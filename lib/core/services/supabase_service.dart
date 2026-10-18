@@ -134,6 +134,9 @@ class SupabaseService {
   Future<void> syncProfileAuthCredentials() =>
       profile.syncProfileAuthCredentials();
 
+  Future<void> syncAppVersion() =>
+      profile.syncAppVersion();
+
   // --- FEED & POST DELEGATIONS ---
   List<MarketPostModel> get cachedFeedPosts => feed.cachedFeedPosts;
   bool get hasCachedFeedPosts => feed.hasCachedFeedPosts;

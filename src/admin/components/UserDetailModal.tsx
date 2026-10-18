@@ -261,6 +261,31 @@ export function UserDetailModal({
                   }}
                 >
                   <span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <i className="fa-solid fa-mobile-screen-button" style={{ width: '14px', color: '#94a3b8' }}></i>
+                    Versi Aplikasi di HP
+                  </span>
+                  <span style={{ fontWeight: 600 }}>
+                    {user.last_app_version ? (
+                      <span style={{ background: '#f0fdf4', color: '#166534', padding: '2.5px 8px', borderRadius: '6px', border: '1px solid #bbf7d0', fontSize: '11.5px', fontWeight: 700 }}>
+                        {user.last_app_version}
+                      </span>
+                    ) : (
+                      <span style={{ color: '#94a3b8', fontSize: '11.5px', fontWeight: 500 }}>Belum Tersinkron</span>
+                    )}
+                  </span>
+                </div>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '10px 14px',
+                    borderBottom: '1px solid #f1f3f5',
+                    fontSize: '12.5px',
+                  }}
+                >
+                  <span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <i className="fa-solid fa-bag-shopping" style={{ width: '14px', color: '#94a3b8' }}></i>
                     Transaksi COD
                   </span>

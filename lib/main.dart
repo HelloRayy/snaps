@@ -44,6 +44,7 @@ Future<void> main() async {
 
   if (Supabase.instance.client.auth.currentUser != null) {
     FollowService.instance.loadFollowings();
+    unawaited(SupabaseService.instance.syncAppVersion());
   }
 
   // Initialize global notification service & FCM token immediately

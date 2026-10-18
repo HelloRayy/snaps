@@ -1,5 +1,6 @@
 // ignore_for_file: use_null_aware_elements
 import 'package:flutter/foundation.dart';
+import 'package:snapan_market/core/services/app_update_service.dart';
 import 'package:snapan_market/features/auth/models/auth_constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -403,6 +404,33 @@ class SupabaseProfileService {
       }
     } catch (e) {
       debugPrint('syncProfileAuthCredentials error: $e');
+    }
+  }
+
+  /// Asynchronously synchronize currently installed app version to user's profile
+  Future<void> syncAppVersion() async {
+    final user = _client.auth.currentUser;
+    if (user == null) return;
+    try {
+      final info = await AppUpdateService.instance.getPackageInfo();
+      final currentVersion = 'v${info.version}+${info.buildNumber}';
+
+      final existingVersion = currentUserProfileNotifier.value?['last_app_version'];
+      if (existingVersion == currentVersion) return;
+
+      await _client
+          .from('profiles')
+          .update({'last_app_version': currentVersion})
+          .eq('id', user.id);
+
+      if (currentUserProfileNotifier.value != null) {
+        currentUserProfileNotifier.value = {
+          ...currentUserProfileNotifier.value!,
+          'last_app_version': currentVersion,
+        };
+      }
+    } catch (_) {
+      // Non-blocking fallback
     }
   }
 }

@@ -148,6 +148,7 @@ class AuthController {
 
         // Sinkronkan kredensial di background jika username pernah diganti (SNAPS-64)
         unawaited(SupabaseService.instance.syncProfileAuthCredentials());
+        unawaited(SupabaseService.instance.syncAppVersion());
         // Cek apakah akun berstatus ditangguhkan (suspended) (SNAPS-16)
         final suspension = await SupabaseService.instance.auth.getCurrentUserSuspensionStatus();
         if (suspension != null) {
@@ -309,6 +310,7 @@ class AuthController {
             userId: response.user!.id,
           ));
         }
+        unawaited(SupabaseService.instance.syncAppVersion());
 
         return null; // success
       }

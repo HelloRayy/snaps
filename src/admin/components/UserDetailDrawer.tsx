@@ -7,6 +7,7 @@ import {
   GraduationCap,
   ShoppingBag,
   TrendingUp,
+  Smartphone,
 } from 'lucide-react';
 import { SlideOverDrawer } from './SlideOverDrawer';
 import { UserAvatar } from './UserAvatar';
@@ -112,6 +113,21 @@ export function UserDetailDrawer({
             </span>
             <span className="font-semibold text-slate-900">
               {user.class_group || 'Umum'}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between py-1 border-b border-slate-100">
+            <span className="text-slate-500 flex items-center gap-2">
+              <Smartphone className="h-4 w-4 text-slate-400" /> Versi Aplikasi di HP
+            </span>
+            <span className="font-semibold text-slate-900">
+              {user.last_app_version ? (
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  {user.last_app_version}
+                </span>
+              ) : (
+                <span className="text-slate-400 text-xs font-medium">Belum Tersinkron</span>
+              )}
             </span>
           </div>
 

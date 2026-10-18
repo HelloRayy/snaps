@@ -26,6 +26,7 @@ export interface Database {
           suspended_until?: string | null
           suspend_reason?: string | null
           nis?: string | null
+          last_app_version?: string | null
         }
         Insert: {
           id: string
@@ -43,6 +44,7 @@ export interface Database {
           suspended_until?: string | null
           suspend_reason?: string | null
           nis?: string | null
+          last_app_version?: string | null
         }
         Update: {
           id?: string
@@ -60,6 +62,7 @@ export interface Database {
           suspended_until?: string | null
           suspend_reason?: string | null
           nis?: string | null
+          last_app_version?: string | null
         }
         Relationships: []
       }

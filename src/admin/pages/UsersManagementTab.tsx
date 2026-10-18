@@ -453,6 +453,7 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
               <tr>
                 <th>Siswa</th>
                 <th>NIS & Jurusan</th>
+                <th>Versi App</th>
                 <th>Role</th>
                 <th>Status Verifikasi</th>
                 <th>Status Akun</th>
@@ -462,15 +463,13 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', padding: '32px 0', color: '#94a3b8' }}>
-                    <i className="fa-solid fa-arrows-rotate fa-spin" style={{ marginRight: '8px' }}></i>
+                  <td colSpan={7} style={{ textAlign: 'center', padding: '32px 0', color: '#94a3b8' }}>
                     Memuat data siswa...
                   </td>
                 </tr>
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', padding: '32px 0', color: '#94a3b8' }}>
-                    Tidak ada siswa yang sesuai dengan filter.
+                  <td colSpan={7} style={{ textAlign: 'center', padding: '32px 0', color: '#94a3b8' }}>
                   </td>
                 </tr>
               ) : (
@@ -510,6 +509,30 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
                       <div style={{ fontSize: '11.5px', color: '#94a3b8' }}>
                         {u.is_verified ? 'Siswa Terverifikasi' : 'Belum Diverifikasi'}
                       </div>
+                    </td>
+                    <td>
+                      {u.last_app_version ? (
+                        <span
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4.5px',
+                            padding: '2.5px 7.5px',
+                            borderRadius: '6px',
+                            fontSize: '11px',
+                            fontWeight: 700,
+                            background: '#f0fdf4',
+                            color: '#166534',
+                            border: '1px solid #bbf7d0',
+                          }}
+                          title={`Versi aplikasi terpasang di HP: ${u.last_app_version}`}
+                        >
+                          <i className="fa-solid fa-mobile-screen" style={{ fontSize: '10px' }}></i>
+                          {u.last_app_version}
+                        </span>
+                      ) : (
+                        <span style={{ color: '#94a3b8', fontSize: '11.5px' }} title="Belum pernah membuka rilis v1.0.35">-</span>
+                      )}
                     </td>
                     <td>
                       <span
