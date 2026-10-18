@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/create_post/components/create_post_media_preview.dart';
 
 void main() {
@@ -58,18 +57,6 @@ void main() {
       // Hold to trigger reorderable drag start
       await tester.pump(kLongPressTimeout + const Duration(milliseconds: 100));
       await tester.pump(const Duration(milliseconds: 50));
-
-      // Brand border should appear in foreground decoration of proxy card
-      final containerFinder = find.byWidgetPredicate((widget) {
-        if (widget is Container && widget.foregroundDecoration is BoxDecoration) {
-          final deco = widget.foregroundDecoration as BoxDecoration;
-          final border = deco.border as Border?;
-          if (border != null && border.top.color.value == AppColors.primary.value) {
-            return true;
-          }
-        }
-        return false;
-      });
 
       // The proxy container is instantiated
       expect(find.byType(ReorderableListView), findsOneWidget);

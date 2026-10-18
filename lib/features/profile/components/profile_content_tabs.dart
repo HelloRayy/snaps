@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:snapan_market/core/components/snaps_skeleton.dart';
 import 'package:snapan_market/features/feed/components/post_card/market_post_card.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';

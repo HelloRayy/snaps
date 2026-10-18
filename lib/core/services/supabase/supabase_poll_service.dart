@@ -72,13 +72,11 @@ class SupabasePollService {
           .eq('user_id', user.id);
 
       final Map<String, List<String>> result = {};
-      if (response is List) {
-        for (final row in response) {
-          final pid = row['post_id']?.toString();
-          final oid = row['option_id']?.toString();
-          if (pid != null && oid != null) {
-            result.putIfAbsent(pid, () => []).add(oid);
-          }
+      for (final row in response) {
+        final pid = row['post_id']?.toString();
+        final oid = row['option_id']?.toString();
+        if (pid != null && oid != null) {
+          result.putIfAbsent(pid, () => []).add(oid);
         }
       }
       PollSyncService.instance.seedVotes(result);

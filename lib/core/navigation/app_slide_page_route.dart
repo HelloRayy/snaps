@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
 /// iOS-grade Parallax Page Route with Interactive Swipe-Back Gesture.
 /// Matching Threads & Instagram mobile motion design:

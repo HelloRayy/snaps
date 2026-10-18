@@ -75,8 +75,8 @@ class StudentRegistryService {
           .select('nis, full_name, class_group, is_claimed, claimed_by')
           .order('nis', ascending: true);
 
-      if (response is List && response.isNotEmpty) {
-        final allRows = response.whereType<Map<String, dynamic>>().toList();
+      if (response.isNotEmpty) {
+        final allRows = List<Map<String, dynamic>>.from(response);
         if (response.length >= 1000) {
           try {
             final nextBatch = await SupabaseService.instance.client
@@ -84,8 +84,8 @@ class StudentRegistryService {
                 .select('nis, full_name, class_group, is_claimed, claimed_by')
                 .order('nis', ascending: true)
                 .range(1000, 2999);
-            if (nextBatch is List && nextBatch.isNotEmpty) {
-              allRows.addAll(nextBatch.whereType<Map<String, dynamic>>());
+            if (nextBatch.isNotEmpty) {
+              allRows.addAll(nextBatch);
             }
           } catch (_) {}
         }
@@ -214,9 +214,8 @@ class StudentRegistryService {
           .or('nis.ilike.%$clean%,full_name.ilike.%$clean%')
           .limit(8);
 
-      if (res is List && res.isNotEmpty) {
+      if (res.isNotEmpty) {
         final fetched = res
-            .whereType<Map<String, dynamic>>()
             .map(RegisteredStudent.fromJson)
             .toList();
 

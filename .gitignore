@@ -117,3 +117,8 @@ gatekeep-secret/
 nohup.out
 waktu.txt
 *.bak
+
+# Sensitive Student Data & PII
+assets/data/students_registry_smkn8.json
+supabase/migrations/seed_all_student_registry.sql
+docs-secret/
