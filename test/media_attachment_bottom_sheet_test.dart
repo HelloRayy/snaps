@@ -19,16 +19,16 @@ void main() {
       await tester.pump();
 
       // Verify instruction banner text
-      expect(find.text('Tap rana untuk foto, atau pilih dari galeri'), findsOneWidget);
+      expect(find.text('Tap rana untuk ambil foto'), findsOneWidget);
 
       // Verify side action buttons
       expect(find.text('Galeri'), findsOneWidget);
-      expect(find.text('Multi Foto'), findsOneWidget);
+      expect(find.text('Putar'), findsOneWidget);
 
       // Verify icons
       expect(find.byIcon(CupertinoIcons.photo_on_rectangle), findsOneWidget);
-      expect(find.byIcon(CupertinoIcons.camera), findsOneWidget);
-      expect(find.byIcon(CupertinoIcons.square_stack_3d_down_right), findsOneWidget);
+      expect(find.byIcon(CupertinoIcons.camera), findsWidgets);
+      expect(find.byIcon(CupertinoIcons.camera_rotate), findsOneWidget);
     });
   });
 
