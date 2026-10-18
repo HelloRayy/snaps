@@ -492,6 +492,7 @@ export function OverviewTab({
                   <tr>
                     <th>Siswa</th>
                     <th>Kelas & Jurusan</th>
+                    <th>Versi App</th>
                     <th>Role</th>
                     <th className="num">Waktu</th>
                   </tr>
@@ -499,8 +500,7 @@ export function OverviewTab({
                 <tbody>
                   {stats.recentUsers.length === 0 ? (
                     <tr>
-                      <td colSpan={4} style={{ textAlign: 'center', padding: '24px 0', color: '#94a3b8' }}>
-                        Belum ada siswa terdaftar.
+                      <td colSpan={5} style={{ textAlign: 'center', padding: '24px 0', color: '#94a3b8' }}>
                       </td>
                     </tr>
                   ) : (
@@ -540,6 +540,29 @@ export function OverviewTab({
                               <span style={{ color: '#94a3b8' }}>Belum Verifikasi</span>
                             )}
                           </div>
+                        </td>
+                        <td>
+                          {u.last_app_version ? (
+                            <span
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                padding: '2.5px 7.5px',
+                                borderRadius: '6px',
+                                fontSize: '11px',
+                                fontWeight: 700,
+                                background: '#f0fdf4',
+                                color: '#166534',
+                                border: '1px solid #bbf7d0',
+                              }}
+                            >
+                              <i className="fa-solid fa-mobile-screen" style={{ fontSize: '10px' }}></i>
+                              {u.last_app_version}
+                            </span>
+                          ) : (
+                            <span style={{ color: '#94a3b8', fontSize: '11px' }}>-</span>
+                          )}
                         </td>
                         <td>
                           <span
