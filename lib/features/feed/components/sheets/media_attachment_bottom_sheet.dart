@@ -16,17 +16,19 @@ import 'package:snapan_market/core/theme/app_colors.dart';
 ///   2. Double-Ring Shutter Button (Center primary action with haptic impact)
 ///   3. Multi-Photo Picker (Right rounded square button for batch selection)
 class MediaAttachmentBottomSheet extends StatefulWidget {
-  const MediaAttachmentBottomSheet({super.key});
+  final int maxImages;
+
+  const MediaAttachmentBottomSheet({super.key, this.maxImages = 3});
 
   /// Opens the interactive media sheet and returns selected [XFile] list or null
-  static Future<List<XFile>?> show(BuildContext context) {
+  static Future<List<XFile>?> show(BuildContext context, {int maxImages = 3}) {
     HapticFeedback.lightImpact();
     return showModalBottomSheet<List<XFile>>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.45),
-      builder: (ctx) => const MediaAttachmentBottomSheet(),
+      builder: (ctx) => MediaAttachmentBottomSheet(maxImages: maxImages),
     );
   }
 
@@ -83,7 +85,7 @@ class _MediaAttachmentBottomSheetState extends State<MediaAttachmentBottomSheet>
 
     try {
       final files = await MediaUploadService.instance.pickMultiImages(
-        limit: 3,
+        limit: widget.maxImages,
       );
       if (mounted && files.isNotEmpty) {
         Navigator.of(context).pop(files);
