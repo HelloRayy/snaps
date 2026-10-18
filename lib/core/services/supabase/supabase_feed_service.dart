@@ -414,6 +414,7 @@ class SupabaseFeedService {
     required String postId,
     required String content,
     String? parentCommentId,
+    List<String>? images,
   }) async {
     final user = _currentUser;
     if (user == null) {
@@ -429,10 +430,10 @@ class SupabaseFeedService {
             'content': content,
             // ignore: use_null_aware_elements
             if (parentCommentId != null) 'parent_comment_id': parentCommentId,
+            if (images != null && images.isNotEmpty) 'images': images,
           })
           .select('*, user:profiles!post_comments_user_id_fkey(*)')
           .single();
-
       return PostCommentModel.fromJson(inserted);
     } catch (e) {
       debugPrint('Error addComment: $e');

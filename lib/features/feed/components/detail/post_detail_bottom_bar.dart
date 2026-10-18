@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
 import 'package:snapan_market/features/feed/components/comment/comment_input_bar.dart';
@@ -18,6 +19,7 @@ class PostDetailBottomBar extends StatelessWidget {
   final VoidCallback onBuyClick;
   final VoidCallback onCancelReply;
   final ValueChanged<String> onSubmitComment;
+  final void Function(String text, List<XFile> images)? onSubmitCommentWithMedia;
 
   const PostDetailBottomBar({
     super.key,
@@ -28,6 +30,7 @@ class PostDetailBottomBar extends StatelessWidget {
     required this.onBuyClick,
     required this.onCancelReply,
     required this.onSubmitComment,
+    this.onSubmitCommentWithMedia,
   });
 
   @override
@@ -89,6 +92,7 @@ class PostDetailBottomBar extends StatelessWidget {
       replyToUser: replyToUser,
       onCancelReply: onCancelReply,
       onSubmitComment: onSubmitComment,
+      onSubmitCommentWithMedia: onSubmitCommentWithMedia,
     );
   }
 }

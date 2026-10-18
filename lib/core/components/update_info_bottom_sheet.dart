@@ -109,7 +109,6 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                 _isDownloading = false;
                 _errorMessage = 'Proses unduhan sedang berjalan di latar belakang. Silakan keluar dan buka kembali aplikasi.';
               });
-              });
               break;
 
             case OtaStatus.PERMISSION_NOT_GRANTED_ERROR:
@@ -117,25 +116,13 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                 _isDownloading = false;
                 _errorMessage = 'Izin pemasangan aplikasi belum aktif. Buka Pengaturan HP > Aplikasi > Snaps > Aktifkan "Instal aplikasi tidak dikenal", lalu keluar dan buka kembali aplikasi.';
               });
-              });
               break;
 
             case OtaStatus.INTERNAL_ERROR:
               setState(() {
                 _isDownloading = false;
+                _isInstalling = false;
                 _errorMessage = 'Gagal mengunduh pembaruan. Silakan keluar dari aplikasi dan masuk kembali.';
-              });
-                _errorMessage =
-                    'Gagal mengunduh pembaruan. Silakan keluar dari aplikasi dan masuk kembali.';
-              });
-              break;
-                _isInstalling = false;
-                _errorMessage = 'Pemasangan pembaruan belum berhasil. Silakan keluar dari aplikasi dan masuk kembali.';
-              });
-                _isDownloading = false;
-                _isInstalling = false;
-                _errorMessage =
-                    'Pemasangan pembaruan belum selesai. Silakan keluar dari aplikasi dan masuk kembali.';
               });
               break;
 
@@ -151,21 +138,19 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
               break;
           }
         },
+        onError: (e) {
+          if (!mounted) return;
           setState(() {
             _isDownloading = false;
             _errorMessage = 'Terjadi kendala saat mengunduh pembaruan. Silakan keluar dari aplikasi dan masuk kembali.';
           });
-            _errorMessage =
-                'Terjadi kendala saat mengunduh pembaruan. Silakan keluar dari aplikasi dan masuk kembali.';
-          });
         },
+      );
+    } catch (e) {
+      if (!mounted) return;
       setState(() {
         _isDownloading = false;
         _errorMessage = 'Gagal memulai unduhan. Silakan keluar dari aplikasi dan masuk kembali.';
-      });
-        _isDownloading = false;
-        _errorMessage =
-            'Gagal memulai unduhan. Silakan keluar dari aplikasi dan masuk kembali.';
       });
     }
   }
