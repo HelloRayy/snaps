@@ -88,7 +88,7 @@ git push origin -f "v${NEW_NAME}"
 # 5. Buat GitHub Release via API & Upload Asset
 echo -e "\n${CYAN}☁️  [4/5] Mengunggah APK ke GitHub Release...${NC}"
 REMOTE_URL=$(git config remote.origin.url)
-GH_TOKEN=$(echo "$REMOTE_URL" | sed -n -E 's#.*(github_pat_[^@]+)@.*#\1#p')
+GH_TOKEN=$(echo "$REMOTE_URL" | sed -n -E 's#.*((github_pat_|ghp_)[^@]+)@.*#\1#p')
 
 if [ -z "$GH_TOKEN" ]; then
   GH_TOKEN="${GITHUB_TOKEN}"
