@@ -76,10 +76,20 @@ class StudentRegistryService {
           .order('nis', ascending: true);
 
       if (response is List && response.isNotEmpty) {
-        _students = response
-            .whereType<Map<String, dynamic>>()
-            .map(RegisteredStudent.fromJson)
-            .toList();
+        final allRows = response.whereType<Map<String, dynamic>>().toList();
+        if (response.length >= 1000) {
+          try {
+            final nextBatch = await SupabaseService.instance.client
+                .from('student_registry')
+                .select('nis, full_name, class_group, is_claimed, claimed_by')
+                .order('nis', ascending: true)
+                .range(1000, 2999);
+            if (nextBatch is List && nextBatch.isNotEmpty) {
+              allRows.addAll(nextBatch.whereType<Map<String, dynamic>>());
+            }
+          } catch (_) {}
+        }
+        _students = allRows.map(RegisteredStudent.fromJson).toList();
         _isLoaded = true;
         return;
       }

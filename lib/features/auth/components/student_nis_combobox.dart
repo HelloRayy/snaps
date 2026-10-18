@@ -30,7 +30,7 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
   final FocusNode _focusNode = FocusNode();
   OverlayEntry? _overlayEntry;
   List<RegisteredStudent> _suggestions = [];
-
+  Timer? _debounceTimer;
   @override
   void initState() {
     super.initState();
@@ -44,12 +44,14 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _removeOverlay();
     _focusNode.dispose();
     super.dispose();
   }
 
   void _onChanged(String value) {
+    _debounceTimer?.cancel();
     final clean = value.trim();
 
     // Reset verified student status if user modifies input away from verified NIS
@@ -57,19 +59,28 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
       widget.onStudentSelected(null);
     }
 
-    if (clean.length >= 2) {
-      final results = StudentRegistryService.instance.searchStudents(clean);
-      setState(() {
-        _suggestions = results.take(6).toList();
-      });
+    if (clean.length < 2) {
+      _removeOverlay();
+      return;
+    }
 
-      if (_suggestions.isNotEmpty && _focusNode.hasFocus) {
-        _showOverlay();
-      } else {
-        _removeOverlay();
+    // Debounce 200ms agar pengetikan cepat tidak membombardir UI/database
+    _debounceTimer = Timer(const Duration(milliseconds: 200), () {
+      if (!mounted) return;
+
+      // 1. Pencarian instan di memori lokal HP (0 ms latency, 0 beban server)
+      final localResults = StudentRegistryService.instance.searchStudents(clean);
+      if (localResults.isNotEmpty) {
+        setState(() {
+          _suggestions = localResults.take(6).toList();
+        });
+        if (_focusNode.hasFocus) {
+          _showOverlay();
+        }
+        return; // SELESAI: tidak perlu request jaringan jika data lokal sudah ada
       }
 
-      // Live async check ke Supabase jika pencarian lokal nihil atau data baru di-input admin
+      // 2. Fallback remote Supabase HANYA jika data lokal nihil
       StudentRegistryService.instance.searchStudentsAsync(clean).then((remoteResults) {
         if (mounted && _focusNode.hasFocus && widget.controller.text.trim() == clean) {
           if (remoteResults.isNotEmpty) {
@@ -77,12 +88,12 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
               _suggestions = remoteResults.take(6).toList();
             });
             _showOverlay();
+          } else {
+            _removeOverlay();
           }
         }
       });
-    } else {
-      _removeOverlay();
-    }
+    });
   }
 
   void _showOverlay() {

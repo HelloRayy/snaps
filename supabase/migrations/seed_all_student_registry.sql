@@ -1275,6 +1275,6 @@ VALUES
   ('11632', 'VANIA ATHAILLAH', 'XII TJKT 2'),
   ('11633', 'VIKA AYU PRATIWI', 'XII TJKT 2'),
   ('11634', 'ZEVANO SYAFIQY AL GHIFFARI SURYONO', 'XII TJKT 2')
-ON CONFLICT (nis) DO UPDATE SET
-  full_name = EXCLUDED.full_name,
-  class_group = EXCLUDED.class_group;
+-- Sangat penting: DO NOTHING agar akun siswa yang sudah aktif (seperti XI PPLG 2)
+-- tidak ter-reset is_claimed atau claimed_by-nya!
+ON CONFLICT (nis) DO NOTHING;
