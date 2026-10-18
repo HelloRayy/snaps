@@ -156,6 +156,25 @@ if [ -f ".env.local" ]; then
 fi
 
 if [ -n "$SUPABASE_KEY" ]; then
+  # 1. Pastikan bucket publik app_releases tersedia di Supabase Storage
+  curl -s -X POST "https://lcwsxldnoqjdfqxqcqja.supabase.co/storage/v1/bucket" \
+    -H "apikey: ${SUPABASE_KEY}" \
+    -H "Authorization: Bearer ${SUPABASE_KEY}" \
+    -H "Content-Type: application/json" \
+    -d '{"id": "app_releases", "name": "app_releases", "public": true}' > /dev/null || true
+
+  # 2. Upload binary APK ke Supabase Storage (Public CDN langsung, anti-404 private repo)
+  echo "Mengunggah APK ke Supabase Storage (Public Bucket)..."
+  curl -s -X POST "https://lcwsxldnoqjdfqxqcqja.supabase.co/storage/v1/object/app_releases/v${NEW_NAME}/app-release.apk" \
+    -H "apikey: ${SUPABASE_KEY}" \
+    -H "Authorization: Bearer ${SUPABASE_KEY}" \
+    -H "Content-Type: application/vnd.android.package-archive" \
+    -H "x-upsert: true" \
+    --data-binary @"$APK_SOURCE" > /dev/null || true
+
+  # Gunakan URL Supabase Storage sebagai direct public download URL
+  DOWNLOAD_URL="https://lcwsxldnoqjdfqxqcqja.supabase.co/storage/v1/object/public/app_releases/v${NEW_NAME}/app-release.apk"
+
   # Hitung real version code yang cocok dengan AndroidManifest (>= 2000)
   REAL_VERSION_CODE=$((NEW_CODE < 2000 ? 2000 + NEW_CODE : NEW_CODE))
 
