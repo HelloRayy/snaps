@@ -220,13 +220,11 @@ class SupabaseService {
     required String postId,
     required String content,
     String? parentCommentId,
-    List<String>? images,
   }) =>
       feed.addComment(
         postId: postId,
         content: content,
         parentCommentId: parentCommentId,
-        images: images,
       );
 
   Future<void> deleteComment(String commentId) =>

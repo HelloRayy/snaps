@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:snapan_market/core/services/media_upload_service.dart';
 import 'package:snapan_market/core/services/poll_sync_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/services/suspension_service.dart';
@@ -86,9 +84,8 @@ class PostDetailController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> addComment(BuildContext context, String content, bool isProductMode, {List<XFile>? media}) async {
-    final trimmed = content.trim();
-    if (trimmed.isEmpty && (media == null || media.isEmpty)) return false;
+  Future<bool> addComment(BuildContext context, String content, bool isProductMode) async {
+    if (content.trim().isEmpty) return false;
     HapticFeedback.mediumImpact();
 
     if (!SupabaseService.instance.isAuthenticated) {
@@ -106,18 +103,12 @@ class PostDetailController extends ChangeNotifier {
     if (isSuspended) return false;
 
     try {
-      List<String> imageUrls = [];
-      if (media != null && media.isNotEmpty) {
-        imageUrls = await MediaUploadService.instance.uploadMultipleXFiles(media);
-      }
-
-      final commentText = trimmed.isEmpty && imageUrls.isNotEmpty ? '📷 Lampiran Foto' : trimmed;
       final liveComment = await SupabaseService.instance.addComment(
         postId: post.id,
-        content: commentText,
+        content: content.trim(),
         parentCommentId: replyToCommentId,
-        images: imageUrls,
       );
+
       if (replyToCommentId != null) {
         comments = comments.map((c) {
           if (c.id == replyToCommentId || c.replies.any((r) => r.id == replyToCommentId)) {
@@ -327,7 +318,7 @@ class PostDetailController extends ChangeNotifier {
         if (confirmed == true && context.mounted) {
           Navigator.of(context).pop({'deleted': true, 'postId': post.id});
           if (onDeletePost != null) {
-            onDeletePost(post);
+            onDeletePost?.call(post);
           } else {
             try {
               await SupabaseService.instance.deletePost(post.id, asAdmin: isAdmin && !isOwner);
