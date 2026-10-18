@@ -58,12 +58,21 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
     if (widget.verifiedStudent != null && widget.verifiedStudent!.nis != clean) {
       widget.onStudentSelected(null);
     }
-
     if (clean.length < 2) {
       _removeOverlay();
       return;
     }
 
+    // Jika tepat 5 digit, cek instan apakah cocok langsung ke memori lokal
+    if (clean.length == 5) {
+      final exactMatch = StudentRegistryService.instance.findByNis(clean);
+      if (exactMatch != null && !exactMatch.isClaimed) {
+        HapticFeedback.lightImpact();
+        widget.onStudentSelected(exactMatch);
+        _removeOverlay();
+        return;
+      }
+    }
     // Debounce 200ms agar pengetikan cepat tidak membombardir UI/database
     _debounceTimer = Timer(const Duration(milliseconds: 200), () {
       if (!mounted) return;
@@ -269,8 +278,7 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
 
     final String labelText = isVerified
         ? 'NIS Terverifikasi • ${widget.verifiedStudent!.classGroup}'
-        : 'NIS Siswa';
-
+        : 'Nomor Induk Siswa (5 Digit)';
     final Widget suffixIcon = isVerified
         ? const Padding(
             padding: EdgeInsets.only(right: 14.0),
@@ -295,14 +303,19 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
         focusNode: _focusNode,
         child: AuthInputField(
           label: labelText,
-          hint: 'Masukkan NIS / nama lengkap',
+          hint: 'Masukkan 5 digit NIS kamu',
           prefixIcon: LucideIcons.idCard,
           controller: widget.controller,
           errorText: widget.errorText,
           isValid: isVerified,
           customSuffixIcon: suffixIcon,
           textInputAction: TextInputAction.next,
-          keyboardType: TextInputType.text,
+          keyboardType: TextInputType.number,
+          maxLength: 5,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(5),
+          ],
           onChanged: _onChanged,
         ),
       ),

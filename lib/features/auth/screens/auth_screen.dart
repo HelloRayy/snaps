@@ -249,7 +249,11 @@ class _AuthScreenState extends State<AuthScreen> {
 
     final rawNis = _nisController.text.trim();
     if (rawNis.isEmpty) {
-      setState(() => _nisError = 'NIS siswa wajib diisi');
+      setState(() => _nisError = 'Nomor NIS 5 digit wajib diisi');
+      return;
+    }
+    if (rawNis.length != 5) {
+      setState(() => _nisError = 'Nomor NIS harus berupa 5 digit angka');
       return;
     }
 
@@ -257,17 +261,17 @@ class _AuthScreenState extends State<AuthScreen> {
       var student = StudentRegistryService.instance.findByNis(rawNis);
       student ??= await StudentRegistryService.instance.findByNisRemote(rawNis);
       if (student == null) {
-        setState(() => _nisError = 'NIS belum terdaftar sebagai siswa SMKN 8');
+        setState(() => _nisError = 'NIS $rawNis belum terdaftar di buku induk SMKN 8');
         return;
       }
       if (student.isClaimed) {
-        setState(() => _nisError = 'NIS ini sudah terdaftar. Silakan login ke akun Anda');
+        setState(() => _nisError = 'NIS $rawNis sudah memiliki akun aktif. Silakan masuk');
         return;
       }
       _verifiedStudent = student;
       _fullNameController.text = student.name;
     } else if (_verifiedStudent!.isClaimed) {
-      setState(() => _nisError = 'NIS ini sudah terdaftar. Silakan login ke akun Anda');
+      setState(() => _nisError = 'NIS $rawNis sudah memiliki akun aktif. Silakan masuk');
       return;
     }
 
@@ -440,7 +444,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                 Text(
                                   _authMode == AuthMode.login
                                       ? 'Selamat datang kembali, Snapanians!'
-                                      : 'Daftarkan akunmu untuk berjejaring dan belanja bareng!',
+                                      : 'Masukkan 5 digit NIS sekolahmu untuk mengaktifkan akun!',
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(
                                     fontFamily: 'SFPro',
