@@ -282,6 +282,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 onBuyClick: _handleBuySheet,
                 onCancelReply: () => _controller.cancelReply(_isProductMode),
                 onSubmitComment: (content) => _controller.addComment(context, content, _isProductMode),
+                onSubmitCommentWithMedia: (content, images) =>
+                    _controller.addCommentWithMedia(context, content, images, _isProductMode),
               ),
             ),
           ],

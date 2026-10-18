@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/services/snaps_asset_picker.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// CommentInputBar Widget
@@ -18,6 +20,7 @@ class CommentInputBar extends StatefulWidget {
   final String? targetAuthor;
   final String? userAvatar;
   final ValueChanged<String> onSubmitComment;
+  final void Function(String text, List<String> images)? onSubmitCommentWithMedia;
   final VoidCallback? onCancelReply;
   final ValueChanged<String>? onDraftChange;
 
@@ -27,6 +30,7 @@ class CommentInputBar extends StatefulWidget {
     this.targetAuthor,
     this.userAvatar,
     required this.onSubmitComment,
+    this.onSubmitCommentWithMedia,
     this.onCancelReply,
     this.onDraftChange,
   });
@@ -41,7 +45,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
   late ScrollController _scrollController;
   bool _hasText = false;
   bool _isSendPressed = false;
-
+  final List<String> _attachedImages = [];
   String _cleanUsername(String raw) =>
       raw.trim().replaceAll('@', '').replaceAll(' ', '_');
 
@@ -103,6 +107,32 @@ class _CommentInputBarState extends State<CommentInputBar> {
     }
     widget.onDraftChange?.call(text);
   }
+  void _pickCommentImages() async {
+    HapticFeedback.selectionClick();
+    final remaining = 3 - _attachedImages.length;
+    if (remaining <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Maksimal 3 foto untuk lampiran komentar'),
+          duration: Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    final picked = await SnapsAssetPicker.pickImages(context, maxImages: remaining);
+    if (picked != null && picked.isNotEmpty && mounted) {
+      setState(() {
+        for (final file in picked) {
+          if (_attachedImages.length < 3) {
+            _attachedImages.add(file.path);
+          }
+        }
+      });
+    }
+  }
+
 
   void _handleSubmit() {
     var text = _textController.text.trim();
@@ -113,10 +143,20 @@ class _CommentInputBarState extends State<CommentInputBar> {
         text = '$prefix$text';
       }
     }
-    if (text.isEmpty) return;
+    if (text.isEmpty && _attachedImages.isEmpty) return;
     HapticFeedback.lightImpact();
-    widget.onSubmitComment(text);
+
+    final imagesToSend = List<String>.from(_attachedImages);
+    if (widget.onSubmitCommentWithMedia != null) {
+      widget.onSubmitCommentWithMedia!(text, imagesToSend);
+    } else {
+      widget.onSubmitComment(text);
+    }
+
     _textController.clear();
+    setState(() {
+      _attachedImages.clear();
+    });
     _focusNode.unfocus();
   }
 
@@ -235,6 +275,100 @@ class _CommentInputBarState extends State<CommentInputBar> {
               ),
             ),
           ],
+          // ===============================================================
+          // ATTACHED IMAGES PREVIEW (Horizontal thumbnail row)
+          // ===============================================================
+          if (_attachedImages.isNotEmpty) ...[
+            Container(
+              height: 64.0,
+              margin: const EdgeInsets.only(bottom: 8.0),
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: _attachedImages.length + (_attachedImages.length < 3 ? 1 : 0),
+                separatorBuilder: (context, index) => const SizedBox(width: 8.0),
+                itemBuilder: (context, index) {
+                  if (index == _attachedImages.length) {
+                    return GestureDetector(
+                      onTap: _pickCommentImages,
+                      child: Container(
+                        width: 60.0,
+                        height: 60.0,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          border: Border.all(
+                            color: isDark ? AppColors.darkBorder : const Color(0xFFCBD5E1),
+                            width: 1.0,
+                          ),
+                          color: isDark ? AppColors.darkSurface : const Color(0xFFF1F5F9),
+                        ),
+                        child: Center(
+                          child: Icon(
+                            CupertinoIcons.plus,
+                            size: 20.0,
+                            color: isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+
+                  final imagePath = _attachedImages[index];
+                  return Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10.0),
+                        child: Container(
+                          width: 60.0,
+                          height: 60.0,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0),
+                              width: 0.8,
+                            ),
+                          ),
+                          child: Image.file(
+                            File(imagePath),
+                            width: 60.0,
+                            height: 60.0,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: -4.0,
+                        right: -4.0,
+                        child: GestureDetector(
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            setState(() {
+                              _attachedImages.removeAt(index);
+                            });
+                          },
+                          child: Container(
+                            width: 20.0,
+                            height: 20.0,
+                            decoration: const BoxDecoration(
+                              color: Color(0xCC000000),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Center(
+                              child: Icon(
+                                CupertinoIcons.xmark,
+                                size: 11.0,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
+
 
           // ===============================================================
           // FRAME 1: Leading Button + Write Bar (pen.dev jXVwo)
@@ -243,18 +377,9 @@ class _CommentInputBarState extends State<CommentInputBar> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               // 1. LEADING BUTTON (pen.dev jxdH0: 42x42 circle, frosted liquid glass + shadow)
+              // 1. LEADING ATTACHMENT BUTTON
               GestureDetector(
-                onTap: () {
-                  HapticFeedback.selectionClick();
-                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Lampirkan foto atau dokumen 📎'),
-                      behavior: SnackBarBehavior.floating,
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                },
+                onTap: _pickCommentImages,
                 child: Container(
                   width: 42.0,
                   height: 42.0,
@@ -262,31 +387,50 @@ class _CommentInputBarState extends State<CommentInputBar> {
                     shape: BoxShape.circle,
                     color: isDark ? AppColors.darkSurfaceElevated : const Color(0xFFF1F5F9),
                     border: Border.all(
-                      color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0),
+                      color: _attachedImages.isNotEmpty
+                          ? AppColors.primary
+                          : (isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0)),
                       width: 1.0,
                     ),
                   ),
                   child: Center(
-                    child: widget.userAvatar != null && widget.userAvatar!.isNotEmpty
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(15.0),
-                            child: Image.network(
-                              widget.userAvatar!,
-                              width: 30.0,
-                              height: 30.0,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Icon(
-                                CupertinoIcons.paperclip,
-                                color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1A1A1A),
-                                size: 20.0,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      alignment: Alignment.center,
+                      children: [
+                        Icon(
+                          CupertinoIcons.photo_on_rectangle,
+                          color: _attachedImages.isNotEmpty
+                              ? AppColors.primary
+                              : (isDark ? AppColors.darkTextPrimary : const Color(0xFF1A1A1A)),
+                          size: 20.0,
+                        ),
+                        if (_attachedImages.isNotEmpty)
+                          Positioned(
+                            top: -6.0,
+                            right: -6.0,
+                            child: Container(
+                              width: 16.0,
+                              height: 16.0,
+                              decoration: const BoxDecoration(
+                                color: AppColors.primary,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  '${_attachedImages.length}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 9.0,
+                                    fontWeight: FontWeight.w700,
+                                    height: 1.0,
+                                  ),
+                                ),
                               ),
                             ),
-                          )
-                        : Icon(
-                            CupertinoIcons.paperclip,
-                            color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1A1A1A),
-                            size: 20.0,
                           ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -345,7 +489,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
                       const SizedBox(width: 4.0),
 
                       // Trailing Action: Send Button when text exists, or Sticker/Emoji Symbol when empty
-                      if (_hasText)
+                      if (_hasText || _attachedImages.isNotEmpty)
                         GestureDetector(
                           onTapDown: (_) => setState(() => _isSendPressed = true),
                           onTapUp: (_) => setState(() => _isSendPressed = false),

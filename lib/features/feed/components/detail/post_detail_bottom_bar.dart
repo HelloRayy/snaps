@@ -18,6 +18,7 @@ class PostDetailBottomBar extends StatelessWidget {
   final VoidCallback onBuyClick;
   final VoidCallback onCancelReply;
   final ValueChanged<String> onSubmitComment;
+  final void Function(String text, List<String> images)? onSubmitCommentWithMedia;
 
   const PostDetailBottomBar({
     super.key,
@@ -28,6 +29,7 @@ class PostDetailBottomBar extends StatelessWidget {
     required this.onBuyClick,
     required this.onCancelReply,
     required this.onSubmitComment,
+    this.onSubmitCommentWithMedia,
   });
 
   @override
@@ -89,6 +91,7 @@ class PostDetailBottomBar extends StatelessWidget {
       replyToUser: replyToUser,
       onCancelReply: onCancelReply,
       onSubmitComment: onSubmitComment,
+      onSubmitCommentWithMedia: onSubmitCommentWithMedia,
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import 'package:snapan_market/core/components/notification_guide_bottom_sheet.dart';
 import 'package:snapan_market/core/components/update_info_bottom_sheet.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
@@ -68,10 +69,17 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     GlobalNotificationService.instance.init();
     DirectMessagesService.instance.loadConversations();
 
+    _requestPhotoPermission();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkForAppUpdate();
     });
   }
+  void _requestPhotoPermission() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      PhotoManager.requestPermissionExtend();
+    });
+  }
+
 
   void _initAnimations() {
     _fabAnimationController ??= AnimationController(

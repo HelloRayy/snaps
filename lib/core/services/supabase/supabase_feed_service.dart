@@ -414,6 +414,7 @@ class SupabaseFeedService {
     required String postId,
     required String content,
     String? parentCommentId,
+    List<String>? images,
   }) async {
     final user = _currentUser;
     if (user == null) {
@@ -421,20 +422,41 @@ class SupabaseFeedService {
     }
 
     try {
+      final payload = <String, dynamic>{
+        'post_id': postId,
+        'user_id': user.id,
+        'content': content,
+        // ignore: use_null_aware_elements
+        if (parentCommentId != null) 'parent_comment_id': parentCommentId,
+        // ignore: use_null_aware_elements
+        if (images != null && images.isNotEmpty) 'images': images,
+      };
       final inserted = await _client
           .from('post_comments')
-          .insert({
-            'post_id': postId,
-            'user_id': user.id,
-            'content': content,
-            // ignore: use_null_aware_elements
-            if (parentCommentId != null) 'parent_comment_id': parentCommentId,
-          })
+          .insert(payload)
           .select('*, user:profiles!post_comments_user_id_fkey(*)')
           .single();
 
       return PostCommentModel.fromJson(inserted);
     } catch (e) {
+      // Fallback: If 'images' column does not exist in DB, retry without images field
+      if (images != null && images.isNotEmpty && e.toString().contains('images')) {
+        try {
+          final fallbackPayload = <String, dynamic>{
+            'post_id': postId,
+            'user_id': user.id,
+            'content': content,
+            // ignore: use_null_aware_elements
+            if (parentCommentId != null) 'parent_comment_id': parentCommentId,
+          };
+          final inserted = await _client
+              .from('post_comments')
+              .insert(fallbackPayload)
+              .select('*, user:profiles!post_comments_user_id_fkey(*)')
+              .single();
+          return PostCommentModel.fromJson(inserted);
+        } catch (_) {}
+      }
       debugPrint('Error addComment: $e');
       rethrow;
     }

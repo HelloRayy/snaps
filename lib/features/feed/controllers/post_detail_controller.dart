@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:snapan_market/core/services/poll_sync_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/services/suspension_service.dart';
+import 'package:snapan_market/features/create_post/components/create_post_image_helper.dart';
 import 'package:snapan_market/features/feed/components/sheets/delete_post_bottom_sheet.dart';
 import 'package:snapan_market/features/feed/components/post_card/post_submenu_popover.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
@@ -84,8 +85,14 @@ class PostDetailController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> addComment(BuildContext context, String content, bool isProductMode) async {
-    if (content.trim().isEmpty) return false;
+  Future<bool> addComment(
+    BuildContext context,
+    String content,
+    bool isProductMode, {
+    List<String> images = const [],
+  }) async {
+    final cleanContent = content.trim();
+    if (cleanContent.isEmpty && images.isEmpty) return false;
     HapticFeedback.mediumImpact();
 
     if (!SupabaseService.instance.isAuthenticated) {
@@ -101,12 +108,17 @@ class PostDetailController extends ChangeNotifier {
     // Proactively check if account got suspended (SNAPS-16)
     final isSuspended = await SuspensionService.instance.checkStatus();
     if (isSuspended) return false;
-
+    List<String> uploadedImages = [];
     try {
+      if (images.isNotEmpty) {
+        uploadedImages = await CreatePostImageHelper.uploadAllImages(images);
+      }
+
       final liveComment = await SupabaseService.instance.addComment(
         postId: post.id,
-        content: content.trim(),
+        content: cleanContent,
         parentCommentId: replyToCommentId,
+        images: uploadedImages.isNotEmpty ? uploadedImages : null,
       );
 
       if (replyToCommentId != null) {
@@ -155,6 +167,7 @@ class PostDetailController extends ChangeNotifier {
           avatar: '',
         ),
         content: content.trim(),
+        images: uploadedImages,
         timestamp: 'Baru saja',
       );
 
@@ -164,6 +177,15 @@ class PostDetailController extends ChangeNotifier {
       notifyListeners();
       return false;
     }
+  }
+
+  Future<bool> addCommentWithMedia(
+    BuildContext context,
+    String content,
+    List<String> images,
+    bool isProductMode,
+  ) {
+    return addComment(context, content, isProductMode, images: images);
   }
 
   /// Delete a comment with optimistic UI update and error rollback
@@ -318,7 +340,7 @@ class PostDetailController extends ChangeNotifier {
         if (confirmed == true && context.mounted) {
           Navigator.of(context).pop({'deleted': true, 'postId': post.id});
           if (onDeletePost != null) {
-            onDeletePost?.call(post);
+            onDeletePost(post);
           } else {
             try {
               await SupabaseService.instance.deletePost(post.id, asAdmin: isAdmin && !isOwner);
