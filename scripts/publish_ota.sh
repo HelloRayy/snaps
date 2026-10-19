@@ -185,8 +185,8 @@ elif [ "$SKIP_BUILD" = "true" ] && [ -f "$APK_PATH" ]; then
   APK_SIZE=$(ls -lh "$APK_PATH" | awk '{print $5}')
   echo -e "${GREEN}✓ Menggunakan APK Release yang sudah ada (${APK_SIZE}): ${APK_PATH}${NC}"
 else
-  echo "• Mengompilasi APK Release (flutter build apk --release --no-pub)..."
-  flutter build apk --release --no-pub
+  echo "• Mengompilasi APK Release arm64 (flutter build apk --release --target-platform android-arm64 --no-pub)..."
+  flutter build apk --release --target-platform android-arm64 --no-pub
   if [ ! -f "$APK_PATH" ]; then
     echo -e "${RED}❌ Error: File APK tidak ditemukan di $APK_PATH!${NC}"
     exit 1
@@ -311,6 +311,28 @@ if [ "$DRY_RUN" = "true" ]; then
   echo -e "• Service Role Key terdeteksi: $([ -n "$SUPABASE_KEY" ] && echo -e "${GREEN}Ya${NC}" || echo -e "${RED}Tidak${NC}")"
   echo "• Version Code Supabase: ${REAL_VERSION_CODE}"
 elif [ -n "$SUPABASE_KEY" ]; then
+  # 0. Upload APK ke Supabase Storage (Public CDN langsung untuk menghindari 404 dari private GitHub repo)
+  echo "• Mengunggah APK ke Supabase Storage CDN (public bucket app_releases)..."
+  curl -s -X POST "${SUPABASE_URL_VAL}/storage/v1/bucket" \
+    -H "apikey: ${SUPABASE_KEY}" \
+    -H "Authorization: Bearer ${SUPABASE_KEY}" \
+    -H "Content-Type: application/json" \
+    -d '{"id": "app_releases", "name": "app_releases", "public": true}' > /dev/null || true
+
+  UPLOAD_STORAGE_RESP=$(curl -s -X POST "${SUPABASE_URL_VAL}/storage/v1/object/app_releases/v${VERSION_NAME}/app-release.apk" \
+    -H "apikey: ${SUPABASE_KEY}" \
+    -H "Authorization: Bearer ${SUPABASE_KEY}" \
+    -H "Content-Type: application/vnd.android.package-archive" \
+    -H "x-upsert: true" \
+    --data-binary @"$APK_PATH")
+
+  if echo "$UPLOAD_STORAGE_RESP" | grep -q "Key"; then
+    echo -e "${GREEN}✓ APK berhasil diunggah ke Supabase Storage CDN!${NC}"
+    DOWNLOAD_URL="${SUPABASE_URL_VAL}/storage/v1/object/public/app_releases/v${VERSION_NAME}/app-release.apk"
+  else
+    echo -e "${YELLOW}⚠️ Upload ke Storage: $UPLOAD_STORAGE_RESP. Tetap menggunakan URL fallback.${NC}"
+  fi
+
   # 1. Nonaktifkan versi sebelumnya agar rilis ini menjadi satu-satunya yang aktif
   echo "• Menonaktifkan versi aplikasi sebelumnya..."
   curl -s -X PATCH "${SUPABASE_URL_VAL}/rest/v1/app_versions?version_code=lt.${REAL_VERSION_CODE}" \

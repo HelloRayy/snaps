@@ -177,6 +177,13 @@ if [ -n "$SUPABASE_KEY" ]; then
 
   # Hitung real version code yang cocok dengan AndroidManifest (>= 2000)
   REAL_VERSION_CODE=$((NEW_CODE < 2000 ? 2000 + NEW_CODE : NEW_CODE))
+  # Nonaktifkan versi sebelumnya agar hanya versi terbaru yang aktif
+  curl -s -X PATCH "https://lcwsxldnoqjdfqxqcqja.supabase.co/rest/v1/app_versions?version_code=lt.${REAL_VERSION_CODE}" \
+    -H "apikey: ${SUPABASE_KEY}" \
+    -H "Authorization: Bearer ${SUPABASE_KEY}" \
+    -H "Content-Type: application/json" \
+    -d '{"is_active": false}' > /dev/null || true
+
 
   SUPABASE_PAYLOAD=$(cat <<EOF
 {
