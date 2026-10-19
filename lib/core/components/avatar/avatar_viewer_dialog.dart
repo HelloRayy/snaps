@@ -71,11 +71,15 @@ class AvatarViewerDialog extends StatefulWidget {
 }
 
 class _AvatarViewerDialogState extends State<AvatarViewerDialog>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final TransformationController _transformController;
   late final AnimationController _springBackAnimController;
   Animation<double>? _springBackAnim;
+  late final AnimationController _doubleTapAnimController;
+  Animation<Matrix4>? _doubleTapAnimation;
+  TapDownDetails? _doubleTapDetails;
 
+  int _activePointerCount = 0;
   double _dragOffsetY = 0.0;
   bool _isCurrentZoomed = false;
 
@@ -89,6 +93,15 @@ class _AvatarViewerDialogState extends State<AvatarViewerDialog>
       vsync: this,
       duration: const Duration(milliseconds: 240),
     );
+
+    _doubleTapAnimController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 240),
+    )..addListener(() {
+        if (_doubleTapAnimation != null) {
+          _transformController.value = _doubleTapAnimation!.value;
+        }
+      });
   }
 
   @override
@@ -96,6 +109,7 @@ class _AvatarViewerDialogState extends State<AvatarViewerDialog>
     _transformController.removeListener(_handleTransform);
     _transformController.dispose();
     _springBackAnimController.dispose();
+    _doubleTapAnimController.dispose();
     super.dispose();
   }
 
@@ -108,7 +122,7 @@ class _AvatarViewerDialogState extends State<AvatarViewerDialog>
   }
 
   void _handleVerticalDragUpdate(DragUpdateDetails details) {
-    if (_isCurrentZoomed) return;
+    if (_isCurrentZoomed || _activePointerCount > 1) return;
     setState(() {
       _dragOffsetY += details.delta.dy;
       if (_dragOffsetY < 0) {
@@ -118,7 +132,7 @@ class _AvatarViewerDialogState extends State<AvatarViewerDialog>
   }
 
   void _handleVerticalDragEnd(DragEndDetails details) {
-    if (_isCurrentZoomed) return;
+    if (_isCurrentZoomed || _activePointerCount > 1) return;
     final velocity = details.primaryVelocity ?? 0.0;
     if (_dragOffsetY > 110.0 || velocity > 650.0) {
       HapticFeedback.lightImpact();
@@ -251,37 +265,70 @@ class _AvatarViewerDialogState extends State<AvatarViewerDialog>
       value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
       child: Material(
         color: bgColor.withValues(alpha: bgOpacity),
-        child: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: () {
-            // Tap outside avatar image dismisses dialog
-            Navigator.of(context).pop();
+        child: Listener(
+          onPointerDown: (_) {
+            setState(() {
+              _activePointerCount++;
+              if (_activePointerCount > 1 && _dragOffsetY != 0.0) {
+                _dragOffsetY = 0.0;
+              }
+            });
           },
-          onVerticalDragUpdate: _handleVerticalDragUpdate,
-          onVerticalDragEnd: _handleVerticalDragEnd,
-          child: Stack(
-            children: [
-              // 1. Centered Full-Circle Avatar with Zoom and Drag
-              Center(
-                child: Transform.translate(
-                  offset: Offset(0.0, _dragOffsetY),
-                  child: Transform.scale(
-                    scale: scale,
-                    child: GestureDetector(
-                      // Prevent tap on avatar from closing modal
-                      onTap: () {},
-                      child: InteractiveViewer(
-                        transformationController: _transformController,
-                        minScale: 1.0,
-                        maxScale: 3.5,
-                        panEnabled: _isCurrentZoomed,
-                        clipBehavior: Clip.none,
-                        child: _buildAvatarImage(avatarSize, isDark),
+          onPointerUp: (_) {
+            setState(() {
+              _activePointerCount = (_activePointerCount - 1).clamp(0, 10);
+            });
+          },
+          onPointerCancel: (_) {
+            setState(() {
+              _activePointerCount = (_activePointerCount - 1).clamp(0, 10);
+            });
+          },
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () {
+              // Tap outside avatar image dismisses dialog
+              Navigator.of(context).pop();
+            },
+            onVerticalDragUpdate: _handleVerticalDragUpdate,
+            onVerticalDragEnd: _handleVerticalDragEnd,
+            child: Stack(
+              children: [
+                // 1. Centered Full-Circle Avatar with Zoom and Drag
+                Center(
+                  child: Transform.translate(
+                    offset: Offset(0.0, _dragOffsetY),
+                    child: Transform.scale(
+                      scale: scale,
+                      child: GestureDetector(
+                        // Prevent tap on avatar from closing modal, support double tap to zoom
+                        onTap: () {},
+                        onDoubleTapDown: (details) => _doubleTapDetails = details,
+                        onDoubleTap: () => _handleDoubleTap(avatarSize),
+                        child: InteractiveViewer(
+                          transformationController: _transformController,
+                          minScale: 1.0,
+                          maxScale: 3.5,
+                          panEnabled: true,
+                          boundaryMargin: const EdgeInsets.all(40.0),
+                          clipBehavior: Clip.none,
+                          onInteractionEnd: (_) {
+                            final scale =
+                                _transformController.value.getMaxScaleOnAxis();
+                            if (scale <= 1.02 &&
+                                !_doubleTapAnimController.isAnimating) {
+                              if (_transformController.value !=
+                                  Matrix4.identity()) {
+                                _transformController.value = Matrix4.identity();
+                              }
+                            }
+                          },
+                          child: _buildAvatarImage(avatarSize, isDark),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
 
               // 2. Contextual Top Header (User info + Close button)
               Positioned(
@@ -401,6 +448,37 @@ class _AvatarViewerDialogState extends State<AvatarViewerDialog>
           ),
         ),
       ),
-    );
+    ),
+  );
+  }
+
+  void _handleDoubleTap(double avatarSize) {
+    HapticFeedback.lightImpact();
+    final currentMatrix = _transformController.value;
+    final currentScale = currentMatrix.getMaxScaleOnAxis();
+
+    Matrix4 targetMatrix;
+    if (currentScale > 1.05) {
+      targetMatrix = Matrix4.identity();
+    } else {
+      final tapPos = _doubleTapDetails?.localPosition ??
+          Offset(avatarSize / 2, avatarSize / 2);
+      const targetScale = 2.2;
+      final dx = -tapPos.dx * (targetScale - 1);
+      final dy = -tapPos.dy * (targetScale - 1);
+      targetMatrix = Matrix4.identity()
+        ..translate(dx, dy)
+        ..scale(targetScale);
+    }
+
+    _doubleTapAnimation = Matrix4Tween(
+      begin: currentMatrix,
+      end: targetMatrix,
+    ).animate(CurvedAnimation(
+      parent: _doubleTapAnimController,
+      curve: Curves.easeOutCubic,
+    ));
+
+    _doubleTapAnimController.forward(from: 0.0);
   }
 }

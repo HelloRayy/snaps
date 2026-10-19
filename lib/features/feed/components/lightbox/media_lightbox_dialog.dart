@@ -89,6 +89,7 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
   late Animation<double> _likeScaleAnim;
 
   // Swipe-down to dismiss state
+  int _activePointerCount = 0;
   double _dragOffsetY = 0.0;
   bool _isCurrentZoomed = false;
   late AnimationController _springBackAnimController;
@@ -135,7 +136,7 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
   }
 
   void _handleVerticalDragUpdate(DragUpdateDetails details) {
-    if (_isCurrentZoomed) return;
+    if (_isCurrentZoomed || _activePointerCount > 1) return;
     setState(() {
       _dragOffsetY += details.delta.dy;
       if (_dragOffsetY < 0) {
@@ -145,7 +146,7 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
   }
 
   void _handleVerticalDragEnd(DragEndDetails details) {
-    if (_isCurrentZoomed) return;
+    if (_isCurrentZoomed || _activePointerCount > 1) return;
     final velocity = details.primaryVelocity ?? 0.0;
     if (_dragOffsetY > 110.0 || velocity > 650.0) {
       HapticFeedback.lightImpact();
@@ -239,35 +240,57 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
       value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
       child: Material(
         color: bgColor.withValues(alpha: bgOpacity),
-        child: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-        onVerticalDragUpdate: _handleVerticalDragUpdate,
-        onVerticalDragEnd: _handleVerticalDragEnd,
-        child: Stack(
-          children: [
-            // 1. Edge-to-edge PageView with pinch-to-zoom and swipe-down translation
-            Positioned.fill(
-              child: Transform.translate(
-                offset: Offset(0.0, _dragOffsetY),
-                child: Transform.scale(
-                  scale: imageScale,
-                  child: PageView.builder(
-                    controller: _pageController,
-                    itemCount: widget.images.length,
-                    onPageChanged: (idx) => setState(() => _currentIndex = idx),
-                    itemBuilder: (context, index) {
-                      return LightboxImageViewer(
-                        imageUrl: widget.images[index],
-                        screenWidth: mediaQuery.size.width,
-                        onZoomChanged: (zoomed) {
-                          _isCurrentZoomed = zoomed;
+        child: Listener(
+          onPointerDown: (_) {
+            setState(() {
+              _activePointerCount++;
+              if (_activePointerCount > 1 && _dragOffsetY != 0.0) {
+                _dragOffsetY = 0.0;
+              }
+            });
+          },
+          onPointerUp: (_) {
+            setState(() {
+              _activePointerCount = (_activePointerCount - 1).clamp(0, 10);
+            });
+          },
+          onPointerCancel: (_) {
+            setState(() {
+              _activePointerCount = (_activePointerCount - 1).clamp(0, 10);
+            });
+          },
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onVerticalDragUpdate: _handleVerticalDragUpdate,
+            onVerticalDragEnd: _handleVerticalDragEnd,
+            child: Stack(
+              children: [
+                // 1. Edge-to-edge PageView with pinch-to-zoom and swipe-down translation
+                Positioned.fill(
+                  child: Transform.translate(
+                    offset: Offset(0.0, _dragOffsetY),
+                    child: Transform.scale(
+                      scale: imageScale,
+                      child: PageView.builder(
+                        controller: _pageController,
+                        physics: (_isCurrentZoomed || _activePointerCount > 1)
+                            ? const NeverScrollableScrollPhysics()
+                            : const BouncingScrollPhysics(),
+                        itemCount: widget.images.length,
+                        onPageChanged: (idx) => setState(() => _currentIndex = idx),
+                        itemBuilder: (context, index) {
+                          return LightboxImageViewer(
+                            imageUrl: widget.images[index],
+                            screenWidth: mediaQuery.size.width,
+                            onZoomChanged: (zoomed) {
+                              _isCurrentZoomed = zoomed;
+                            },
+                          );
                         },
-                      );
-                    },
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
 
             // 2. Overlays (Chevrons, Header, Action Bar) smoothly fading on swipe-down
             Positioned.fill(
@@ -321,6 +344,7 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
         ),
       ),
     ),
-  );
+  ),
+);
 }
 }
