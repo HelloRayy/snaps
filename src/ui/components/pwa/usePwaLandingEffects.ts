@@ -398,7 +398,18 @@ export function usePwaLandingEffects({
       if (!btn) return;
 
       const text = (btn.textContent || '').trim().toLowerCase();
-      if (text.includes('claim') || text.includes('create account') || text.includes('daftar') || text.includes('pasang') || text.includes('install') || text.includes('download')) {
+      const href = (btn.getAttribute('href') || '').toLowerCase();
+
+      if (
+        href.includes('download-app') ||
+        href.includes('pop.site') ||
+        text.includes('claim') ||
+        text.includes('create account') ||
+        text.includes('daftar') ||
+        text.includes('pasang') ||
+        text.includes('install') ||
+        text.includes('download')
+      ) {
         e.preventDefault();
         e.stopPropagation();
 
@@ -502,7 +513,7 @@ export function usePwaLandingEffects({
       }
     };
 
-    document.addEventListener('click', handleGlobalClick);
-    return () => document.removeEventListener('click', handleGlobalClick);
+    document.addEventListener('click', handleGlobalClick, { capture: true });
+    return () => document.removeEventListener('click', handleGlobalClick, { capture: true });
   }, [onProceedToWeb, onOpenInstallModal]);
 }
