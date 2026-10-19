@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:snapan_market/core/utils/snaps_toast.dart';
 import 'package:snapan_market/core/services/feedback_service.dart';
 import 'package:snapan_market/core/services/media_upload_service.dart';
+import 'package:snapan_market/core/services/snaps_asset_picker.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// Bug and Feedback Reporter Bottom Sheet
@@ -69,13 +70,12 @@ class _BugReportBottomSheetState extends State<BugReportBottomSheet> {
 
   Future<void> _handlePickScreenshot() async {
     HapticFeedback.selectionClick();
-    final file = await MediaUploadService.instance.pickSingleImage(
-      maxWidth: 1080,
-      maxHeight: 1920,
-      imageQuality: 75,
+    final picked = await SnapsAssetPicker.pickImages(
+      context,
+      maxImages: 1,
     );
-    if (file != null && mounted) {
-      setState(() => _screenshotFile = file);
+    if (picked != null && picked.isNotEmpty && mounted) {
+      setState(() => _screenshotFile = picked.first);
     }
   }
 

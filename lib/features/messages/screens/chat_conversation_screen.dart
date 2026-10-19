@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -173,6 +174,60 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
     _scrollToBottom();
   }
 
+  void _handleSendMessageWithMedia(String text, List<String> images) async {
+    if (images.isEmpty) {
+      _handleSendMessage(text);
+      return;
+    }
+
+    final now = DateTime.now();
+    final timeStr =
+        "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
+    final tempMsg = ChatMessageModel(
+      id: "temp-${now.millisecondsSinceEpoch}",
+      senderId: SupabaseService.instance.currentUser?.id ?? "saya",
+      text: text,
+      images: images,
+      timestamp: timeStr,
+      isMe: true,
+      status: MessageStatus.sending,
+    );
+    DirectMessagesService.instance
+        .addMessage(_activeConvId, tempMsg, conversation: widget.conversation);
+    _scrollToBottom();
+
+    try {
+      List<String> uploadedUrls = [];
+      for (final imgPath in images) {
+        final file = File(imgPath);
+        if (await file.exists()) {
+          final bytes = await file.readAsBytes();
+          final url = await SupabaseService.instance.uploadImage(
+            bytes: bytes,
+            fileName:
+                'chat_${DateTime.now().millisecondsSinceEpoch}_${images.indexOf(imgPath)}.jpg',
+            bucket: 'market-media',
+          );
+          if (url != null) {
+            uploadedUrls.add(url);
+          }
+        }
+      }
+
+      final payloadText = text.isNotEmpty
+          ? text
+          : (uploadedUrls.isNotEmpty ? uploadedUrls.first : '');
+
+      DirectMessagesService.instance.sendMessage(
+        conversationId: _activeConvId,
+        text: payloadText,
+        conversation: widget.conversation,
+      );
+    } catch (e) {
+      debugPrint('Error uploading chat media: $e');
+    }
+  }
+
   void _handleViewProfile() {
     HapticFeedback.selectionClick();
     Navigator.of(context).push(
@@ -291,6 +346,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
           ),
           ChatComposerBar(
             onSendMessage: _handleSendMessage,
+            onSendMessageWithMedia: _handleSendMessageWithMedia,
           ),
         ],
       ),

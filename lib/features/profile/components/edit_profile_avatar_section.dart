@@ -5,6 +5,7 @@ import 'package:snapan_market/core/components/mascot_flair_badge.dart';
 import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/core/services/media_cropper_service.dart';
 import 'package:snapan_market/core/services/media_upload_service.dart';
+import 'package:snapan_market/core/services/snaps_asset_picker.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/ui/oreo_avatar_helper.dart';
@@ -95,7 +96,15 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
 
     if (source == null) return;
 
-    final picked = await MediaUploadService.instance.pickSingleImage(source: source);
+    XFile? picked;
+    if (source == ImageSource.gallery) {
+      final assets = await SnapsAssetPicker.pickImages(context, maxImages: 1);
+      if (assets != null && assets.isNotEmpty) {
+        picked = assets.first;
+      }
+    } else {
+      picked = await MediaUploadService.instance.pickSingleImage(source: source);
+    }
     if (picked == null || !mounted) return;
 
     // 1. In-App Pure Flutter Image Crop Modal (Pan, Pinch-to-Zoom, 1:1 Circle Mask)

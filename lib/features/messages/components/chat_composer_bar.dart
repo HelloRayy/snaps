@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/services/snaps_asset_picker.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// ChatComposerBar sliced 1:1 from pen.dev Frame 1 (`snaps-design.pen` node `jXVwo`)
 ///
@@ -16,12 +19,14 @@ import 'package:flutter/services.dart';
 ///     - Active: Circular Send Button (36x36, Azure Blue #008BFF with arrow up)
 class ChatComposerBar extends StatefulWidget {
   final ValueChanged<String> onSendMessage;
+  final void Function(String text, List<String> images)? onSendMessageWithMedia;
   final VoidCallback? onAttachmentTap;
   final String placeholder;
 
   const ChatComposerBar({
     super.key,
     required this.onSendMessage,
+    this.onSendMessageWithMedia,
     this.onAttachmentTap,
     this.placeholder = 'Message',
   });
@@ -34,6 +39,7 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
   late final TextEditingController _controller;
   bool _canSend = false;
   bool _isSendPressed = false;
+  final List<String> _attachedImages = [];
 
   @override
   void initState() {
@@ -43,7 +49,7 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
   }
 
   void _handleTextChanged() {
-    final canSend = _controller.text.trim().isNotEmpty;
+    final canSend = _controller.text.trim().isNotEmpty || _attachedImages.isNotEmpty;
     if (canSend != _canSend) {
       setState(() => _canSend = canSend);
     }
@@ -56,13 +62,43 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
     super.dispose();
   }
 
+  void _pickImages() async {
+    HapticFeedback.selectionClick();
+    if (widget.onAttachmentTap != null) {
+      widget.onAttachmentTap!();
+      return;
+    }
+    final remaining = 5 - _attachedImages.length;
+    if (remaining <= 0) return;
+    final picked = await SnapsAssetPicker.pickImages(context, maxImages: remaining);
+    if (picked != null && picked.isNotEmpty && mounted) {
+      setState(() {
+        for (final file in picked) {
+          if (_attachedImages.length < 5) {
+            _attachedImages.add(file.path);
+          }
+        }
+        _canSend = _controller.text.trim().isNotEmpty || _attachedImages.isNotEmpty;
+      });
+    }
+  }
+
   void _handleSend() {
     final text = _controller.text.trim();
-    if (text.isEmpty) return;
+    if (text.isEmpty && _attachedImages.isEmpty) return;
 
     HapticFeedback.mediumImpact();
-    widget.onSendMessage(text);
+    final imagesToSend = List<String>.from(_attachedImages);
+    if (imagesToSend.isNotEmpty && widget.onSendMessageWithMedia != null) {
+      widget.onSendMessageWithMedia!(text, imagesToSend);
+    } else {
+      widget.onSendMessage(text);
+    }
     _controller.clear();
+    setState(() {
+      _attachedImages.clear();
+      _canSend = false;
+    });
   }
 
   @override
@@ -88,79 +124,194 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
           ),
         ),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ===============================================================
-          // 1. LEADING BUTTON (pen.dev jxdH0: 42x42 circle, frosted liquid glass + shadow)
-          // ===============================================================
-          GestureDetector(
-            onTap: () {
-              HapticFeedback.selectionClick();
-              if (widget.onAttachmentTap != null) {
-                widget.onAttachmentTap!();
-              } else {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Lampirkan foto atau dokumen 📎'),
-                    behavior: SnackBarBehavior.floating,
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-              }
-            },
-            child: Container(
-              width: 42.0,
-              height: 42.0,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0x1F000000),
-                    blurRadius: 35.0,
-                    offset: Offset(0, 8),
-                  ),
-                  BoxShadow(
-                    color: Color(0x0A000000),
-                    blurRadius: 10.0,
-                    offset: Offset(0, 2),
-                  ),
-                ],
+          if (_attachedImages.isNotEmpty) ...[
+            Container(
+              height: 64.0,
+              margin: const EdgeInsets.only(bottom: 8.0),
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: _attachedImages.length + (_attachedImages.length < 5 ? 1 : 0),
+                separatorBuilder: (_, __) => const SizedBox(width: 8.0),
+                itemBuilder: (context, index) {
+                  if (index == _attachedImages.length) {
+                    return GestureDetector(
+                      onTap: _pickImages,
+                      child: Container(
+                        width: 60.0,
+                        height: 60.0,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12.0),
+                          border: Border.all(
+                            color: const Color(0xFFCBD5E1),
+                            width: 1.0,
+                          ),
+                          color: const Color(0xFFF1F5F9),
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            CupertinoIcons.plus,
+                            size: 20.0,
+                            color: Color(0xFF64748B),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+
+                  final imagePath = _attachedImages[index];
+                  return Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12.0),
+                        child: Container(
+                          width: 60.0,
+                          height: 60.0,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: const Color(0xFFE2E8F0),
+                              width: 0.8,
+                            ),
+                          ),
+                          child: Image.file(
+                            File(imagePath),
+                            width: 60.0,
+                            height: 60.0,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: -4.0,
+                        right: -4.0,
+                        child: GestureDetector(
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            setState(() {
+                              _attachedImages.removeAt(index);
+                              _canSend = _controller.text.trim().isNotEmpty || _attachedImages.isNotEmpty;
+                            });
+                          },
+                          child: Container(
+                            width: 20.0,
+                            height: 20.0,
+                            decoration: const BoxDecoration(
+                              color: Color(0xCC000000),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Center(
+                              child: Icon(
+                                CupertinoIcons.xmark,
+                                size: 11.0,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
-              child: ClipOval(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
-                  child: Container(
-                    width: 42.0,
-                    height: 42.0,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.white.withValues(alpha: 0.72),
-                          Colors.white.withValues(alpha: 0.45),
-                        ],
+            ),
+          ],
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              // ===============================================================
+              // 1. LEADING BUTTON (pen.dev jxdH0: 42x42 circle, frosted liquid glass + shadow)
+              // ===============================================================
+              GestureDetector(
+                onTap: _pickImages,
+                child: Container(
+                  width: 42.0,
+                  height: 42.0,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0x1F000000),
+                        blurRadius: 35.0,
+                        offset: Offset(0, 8),
                       ),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.90),
-                        width: 1.2,
+                      BoxShadow(
+                        color: Color(0x0A000000),
+                        blurRadius: 10.0,
+                        offset: Offset(0, 2),
                       ),
-                    ),
-                    child: const Center(
-                      child: Icon(
-                        CupertinoIcons.paperclip,
-                        color: Color(0xFF1A1A1A), // pen.dev #1A1A1A
-                        size: 20.0,
+                    ],
+                  ),
+                  child: ClipOval(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
+                      child: Container(
+                        width: 42.0,
+                        height: 42.0,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.white.withValues(alpha: 0.72),
+                              Colors.white.withValues(alpha: 0.45),
+                            ],
+                          ),
+                          border: Border.all(
+                            color: _attachedImages.isNotEmpty
+                                ? AppColors.primary
+                                : Colors.white.withValues(alpha: 0.90),
+                            width: 1.2,
+                          ),
+                        ),
+                        child: Center(
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            alignment: Alignment.center,
+                            children: [
+                              Icon(
+                                CupertinoIcons.photo_on_rectangle,
+                                color: _attachedImages.isNotEmpty
+                                    ? AppColors.primary
+                                    : const Color(0xFF1A1A1A),
+                                size: 20.0,
+                              ),
+                              if (_attachedImages.isNotEmpty)
+                                Positioned(
+                                  top: -6.0,
+                                  right: -6.0,
+                                  child: Container(
+                                    width: 16.0,
+                                    height: 16.0,
+                                    decoration: const BoxDecoration(
+                                      color: AppColors.primary,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        '${_attachedImages.length}',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 9.0,
+                                          fontWeight: FontWeight.w700,
+                                          height: 1.0,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ),
 
           const SizedBox(width: 6.0), // pen.dev gap: 6
 
@@ -293,6 +444,8 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
     ),
   ],
 ),
+    ],
+  ),
 );
 }
 }
