@@ -143,7 +143,7 @@ void main() {
       );
 
       expect(find.text('SiswaSnapan'), findsOneWidget);
-      expect(find.byIcon(CupertinoIcons.sparkles), findsOneWidget);
+      expect(find.byIcon(Icons.pets_rounded), findsOneWidget);
     });
 
     testWidgets('hides mascot trigger when canUseMascot is revoked (false)', (tester) async {
@@ -163,10 +163,10 @@ void main() {
       );
 
       expect(find.text('SiswaSnapan'), findsOneWidget);
-      expect(find.byIcon(CupertinoIcons.sparkles), findsNothing);
+      expect(find.byIcon(Icons.pets_rounded), findsNothing);
     });
 
-    testWidgets('preserves layout order [Username] [Mascot Trigger] [Verified Badge]', (tester) async {
+    testWidgets('preserves layout order [Username] [Verified Badge] [Mascot Trigger]', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -184,11 +184,11 @@ void main() {
       );
 
       final usernameX = tester.getTopLeft(find.text('SiswaSnapan')).dx;
-      final mascotX = tester.getTopLeft(find.byIcon(CupertinoIcons.sparkles)).dx;
       final verifiedX = tester.getTopLeft(find.byType(VerifiedBadgeIcon)).dx;
+      final mascotX = tester.getTopLeft(find.byIcon(Icons.pets_rounded)).dx;
 
-      expect(usernameX < mascotX, isTrue);
-      expect(mascotX < verifiedX, isTrue);
+      expect(usernameX < verifiedX, isTrue);
+      expect(verifiedX < mascotX, isTrue);
     });
   });
 }

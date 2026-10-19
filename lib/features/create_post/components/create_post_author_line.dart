@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/mascot_flair_badge.dart';
 import 'package:snapan_market/core/components/snaps_skeleton.dart';
@@ -55,6 +56,12 @@ class CreatePostAuthorLine extends StatelessWidget {
           ),
         const SizedBox(width: 4.0),
 
+        // Verified Badge Icon ([Username] [Verified] [Mascot Trigger] > [Topik])
+        if (isVerified) ...[
+          const VerifiedBadgeIcon(size: 14.5),
+          const SizedBox(width: 4.0),
+        ],
+
         // Mascot Flair Trigger (SNAPS-13: Interactive container encompassing mascot and dropdown arrow)
         if (canUseMascot) ...[
           GestureDetector(
@@ -78,8 +85,8 @@ class CreatePostAuthorLine extends StatelessWidget {
                     )
                   else
                     const Icon(
-                      CupertinoIcons.sparkles,
-                      size: 16.0,
+                      Icons.pets_rounded,
+                      size: 15.0,
                       color: Color(0xFF64748B),
                     ),
                   const SizedBox(width: 3.0),
@@ -92,11 +99,6 @@ class CreatePostAuthorLine extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 4.0),
-        ],
-        // Verified Badge Icon ([Username] [Mascot] [Verified] > [Topik])
-        if (isVerified) ...[
-          const VerifiedBadgeIcon(size: 14.5),
           const SizedBox(width: 4.0),
         ],
 
