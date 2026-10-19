@@ -5,6 +5,7 @@ import 'package:snapan_market/core/components/snaps_skeleton.dart';
 import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/create_post/models/create_post_types.dart';
+import 'package:snapan_market/features/feed/components/post_card/market_feed_icons.dart';
 
 /// Author username and topic tag badge trigger
 class CreatePostAuthorLine extends StatelessWidget {
@@ -18,6 +19,7 @@ class CreatePostAuthorLine extends StatelessWidget {
   final VoidCallback? onMascotTriggerTap;
   final GlobalKey? mascotTriggerKey;
   final bool isMascotDropdownOpen;
+  final bool isVerified;
 
   const CreatePostAuthorLine({
     super.key,
@@ -31,6 +33,7 @@ class CreatePostAuthorLine extends StatelessWidget {
     this.onMascotTriggerTap,
     this.mascotTriggerKey,
     this.isMascotDropdownOpen = false,
+    this.isVerified = false,
   });
 
   @override
@@ -91,6 +94,12 @@ class CreatePostAuthorLine extends StatelessWidget {
           ),
           const SizedBox(width: 4.0),
         ],
+        // Verified Badge Icon ([Username] [Mascot] [Verified] > [Topik])
+        if (isVerified) ...[
+          const VerifiedBadgeIcon(size: 14.5),
+          const SizedBox(width: 4.0),
+        ],
+
 
         // Chevron Right Separator
         const Icon(

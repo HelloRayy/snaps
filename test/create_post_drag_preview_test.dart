@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:snapan_market/features/create_post/components/create_post_author_line.dart';
 import 'package:snapan_market/features/create_post/components/create_post_media_preview.dart';
+import 'package:snapan_market/features/feed/components/post_card/market_feed_icons.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +21,7 @@ void main() {
               images: images,
               onAddImage: () {},
               onRemoveImage: (idx) => removedIndex = idx,
-              onReorderImage: (_, __) {},
+              onReorderImage: (_, _) {},
             ),
           ),
         ),
@@ -43,7 +45,7 @@ void main() {
               images: images,
               onAddImage: () {},
               onRemoveImage: (_) {},
-              onReorderImage: (_, __) {},
+              onReorderImage: (_, _) {},
             ),
           ),
         ),
@@ -77,6 +79,50 @@ void main() {
 
       expect(existingImages, equals(['path/a.jpg', 'path/b.jpg', 'path/c.jpg', 'path/d.jpg']));
       expect(existingImages.length, equals(4));
+    });
+  });
+
+  group('CreatePostAuthorLine Verified Badge Tests', () {
+    testWidgets('renders VerifiedBadgeIcon when isVerified is true', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: CreatePostAuthorLine(
+              authorName: 'Rayhan',
+              selectedTopic: null,
+              topicTriggerKey: GlobalKey(),
+              onTopicTriggerTap: () {},
+              onTopicClear: () {},
+              isVerified: true,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Rayhan'), findsOneWidget);
+      expect(find.byType(VerifiedBadgeIcon), findsOneWidget);
+      expect(find.byIcon(Icons.verified_rounded), findsOneWidget);
+    });
+
+    testWidgets('does not render VerifiedBadgeIcon when isVerified is false', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: CreatePostAuthorLine(
+              authorName: 'Rayhan',
+              selectedTopic: null,
+              topicTriggerKey: GlobalKey(),
+              onTopicTriggerTap: () {},
+              onTopicClear: () {},
+              isVerified: false,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Rayhan'), findsOneWidget);
+      expect(find.byType(VerifiedBadgeIcon), findsNothing);
+      expect(find.byIcon(Icons.verified_rounded), findsNothing);
     });
   });
 }

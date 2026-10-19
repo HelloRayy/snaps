@@ -21,6 +21,7 @@ class CreatePostModal extends StatefulWidget {
   final String currentUserAvatar;
   final MascotFlairModel? initialMascotFlair;
   final ValueChanged<Map<String, dynamic>>? onSubmitPost;
+  final bool? isVerified;
 
   const CreatePostModal({
     super.key,
@@ -29,6 +30,7 @@ class CreatePostModal extends StatefulWidget {
     this.currentUserAvatar = '',
     this.initialMascotFlair,
     this.onSubmitPost,
+    this.isVerified,
   });
 
   static Future<void> show(
@@ -38,6 +40,7 @@ class CreatePostModal extends StatefulWidget {
     String? currentUserAvatar,
     MascotFlairModel? initialMascotFlair,
     ValueChanged<Map<String, dynamic>>? onSubmitPost,
+    bool? isVerified,
   }) {
     return Navigator.of(context).push(
       PageRouteBuilder(
@@ -49,6 +52,7 @@ class CreatePostModal extends StatefulWidget {
           currentUserAvatar: currentUserAvatar ?? '',
           initialMascotFlair: initialMascotFlair,
           onSubmitPost: onSubmitPost,
+          isVerified: isVerified,
         ),
         transitionsBuilder: (context, animation, _, child) => SlideTransition(
           position: Tween<Offset>(begin: const Offset(0.0, 1.0), end: Offset.zero).animate(
@@ -108,6 +112,15 @@ class _CreatePostModalState extends State<CreatePostModal> {
     final email = SupabaseService.instance.currentUser?.email?.toLowerCase().trim() ?? '';
     return username == 'snaps' || email.contains('snaps');
   }
+  bool get _isVerified {
+    if (widget.isVerified != null) return widget.isVerified!;
+    try {
+      return SupabaseService.instance.currentUserProfileNotifier.value?['is_verified'] == true;
+    } catch (_) {
+      return false;
+    }
+  }
+
 
   @override
   void initState() {
@@ -328,6 +341,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                             postMode: _postMode,
                             currentUserName: widget.currentUserName,
                             currentUserAvatar: widget.currentUserAvatar,
+                            isVerified: _isVerified,
                             captionController: _captionController,
                             images: _images,
                             selectedGif: _selectedGif,

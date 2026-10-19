@@ -44,6 +44,7 @@ class CreatePostMainInputBlock extends StatelessWidget {
   final VoidCallback? onMascotTriggerTap;
   final GlobalKey? mascotTriggerKey;
   final bool isMascotDropdownOpen;
+  final bool isVerified;
 
   const CreatePostMainInputBlock({
     super.key,
@@ -79,6 +80,7 @@ class CreatePostMainInputBlock extends StatelessWidget {
     this.onMascotTriggerTap,
     this.mascotTriggerKey,
     this.isMascotDropdownOpen = false,
+    this.isVerified = false,
   });
 
   @override
@@ -126,6 +128,7 @@ class CreatePostMainInputBlock extends StatelessWidget {
                     onMascotTriggerTap: onMascotTriggerTap,
                     mascotTriggerKey: mascotTriggerKey,
                     isMascotDropdownOpen: isMascotDropdownOpen,
+                    isVerified: isVerified,
                     onTopicTriggerTap: () => CreatePostBottomSheets.showTopicPickerPopup(
                       context: context,
                       triggerKey: topicTriggerKey,

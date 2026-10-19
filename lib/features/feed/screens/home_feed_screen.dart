@@ -185,7 +185,15 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     final name = (rawDisplayName != null && rawDisplayName.isNotEmpty)
         ? rawDisplayName
         : ((rawUsername != null && rawUsername.isNotEmpty) ? '@$rawUsername' : 'Pengguna');
-    CreatePostModal.show(context, initialMode: mode, currentUserName: name, currentUserAvatar: _feedController.userProfile?['avatar_url'] as String?, onSubmitPost: _feedController.createPost);
+    final bool isVerified = _feedController.userProfile?['is_verified'] as bool? ?? false;
+    CreatePostModal.show(
+      context,
+      initialMode: mode,
+      currentUserName: name,
+      currentUserAvatar: _feedController.userProfile?['avatar_url'] as String?,
+      isVerified: isVerified,
+      onSubmitPost: _feedController.createPost,
+    );
   }
 
   void _handlePostClick(MarketPostModel item) async {
