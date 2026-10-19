@@ -1281,3 +1281,26 @@ button:hover, a:hover {
     transition: none !important;
   }
 }
+
+/* 🛡️ Strict Watermark & Editorbar Annihilation (Framer / Pop.site Badges) */
+#__framer-editorbar,
+#__framer-editorbar-container,
+#__framer-badge-container,
+[id^="__framer"],
+[class*="__framer-editorbar"],
+[class*="framer-badge"],
+a[href*="framer.com"],
+a[href*="pop.site"]:not([href*="#download-app"]),
+div[data-framer-name="Badge"],
+div[data-framer-name="Watermark"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  position: absolute !important;
+  z-index: -99999 !important;
+  clip-path: circle(0) !important;
+}
+
