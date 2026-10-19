@@ -76,10 +76,77 @@ class _ImageCropEditorModalState extends State<ImageCropEditorModal> {
   bool _isInteracting = false;
   bool _isExporting = false;
 
+  double _imageAspectRatio = 1.0;
+  bool _hasLoadedDimensions = false;
+  bool _hasCenteredInitial = false;
+  double _currentCropBoxSize = 280.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadImageDimensions();
+  }
+
+  Future<void> _loadImageDimensions() async {
+    try {
+      final bytes = await widget.imageFile.readAsBytes();
+      final codec = await ui.instantiateImageCodec(bytes);
+      final frame = await codec.getNextFrame();
+      if (mounted) {
+        final ratio = frame.image.width / frame.image.height;
+        setState(() {
+          _imageAspectRatio = ratio;
+          _hasLoadedDimensions = true;
+        });
+      }
+    } catch (e) {
+      debugPrint('[ImageCropEditorModal] Error decoding image: $e');
+    }
+  }
+
+  Size _computeRenderSize(double boxSize) {
+    if (_imageAspectRatio <= 0) return Size(boxSize, boxSize);
+
+    final isRotatedSide = _quarterTurns % 2 == 1;
+    final effectiveRatio =
+        isRotatedSide ? (1.0 / _imageAspectRatio) : _imageAspectRatio;
+
+    double renderedWidth;
+    double renderedHeight;
+
+    if (effectiveRatio >= 1.0) {
+      // Landscape: height matches boxSize, width extends beyond
+      renderedHeight = boxSize;
+      renderedWidth = boxSize * effectiveRatio;
+    } else {
+      // Portrait: width matches boxSize, height extends beyond
+      renderedWidth = boxSize;
+      renderedHeight = boxSize / effectiveRatio;
+    }
+
+    if (isRotatedSide) {
+      return Size(renderedHeight, renderedWidth);
+    }
+    return Size(renderedWidth, renderedHeight);
+  }
+
+  void _centerImage(double boxSize) {
+    final size = _computeRenderSize(boxSize);
+    final isRotatedSide = _quarterTurns % 2 == 1;
+    final effectiveW = isRotatedSide ? size.height : size.width;
+    final effectiveH = isRotatedSide ? size.width : size.height;
+
+    final dx = effectiveW > boxSize ? -(effectiveW - boxSize) / 2 : 0.0;
+    final dy = effectiveH > boxSize ? -(effectiveH - boxSize) / 2 : 0.0;
+
+    _transformController.value = Matrix4.identity()..translate(dx, dy);
+  }
+
   void _rotateClockwise() {
     HapticFeedback.selectionClick();
     setState(() {
       _quarterTurns = (_quarterTurns + 1) % 4;
+      _centerImage(_currentCropBoxSize);
     });
   }
 
@@ -95,7 +162,7 @@ class _ImageCropEditorModalState extends State<ImageCropEditorModal> {
     setState(() {
       _quarterTurns = 0;
       _isFlippedHorizontally = false;
-      _transformController.value = Matrix4.identity();
+      _centerImage(_currentCropBoxSize);
     });
   }
 
@@ -148,6 +215,18 @@ class _ImageCropEditorModalState extends State<ImageCropEditorModal> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final cropBoxSize = (screenSize.width * 0.72).clamp(240.0, 320.0);
+    _currentCropBoxSize = cropBoxSize;
+
+    if (!_hasCenteredInitial && _hasLoadedDimensions) {
+      _hasCenteredInitial = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _centerImage(cropBoxSize);
+        }
+      });
+    }
+
+    final imageRenderSize = _computeRenderSize(cropBoxSize);
 
     return Scaffold(
       backgroundColor: const Color(0xFF0B0F17), // Snaps Dark Cinema
@@ -181,6 +260,8 @@ class _ImageCropEditorModalState extends State<ImageCropEditorModal> {
                               transformationController: _transformController,
                               minScale: 1.0,
                               maxScale: 4.5,
+                              panEnabled: true,
+                              boundaryMargin: EdgeInsets.all(cropBoxSize * 1.5),
                               clipBehavior: Clip.none,
                               onInteractionStart: (_) =>
                                   setState(() => _isInteracting = true),
@@ -197,9 +278,9 @@ class _ImageCropEditorModalState extends State<ImageCropEditorModal> {
                                   ),
                                   child: Image.file(
                                     widget.imageFile,
-                                    fit: BoxFit.cover,
-                                    width: cropBoxSize,
-                                    height: cropBoxSize,
+                                    fit: BoxFit.fill,
+                                    width: imageRenderSize.width,
+                                    height: imageRenderSize.height,
                                   ),
                                 ),
                               ),
