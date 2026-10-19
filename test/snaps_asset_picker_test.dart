@@ -74,7 +74,7 @@ void main() {
       expect(delegate.themeColor, AppColors.primary);
       expect(delegate.previewAsset.value, isNull);
       expect(delegate.viewerPosition.value, 0.0);
-      expect(delegate.isMultiSelect.value, isFalse);
+      expect(delegate.isMultiSelect.value, isTrue);
 
       await tester.pump(const Duration(milliseconds: 300));
       delegate.dispose();
@@ -220,7 +220,7 @@ void main() {
       expect(delegate, isA<SnapsInstaAssetPickerBuilderDelegate>());
       expect(delegate.gridCount, 3);
       expect(delegate.previewAsset.value, isNull);
-      expect(delegate.isMultiSelect.value, isFalse);
+      expect(delegate.isMultiSelect.value, isTrue);
     });
   });
 
