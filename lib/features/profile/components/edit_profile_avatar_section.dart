@@ -17,7 +17,7 @@ class EditProfileAvatarSection extends StatefulWidget {
   final ValueChanged<String> onAvatarChanged;
   final MascotFlairModel? currentMascotFlair;
   final ValueChanged<MascotFlairModel?> onMascotFlairChanged;
-  final bool isBetaPilotUser;
+  final bool canUseMascot;
 
   const EditProfileAvatarSection({
     super.key,
@@ -26,7 +26,7 @@ class EditProfileAvatarSection extends StatefulWidget {
     required this.onAvatarChanged,
     this.currentMascotFlair,
     required this.onMascotFlairChanged,
-    this.isBetaPilotUser = false,
+    this.canUseMascot = true,
   });
 
   @override
@@ -34,7 +34,6 @@ class EditProfileAvatarSection extends StatefulWidget {
 }
 
 class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
-  bool _showAvatarPicker = false;
   bool _isUploadingAvatar = false;
 
   Future<void> _handlePickAvatar() async {
@@ -264,13 +263,10 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
 
         Divider(height: 1.0, thickness: 0.8, color: dividerColor),
 
-        // Row 1.5: Mascot Bundle Picker (SNAPS-13 for beta pilot) OR Preset Avatars Accordion
-        if (widget.isBetaPilotUser)
-          _buildMascotSection()
-        else
-          _buildPresetAvatarSection(),
-
-        Divider(height: 1.0, thickness: 0.8, color: dividerColor),
+        if (widget.canUseMascot) ...[
+          _buildMascotSection(),
+          Divider(height: 1.0, thickness: 0.8, color: dividerColor),
+        ],
       ],
     );
   }
@@ -314,7 +310,7 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                       borderRadius: BorderRadius.circular(4.0),
                     ),
                     child: const Text(
-                      'BETA',
+                      'BARU',
                       style: TextStyle(
                         fontSize: 10.0,
                         fontWeight: FontWeight.w700,
@@ -474,171 +470,4 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
     );
   }
 
-  Widget _buildPresetAvatarSection() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 14.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          GestureDetector(
-            onTap: () {
-              HapticFeedback.lightImpact();
-              setState(() => _showAvatarPicker = !_showAvatarPicker);
-            },
-            behavior: HitTestBehavior.opaque,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Pilihan avatar preset',
-                  style: TextStyle(
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A),
-                    letterSpacing: -0.1,
-                  ),
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      _showAvatarPicker ? 'Tutup' : 'Pilih',
-                      style: const TextStyle(
-                        fontSize: 13.5,
-                        color: Color(0xFF94A3B8),
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                    const SizedBox(width: 2.0),
-                    AnimatedRotation(
-                      turns: _showAvatarPicker ? 0.25 : 0.0,
-                      duration: const Duration(milliseconds: 200),
-                      curve: Curves.easeInOut,
-                      child: const Icon(
-                        Icons.chevron_right_rounded,
-                        size: 16.0,
-                        color: Color(0xFF94A3B8),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          // Animated Horizontal Carousel of 6 Preset Avatars
-          AnimatedCrossFade(
-            firstChild: const SizedBox.shrink(),
-            secondChild: Padding(
-              padding: const EdgeInsets.only(top: 12.0, bottom: 4.0),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                child: Row(
-                  children: [
-                    // Upload custom photo from Camera/Gallery
-                    Padding(
-                      padding: const EdgeInsets.only(right: 10.0),
-                      child: GestureDetector(
-                        onTap: _handlePickAvatar,
-                        child: Container(
-                          width: 44.0,
-                          height: 44.0,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: isDark ? AppColors.darkSurfaceElevated : const Color(0xFFF1F5F9),
-                            border: Border.all(
-                              color: isDark ? AppColors.darkBorder : const Color(0xFFCBD5E1),
-                              width: 1.2,
-                            ),
-                          ),
-                          child: const Center(
-                            child: Icon(
-                              Icons.add_a_photo_outlined,
-                              size: 19.0,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    ...kOreoGradientPresets.map((preset) {
-                      final presetVal = 'preset:${preset.id}';
-                      final isSelected = widget.currentAvatar == presetVal;
-
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 10.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            HapticFeedback.selectionClick();
-                            widget.onAvatarChanged(presetVal);
-                          },
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 180),
-                            width: 44.0,
-                            height: 44.0,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: LinearGradient(
-                                colors: preset.colors,
-                                begin: preset.begin,
-                                end: preset.end,
-                              ),
-                              border: Border.all(
-                                color: isSelected
-                                    ? const Color(0xFF101010)
-                                    : const Color(0xFFE2E8F0),
-                                width: isSelected ? 2.5 : 1.0,
-                              ),
-                            ),
-                            child: ClipOval(
-                              child: Stack(
-                                fit: StackFit.expand,
-                                children: [
-                                  Center(
-                                    child: Text(
-                                      widget.nameController.text.trim().isNotEmpty
-                                          ? widget.nameController.text.trim()[0].toUpperCase()
-                                          : 'S',
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.w700,
-                                        color: (preset.id == 'aurora-pink' || preset.id == 'violet-peach')
-                                            ? Colors.white.withValues(alpha: 0.95)
-                                            : const Color(0xFF1E293B).withValues(alpha: 0.85),
-                                      ),
-                                    ),
-                                  ),
-                                  if (isSelected)
-                                    Container(
-                                      color: Colors.black.withValues(alpha: 0.3),
-                                      child: const Center(
-                                        child: Icon(
-                                          Icons.check_rounded,
-                                          size: 20.0,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
-                  ],
-                ),
-              ),
-            ),
-            crossFadeState: _showAvatarPicker
-                ? CrossFadeState.showSecond
-                : CrossFadeState.showFirst,
-            duration: const Duration(milliseconds: 220),
-          ),
-        ],
-      ),
-    );
-  }
 }

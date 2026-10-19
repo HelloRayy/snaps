@@ -15,7 +15,7 @@ class CreatePostAuthorLine extends StatelessWidget {
   final VoidCallback onTopicTriggerTap;
   final VoidCallback onTopicClear;
   final MascotFlairModel? selectedMascotFlair;
-  final bool isBetaPilotUser;
+  final bool canUseMascot;
   final VoidCallback? onMascotTriggerTap;
   final GlobalKey? mascotTriggerKey;
   final bool isMascotDropdownOpen;
@@ -29,7 +29,7 @@ class CreatePostAuthorLine extends StatelessWidget {
     required this.onTopicTriggerTap,
     required this.onTopicClear,
     this.selectedMascotFlair,
-    this.isBetaPilotUser = false,
+    this.canUseMascot = true,
     this.onMascotTriggerTap,
     this.mascotTriggerKey,
     this.isMascotDropdownOpen = false,
@@ -56,7 +56,7 @@ class CreatePostAuthorLine extends StatelessWidget {
         const SizedBox(width: 4.0),
 
         // Mascot Flair Trigger (SNAPS-13: Interactive container encompassing mascot and dropdown arrow)
-        if (isBetaPilotUser) ...[
+        if (canUseMascot) ...[
           GestureDetector(
             key: mascotTriggerKey,
             onTap: () {

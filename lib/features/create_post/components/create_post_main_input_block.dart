@@ -40,7 +40,7 @@ class CreatePostMainInputBlock extends StatelessWidget {
   final bool pollAllowChangeVote;
   final ValueChanged<bool> onPollAllowChangeVoteChanged;
   final MascotFlairModel? selectedMascotFlair;
-  final bool isBetaPilotUser;
+  final bool canUseMascot;
   final VoidCallback? onMascotTriggerTap;
   final GlobalKey? mascotTriggerKey;
   final bool isMascotDropdownOpen;
@@ -76,7 +76,7 @@ class CreatePostMainInputBlock extends StatelessWidget {
     required this.pollAllowChangeVote,
     required this.onPollAllowChangeVoteChanged,
     this.selectedMascotFlair,
-    this.isBetaPilotUser = false,
+    this.canUseMascot = true,
     this.onMascotTriggerTap,
     this.mascotTriggerKey,
     this.isMascotDropdownOpen = false,
@@ -124,7 +124,7 @@ class CreatePostMainInputBlock extends StatelessWidget {
                     selectedTopic: selectedTopic,
                     topicTriggerKey: topicTriggerKey,
                     selectedMascotFlair: selectedMascotFlair,
-                    isBetaPilotUser: isBetaPilotUser,
+                    canUseMascot: canUseMascot,
                     onMascotTriggerTap: onMascotTriggerTap,
                     mascotTriggerKey: mascotTriggerKey,
                     isMascotDropdownOpen: isMascotDropdownOpen,

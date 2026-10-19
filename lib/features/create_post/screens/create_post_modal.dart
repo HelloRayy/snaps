@@ -106,12 +106,8 @@ class _CreatePostModalState extends State<CreatePostModal> {
   String? _uploadStatusText;
   bool _showSellingIntentBanner = false;
 
-  bool get _isBetaPilotUser {
-    final profile = SupabaseService.instance.currentUserProfileNotifier.value;
-    final username = (profile?['username'] as String?)?.toLowerCase().trim() ?? '';
-    final email = SupabaseService.instance.currentUser?.email?.toLowerCase().trim() ?? '';
-    return username == 'snaps' || email.contains('snaps');
-  }
+  bool get _canUseMascot =>
+      (SupabaseService.instance.currentUserProfileNotifier.value?['can_use_mascot'] as bool?) ?? true;
   bool get _isVerified {
     if (widget.isVerified != null) return widget.isVerified!;
     try {
@@ -145,11 +141,8 @@ class _CreatePostModalState extends State<CreatePostModal> {
       final profile = SupabaseService.instance.currentUserProfileNotifier.value;
       if (profile?['mascot_flair'] != null && profile!['mascot_flair'] is Map) {
         _selectedMascotFlair = MascotFlairModel.fromJson(Map<String, dynamic>.from(profile['mascot_flair'] as Map));
-      } else if (_isBetaPilotUser) {
-        _selectedMascotFlair = const MascotFlairModel(
-          bundle: MascotBundle.koala,
-          emotion: MascotEmotion.delighted,
-        );
+      } else {
+        _selectedMascotFlair = null;
       }
     }
   }
@@ -378,7 +371,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                             pollAllowChangeVote: _pollAllowChangeVote,
                             onPollAllowChangeVoteChanged: (v) => setState(() => _pollAllowChangeVote = v),
                             selectedMascotFlair: _selectedMascotFlair,
-                            isBetaPilotUser: _isBetaPilotUser,
+                            canUseMascot: _canUseMascot,
                             mascotTriggerKey: _mascotTriggerKey,
                             isMascotDropdownOpen: _isMascotDropdownOpen,
                             onMascotTriggerTap: () async {

@@ -125,4 +125,70 @@ void main() {
       expect(find.byIcon(Icons.verified_rounded), findsNothing);
     });
   });
+
+  group('CreatePostAuthorLine Mascot Trigger Tests', () {
+    testWidgets('renders mascot trigger by default for public users (canUseMascot: true)', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: CreatePostAuthorLine(
+              authorName: 'SiswaSnapan',
+              selectedTopic: null,
+              topicTriggerKey: GlobalKey(),
+              onTopicTriggerTap: () {},
+              onTopicClear: () {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('SiswaSnapan'), findsOneWidget);
+      expect(find.byIcon(CupertinoIcons.sparkles), findsOneWidget);
+    });
+
+    testWidgets('hides mascot trigger when canUseMascot is revoked (false)', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: CreatePostAuthorLine(
+              authorName: 'SiswaSnapan',
+              selectedTopic: null,
+              topicTriggerKey: GlobalKey(),
+              onTopicTriggerTap: () {},
+              onTopicClear: () {},
+              canUseMascot: false,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('SiswaSnapan'), findsOneWidget);
+      expect(find.byIcon(CupertinoIcons.sparkles), findsNothing);
+    });
+
+    testWidgets('preserves layout order [Username] [Mascot Trigger] [Verified Badge]', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: CreatePostAuthorLine(
+              authorName: 'SiswaSnapan',
+              selectedTopic: null,
+              topicTriggerKey: GlobalKey(),
+              onTopicTriggerTap: () {},
+              onTopicClear: () {},
+              isVerified: true,
+              canUseMascot: true,
+            ),
+          ),
+        ),
+      );
+
+      final usernameX = tester.getTopLeft(find.text('SiswaSnapan')).dx;
+      final mascotX = tester.getTopLeft(find.byIcon(CupertinoIcons.sparkles)).dx;
+      final verifiedX = tester.getTopLeft(find.byType(VerifiedBadgeIcon)).dx;
+
+      expect(usernameX < mascotX, isTrue);
+      expect(mascotX < verifiedX, isTrue);
+    });
+  });
 }

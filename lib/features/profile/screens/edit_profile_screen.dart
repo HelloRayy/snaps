@@ -287,7 +287,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       onAvatarChanged: (newAvatar) => setState(() => _avatar = newAvatar),
                       currentMascotFlair: _mascotFlair,
                       onMascotFlairChanged: (flair) => setState(() => _mascotFlair = flair),
-                      isBetaPilotUser: widget.initialUser.username.replaceAll('@', '').toLowerCase() == 'snaps',
+                      canUseMascot: widget.initialUser.canUseMascot,
                     ),
                     EditProfileFormFields(
                       usernameController: _usernameController,

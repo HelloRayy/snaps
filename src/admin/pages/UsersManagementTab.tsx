@@ -78,7 +78,7 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
         limit: pageSize,
         offset,
       });
-      setUsers(res.data);
+      setUsers(res.data.map((u) => ({ ...u, can_use_mascot: u.can_use_mascot ?? true })));
       setTotalCount(res.count);
     } catch (e: any) {
       setFeedbackMsg({ type: 'error', text: `Gagal memuat siswa: ${e?.message || e}` });
@@ -123,6 +123,30 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
       setTimeout(() => setFeedbackMsg(null), 3000);
     } catch (e: any) {
       setFeedbackMsg({ type: 'error', text: `Gagal update: ${e?.message || e}` });
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const handleToggleMascotAccess = async (userId: string, currentStatus: boolean) => {
+    setUpdatingId(userId);
+    const nextStatus = !currentStatus;
+    try {
+      await adminService.toggleMascotAccess(userId, nextStatus);
+      setUsers((prev) =>
+        prev.map((u) => (u.id === userId ? { ...u, can_use_mascot: nextStatus } : u))
+      );
+      if (selectedStudent?.id === userId) {
+        setSelectedStudent((prev) => (prev ? { ...prev, can_use_mascot: nextStatus } : null));
+      }
+      setFeedbackMsg({
+        type: 'success',
+        text: nextStatus ? 'Akses maskot berhasil diaktifkan.' : 'Akses maskot dicabut.',
+      });
+      setTimeout(() => setFeedbackMsg(null), 3000);
+    } catch (e: unknown) {
+      const err = e instanceof Error ? e.message : String(e);
+      setFeedbackMsg({ type: 'error', text: `Gagal mengubah akses maskot: ${err}` });
     } finally {
       setUpdatingId(null);
     }
@@ -819,6 +843,7 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
             });
           }
         }}
+        onToggleMascotAccess={handleToggleMascotAccess}
         onChangeRole={handleRoleChange}
         onRequestSuspend={(user) => {
           setPendingSuspendTarget(user);

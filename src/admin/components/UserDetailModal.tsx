@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BadgeCheck } from 'lucide-react';
+import { BadgeCheck, Sparkles } from 'lucide-react';
 import type { ProfileRow } from '../services/adminService';
 import { UserAvatar } from './UserAvatar';
 import { AdminModalPortal } from './AdminModalPortal';
@@ -12,6 +12,7 @@ interface UserDetailModalProps {
   onClose: () => void;
   onToggleVerify: (userId: string, currentStatus: boolean) => Promise<void>;
   onChangeRole: (user: ProfileRow, newRole: UserRole) => void;
+  onToggleMascotAccess?: (userId: string, currentStatus: boolean) => Promise<void>;
   onRequestSuspend?: (user: ProfileRow) => void;
   onRequestUnsuspend?: (user: ProfileRow) => void;
   onRequestDelete?: (user: ProfileRow) => void;
@@ -24,6 +25,7 @@ export function UserDetailModal({
   onClose,
   onToggleVerify,
   onChangeRole,
+  onToggleMascotAccess,
   onRequestSuspend,
   onRequestUnsuspend,
   onRequestDelete,
@@ -482,6 +484,110 @@ export function UserDetailModal({
                       : user.is_verified
                       ? 'Cabut Lencana Verified Biru'
                       : 'Beri Lencana Verified Biru'}
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {/* Akses Ikon Maskot (Mascot Flair) */}
+            <div>
+              <div
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  color: '#64748b',
+                  marginBottom: '8px',
+                }}
+              >
+                Akses Ikon Maskot (Mascot Flair)
+              </div>
+
+              <div
+                style={{
+                  padding: '14px 16px',
+                  background: (user.can_use_mascot ?? true) ? '#f0fdf4' : '#fafaf9',
+                  border: (user.can_use_mascot ?? true) ? '1px solid #bbf7d0' : '1px solid #e7e5e4',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {(user.can_use_mascot ?? true) ? (
+                    <Sparkles size={18} className="text-emerald-600 shrink-0" />
+                  ) : (
+                    <i
+                      className="fa-solid fa-ban"
+                      style={{
+                        color: '#78716c',
+                        fontSize: '15px',
+                      }}
+                    ></i>
+                  )}
+                  <span
+                    style={{
+                      fontSize: '13px',
+                      fontWeight: 700,
+                      color: (user.can_use_mascot ?? true) ? '#15803d' : '#44403c',
+                    }}
+                  >
+                    {(user.can_use_mascot ?? true) ? 'Akses Maskot Aktif' : 'Akses Maskot Dicabut'}
+                  </span>
+                </div>
+
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: '11.5px',
+                    lineHeight: 1.45,
+                    color: (user.can_use_mascot ?? true) ? '#166534' : '#78716c',
+                  }}
+                >
+                  {(user.can_use_mascot ?? true)
+                    ? 'Siswa ini diizinkan memilih dan menampilkan lencana maskot profil & postingan.'
+                    : 'Akses fitur maskot untuk siswa ini sedang dinonaktifkan oleh administrator.'}
+                </p>
+
+                <button
+                  type="button"
+                  disabled={isUpdating}
+                  onClick={() => onToggleMascotAccess?.(user.id, user.can_use_mascot ?? true)}
+                  style={{
+                    width: '100%',
+                    height: '36px',
+                    marginTop: '4px',
+                    padding: '0 14px',
+                    borderRadius: '6px',
+                    fontSize: '12.5px',
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '7px',
+                    cursor: isUpdating ? 'not-allowed' : 'pointer',
+                    border: (user.can_use_mascot ?? true) ? '1px solid #fca5a5' : '1px solid #16a34a',
+                    background: (user.can_use_mascot ?? true) ? '#fef2f2' : '#16a34a',
+                    color: (user.can_use_mascot ?? true) ? '#dc2626' : '#ffffff',
+                    boxShadow: (user.can_use_mascot ?? true) ? 'none' : '0 2px 6px rgba(22, 163, 74, 0.28)',
+                    transition: 'all 120ms ease',
+                  }}
+                >
+                  {isUpdating ? (
+                    <i className="fa-solid fa-arrows-rotate fa-spin"></i>
+                  ) : (user.can_use_mascot ?? true) ? (
+                    <i className="fa-solid fa-ban"></i>
+                  ) : (
+                    <Sparkles size={15} />
+                  )}
+                  <span>
+                    {isUpdating
+                      ? 'Memproses...'
+                      : (user.can_use_mascot ?? true)
+                      ? 'Cabut Akses Maskot'
+                      : 'Beri Akses Maskot'}
                   </span>
                 </button>
               </div>

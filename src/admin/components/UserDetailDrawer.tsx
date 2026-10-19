@@ -8,6 +8,7 @@ import {
   ShoppingBag,
   TrendingUp,
   Smartphone,
+  Sparkles,
 } from 'lucide-react';
 import { SlideOverDrawer } from './SlideOverDrawer';
 import { UserAvatar } from './UserAvatar';
@@ -19,6 +20,7 @@ interface UserDetailDrawerProps {
   onClose: () => void;
   onToggleVerify: (userId: string, currentStatus: boolean) => Promise<void>;
   onChangeRole: (user: ProfileRow, newRole: 'user' | 'admin' | 'buyer' | 'seller') => void;
+  onToggleMascotAccess?: (userId: string, currentStatus: boolean) => Promise<void>;
   isUpdating: boolean;
 }
 
@@ -29,6 +31,7 @@ export function UserDetailDrawer({
   onToggleVerify,
   onChangeRole,
   isUpdating,
+  onToggleMascotAccess,
 }: UserDetailDrawerProps) {
   const [copiedId, setCopiedId] = useState(false);
 
@@ -218,6 +221,54 @@ export function UserDetailDrawer({
             <>
               <BadgeCheck className="h-4 w-4 text-white fill-white/20" />
               <span>Beri Lencana Verified Biru</span>
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* 5. Mascot Access Toggle Action Card & Button */}
+      <div className="pt-2">
+        <div
+          className={`p-3 rounded-xl border mb-2 flex flex-col gap-1.5 ${
+            (user.can_use_mascot ?? true)
+              ? 'bg-emerald-50/60 border-emerald-200 text-emerald-800'
+              : 'bg-slate-50 border-slate-200 text-slate-700'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <Sparkles
+              className={`h-4 w-4 shrink-0 ${
+                (user.can_use_mascot ?? true) ? 'text-emerald-600' : 'text-slate-400'
+              }`}
+            />
+            <span className="text-xs font-bold">
+              {(user.can_use_mascot ?? true) ? 'Akses Maskot Aktif' : 'Akses Maskot Dicabut'}
+            </span>
+          </div>
+          <p className="text-[11px] leading-relaxed text-slate-500">
+            {(user.can_use_mascot ?? true)
+              ? 'Siswa diizinkan memilih lencana maskot profil & postingan.'
+              : 'Fitur maskot dinonaktifkan untuk akun siswa ini.'}
+          </p>
+        </div>
+        <button
+          disabled={isUpdating}
+          onClick={() => onToggleMascotAccess?.(user.id, user.can_use_mascot ?? true)}
+          className={`w-full py-2.5 px-4 rounded-xl font-semibold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer ${
+            (user.can_use_mascot ?? true)
+              ? 'bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100'
+              : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-[0_2px_8px_rgba(16,185,129,0.25)]'
+          }`}
+        >
+          {(user.can_use_mascot ?? true) ? (
+            <>
+              <XCircle className="h-4 w-4" />
+              <span>Cabut Akses Maskot</span>
+            </>
+          ) : (
+            <>
+              <Sparkles className="h-4 w-4" />
+              <span>Beri Akses Maskot</span>
             </>
           )}
         </button>

@@ -393,6 +393,18 @@ export const adminService = {
   },
 
   /**
+   * Toggle izin penggunaan maskot siswa (mascot flair)
+   */
+  async toggleMascotAccess(userId: string, canUseMascot: boolean): Promise<void> {
+    const { error } = await supabase
+      .from('profiles')
+      .update({ can_use_mascot: canUseMascot })
+      .eq('id', userId);
+
+    if (error) throw error;
+  },
+
+  /**
    * Mengambil daftar postingan feed untuk moderasi
    */
   async getMarketPosts(params?: {

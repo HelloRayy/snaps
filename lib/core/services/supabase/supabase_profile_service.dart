@@ -21,6 +21,10 @@ class SupabaseProfileService {
           .eq('id', userId)
           .maybeSingle();
       if (data != null) {
+        if (!data.containsKey('can_use_mascot') || data['can_use_mascot'] == null) {
+          data['can_use_mascot'] = true;
+        }
+
         if (_client.auth.currentUser?.id == userId) {
           final metaDisplayName = _client.auth.currentUser?.userMetadata?['display_name'] as String?;
           if ((data['display_name'] == null || (data['display_name'] as String).isEmpty) &&
@@ -55,9 +59,13 @@ class SupabaseProfileService {
           .select()
           .ilike('username', username)
           .maybeSingle();
-      if (data != null && _client.auth.currentUser?.id == data['id']) {
-        final metaDisplayName = _client.auth.currentUser?.userMetadata?['display_name'] as String?;
-        if ((data['display_name'] == null || (data['display_name'] as String).isEmpty) &&
+      if (data != null) {
+        if (!data.containsKey('can_use_mascot') || data['can_use_mascot'] == null) {
+          data['can_use_mascot'] = true;
+        }
+        if (_client.auth.currentUser?.id == data['id']) {
+          final metaDisplayName = _client.auth.currentUser?.userMetadata?['display_name'] as String?;
+          if ((data['display_name'] == null || (data['display_name'] as String).isEmpty) &&
             metaDisplayName != null && metaDisplayName.isNotEmpty) {
           data['display_name'] = metaDisplayName;
         }
@@ -70,6 +78,7 @@ class SupabaseProfileService {
         if ((data['link'] == null || (data['link'] as String).isEmpty) &&
             metaLink != null && metaLink.isNotEmpty) {
           data['link'] = metaLink;
+        }
         }
       }
       return data;
@@ -137,6 +146,7 @@ class SupabaseProfileService {
 
     currentUserProfileNotifier.value = {
       ...existing,
+      'can_use_mascot': existing['can_use_mascot'] ?? true,
       'id': userId,
       'full_name': fullName,
       if (hasDisplayName) 'display_name': cleanDisplayName,

@@ -86,7 +86,7 @@ class ProfileMediaGrid extends StatelessWidget {
                 child: Image.network(
                   item.imageUrl,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const Center(
+                  errorBuilder: (_, _, _) => const Center(
                     child: Icon(
                       Icons.image_not_supported_rounded,
                       size: 24.0,

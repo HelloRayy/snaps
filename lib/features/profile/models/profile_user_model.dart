@@ -19,6 +19,7 @@ class ProfileUserModel {
   final int reviewsCount;
   final bool isVerified;
   final MascotFlairModel? mascotFlair;
+  final bool canUseMascot;
 
   const ProfileUserModel({
     required this.id,
@@ -37,6 +38,7 @@ class ProfileUserModel {
     this.reviewsCount = 0,
     this.isVerified = false,
     this.mascotFlair,
+    this.canUseMascot = true,
   });
 
   ProfileUserModel copyWith({
@@ -56,6 +58,7 @@ class ProfileUserModel {
     int? reviewsCount,
     bool? isVerified,
     MascotFlairModel? mascotFlair,
+    bool? canUseMascot,
   }) {
     return ProfileUserModel(
       id: id ?? this.id,
@@ -74,6 +77,7 @@ class ProfileUserModel {
       reviewsCount: reviewsCount ?? this.reviewsCount,
       isVerified: isVerified ?? this.isVerified,
       mascotFlair: mascotFlair ?? this.mascotFlair,
+      canUseMascot: canUseMascot ?? this.canUseMascot,
     );
   }
 

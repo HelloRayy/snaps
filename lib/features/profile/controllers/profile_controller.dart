@@ -361,6 +361,10 @@ class ProfileController extends ChangeNotifier {
       );
     }
 
+    final canUseMascot = (profile?['can_use_mascot'] as bool?) ??
+        (meta['can_use_mascot'] as bool?) ??
+        true;
+
     return ProfileUserModel(
       id: id,
       name: effectiveDisplayName,
@@ -376,6 +380,7 @@ class ProfileController extends ChangeNotifier {
       followersCount: followersCount,
       isVerified: profile?['is_verified'] as bool? ?? false,
       mascotFlair: parsedFlair,
+      canUseMascot: canUseMascot,
     );
   }
 }

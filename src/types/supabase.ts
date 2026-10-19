@@ -27,6 +27,8 @@ export interface Database {
           suspend_reason?: string | null
           nis?: string | null
           last_app_version?: string | null
+          can_use_mascot?: boolean
+          mascot_flair?: Json | null
         }
         Insert: {
           id: string
@@ -45,6 +47,8 @@ export interface Database {
           suspend_reason?: string | null
           nis?: string | null
           last_app_version?: string | null
+          can_use_mascot?: boolean
+          mascot_flair?: Json | null
         }
         Update: {
           id?: string
@@ -63,6 +67,8 @@ export interface Database {
           suspend_reason?: string | null
           nis?: string | null
           last_app_version?: string | null
+          can_use_mascot?: boolean
+          mascot_flair?: Json | null
         }
         Relationships: []
       }

@@ -37,6 +37,8 @@ alter table public.profiles add column if not exists bio text;
 alter table public.profiles add column if not exists link text;
 alter table public.profiles add column if not exists interests text;
 create index if not exists idx_profiles_nis on public.profiles(nis);
+alter table public.profiles add column if not exists mascot_flair jsonb default null;
+alter table public.profiles add column if not exists can_use_mascot boolean default true;
 
 -- Trigger Otomatis saat User Sign Up (Google OAuth / Email / NIS)
 create or replace function public.handle_new_user()
