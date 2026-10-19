@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
+import 'package:snapan_market/core/services/mascot_feature_notice_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/auth/models/auth_constants.dart';
 import 'package:snapan_market/features/profile/components/discard_changes_dialog.dart';
@@ -47,6 +48,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
+    MascotFeatureNoticeService.instance.markSeen();
     _nameController = TextEditingController(text: widget.initialUser.name);
     _usernameController = TextEditingController(text: widget.initialUser.username.replaceAll('@', ''));
     _bioController = TextEditingController(text: widget.initialUser.bio);

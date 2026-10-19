@@ -30,7 +30,12 @@ class MascotFeatureNoticeService {
         debugPrint('MascotFeatureNoticeService SharedPreferences init notice: $e');
       }
 
-      SupabaseService.instance.currentUserProfileNotifier.addListener(_onProfileChanged);
+      try {
+        SupabaseService.instance.currentUserProfileNotifier.addListener(_onProfileChanged);
+      } catch (e) {
+        debugPrint('MascotFeatureNoticeService currentUserProfileNotifier listen notice: $e');
+      }
+
       try {
         _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((_) {
           evaluate();
@@ -49,19 +54,18 @@ class MascotFeatureNoticeService {
   /// Re-evaluates whether the mascot badge should be displayed for the active user
   Future<void> evaluate() async {
     try {
-      if (!SupabaseService.instance.isAuthenticated) {
+      if (!_checkIsAuthenticated()) {
         shouldShowMascotBadge.value = false;
         return;
       }
 
-      final currentUser = SupabaseService.instance.currentUser;
-      final userId = currentUser?.id;
+      final userId = _getCurrentUserId();
       if (userId == null || userId.isEmpty) {
         shouldShowMascotBadge.value = false;
         return;
       }
 
-      final profile = SupabaseService.instance.currentUserProfileNotifier.value;
+      final profile = _getCurrentUserProfile();
       if (profile != null && profile['mascot_flair'] != null) {
         shouldShowMascotBadge.value = false;
         return;
@@ -86,7 +90,7 @@ class MascotFeatureNoticeService {
     shouldShowMascotBadge.value = false;
     try {
       _prefs ??= await SharedPreferences.getInstance();
-      final userId = SupabaseService.instance.currentUser?.id;
+      final userId = _getCurrentUserId();
       if (userId != null && userId.isNotEmpty) {
         await _prefs?.setBool('$_kMascotNoticeSeenPrefix$userId', true);
       }
@@ -100,9 +104,35 @@ class MascotFeatureNoticeService {
   void resetForTesting() {
     _authSubscription?.cancel();
     _authSubscription = null;
-    SupabaseService.instance.currentUserProfileNotifier.removeListener(_onProfileChanged);
+    try {
+      SupabaseService.instance.currentUserProfileNotifier.removeListener(_onProfileChanged);
+    } catch (_) {}
     _prefs = null;
     _isInitialized = false;
     shouldShowMascotBadge.value = false;
+  }
+
+  bool _checkIsAuthenticated() {
+    try {
+      return SupabaseService.instance.isAuthenticated;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  String? _getCurrentUserId() {
+    try {
+      return SupabaseService.instance.currentUser?.id;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Map<String, dynamic>? _getCurrentUserProfile() {
+    try {
+      return SupabaseService.instance.currentUserProfileNotifier.value;
+    } catch (_) {
+      return null;
+    }
   }
 }

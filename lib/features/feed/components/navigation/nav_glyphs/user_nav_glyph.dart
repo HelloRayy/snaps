@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/components/mascot_indicator_badge.dart';
+import 'package:snapan_market/core/services/mascot_feature_notice_service.dart';
 
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -29,7 +31,10 @@ class UserNavGlyph extends StatelessWidget {
     return ValueListenableBuilder<Map<String, dynamic>?>(
       valueListenable: SupabaseService.instance.currentUserProfileNotifier,
       builder: (context, profile, _) {
-        final isLoggedIn = SupabaseService.instance.isAuthenticated;
+        return ValueListenableBuilder<bool>(
+          valueListenable: MascotFeatureNoticeService.instance.shouldShowMascotBadge,
+          builder: (context, shouldShowMascotNotice, _) {
+            final isLoggedIn = SupabaseService.instance.isAuthenticated;
         final effectiveAvatar = (profile?['avatar_url'] as String?)?.trim() ??
             (userAvatar?.trim().isNotEmpty == true ? userAvatar!.trim() : null) ??
             (SupabaseService.instance.currentUser?.userMetadata?['avatar_url'] as String?)?.trim();
@@ -39,8 +44,10 @@ class UserNavGlyph extends StatelessWidget {
             effectiveAvatar.isNotEmpty &&
             !effectiveAvatar.startsWith('assets/');
 
-        final shouldShowWarning = isLoggedIn && !hasCustomAvatar;
-
+            final shouldShowWarning = isLoggedIn && !hasCustomAvatar;
+            final hasMascotFlair = profile?['mascot_flair'] != null;
+            final shouldShowMascot =
+                isLoggedIn && !shouldShowWarning && shouldShowMascotNotice && !hasMascotFlair;
         Widget glyph;
         if (hasCustomAvatar) {
           glyph = Container(
@@ -68,38 +75,55 @@ class UserNavGlyph extends StatelessWidget {
           glyph = _buildFallbackGlyph(effectiveActive, effectiveInactive);
         }
 
-        if (!shouldShowWarning) {
-          return glyph;
-        }
-
-        return Stack(
-          clipBehavior: Clip.none,
-          alignment: Alignment.center,
-          children: [
-            glyph,
-            Positioned(
-              top: -3.0,
-              right: -6.0,
-              child: Container(
-                width: 12.0,
-                height: 12.0,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF59E0B), // Pure flat warm amber yellow
-                  shape: BoxShape.circle,
-                ),
+            if (shouldShowWarning) {
+              return Stack(
+                clipBehavior: Clip.none,
                 alignment: Alignment.center,
-                child: const Text(
-                  '!',
-                  style: TextStyle(
-                    fontSize: 8.5,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                    height: 1.0,
+                children: [
+                  glyph,
+                  Positioned(
+                    top: -3.0,
+                    right: -6.0,
+                    child: Container(
+                      width: 12.0,
+                      height: 12.0,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFF59E0B), // Pure flat warm amber yellow
+                        shape: BoxShape.circle,
+                      ),
+                      alignment: Alignment.center,
+                      child: const Text(
+                        '!',
+                        style: TextStyle(
+                          fontSize: 8.5,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          height: 1.0,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
-          ],
+                ],
+              );
+            }
+
+            if (shouldShowMascot) {
+              return Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.center,
+                children: [
+                  glyph,
+                  const Positioned(
+                    top: -3.0,
+                    right: -6.0,
+                    child: MascotIndicatorBadge(size: 13.0),
+                  ),
+                ],
+              );
+            }
+
+            return glyph;
+          },
         );
       },
     );

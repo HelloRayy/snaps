@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/components/mascot_indicator_badge.dart';
+import 'package:snapan_market/core/services/mascot_feature_notice_service.dart';
 import 'package:snapan_market/core/components/mascot_flair_badge.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/ui/default_profile_avatar.dart';
@@ -19,17 +21,21 @@ class ProfileInfoHeader extends StatelessWidget {
   final bool isOwnProfile;
   final VoidCallback? onEditInterests;
   final VoidCallback? onAvatarTap;
-
+  final VoidCallback? onMascotBadgeTap;
   const ProfileInfoHeader({
     super.key,
     required this.user,
     this.isOwnProfile = true,
     this.onEditInterests,
     this.onAvatarTap,
+    this.onMascotBadgeTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final hasIncompleteAvatar =
+        isOwnProfile && (user.avatar.trim().isEmpty || user.avatar.startsWith('assets/'));
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
       child: Column(
@@ -121,7 +127,7 @@ class ProfileInfoHeader extends StatelessWidget {
                         ),
                       ),
                     ),
-                    if (isOwnProfile && (user.avatar.trim().isEmpty || user.avatar.startsWith('assets/')))
+                    if (hasIncompleteAvatar)
                       Positioned(
                         right: -2.0,
                         bottom: -2.0,
@@ -144,6 +150,22 @@ class ProfileInfoHeader extends StatelessWidget {
                             ),
                           ),
                         ),
+                      ),
+                    if (isOwnProfile && user.mascotFlair == null)
+                      ValueListenableBuilder<bool>(
+                        valueListenable: MascotFeatureNoticeService.instance.shouldShowMascotBadge,
+                        builder: (context, shouldShow, _) {
+                          if (!shouldShow) return const SizedBox.shrink();
+                          return Positioned(
+                            right: -2.0,
+                            top: hasIncompleteAvatar ? -2.0 : null,
+                            bottom: hasIncompleteAvatar ? null : -2.0,
+                            child: MascotIndicatorBadge(
+                              size: 20.0,
+                              onTap: onMascotBadgeTap ?? onAvatarTap,
+                            ),
+                          );
+                        },
                       ),
                   ],
                 ),

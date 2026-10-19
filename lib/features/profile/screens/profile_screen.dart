@@ -313,6 +313,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                               user: displayUser,
                               isOwnProfile: _isOwnProfile,
                               onEditInterests: _handleEditProfile,
+                              onMascotBadgeTap: _handleEditProfile,
                               onAvatarTap: () {
                                 if (_isOwnProfile && (user.avatar.trim().isEmpty || user.avatar.startsWith('assets/'))) {
                                   _handleEditProfile();
