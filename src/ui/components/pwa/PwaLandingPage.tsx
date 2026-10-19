@@ -2,8 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { popSiteHtml } from './popSiteHtml';
 import { popSiteMobileHtml } from './popSiteMobileHtml';
-import { usePWA } from '@/ui/hooks/usePWA';
-import { CustomPwaInstallModal } from './CustomPwaInstallModal';
 import { usePwaLandingEffects } from './usePwaLandingEffects';
 import './pwaLanding.css';
 
@@ -12,8 +10,6 @@ interface PwaLandingPageProps {
 }
 
 export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }) => {
-  const { promptInstall } = usePWA();
-  const [showCustomInstallModal, setShowCustomInstallModal] = useState(false);
   const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 810 : false));
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -29,13 +25,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
     containerRef,
     isMobile,
     onProceedToWeb,
-    onOpenInstallModal: () => setShowCustomInstallModal(true),
   });
-
-  const handleConfirmInstall = async () => {
-    setShowCustomInstallModal(false);
-    await promptInstall();
-  };
 
   return (
     <motion.div
@@ -47,12 +37,6 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
       <div
         ref={containerRef}
         dangerouslySetInnerHTML={{ __html: isMobile ? popSiteMobileHtml : popSiteHtml }}
-      />
-
-      <CustomPwaInstallModal
-        isOpen={showCustomInstallModal}
-        onClose={() => setShowCustomInstallModal(false)}
-        onConfirmInstall={handleConfirmInstall}
       />
     </motion.div>
   );

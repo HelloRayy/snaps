@@ -6,7 +6,7 @@ interface UsePwaLandingEffectsOptions {
   containerRef: RefObject<HTMLDivElement | null>;
   isMobile: boolean;
   onProceedToWeb?: () => void;
-  onOpenInstallModal: () => void;
+  onOpenInstallModal?: () => void;
 }
 
 export function usePwaLandingEffects({
@@ -483,7 +483,21 @@ export function usePwaLandingEffects({
         }
 
         triggerHaptic('medium');
-        onOpenInstallModal();
+        
+        // Direct APK download instant trigger
+        const downloadUrl = 'https://github.com/HelloRayy/snaps/releases/latest/download/app-release.apk';
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = 'app-release.apk';
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        if (onOpenInstallModal) {
+          onOpenInstallModal();
+        }
       } else if (text.includes('log in') || text.includes('masuk web') || text.includes('buka web') || text.includes('sign in')) {
         if (onProceedToWeb) {
           e.preventDefault();
