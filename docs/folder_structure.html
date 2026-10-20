@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Struktur Folder - Snaps Market Mobile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --background: #f8fafc;
+      --card: #ffffff;
+      --foreground: #0f172a;
+      --muted-foreground: #64748b;
+      --border: #e2e8f0;
+      --primary: #3d38f5;
+      --primary-foreground: #ffffff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #090d16;
+        --card: #111827;
+        --foreground: #f8fafc;
+        --muted-foreground: #94a3b8;
+        --border: #1f2937;
+        --primary: #4f46e5;
+        --primary-foreground: #ffffff;
+      }
+    }
+    body {
+      background-color: var(--background);
+      color: var(--foreground);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    .tree-line {
+      position: relative;
+    }
+    .tree-line::before {
+      content: "";
+      position: absolute;
+      left: 11px;
+      top: 0;
+      bottom: 0;
+      width: 1.5px;
+      background: var(--border, #e2e8f0);
+    }
+    .node-row:hover {
+      background: rgba(61, 56, 245, 0.05);
+    }
+  </style>
+</head>
+<body class="antialiased p-3 sm:p-6 min-h-screen">
+  <div class="max-w-4xl mx-auto bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-sm p-4 sm:p-6">
+    
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-[var(--border)] pb-4 mb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-[#3d38f5]"></span>
+          <h1 class="text-lg sm:text-xl font-bold tracking-tight text-[var(--foreground)]">snapan-market-mobile</h1>
+          <span class="text-xs px-2 py-0.5 rounded-full font-medium bg-[#3d38f5]/10 text-[#3d38f5]">Flutter + Supabase</span>
+        </div>
+        <p class="text-xs sm:text-sm text-[var(--muted-foreground)] mt-1">Visualisasi hierarki struktur folder modular (Feature-First)</p>
+      </div>
+      
+      <!-- Quick Actions -->
+      <div class="flex items-center gap-2">
+        <button id="btn-expand-all" class="text-xs px-3 py-1.5 rounded-lg border border-[var(--border)] font-medium text-[var(--foreground)] hover:bg-[var(--border)]/30 transition">
+          Buka Semua
+        </button>
+        <button id="btn-collapse-all" class="text-xs px-3 py-1.5 rounded-lg border border-[var(--border)] font-medium text-[var(--foreground)] hover:bg-[var(--border)]/30 transition">
+          Tutup Semua
+        </button>
+      </div>
+    </div>
+
+    <!-- Search & Filter Bar -->
+    <div class="flex flex-col sm:flex-row gap-2 mb-4">
+      <div class="relative flex-1">
+        <input 
+          id="search-input" 
+          type="text" 
+          placeholder="Cari folder atau komponen (misal: checkout, theme, auth)..." 
+          class="w-full text-xs sm:text-sm px-3.5 py-2 pl-9 rounded-xl border border-[var(--border)] bg-transparent text-[var(--foreground)] placeholder-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]"
+        />
+        <svg class="absolute left-3 top-2.5 w-4 h-4 text-[var(--muted-foreground)] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+      </div>
+      
+      <!-- Category Filter Tabs -->
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0" id="filter-chips">
+        <button data-filter="all" class="filter-chip active text-xs px-3 py-2 rounded-xl border border-[#3d38f5] bg-[#3d38f5] text-white font-medium whitespace-nowrap transition">
+          Semua
+        </button>
+        <button data-filter="features" class="filter-chip text-xs px-3 py-2 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] font-medium whitespace-nowrap transition">
+          Features
+        </button>
+        <button data-filter="core" class="filter-chip text-xs px-3 py-2 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] font-medium whitespace-nowrap transition">
+          Core
+        </button>
+        <button data-filter="root" class="filter-chip text-xs px-3 py-2 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] font-medium whitespace-nowrap transition">
+          Root & Config
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="flex items-center justify-between text-xs text-[var(--muted-foreground)] border-b border-[var(--border)] pb-2 mb-3">
+      <span id="match-counter">Menampilkan seluruh folder utama</span>
+      <span class="text-[11px]">Klik folder untuk expand / collapse</span>
+    </div>
+
+    <!-- Tree View Container -->
+    <div id="tree-container" class="space-y-1 select-none">
+      <!-- Tree populated by JavaScript -->
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-12 opacity-0 transition-all duration-200 pointer-events-none bg-[var(--foreground)] text-[var(--card)] text-xs px-3 py-2 rounded-lg shadow-lg">
+      Path disalin ke clipboard!
+    </div>
+
+  </div>
+
+  <script>
+    const treeData = [
+      {
+        id: "lib",
+        name: "lib/",
+        badge: "Flutter App",
+        badgeColor: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
+        desc: "Pusat seluruh kode aplikasi Flutter mobile",
+        category: "core",
+        expanded: true,
+        children: [
+          {
+            id: "main_dart",
+            name: "main.dart",
+            badge: "Entry Point",
+            badgeColor: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
+            desc: "Bootstrap aplikasi, inisialisasi Supabase, MaterialApp, tema, dan rute",
+            category: "core",
+            isFile: true
+          },
+          {
+            id: "core",
+            name: "core/",
+            badge: "Shared Infrastructure",
+            badgeColor: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20",
+            desc: "Pondasi global yang digunakan bersama lintas fitur",
+            category: "core",
+            expanded: true,
+            children: [
+              {
+                id: "core_theme",
+                name: "theme/",
+                badge: "Design Tokens",
+                badgeColor: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
+                desc: "Token warna resmi AppColors.* (Indigo #3D38F5), tipografi Inter, dan tema global",
+                category: "core",
+                isFile: false
+              },
+              {
+                id: "core_components",
+                name: "components/",
+                badge: "Atomic Widgets",
+                badgeColor: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20",
+                desc: "Komponen atomik umum (SnapsLogo, tombol, avatar, cropper, skeleton loader)",
+                category: "core",
+                isFile: false
+              },
+              {
+                id: "core_services",
+                name: "services/",
+                badge: "Global Services",
+                badgeColor: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
+                desc: "Koneksi Supabase client, session auth, realtime broadcast, dan suspensi akun",
+                category: "core",
+                isFile: false
+              },
+              {
+                id: "core_navigation",
+                name: "navigation/",
+                badge: "Transitions",
+                badgeColor: "bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20",
+                desc: "Animasi perpindahan layar halus (AppSlidePageRoute)",
+                category: "core",
+                isFile: false
+              },
+              {
+                id: "core_utils",
+                name: "utils/",
+                badge: "Helpers",
+                badgeColor: "bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20",
+                desc: "Formatter harga rupiah, waktu relatif, dan trigger tactile haptic feedback",
+                category: "core",
+                isFile: false
+              },
+              {
+                id: "core_constants",
+                name: "constants/",
+                badge: "Constants",
+                badgeColor: "bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20",
+                desc: "Konstanta aplikasi, regex, dan path aset internal",
+                category: "core",
+                isFile: false
+              },
+              {
+                id: "core_models",
+                name: "models/",
+                badge: "Base Models",
+                badgeColor: "bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20",
+                desc: "Model data umum bersama (user profile, pagination, status respons)",
+                category: "core",
+                isFile: false
+              }
+            ]
+          },
+          {
+            id: "features",
+            name: "features/",
+            badge: "Domain Modules",
+            badgeColor: "bg-[#3d38f5]/10 text-[#3d38f5] border-[#3d38f5]/20",
+            desc: "Pemisahan modul berbasis domain fitur (Feature-First Architecture)",
+            category: "features",
+            expanded: true,
+            children: [
+              {
+                id: "feat_feed",
+                name: "feed/",
+                badge: "Linimasa & Utas",
+                badgeColor: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
+                desc: "Timeline beranda ala Threads, kartu produk jualan, polling suara, dan komentar",
+                category: "features",
+                expanded: false,
+                children: [
+                  { id: "f_feed_c", name: "components/", desc: "Leaf widgets: MarketPostCard, PostActionBar, PostPollSection", isFile: false, category: "features" },
+                  { id: "f_feed_s", name: "screens/", desc: "Orchestrator: HomeFeedScreen, PostDetailScreen", isFile: false, category: "features" },
+                  { id: "f_feed_ctrl", name: "controllers/", desc: "HomeFeedController, PostDetailController", isFile: false, category: "features" },
+                  { id: "f_feed_m", name: "models/", desc: "Model data postingan, komentar, dan vote", isFile: false, category: "features" }
+                ]
+              },
+              {
+                id: "feat_checkout",
+                name: "checkout/",
+                badge: "Transaksi COD",
+                badgeColor: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
+                desc: "Alur pembelian COD, pemilihan titik temu sekolah, dan rincian harga",
+                category: "features",
+                expanded: false,
+                children: [
+                  { id: "f_chk_c", name: "components/", desc: "CheckoutPriceBreakdown, CheckoutBuyerNoteCard, BottomBar", isFile: false, category: "features" },
+                  { id: "f_chk_s", name: "screens/", desc: "CheckoutScreen", isFile: false, category: "features" },
+                  { id: "f_chk_m", name: "models/", desc: "Model data pesanan COD dan payload", isFile: false, category: "features" }
+                ]
+              },
+              {
+                id: "feat_locations",
+                name: "locations/",
+                badge: "Spot COD",
+                badgeColor: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
+                desc: "Daftar titik kumpul resmi di lingkungan SMKN 8 Semarang (Lobi, Kantin, Lab)",
+                category: "features",
+                expanded: false,
+                children: [
+                  { id: "f_loc_c", name: "components/", desc: "LocationSpotCard, LocationSpotDetailSheet", isFile: false, category: "features" },
+                  { id: "f_loc_s", name: "screens/", desc: "CampusLocationsScreen", isFile: false, category: "features" }
+                ]
+              },
+              {
+                id: "feat_map",
+                name: "map/",
+                badge: "Denah 2D",
+                badgeColor: "bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20",
+                desc: "Kanvas denah visual 2D denah gedung & spot COD interaktif",
+                category: "features",
+                expanded: false,
+                children: [
+                  { id: "f_map_c", name: "components/", desc: "Campus2DBlueprintPainter, FloorSelector", isFile: false, category: "features" },
+                  { id: "f_map_s", name: "screens/", desc: "CampusMapScreen", isFile: false, category: "features" }
+                ]
+              },
+              {
+                id: "feat_messages",
+                name: "messages/",
+                badge: "Obrolan DM",
+                badgeColor: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
+                desc: "Pesan instan antarsiswa, negosiasi produk, dan riwayat obrolan",
+                category: "features",
+                expanded: false,
+                children: [
+                  { id: "f_msg_c", name: "components/", desc: "ChatMessageBubble, ProductNegotiationCard", isFile: false, category: "features" },
+                  { id: "f_msg_s", name: "screens/", desc: "MessagesListScreen, ChatConversationScreen", isFile: false, category: "features" },
+                  { id: "f_msg_srv", name: "services/", desc: "DirectMessagesService (Realtime Supabase)", isFile: false, category: "features" }
+                ]
+              },
+              {
+                id: "feat_profile",
+                name: "profile/",
+                badge: "Profil Siswa",
+                badgeColor: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20",
+                desc: "Profil akademik, jurusan siswa, daftar etalase jualan, dan pengeditan profil",
+                category: "features",
+                expanded: false,
+                children: [
+                  { id: "f_prof_c", name: "components/", desc: "ProfileInfoHeader, ProfileActionButtons, EditProfileFields", isFile: false, category: "features" },
+                  { id: "f_prof_s", name: "screens/", desc: "ProfileScreen, EditProfileScreen", isFile: false, category: "features" },
+                  { id: "f_prof_ctrl", name: "controllers/", desc: "ProfileController", isFile: false, category: "features" }
+                ]
+              },
+              {
+                id: "feat_auth",
+                name: "auth/",
+                badge: "Login Siswa NIS",
+                badgeColor: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20",
+                desc: "Sistem autentikasi sekolah berbasis NIS / Username tanpa email Google",
+                category: "features",
+                expanded: false,
+                children: [
+                  { id: "f_auth_c", name: "components/", desc: "AuthLoginTab, AuthRegisterTab, StudentNisCombobox", isFile: false, category: "features" },
+                  { id: "f_auth_s", name: "screens/", desc: "AuthModalScreen, AccountSuspendedScreen", isFile: false, category: "features" },
+                  { id: "f_auth_ctrl", name: "controllers/", desc: "AuthController", isFile: false, category: "features" }
+                ]
+              },
+              {
+                id: "feat_create_post",
+                name: "create_post/",
+                badge: "Buat Postingan",
+                badgeColor: "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20",
+                desc: "Modal pembuatan utas teks, jualan produk, dan polling suara siswa",
+                category: "features",
+                expanded: false,
+                children: [
+                  { id: "f_cp_c", name: "components/", desc: "PostTypeSelector, ImageAttachmentGrid, PollEditor", isFile: false, category: "features" },
+                  { id: "f_cp_s", name: "screens/", desc: "CreatePostModalScreen", isFile: false, category: "features" }
+                ]
+              },
+              {
+                id: "feat_search",
+                name: "search/",
+                badge: "Pencarian",
+                badgeColor: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20",
+                desc: "Pencarian cepat barang jualan, siswa, jurusan, dan tag topik",
+                category: "features",
+                isFile: false
+              },
+              {
+                id: "feat_activity",
+                name: "activity/",
+                badge: "Notifikasi",
+                badgeColor: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
+                desc: "Pemberitahuan like, komentar baru, update pesanan, dan verifikasi akun",
+                category: "features",
+                isFile: false
+              },
+              {
+                id: "feat_onboarding",
+                name: "onboarding/",
+                badge: "Walkthrough",
+                badgeColor: "bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/20",
+                desc: "Slide sambutan perkenalan fitur Snaps untuk pengguna baru",
+                category: "features",
+                isFile: false
+              },
+              {
+                id: "feat_splash",
+                name: "splash/",
+                badge: "Splash & Boot",
+                badgeColor: "bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20",
+                desc: "Layar splash awal: inisialisasi sesi Supabase, status suspensi, dan OTA check",
+                category: "features",
+                isFile: false
+              },
+              {
+                id: "feat_feedback",
+                name: "feedback/",
+                badge: "Umpan Balik",
+                badgeColor: "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20",
+                desc: "Laporan bug & saran perbaikan aplikasi dari siswa",
+                category: "features",
+                isFile: false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: "assets",
+        name: "assets/",
+        badge: "Assets",
+        badgeColor: "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20",
+        desc: "File aset statis: ikon SVG, logo resmi Snaps, gambar ilustrasi, dan denah sekolah",
+        category: "root",
+        expanded: false,
+        children: [
+          { id: "assets_images", name: "images/", desc: "Ilustrasi COD, avatar default, banner", isFile: false, category: "root" },
+          { id: "assets_icons", name: "icons/", desc: "Vector SVG launcher icon dan brandmark", isFile: false, category: "root" },
+          { id: "assets_data", name: "data/", desc: "Registri data NIS siswa SMKN 8 Semarang", isFile: false, category: "root" }
+        ]
+      },
+      {
+        id: "docs",
+        name: "docs/",
+        badge: "Dokumentasi",
+        badgeColor: "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20",
+        desc: "Dokumentasi arsitektur, panduan coding, kontrak data, dan SOP rilis OTA",
+        category: "root",
+        expanded: false,
+        children: [
+          { id: "doc_standards", name: "coding-standards.md", desc: "Standar penulisan kode & batas 250 baris", isFile: true, category: "root" },
+          { id: "doc_arch", name: "clean-code-architecture.md", desc: "Panduan arsitektur Clean Code & pemisahan layer", isFile: true, category: "root" },
+          { id: "doc_ota", name: "RELEASE_OTA_GUIDE.md", desc: "Prosedur build release APK & in-app update", isFile: true, category: "root" }
+        ]
+      },
+      {
+        id: "scripts",
+        name: "scripts/",
+        badge: "Otomasi",
+        badgeColor: "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20",
+        desc: "Script otomasi rilis APK, verifikasi rute manifest agent, dan build bundle",
+        category: "root",
+        expanded: false,
+        children: [
+          { id: "scr_auto", name: "auto_release.sh", desc: "Eksekusi satu perintah rilis APK + GitHub + Supabase", isFile: true, category: "root" },
+          { id: "scr_map", name: "verify-agent-map.sh", desc: "Validasi konsistensi path AGENT_MANIFEST di pre-commit hook", isFile: true, category: "root" }
+        ]
+      },
+      {
+        id: "supabase",
+        name: "supabase/",
+        badge: "Backend & DB",
+        badgeColor: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
+        desc: "Skema database PostgreSQL, aturan Row Level Security (RLS), dan migrasi data",
+        category: "root",
+        expanded: false,
+        children: [
+          { id: "sb_mig", name: "migrations/", desc: "File migrasi SQL terurut", isFile: false, category: "root" },
+          { id: "sb_schema", name: "schema.sql", desc: "Dump skema lengkap database Supabase", isFile: true, category: "root" }
+        ]
+      },
+      {
+        id: "android",
+        name: "android/",
+        badge: "Native Host",
+        badgeColor: "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20",
+        desc: "Konfigurasi native Android (Gradle, AndroidManifest, app signing key)",
+        category: "root",
+        isFile: false
+      },
+      {
+        id: "pubspec",
+        name: "pubspec.yaml",
+        badge: "Package Config",
+        badgeColor: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
+        desc: "Daftar package dependensi Flutter, versi rilis, dan deklarasi aset",
+        category: "root",
+        isFile: true
+      },
+      {
+        id: "manifest",
+        name: "AGENT_MANIFEST.md",
+        badge: "Single Source of Truth",
+        badgeColor: "bg-[#3d38f5]/10 text-[#3d38f5] border-[#3d38f5]/20",
+        desc: "Kompas AI Agent: tabel peta rute Parent-to-Leaf & aturan mutlak (<80 baris)",
+        category: "root",
+        isFile: true
+      }
+    ];
+
+    let currentFilter = 'all';
+    let searchQuery = '';
+
+    function renderTree(nodes, container, depth = 0, currentPath = '') {
+      nodes.forEach(node => {
+        const fullPath = currentPath ? `${currentPath}/${node.name.replace('/', '')}` : node.name.replace('/', '');
+        const hasChildren = node.children && node.children.length > 0;
+        
+        // Filter match logic
+        const matchesCategory = currentFilter === 'all' || node.category === currentFilter;
+        const matchesSearch = !searchQuery || 
+          node.name.toLowerCase().includes(searchQuery) || 
+          (node.desc && node.desc.toLowerCase().includes(searchQuery)) ||
+          (node.badge && node.badge.toLowerCase().includes(searchQuery)) ||
+          childMatches(node, searchQuery);
+
+        if (!matchesCategory && !searchQuery) return;
+        if (searchQuery && !matchesSearch) return;
+
+        const isExpanded = searchQuery ? true : (node.expanded ?? false);
+
+        const nodeEl = document.createElement('div');
+        nodeEl.className = 'node-wrapper';
+        nodeEl.dataset.id = node.id;
+        nodeEl.dataset.category = node.category;
+
+        const row = document.createElement('div');
+        row.className = `node-row flex items-center justify-between py-1.5 px-2 rounded-xl cursor-pointer transition ${depth > 0 ? 'ml-' + Math.min(depth * 3, 12) : ''}`;
+        row.style.paddingLeft = `${depth * 18 + 8}px`;
+
+        // Left section (chevron + icon + name + badge)
+        const left = document.createElement('div');
+        left.className = 'flex items-center gap-2 overflow-hidden mr-2';
+
+        // Chevron
+        if (hasChildren) {
+          const chevron = document.createElement('span');
+          chevron.className = 'w-4 h-4 flex items-center justify-center text-[var(--muted-foreground)] text-[10px] transition-transform duration-150';
+          chevron.innerHTML = isExpanded ? '▼' : '▶';
+          left.appendChild(chevron);
+        } else {
+          const spacer = document.createElement('span');
+          spacer.className = 'w-4 h-4 flex items-center justify-center text-[var(--muted-foreground)] opacity-30 text-[10px]';
+          spacer.innerHTML = node.isFile ? '•' : '○';
+          left.appendChild(spacer);
+        }
+
+        // Folder/File Icon
+        const icon = document.createElement('span');
+        icon.className = 'text-xs shrink-0';
+        if (node.isFile) {
+          icon.innerHTML = `<svg class="w-3.5 h-3.5 text-[var(--muted-foreground)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>`;
+        } else {
+          icon.innerHTML = `<svg class="w-4 h-4 text-[#3d38f5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>`;
+        }
+        left.appendChild(icon);
+
+        // Name
+        const name = document.createElement('span');
+        name.className = `mono text-xs sm:text-sm font-semibold truncate ${node.isFile ? 'text-[var(--foreground)] opacity-90' : 'text-[var(--foreground)]'}`;
+        name.textContent = node.name;
+        left.appendChild(name);
+
+        // Badge
+        if (node.badge) {
+          const badge = document.createElement('span');
+          badge.className = `text-[10px] px-2 py-0.5 rounded-md font-medium border shrink-0 ${node.badgeColor || 'bg-zinc-500/10 text-zinc-600 border-zinc-500/20'}`;
+          badge.textContent = node.badge;
+          left.appendChild(badge);
+        }
+
+        row.appendChild(left);
+
+        // Right section (description)
+        if (node.desc) {
+          const desc = document.createElement('span');
+          desc.className = 'text-[11px] sm:text-xs text-[var(--muted-foreground)] truncate hidden md:inline-block max-w-xs text-right shrink-0';
+          desc.textContent = node.desc;
+          row.appendChild(desc);
+        }
+
+        nodeEl.appendChild(row);
+
+        // Children Container
+        if (hasChildren) {
+          const childContainer = document.createElement('div');
+          childContainer.className = `children-container tree-line ${isExpanded ? 'block' : 'hidden'}`;
+          renderTree(node.children, childContainer, depth + 1, fullPath);
+          nodeEl.appendChild(childContainer);
+
+          // Click handler to toggle
+          row.addEventListener('click', (e) => {
+            const isCurrentlyHidden = childContainer.classList.contains('hidden');
+            if (isCurrentlyHidden) {
+              childContainer.classList.remove('hidden');
+              childContainer.classList.add('block');
+              row.querySelector('span').innerHTML = '▼';
+            } else {
+              childContainer.classList.add('hidden');
+              childContainer.classList.remove('block');
+              row.querySelector('span').innerHTML = '▶';
+            }
+          });
+        } else {
+          // Click file to copy path
+          row.addEventListener('click', () => {
+            navigator.clipboard.writeText(fullPath).then(() => {
+              showToast(`Path "${fullPath}" disalin!`);
+            });
+          });
+        }
+
+        container.appendChild(nodeEl);
+      });
+    }
+
+    function childMatches(node, query) {
+      if (!node.children) return false;
+      return node.children.some(child => 
+        child.name.toLowerCase().includes(query) ||
+        (child.desc && child.desc.toLowerCase().includes(query)) ||
+        (child.badge && child.badge.toLowerCase().includes(query)) ||
+        childMatches(child, query)
+      );
+    }
+
+    function updateView() {
+      const container = document.getElementById('tree-container');
+      container.innerHTML = '';
+      renderTree(treeData, container, 0, '');
+
+      // Update match count
+      const totalVisible = container.querySelectorAll('.node-row').length;
+      document.getElementById('match-counter').textContent = `Menampilkan ${totalVisible} item terdaftar`;
+    }
+
+    function setAllExpanded(expanded) {
+      function traverse(nodes) {
+        nodes.forEach(n => {
+          n.expanded = expanded;
+          if (n.children) traverse(n.children);
+        });
+      }
+      traverse(treeData);
+      updateView();
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.remove('translate-y-12', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.add('translate-y-12', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 2000);
+    }
+
+    // Event Listeners
+    document.getElementById('btn-expand-all').addEventListener('click', () => setAllExpanded(true));
+    document.getElementById('btn-collapse-all').addEventListener('click', () => setAllExpanded(false));
+
+    document.getElementById('search-input').addEventListener('input', (e) => {
+      searchQuery = e.target.value.trim().toLowerCase();
+      updateView();
+    });
+
+    document.querySelectorAll('.filter-chip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-chip').forEach(b => {
+          b.className = 'filter-chip text-xs px-3 py-2 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] font-medium whitespace-nowrap transition';
+        });
+        btn.className = 'filter-chip active text-xs px-3 py-2 rounded-xl border border-[#3d38f5] bg-[#3d38f5] text-white font-medium whitespace-nowrap transition';
+        currentFilter = btn.dataset.filter;
+        updateView();
+      });
+    });
+
+    // Initial Render
+    updateView();
+  </script>
+</body>
+</html>

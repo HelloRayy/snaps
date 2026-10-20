@@ -122,3 +122,5 @@ waktu.txt
 assets/data/students_registry_smkn8.json
 supabase/migrations/seed_all_student_registry.sql
 docs-secret/
+.vercel
+.env*
