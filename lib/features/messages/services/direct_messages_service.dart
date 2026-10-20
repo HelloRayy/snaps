@@ -97,10 +97,40 @@ class DirectMessagesService extends ChangeNotifier {
       }
     }
 
-    final senderName = targetConv?.user.name.isNotEmpty == true
-        ? targetConv!.user.name
-        : (targetConv?.user.username.isNotEmpty == true ? '@${targetConv!.user.username}' : 'Pesan Masuk');
-    final senderAvatar = targetConv?.user.avatar;
+    String senderName = '';
+    String? senderAvatar;
+
+    // 1. Coba ambil dari targetConv jika targetConv adalah pengirim pesan
+    if (targetConv != null && targetConv.user.id == senderId) {
+      senderName = targetConv.user.name.isNotEmpty
+          ? targetConv.user.name
+          : (targetConv.user.username.isNotEmpty ? '@${targetConv.user.username}' : '');
+      senderAvatar = targetConv.user.avatar;
+    }
+
+    // 2. Jika nama/avatar belum valid, fetch langsung profil pengirim asli berdasarkan senderId
+    if (senderName.isEmpty || senderAvatar == null || senderAvatar.isEmpty) {
+      try {
+        final profile = await SupabaseService.instance.getProfile(senderId);
+        if (profile != null) {
+          final dName = (profile['display_name'] as String?)?.trim();
+          final fName = (profile['full_name'] as String?)?.trim();
+          final uName = (profile['username'] as String?)?.trim();
+          if (senderName.isEmpty) {
+            senderName = (dName != null && dName.isNotEmpty)
+                ? dName
+                : (fName != null && fName.isNotEmpty
+                    ? fName
+                    : (uName != null && uName.isNotEmpty ? '@$uName' : 'Pesan Masuk'));
+          }
+          senderAvatar = (profile['avatar_url'] as String?)?.trim();
+        }
+      } catch (e) {
+        debugPrint('[DM Service] Error fetching sender profile for notification: $e');
+      }
+    }
+
+    if (senderName.isEmpty) senderName = 'Pesan Masuk';
 
     GlobalNotificationService.instance.showDmBanner(
       messageId: messageId,

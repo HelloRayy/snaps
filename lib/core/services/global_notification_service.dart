@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -296,15 +298,24 @@ class GlobalNotificationService {
           // Pastikan unread badge dan list percakapan ter-update
           DirectMessagesService.instance.loadConversations();
 
-          final senderAvatar = message.data['sender_avatar']?.toString() ??
+          String? senderAvatar = message.data['sender_avatar']?.toString() ??
               message.notification?.android?.imageUrl ??
               message.notification?.apple?.imageUrl;
+
+          final senderId = message.data['sender_id']?.toString();
+          if ((senderAvatar == null || senderAvatar.isEmpty) && senderId != null && senderId.isNotEmpty) {
+            try {
+              final prof = await SupabaseService.instance.getProfile(senderId);
+              senderAvatar = (prof?['avatar_url'] as String?)?.trim();
+            } catch (_) {}
+          }
 
           _showOsNotification(
             title: title,
             message: body,
             payloadJson: jsonEncode(message.data),
             channelId: 'snaps_direct_messages',
+            avatarUrl: senderAvatar,
           );
 
           showTopBanner(
@@ -626,12 +637,22 @@ class GlobalNotificationService {
         final title = record['title']?.toString() ?? 'Pengumuman Baru';
         final message = record['message']?.toString() ?? '';
         final type = record['type']?.toString() ?? 'system';
+        final actorId = record['actor_id']?.toString();
+        String? actorAvatar;
+        if (actorId != null && actorId.isNotEmpty) {
+          try {
+            SupabaseService.instance.getProfile(actorId).then((prof) {
+              actorAvatar = (prof?['avatar_url'] as String?)?.trim();
+            });
+          } catch (_) {}
+        }
 
         // 1. Post notification to Android OS Status Bar with BigTextStyle
         _showOsNotification(
           title: title,
           message: message,
           payloadJson: jsonEncode(record),
+          avatarUrl: actorAvatar,
         );
 
         // 2. Show floating in-app banner with direct tap action
@@ -639,6 +660,7 @@ class GlobalNotificationService {
           title: title,
           message: message,
           type: type,
+          avatarUrl: actorAvatar,
           onTap: () {
             final ctx = NavigationService.currentContext;
             if (ctx != null) {
@@ -653,11 +675,28 @@ class GlobalNotificationService {
     }
   }
 
+  Future<ByteArrayAndroidBitmap?> _fetchLargeIconBitmap(String? url) async {
+    if (url == null || url.isEmpty || !url.startsWith('http')) return null;
+    try {
+      final client = HttpClient()..connectionTimeout = const Duration(seconds: 2);
+      final request = await client.getUrl(Uri.parse(url));
+      final response = await request.close();
+      if (response.statusCode == 200) {
+        final bytes = await consolidateHttpClientResponseBytes(response);
+        if (bytes.isNotEmpty) {
+          return ByteArrayAndroidBitmap(bytes);
+        }
+      }
+    } catch (_) {}
+    return null;
+  }
+
   Future<void> _showOsNotification({
     required String title,
     required String message,
     String? payloadJson,
     String? channelId,
+    String? avatarUrl,
   }) async {
     try {
       bool isDm = channelId == 'snaps_direct_messages';
@@ -722,6 +761,11 @@ class GlobalNotificationService {
           ? 'Notifikasi pesan langsung dari pembeli dan penjual Snaps.'
           : 'Notifikasi broadcast pengumuman resmi dan aktivitas interaksi Snaps.';
 
+      ByteArrayAndroidBitmap? largeIconBitmap;
+      if (avatarUrl != null && avatarUrl.isNotEmpty && avatarUrl.startsWith('http')) {
+        largeIconBitmap = await _fetchLargeIconBitmap(avatarUrl);
+      }
+
       final androidDetails = AndroidNotificationDetails(
         effectiveChannelId,
         effectiveChannelName,
@@ -732,6 +776,7 @@ class GlobalNotificationService {
         enableVibration: true,
         playSound: true,
         icon: '@mipmap/ic_launcher',
+        largeIcon: largeIconBitmap,
         actions: actions,
       );
 
