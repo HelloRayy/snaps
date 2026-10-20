@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:snapan_market/core/components/avatar/default_profile_avatar.dart';
 import 'package:snapan_market/core/components/update_info_bottom_sheet.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/navigation/navigation_service.dart';
@@ -295,6 +296,10 @@ class GlobalNotificationService {
           // Pastikan unread badge dan list percakapan ter-update
           DirectMessagesService.instance.loadConversations();
 
+          final senderAvatar = message.data['sender_avatar']?.toString() ??
+              message.notification?.android?.imageUrl ??
+              message.notification?.apple?.imageUrl;
+
           _showOsNotification(
             title: title,
             message: body,
@@ -306,6 +311,7 @@ class GlobalNotificationService {
             title: title,
             message: body,
             type: 'dm',
+            avatarUrl: senderAvatar,
             onTap: () {
               final ctx = NavigationService.currentContext;
               if (ctx != null && conversationId.isNotEmpty) {
@@ -654,14 +660,6 @@ class GlobalNotificationService {
     String? channelId,
   }) async {
     try {
-      final bigTextStyle = BigTextStyleInformation(
-        message,
-        contentTitle: title,
-        summaryText: 'Snaps',
-        htmlFormatContent: false,
-        htmlFormatContentTitle: false,
-      );
-
       bool isDm = channelId == 'snaps_direct_messages';
       List<AndroidNotificationAction>? actions;
       if (payloadJson != null && payloadJson.isNotEmpty) {
@@ -709,6 +707,14 @@ class GlobalNotificationService {
           }
         } catch (_) {}
       }
+
+      final bigTextStyle = BigTextStyleInformation(
+        message,
+        contentTitle: title,
+        summaryText: isDm ? title : 'Snaps',
+        htmlFormatContent: false,
+        htmlFormatContentTitle: false,
+      );
 
       final effectiveChannelId = channelId ?? (isDm ? 'snaps_direct_messages' : 'snaps_announcements');
       final effectiveChannelName = isDm ? 'Pesan Masuk (DM)' : 'Pengumuman & Notifikasi Snaps';
@@ -772,6 +778,7 @@ class GlobalNotificationService {
     required String conversationId,
     required String senderName,
     required String messageText,
+    String? senderAvatar,
   }) {
     if (isDmRecentlyHandled(conversationId, messageText)) return;
     registerHandledDm(conversationId, messageText);
@@ -782,6 +789,7 @@ class GlobalNotificationService {
       title: senderName.isNotEmpty ? senderName : 'Pesan Masuk',
       message: messageText,
       type: 'dm',
+      avatarUrl: senderAvatar,
       onTap: () {
         final ctx = NavigationService.currentContext;
         if (ctx != null && conversationId.isNotEmpty) {
@@ -802,6 +810,7 @@ class GlobalNotificationService {
     required String title,
     required String message,
     required String type,
+    String? avatarUrl,
     VoidCallback? onTap,
   }) {
     final context = NavigationService.currentContext;
@@ -819,6 +828,7 @@ class GlobalNotificationService {
         title: title,
         message: message,
         type: type,
+        avatarUrl: avatarUrl,
         onDismiss: () {
           _currentBannerEntry?.remove();
           _currentBannerEntry = null;
@@ -851,6 +861,7 @@ class _FloatingNotificationBanner extends StatefulWidget {
   final String title;
   final String message;
   final String type;
+  final String? avatarUrl;
   final VoidCallback onDismiss;
   final VoidCallback onTap;
 
@@ -858,6 +869,7 @@ class _FloatingNotificationBanner extends StatefulWidget {
     required this.title,
     required this.message,
     required this.type,
+    this.avatarUrl,
     required this.onDismiss,
     required this.onTap,
   });
@@ -946,40 +958,39 @@ class _FloatingNotificationBannerState extends State<_FloatingNotificationBanner
                   ),
                   child: Row(
                     children: [
-                      // Announcement / Notification Icon Badge
-                      Container(
-                        width: 38.0,
-                        height: 38.0,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: widget.isDm
-                              ? const LinearGradient(
-                                  colors: [Color(0xFF0284C7), Color(0xFF2563EB)],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                )
-                              : widget.isSystem
-                                  ? const LinearGradient(
-                                      colors: [Color(0xFF3D38F5), Color(0xFF6366F1)],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    )
-                                  : const LinearGradient(
-                                      colors: [Color(0xFF10B981), Color(0xFF059669)],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    ),
+                      // Sender Avatar or Type Icon Badge
+                      if ((widget.avatarUrl != null && widget.avatarUrl!.isNotEmpty) || widget.isDm)
+                        AppAvatar(
+                          avatarUrl: widget.avatarUrl,
+                          size: 38.0,
+                          name: widget.title,
+                        )
+                      else
+                        Container(
+                          width: 38.0,
+                          height: 38.0,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: widget.isSystem
+                                ? const LinearGradient(
+                                    colors: [Color(0xFF3D38F5), Color(0xFF6366F1)],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  )
+                                : const LinearGradient(
+                                    colors: [Color(0xFF10B981), Color(0xFF059669)],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                          ),
+                          child: Icon(
+                            widget.isSystem
+                                ? CupertinoIcons.speaker_2_fill
+                                : CupertinoIcons.bell_fill,
+                            color: Colors.white,
+                            size: 18.0,
+                          ),
                         ),
-                        child: Icon(
-                          widget.isDm
-                              ? CupertinoIcons.chat_bubble_2_fill
-                              : widget.isSystem
-                                  ? CupertinoIcons.speaker_2_fill
-                                  : CupertinoIcons.bell_fill,
-                          color: Colors.white,
-                          size: 18.0,
-                        ),
-                      ),
                       const SizedBox(width: 12.0),
 
                       // Text Info

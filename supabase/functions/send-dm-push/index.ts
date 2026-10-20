@@ -160,16 +160,17 @@ Deno.serve(async (req) => {
       });
     }
 
-    // 2. Ambil profil pengirim untuk nama di notifikasi
+    // 2. Ambil profil pengirim untuk nama dan foto profil di notifikasi
     const { data: senderProfile } = await supabase
       .from("profiles")
-      .select("full_name, username")
+      .select("full_name, username, avatar_url")
       .eq("id", senderId)
       .single();
 
     const senderName =
       senderProfile?.full_name ||
       (senderProfile?.username ? `@${senderProfile.username}` : "Seseorang");
+    const senderAvatar = (senderProfile?.avatar_url || "").trim();
 
     // Potong cuplikan pesan maksimal 60 karakter sesuai keputusan SNAPS-71
     const cleanText = rawText.trim();
@@ -220,12 +221,14 @@ Deno.serve(async (req) => {
               notification: {
                 title: senderName,
                 body: messagePreview,
+                ...(senderAvatar.startsWith("http") ? { image: senderAvatar } : {}),
               },
               data: {
                 type: "dm",
                 conversation_id: conversationId,
                 sender_id: senderId,
                 sender_name: senderName,
+                sender_avatar: senderAvatar,
                 message: messagePreview,
               },
               android: {
@@ -235,6 +238,7 @@ Deno.serve(async (req) => {
                   channel_id: "snaps_direct_messages",
                   click_action: "FLUTTER_NOTIFICATION_CLICK",
                   tag: `dm_${conversationId}`,
+                  ...(senderAvatar.startsWith("http") ? { image: senderAvatar } : {}),
                 },
               },
             },

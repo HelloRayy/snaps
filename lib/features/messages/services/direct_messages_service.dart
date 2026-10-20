@@ -100,11 +100,13 @@ class DirectMessagesService extends ChangeNotifier {
     final senderName = targetConv?.user.name.isNotEmpty == true
         ? targetConv!.user.name
         : (targetConv?.user.username.isNotEmpty == true ? '@${targetConv!.user.username}' : 'Pesan Masuk');
+    final senderAvatar = targetConv?.user.avatar;
 
     GlobalNotificationService.instance.showDmBanner(
       messageId: messageId,
       conversationId: convId,
       senderName: senderName,
+      senderAvatar: senderAvatar,
       messageText: messageText,
     );
   }
