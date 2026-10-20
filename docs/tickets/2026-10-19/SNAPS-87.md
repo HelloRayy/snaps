@@ -4,7 +4,7 @@
 > - **Sequence**: SNAPS-87
 > - **Priority**: MEDIUM
 > - **Domain**: `gestures / zoom / lightbox / pinch_scale / interactive_viewer`
-> - **Status**: Ticket (Unstarted)
+> - **Status**: DONE (Implemented in commit 2d59d42)
 
 ---
 
@@ -76,8 +76,8 @@
 
 ## 4. Definition of Done (DoD)
 
-- [ ] Pinch-to-zoom dengan dua jari pada gambar lightbox berjalan mulus tanpa memicu pergeseran vertikal atau penutupan dialog yang tidak diinginkan.
-- [ ] Ketuk dua kali (*double tap*) pada gambar memperbesar gambar ke 2.5x tepat di titik sentuh.
-- [ ] Ketuk dua kali lagi saat kondisi membesar mengembalikan gambar ke ukuran semula (1.0x).
-- [ ] Swipe-to-dismiss vertikal satu jari tetap berfungsi sempurna saat gambar berada pada posisi normal (skala 1.0x).
-- [ ] Lolos static analysis `flutter analyze` dengan 0 errors.
+- [x] Pinch-to-zoom dengan dua jari pada gambar lightbox berjalan mulus tanpa memicu pergeseran vertikal atau penutupan dialog yang tidak diinginkan.
+- [x] Ketuk dua kali (*double tap*) pada gambar memperbesar gambar ke 2.5x tepat di titik sentuh.
+- [x] Ketuk dua kali lagi saat kondisi membesar mengembalikan gambar ke ukuran semula (1.0x).
+- [x] Swipe-to-dismiss vertikal satu jari tetap berfungsi sempurna saat gambar berada pada posisi normal (skala 1.0x).
+- [x] Lolos static analysis `flutter analyze` dengan 0 errors.

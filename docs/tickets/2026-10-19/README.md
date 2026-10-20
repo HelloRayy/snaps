@@ -11,7 +11,7 @@ Direktori ini memuat tiket spesifikasi teknis dan panduan pengerjaan untuk tiket
 | **SNAPS-84** | `feat(mention): add tag mention @username in many pages` | `mention / autocomplete / profile / chat / feed` | HIGH | `TICKET` | [`SNAPS-84.md`](./SNAPS-84.md) |
 | **SNAPS-85** | `feat(mascot-icon): add mascot icon access for public` | `mascot / flair / profile / create_post / permission` | MEDIUM | `TICKET` | [`SNAPS-85.md`](./SNAPS-85.md) |
 | **SNAPS-86** | `fix(dm-notif): fix direct message notif not realtime` | `chat / direct_messages / realtime / supabase / notification` | HIGH | `TICKET` | [`SNAPS-86.md`](./SNAPS-86.md) |
-| **SNAPS-87** | `fix(zoom-behaviour): fix zoom finger gesture` | `gestures / zoom / lightbox / pinch_scale / interactive_viewer` | MEDIUM | `TICKET` | [`SNAPS-87.md`](./SNAPS-87.md) |
+| **SNAPS-87** | `fix(zoom-behaviour): fix zoom finger gesture` | `gestures / zoom / lightbox / pinch_scale / interactive_viewer` | MEDIUM | `DONE` | [`SNAPS-87.md`](./SNAPS-87.md) |
 | **SNAPS-88** | `fix(OTA-script): issue OTA not worked at all` | `release / ota / scripts / supabase_storage / in_app_update` | HIGH | `DONE` | [`SNAPS-88.md`](./SNAPS-88.md) |
 
 ---
