@@ -2,6 +2,10 @@
 # =============================================================================
 # SIMULATOR PESAN DM UNTUK PENGUJIAN NOTIFIKASI DENGAN 1 HP FISIK
 # =============================================================================
+# PENTING:
+# Skrip ini mengunci pengirim secara MUTLAK ke akun resmi @snaps (ID: d3410370-...)
+# Dilarang keras memakai akun siswa/pengguna nyata lain sebagai pengirim tiruan!
+# =============================================================================
 # Penggunaan:
 #   ./scripts/simulate_incoming_dm.sh [target_username] [pesan]
 # Contoh:
@@ -13,11 +17,14 @@ set -e
 SUPABASE_URL="https://lcwsxldnoqjdfqxqcqja.supabase.co"
 SERVICE_ROLE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxjd3N4bGRub3FqZGZxeHFjcWphIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NjA1NjEwNCwiZXhwIjoyMTAxNjMyMTA0fQ.Hb48YZ42zA7aOjVbE2a2E8XvplchlGLwJGYmyAh8Tuw"
 
+# Akun resmi sistem @snaps sebagai pengirim tunggal yang diizinkan untuk simulasi
+SNAPS_SENDER_ID="d3410370-2df1-425d-8c23-3ae980dd5d38"
+
 TARGET_USERNAME="${1:-radityaray}"
-MESSAGE_TEXT="${2:-Halo! Ini simulasi pesan masuk saat HP terkunci.}"
+MESSAGE_TEXT="${2:-Halo! Ini simulasi pesan masuk dari @snaps.}"
 
 echo "=========================================================="
-echo "Simulasi Pengiriman Pesan DM ke @${TARGET_USERNAME}"
+echo "Simulasi DM Terkunci (@snaps -> @${TARGET_USERNAME})"
 echo "=========================================================="
 
 # 1. Cari user_id dari target_username
@@ -33,36 +40,44 @@ if [ -z "$RECIPIENT_ID" ]; then
   exit 1
 fi
 
+echo "Pengirim Resmi: @snaps (Official Snaps System) [${SNAPS_SENDER_ID}]"
 echo "Penerima      : @${TARGET_USERNAME} (${RECIPIENT_NAME}) [${RECIPIENT_ID}]"
 
-# 2. Cari percakapan aktif yang melibatkan penerima
-CONV_JSON=$(curl -s -X GET "${SUPABASE_URL}/rest/v1/conversations?or=(participant_one.eq.${RECIPIENT_ID},participant_two.eq.${RECIPIENT_ID})&select=id,participant_one,participant_two&limit=1" \
+# 2. Cari percakapan resmi KHUSUS antara @snaps dan penerima
+CONV_JSON=$(curl -s -X GET "${SUPABASE_URL}/rest/v1/conversations?or=(and(participant_one.eq.${SNAPS_SENDER_ID},participant_two.eq.${RECIPIENT_ID}),and(participant_one.eq.${RECIPIENT_ID},participant_two.eq.${SNAPS_SENDER_ID}))&select=id&limit=1" \
   -H "apikey: ${SERVICE_ROLE_KEY}" \
   -H "Authorization: Bearer ${SERVICE_ROLE_KEY}")
 
 CONV_ID=$(echo "$CONV_JSON" | grep -o '"id":"[^"]*' | head -n 1 | cut -d'"' -f4)
-P1=$(echo "$CONV_JSON" | grep -o '"participant_one":"[^"]*' | head -n 1 | cut -d'"' -f4)
-P2=$(echo "$CONV_JSON" | grep -o '"participant_two":"[^"]*' | head -n 1 | cut -d'"' -f4)
+
+# Jika percakapan resmi belum ada, buat percakapan resmi secara otomatis
+if [ -z "$CONV_ID" ]; then
+  echo "Membuat ruang percakapan baru antara @snaps dan @${TARGET_USERNAME}..."
+  NOW_UTC=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+  CREATE_CONV_RES=$(curl -s -X POST "${SUPABASE_URL}/rest/v1/conversations" \
+    -H "apikey: ${SERVICE_ROLE_KEY}" \
+    -H "Authorization: Bearer ${SERVICE_ROLE_KEY}" \
+    -H "Content-Type: application/json" \
+    -H "Prefer: return=representation" \
+    -d "{
+      \"participant_one\": \"${SNAPS_SENDER_ID}\",
+      \"participant_two\": \"${RECIPIENT_ID}\",
+      \"last_message_at\": \"${NOW_UTC}\"
+    }")
+  CONV_ID=$(echo "$CREATE_CONV_RES" | grep -o '"id":"[^"]*' | head -n 1 | cut -d'"' -f4)
+fi
 
 if [ -z "$CONV_ID" ]; then
-  echo "Error: Belum ada percakapan untuk @${TARGET_USERNAME}."
+  echo "Error: Gagal mendapatkan atau membuat ID percakapan resmi."
   exit 1
 fi
 
-# Tentukan pengirim (lawan bicara)
-if [ "$P1" = "$RECIPIENT_ID" ]; then
-  SENDER_ID="$P2"
-else
-  SENDER_ID="$P1"
-fi
-
 echo "Percakapan ID : ${CONV_ID}"
-echo "Pengirim (Lawan): ${SENDER_ID}"
 echo "Isi Pesan     : \"${MESSAGE_TEXT}\""
 echo "----------------------------------------------------------"
-echo "Menyuntikkan pesan ke tabel direct_messages..."
+echo "Menyuntikkan pesan resmi ke tabel direct_messages..."
 
-# 3. Insert pesan ke direct_messages (otomatis memicu trigger -> Edge Function -> FCM)
+# 3. Insert pesan ke direct_messages (otomatis memicu trigger -> Edge Function send-dm-push -> FCM)
 INSERT_RES=$(curl -s -X POST "${SUPABASE_URL}/rest/v1/direct_messages" \
   -H "apikey: ${SERVICE_ROLE_KEY}" \
   -H "Authorization: Bearer ${SERVICE_ROLE_KEY}" \
@@ -70,7 +85,7 @@ INSERT_RES=$(curl -s -X POST "${SUPABASE_URL}/rest/v1/direct_messages" \
   -H "Prefer: return=representation" \
   -d "{
     \"conversation_id\": \"${CONV_ID}\",
-    \"sender_id\": \"${SENDER_ID}\",
+    \"sender_id\": \"${SNAPS_SENDER_ID}\",
     \"message_text\": \"${MESSAGE_TEXT}\",
     \"is_read\": false
   }")
@@ -79,11 +94,12 @@ MSG_ID=$(echo "$INSERT_RES" | grep -o '"id":"[^"]*' | head -n 1 | cut -d'"' -f4)
 
 if [ -n "$MSG_ID" ]; then
   echo "Pesan ID      : ${MSG_ID}"
-  echo "Status        : BERHASIL DISUNTIKKAN KE SUPABASE!"
+  echo "Status        : BERHASIL DISUNTIKKAN DARI @snaps!"
   echo "----------------------------------------------------------"
   echo "Edge Function send-dm-push otomatis menembak FCM ke HP @${TARGET_USERNAME}."
-  echo "Periksa layar HP fisik Anda sekarang!"
+  echo "Periksa layar HP Anda sekarang!"
   echo "=========================================================="
 else
   echo "Respon gagal: ${INSERT_RES}"
+  exit 1
 fi
