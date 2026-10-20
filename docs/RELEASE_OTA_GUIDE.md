@@ -23,15 +23,17 @@ Sistem operasi Android (terutama Android 12, 13, 14, 15 pada Samsung OneUI, MIUI
 
 ## 🚀 2. Prosedur Rilis Cepat (Otomatis & Satu Perintah)
 
-Gunakan script root `update_release.sh` yang sudah dilengkapi auto-tagging, GitHub release hosting, dan inject REST API Supabase:
+Gunakan script tunggal `./scripts/auto_release.sh` (atau `./update_release.sh`) yang sudah dilengkapi auto-tagging, Supabase Storage Public CDN hosting, mirror GitHub Releases, dan inject REST API Supabase:
 
 ```bash
-./update_release.sh <VERSION_NAME> <VERSION_CODE> "<CHANGELOG>"
+./scripts/auto_release.sh <VERSION_NAME> <VERSION_CODE> "<CHANGELOG>"
+# Atau auto-bump versi:
+./scripts/auto_release.sh auto "<CHANGELOG>"
 ```
 
 ### Contoh:
 ```bash
-./update_release.sh 1.0.22 24 "Penyempurnaan flow download OTA anti-stuck & perbaikan downgrade protection versionCode"
+./scripts/auto_release.sh 1.0.39 42 "Perbaikan in-app update fail-safe browser & stabilitas rilis beta"
 ```
 
 ### Apa yang Dilakukan Script Ini Secara Otomatis:

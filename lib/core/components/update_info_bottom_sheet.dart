@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ota_update/ota_update.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:snapan_market/core/models/app_version_model.dart';
 import 'package:snapan_market/core/services/app_update_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -56,6 +57,18 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
   int _downloadProgress = 0;
   String? _errorMessage;
   bool _isInstalling = false;
+
+  Future<void> _openInBrowser() async {
+    HapticFeedback.lightImpact();
+    try {
+      final uri = Uri.parse(widget.update.downloadUrl);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      }
+    } catch (e) {
+      debugPrint('Error launching download URL: $e');
+    }
+  }
 
   void _startOtaUpdate() {
     if (_isDownloading) return;
@@ -370,14 +383,11 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                         children: [
                           Expanded(
                             child: ElevatedButton.icon(
-                              onPressed: () {
-                                HapticFeedback.mediumImpact();
-                                SystemNavigator.pop();
-                              },
-                              icon: const Icon(Icons.power_settings_new_rounded, size: 16.0),
-                              label: const Text('Keluar dari Aplikasi'),
+                              onPressed: _openInBrowser,
+                              icon: const Icon(Icons.open_in_browser_rounded, size: 16.0),
+                              label: const Text('Unduh Manual via Browser'),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFB91C1C),
+                                backgroundColor: AppColors.primary,
                                 foregroundColor: Colors.white,
                                 elevation: 0,
                                 visualDensity: VisualDensity.compact,
@@ -385,9 +395,25 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
                                 textStyle: const TextStyle(
-                                  fontSize: 12.5,
+                                  fontSize: 12.0,
                                   fontWeight: FontWeight.w700,
                                 ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8.0),
+                          IconButton(
+                            onPressed: () {
+                              HapticFeedback.mediumImpact();
+                              SystemNavigator.pop();
+                            },
+                            tooltip: 'Keluar dari Aplikasi',
+                            icon: const Icon(Icons.power_settings_new_rounded, size: 18.0),
+                            style: IconButton.styleFrom(
+                              backgroundColor: const Color(0xFFB91C1C),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
                               ),
                             ),
                           ),
@@ -470,10 +496,43 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                 ),
               ),
 
-              if (!widget.update.isMandatory && !_isDownloading && !_isInstalling) ...[
+              if (!_isDownloading && !_isInstalling) ...[
                 const SizedBox(height: 8.0),
+                Center(
+                  child: InkWell(
+                    onTap: _openInBrowser,
+                    borderRadius: BorderRadius.circular(6.0),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.cloud_download_outlined,
+                            size: 13.0,
+                            color: isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B),
+                          ),
+                          const SizedBox(width: 4.0),
+                          Text(
+                            'Kendala pembaruan? Unduh via browser',
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w500,
+                              color: isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B),
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+
+              if (!widget.update.isMandatory && !_isDownloading && !_isInstalling) ...[
+                const SizedBox(height: 4.0),
                 SizedBox(
-                  height: 44.0,
+                  height: 40.0,
                   child: TextButton(
                     onPressed: () {
                       AppUpdateService.instance.dismissUpdate(widget.update.versionCode);

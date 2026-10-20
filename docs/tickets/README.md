@@ -16,6 +16,7 @@
 | **SNAPS-85** | `feat(mascot-icon): add mascot icon access for public` | `mascot / flair / profile / create_post / permission` | MEDIUM | `TICKET` | [`SNAPS-85.md`](./2026-10-19/SNAPS-85.md) |
 | **SNAPS-86** | `fix(dm-notif): fix direct message notif not realtime` | `chat / direct_messages / realtime / supabase / notification` | HIGH | `TICKET` | [`SNAPS-86.md`](./2026-10-19/SNAPS-86.md) |
 | **SNAPS-87** | `fix(zoom-behaviour): fix zoom finger gesture` | `gestures / zoom / lightbox / pinch_scale / interactive_viewer` | MEDIUM | `TICKET` | [`SNAPS-87.md`](./2026-10-19/SNAPS-87.md) |
+| **SNAPS-88** | `fix(OTA-script): issue OTA not worked at all` | `release / ota / scripts / supabase_storage / in_app_update` | HIGH | `DONE` | [`SNAPS-88.md`](./2026-10-19/SNAPS-88.md) |
 
 ---
 
