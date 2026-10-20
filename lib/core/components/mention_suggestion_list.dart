@@ -22,9 +22,11 @@ class MentionSuggestionList extends StatefulWidget {
 }
 
 class _MentionSuggestionListState extends State<MentionSuggestionList> {
+  static final Map<String, List<Map<String, dynamic>>> _memoryCache = {};
   Timer? _debounceTimer;
   List<Map<String, dynamic>> _profiles = [];
   bool _isLoading = false;
+  int _currentRequestId = 0;
 
   @override
   void initState() {
@@ -37,6 +39,16 @@ class _MentionSuggestionListState extends State<MentionSuggestionList> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.query != widget.query) {
       _debounceTimer?.cancel();
+      final clean = widget.query.trim().toLowerCase();
+      // Instant cache hit bypasses debounce delay completely
+      if (_memoryCache.containsKey(clean)) {
+        setState(() {
+          _profiles = _memoryCache[clean]!;
+          _isLoading = false;
+        });
+        return;
+      }
+
       _debounceTimer = Timer(const Duration(milliseconds: 150), () {
         if (mounted) {
           _fetchUsers(widget.query);
@@ -53,10 +65,21 @@ class _MentionSuggestionListState extends State<MentionSuggestionList> {
 
   Future<void> _fetchUsers(String query) async {
     if (!mounted) return;
+    final clean = query.trim().toLowerCase();
+
+    // Check memory cache first
+    if (_memoryCache.containsKey(clean)) {
+      setState(() {
+        _profiles = _memoryCache[clean]!;
+        _isLoading = false;
+      });
+      return;
+    }
+
+    final requestId = ++_currentRequestId;
     setState(() => _isLoading = true);
 
     try {
-      final clean = query.trim();
       List<Map<String, dynamic>> results;
       if (clean.isEmpty) {
         results = await SupabaseService.instance.fetchSuggestedProfiles(limit: 6);
@@ -64,14 +87,21 @@ class _MentionSuggestionListState extends State<MentionSuggestionList> {
         results = await SupabaseService.instance.searchProfiles(clean);
       }
 
-      if (mounted) {
-        setState(() {
-          _profiles = results;
-          _isLoading = false;
-        });
+      // Discard stale out-of-order network responses
+      if (!mounted || requestId != _currentRequestId) return;
+
+      // Populate memory cache (cap size to 50 entries to avoid RAM bloat)
+      if (_memoryCache.length >= 50) {
+        _memoryCache.remove(_memoryCache.keys.first);
       }
+      _memoryCache[clean] = results;
+
+      setState(() {
+        _profiles = results;
+        _isLoading = false;
+      });
     } catch (e) {
-      if (mounted) {
+      if (mounted && requestId == _currentRequestId) {
         setState(() {
           _profiles = [];
           _isLoading = false;

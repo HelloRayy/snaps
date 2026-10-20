@@ -83,6 +83,7 @@ class MentionTextSpanHelper {
         final cleanUsername = coreText.substring(1);
         recognizer = TapGestureRecognizer()
           ..onTap = () {
+            if (!context.mounted) return;
             if (onUserClick != null) {
               onUserClick(cleanUsername);
             } else {
