@@ -12,6 +12,7 @@
 - **Keamanan & Suspensi**: Validasi `SuspensionService.instance.getCurrentUserSuspensionStatus()` pasca-login. Jika ditangguhkan, paksa logout dan tampilkan banner/screen akun suspend.
 - **Pemisahan Lapisan**: Dilarang menjalankan query Supabase langsung di dalam method `build()`. Delegasikan ke Controller atau Service.
 - **Batas Ukuran File**: Target $\le 250$ baris (hard cap 300). Dilarang helper `_buildHeader()`, `_buildCard()` monolitik di file screen. Pecah selalu ke subkomponen.
+- **Pencegahan Salah Sasaran Push Notification (Pelajaran SNAPS-86)**: Dilarang blind query (`limit=1`) untuk testing notifikasi atau mutasi. Wajib mengunci identitas akun testing penguji (`@radityaray`). Dilarang mengeksekusi skrip testing/push tanpa perintah eksplisit pengguna.
 
 ---
 

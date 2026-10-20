@@ -67,3 +67,9 @@
       - Jika task mengubah alur data/state: Baca pasangan [Parent Orchestrator / Controller] + [Leaf Component] sekaligus dalam 1 batch call untuk menjaga kontrak parameter.
     - **Pre-Commit Guard**: Skrip `./scripts/verify-agent-map.sh` otomatis memvalidasi manifest di pre-commit hook untuk mencegah path stale.
 
+13. **Pencegahan Salah Sasaran Push Notification & Simulasi Data (Pelajaran SNAPS-86)**:
+    - **Dilarang Blind Query (`limit=1`)**: Jangan pernah mengirim notifikasi uji coba atau membuat skrip pengujian yang menargetkan sembarang pengguna di database (`limit=1`).
+    - **Kunci Target Akun Penguji**: Skrip testing WAJIB mengunci akun penguji secara eksplisit (misal `@radityaray`) agar tidak salah sasaran ke HP pengguna nyata.
+    - **Dilarang Eksekusi Tanpa Izin**: Jangan pernah mengeksekusi skrip simulasi/injeksi push notification tanpa perintah eksplisit ("tembak"/"eksekusi") dari pengguna.
+
+

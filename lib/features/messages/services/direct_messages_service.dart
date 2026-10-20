@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:snapan-market/core/services/global_notification_service.dart';
-import 'package:snapan-market/core/services/supabase_service.dart';
-import 'package:snapan-market/features/messages/models/conversation_model.dart';
-import 'package:snapan-market/features/messages/models/chat_message_model.dart';
+import 'package:snapan_market/core/services/global_notification_service.dart';
+import 'package:snapan_market/core/services/supabase_service.dart';
+import 'package:snapan_market/features/messages/models/conversation_model.dart';
+import 'package:snapan_market/features/messages/models/chat_message_model.dart';
 
 /// Singleton service to manage live Direct Message conversations & history with Supabase Realtime
 class DirectMessagesService extends ChangeNotifier {

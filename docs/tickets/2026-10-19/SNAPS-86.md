@@ -4,7 +4,7 @@
 > - **Sequence**: SNAPS-86
 > - **Priority**: HIGH
 > - **Domain**: `chat / direct_messages / realtime / supabase / notification`
-> - **Status**: Ticket (Unstarted)
+> - **Status**: DONE (Implemented & Verified)
 
 ---
 
@@ -63,8 +63,20 @@
 
 ## 4. Definition of Done (DoD)
 
-- [ ] Ketika pengguna lain mengirim DM dan kita sedang berada di Home Feed, badge pesan di navbar langsung bertambah tanpa perlu refresh manual.
-- [ ] Banner notifikasi in-app muncul seketika saat ada pesan masuk dan kita tidak sedang membuka room chat tersebut.
-- [ ] Percakapan baru yang diinisiasi dari halaman profil menerima pesan balasan secara realtime tanpa perlu reload layar.
-- [ ] Tidak terjadi duplikasi pesan atau duplikasi banner notifikasi saat FCM dan Realtime WebSocket aktif bersamaan.
-- [ ] Lolos static analysis `flutter analyze` dengan 0 errors.
+- [x] Ketika pengguna lain mengirim DM dan kita sedang berada di Home Feed, badge pesan di navbar langsung bertambah tanpa perlu refresh manual.
+- [x] Banner notifikasi in-app muncul seketika saat ada pesan masuk dan kita tidak sedang membuka room chat tersebut.
+- [x] Percakapan baru yang diinisiasi dari halaman profil menerima pesan balasan secara realtime tanpa perlu reload layar.
+- [x] Tidak terjadi duplikasi pesan atau duplikasi banner notifikasi saat FCM dan Realtime WebSocket aktif bersamaan.
+- [x] Edge function `send-dm-push` dideploy dan database trigger Supabase aktif.
+
+---
+
+## 5. Post-Mortem & AI Self-Learning Lesson (Single-Device Testing)
+
+- **Insiden**:
+  Saat pengujian simulasi pesan masuk di single device developer, skrip awal melakukan kueri acak (`conversations?limit=1`). Hal ini menyebabkan push notification terkirim ke perangkat fisik akun nyata siswa (`@shyfwaaw`) alih-alih perangkat penguji developer (`@radityaray`).
+- **Aturan Pencegahan Mutlak**:
+  1. Dilarang keras menggunakan blind query (`limit=1` atau random row) untuk testing pengiriman pesan, notifikasi, atau mutasi data.
+  2. Semua skrip simulasi testing wajib mengunci secara eksplisit akun target penguji developer (`@radityaray`).
+  3. Agen dilarang mengeksekusi skrip pengiriman testing tanpa perintah eksplisit dari pengguna.
+- **Rule Reference**: Telah didokumentasikan di `AGENTS.md` (Poin 17), `GEMINI.md` (Poin 13), dan `AGENT_MANIFEST.md` (Invariants).

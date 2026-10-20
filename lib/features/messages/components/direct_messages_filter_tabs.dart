@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/features/messages/models/conversation_model.dart';
 import 'package:snapan_market/features/messages/services/direct_messages_service.dart';
 
 /// Horizontal carousel filter chips ("Obrolan", "Pembeli", "Belum Dibaca") for Direct Messages.
@@ -16,14 +17,14 @@ class DirectMessagesFilterTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final allConversations = DirectMessagesService.instance.conversations;
+    final List<ConversationModel> allConversations = DirectMessagesService.instance.conversations;
     final buyerUnreadCount = allConversations
         .where((c) => c.isRequest == true && c.unreadCount > 0)
-        .fold<int>(0, (acc, c) => acc + c.unreadCount);
+        .fold<int>(0, (int acc, ConversationModel c) => acc + c.unreadCount);
 
     final totalUnreadCount = allConversations
         .where((c) => c.unreadCount > 0)
-        .fold<int>(0, (acc, c) => acc + c.unreadCount);
+        .fold<int>(0, (int acc, ConversationModel c) => acc + c.unreadCount);
 
     final tabs = [
       (key: 'inbox', label: 'Obrolan', count: null),

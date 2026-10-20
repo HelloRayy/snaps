@@ -194,6 +194,19 @@
          - Agen AI yang hebat **bukanlah** yang selalu bilang "bisa" dan langsung mengotori codebase dengan *workaround* rapuh.
          - Agen AI harus berani memberikan **penolakan beralasan (*reasoned rejection*)**, mengedukasi pengguna secara transparan mengapa hal itu terjadi, dan mengarahkan ke cara pengujian yang benar (gunakan 2 perangkat fisik / browser terpisah).
 
+17. **Self-Learning AI Agent: Pencegahan Salah Sasaran Push Notification & Simulasi Data (Pelajaran Penting Kasus SNAPS-86)**:
+    - **Prinsip Utama: *"Never Blind-Dispatch Push Notifications or Mutations to Arbitrary Users"***:
+      Saat menguji push notification, background worker, atau simulasi pengiriman pesan di database:
+      1. **Dilarang Keras Blind Query (`limit=1` atau Random Row)**:
+         - Dilarang membuat atau menjalankan skrip simulasi testing yang mengambil sembarang data di tabel database (seperti `SELECT * FROM conversations LIMIT 1`).
+         - Kesalahan ini dapat mengirimkan notifikasi push palsu ke perangkat fisik pengguna nyata yang akunnya kebetulan berada di urutan teratas database.
+      2. **Kewajiban Penguncian Identitas Penguji (Developer Target Locking)**:
+         - Skrip pengujian WAJIB mengunci identitas penguji secara spesifik (berdasarkan `username` atau `user_id` akun testing developer, misal: `@radityaray`).
+         - Validasi terlebih dahulu bahwa token FCM tujuan adalah milik akun developer yang sedang aktif menguji.
+      3. **Larangan Keras Eksekusi Otomatis Tanpa Perintah Eksplisit**:
+         - Agen DILARANG mengeksekusi skrip pengujian notifikasi atau injeksi pesan ke database secara mandiri.
+         - Skrip hanya boleh disiapkan atau dijelaskan; eksekusi HANYA dilakukan jika ada perintah tegas ("tembak", "eksekusi", "jalankan skrip") dari pengguna.
+
 ---
 
 ## Flutter Architecture & Modular Structure (`lib/`)
