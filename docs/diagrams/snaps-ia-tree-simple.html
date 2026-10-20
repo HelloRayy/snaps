@@ -117,12 +117,12 @@
       <span class="badge">Information Architecture · SMKN 8 Semarang</span>
       <h1>Peta Arsitektur Informasi (IA Tree)</h1>
       <p class="desc">
-        Visualisasi hierarki navigasi aplikasi <strong>Snapan Market Mobile (sNaps)</strong>. Menghubungkan gerbang autentikasi, 5 tab utama antarmuka, serta modul transaksional COD dalam 3 tingkat hierarki yang ringkas dan bebas beban kognitif.
+        Visualisasi hierarki navigasi aplikasi <strong>Snapan Market Mobile (sNaps)</strong>. Menghubungkan gerbang autentikasi dan 5 tab utama antarmuka dalam hierarki yang ringkas dan bebas beban kognitif.
       </p>
     </div>
 
     <div class="canvas-card">
-      <svg viewBox="0 0 880 770" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 880 660" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
             <circle cx="1" cy="1" r="0.75" fill="#E2E8F0" />
@@ -133,149 +133,132 @@
         <rect width="100%" height="100%" fill="url(#grid)" />
 
         <!-- ================= KONEKTOR ROOT -> TIER 1 ================= -->
-        <!-- Garis keluar dari Root (200, 385) ke Bus Bar X=240 -->
-        <path d="M 200 385 L 240 385" fill="none" stroke="#94A3B8" stroke-width="1.5" />
-        <!-- Bus Bar Vertikal Tier 1 (X=240, dari Y=56 sampai Y=710) -->
-        <path d="M 240 56 L 240 710" fill="none" stroke="#94A3B8" stroke-width="1.5" />
+        <!-- Garis keluar dari Root (200, 331) ke Bus Bar X=240 -->
+        <path d="M 200 331 L 240 331" fill="none" stroke="#94A3B8" stroke-width="1.5" />
+        <!-- Bus Bar Vertikal Tier 1 (X=240, dari Y=59 sampai Y=603) -->
+        <path d="M 240 59 L 240 603" fill="none" stroke="#94A3B8" stroke-width="1.5" />
         <!-- Cabang siku masuk ke setiap kartu Tier 1 -->
-        <path d="M 240 56 L 270 56" fill="none" stroke="#94A3B8" stroke-width="1.5" />
-        <path d="M 240 160 L 270 160" fill="none" stroke="#94A3B8" stroke-width="1.5" />
-        <path d="M 240 270 L 270 270" fill="none" stroke="#94A3B8" stroke-width="1.5" />
-        <path d="M 240 375 L 270 375" fill="none" stroke="#94A3B8" stroke-width="1.5" />
-        <path d="M 240 480 L 270 480" fill="none" stroke="#94A3B8" stroke-width="1.5" />
-        <path d="M 240 585 L 270 585" fill="none" stroke="#94A3B8" stroke-width="1.5" />
-        <path d="M 240 690 L 270 690" fill="none" stroke="#94A3B8" stroke-width="1.5" />
+        <path d="M 240 59 L 270 59" fill="none" stroke="#94A3B8" stroke-width="1.5" />
+        <path d="M 240 163 L 270 163" fill="none" stroke="#94A3B8" stroke-width="1.5" />
+        <path d="M 240 273 L 270 273" fill="none" stroke="#94A3B8" stroke-width="1.5" />
+        <path d="M 240 383 L 270 383" fill="none" stroke="#94A3B8" stroke-width="1.5" />
+        <path d="M 240 493 L 270 493" fill="none" stroke="#94A3B8" stroke-width="1.5" />
+        <path d="M 240 603 L 270 603" fill="none" stroke="#94A3B8" stroke-width="1.5" />
 
         <!-- ================= KONEKTOR TIER 1 -> TIER 2 ================= -->
         <!-- 1. Auth -> Sub -->
-        <path d="M 450 56 L 490 56 L 490 38 L 520 38" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
-        <path d="M 490 56 L 490 74 L 520 74" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
+        <path d="M 450 59 L 490 59 L 490 40 L 520 40" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
+        <path d="M 490 59 L 490 76 L 520 76" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
 
         <!-- 2. Beranda -> Sub -->
-        <path d="M 450 160 L 490 160 L 490 124 L 520 124" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
-        <path d="M 490 160 L 520 160" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
-        <path d="M 490 160 L 490 196 L 520 196" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
+        <path d="M 450 163 L 490 163 L 490 130 L 520 130" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
+        <path d="M 490 163 L 520 163" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
+        <path d="M 490 163 L 490 196 L 520 196" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
 
         <!-- 3. Jelajah -> Sub -->
-        <path d="M 450 270 L 490 270 L 490 252 L 520 252" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
-        <path d="M 490 270 L 490 288 L 520 288" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
+        <path d="M 450 273 L 490 273 L 490 254 L 520 254" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
+        <path d="M 490 273 L 490 290 L 520 290" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
 
         <!-- 4. Buat Post -> Sub -->
-        <path d="M 450 375 L 490 375 L 490 348 L 520 348" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
-        <path d="M 490 375 L 490 375 L 520 375" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
-        <path d="M 490 375 L 490 402 L 520 402" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
+        <path d="M 450 383 L 490 383 L 490 350 L 520 350" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
+        <path d="M 490 383 L 490 383 L 520 383" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
+        <path d="M 490 383 L 490 416 L 520 416" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
 
         <!-- 5. Pesan -> Sub -->
-        <path d="M 450 480 L 490 480 L 490 462 L 520 462" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
-        <path d="M 490 480 L 490 498 L 520 498" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
+        <path d="M 450 493 L 490 493 L 490 474 L 520 474" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
+        <path d="M 490 493 L 490 510 L 520 510" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
 
         <!-- 6. Profil -> Sub -->
-        <path d="M 450 585 L 490 585 L 490 567 L 520 567" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
-        <path d="M 490 585 L 490 603 L 520 603" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
-
-        <!-- 7. Alur COD -> Sub -->
-        <path d="M 450 690 L 490 690 L 490 672 L 520 672" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
-        <path d="M 490 690 L 490 708 L 520 708" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
+        <path d="M 450 603 L 490 603 L 490 584 L 520 584" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
+        <path d="M 490 603 L 490 620 L 520 620" fill="none" stroke="#CBD5E1" stroke-width="1.2" />
 
 
         <!-- ================= TIER 0 · ROOT NODE ================= -->
-        <rect x="25" y="357" width="175" height="56" rx="8" fill="#3D38F5" />
-        <text x="112" y="380" fill="#FFFFFF" font-size="13" font-weight="700" font-family="'Inter', sans-serif" text-anchor="middle">sNaps Mobile</text>
-        <text x="112" y="398" fill="#EEF2FF" font-size="9" font-family="'JetBrains Mono', monospace" text-anchor="middle">ROOT · SMKN 8</text>
+        <rect x="25" y="303" width="175" height="56" rx="8" fill="#3D38F5" />
+        <text x="112" y="326" fill="#FFFFFF" font-size="13" font-weight="700" font-family="'Inter', sans-serif" text-anchor="middle">sNaps Mobile</text>
+        <text x="112" y="344" fill="#EEF2FF" font-size="9" font-family="'JetBrains Mono', monospace" text-anchor="middle">ROOT · SMKN 8</text>
 
 
         <!-- ================= TIER 1 · MODUL & NAVIGASI ================= -->
         <!-- 1. Autentikasi -->
-        <rect x="270" y="33" width="180" height="46" rx="6" fill="#FFFFFF" stroke="#3D38F5" stroke-width="1.5" />
-        <text x="360" y="52" fill="#0F172A" font-size="11" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Autentikasi Siswa</text>
-        <text x="360" y="67" fill="#64748B" font-size="8.5" font-family="'JetBrains Mono', monospace" text-anchor="middle">NIS · Akses Akun</text>
+        <rect x="270" y="36" width="180" height="46" rx="6" fill="#FFFFFF" stroke="#3D38F5" stroke-width="1.5" />
+        <text x="360" y="55" fill="#0F172A" font-size="11" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Autentikasi Siswa</text>
+        <text x="360" y="70" fill="#64748B" font-size="8.5" font-family="'JetBrains Mono', monospace" text-anchor="middle">NIS · Akses Akun</text>
 
         <!-- 2. Beranda -->
-        <rect x="270" y="137" width="180" height="46" rx="6" fill="#FFFFFF" stroke="#3D38F5" stroke-width="1.5" />
-        <text x="360" y="156" fill="#0F172A" font-size="11" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">1. Beranda (Feed)</text>
-        <text x="360" y="171" fill="#64748B" font-size="8.5" font-family="'JetBrains Mono', monospace" text-anchor="middle">Timeline &amp; Marketplace</text>
+        <rect x="270" y="140" width="180" height="46" rx="6" fill="#FFFFFF" stroke="#3D38F5" stroke-width="1.5" />
+        <text x="360" y="159" fill="#0F172A" font-size="11" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">1. Beranda (Feed)</text>
+        <text x="360" y="174" fill="#64748B" font-size="8.5" font-family="'JetBrains Mono', monospace" text-anchor="middle">Timeline &amp; Marketplace</text>
 
         <!-- 3. Jelajah -->
-        <rect x="270" y="247" width="180" height="46" rx="6" fill="#FFFFFF" stroke="#3D38F5" stroke-width="1.5" />
-        <text x="360" y="266" fill="#0F172A" font-size="11" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">2. Jelajah (Search)</text>
-        <text x="360" y="281" fill="#64748B" font-size="8.5" font-family="'JetBrains Mono', monospace" text-anchor="middle">Pencarian &amp; Teman</text>
+        <rect x="270" y="250" width="180" height="46" rx="6" fill="#FFFFFF" stroke="#3D38F5" stroke-width="1.5" />
+        <text x="360" y="269" fill="#0F172A" font-size="11" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">2. Jelajah (Search)</text>
+        <text x="360" y="284" fill="#64748B" font-size="8.5" font-family="'JetBrains Mono', monospace" text-anchor="middle">Pencarian &amp; Teman</text>
 
         <!-- 4. Buat Postingan -->
-        <rect x="270" y="352" width="180" height="46" rx="6" fill="#FFFFFF" stroke="#3D38F5" stroke-width="1.5" />
-        <text x="360" y="371" fill="#0F172A" font-size="11" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">3. Buat Post (FAB)</text>
-        <text x="360" y="386" fill="#64748B" font-size="8.5" font-family="'JetBrains Mono', monospace" text-anchor="middle">Utas, Jual &amp; Polling</text>
+        <rect x="270" y="360" width="180" height="46" rx="6" fill="#FFFFFF" stroke="#3D38F5" stroke-width="1.5" />
+        <text x="360" y="379" fill="#0F172A" font-size="11" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">3. Buat Post (FAB)</text>
+        <text x="360" y="394" fill="#64748B" font-size="8.5" font-family="'JetBrains Mono', monospace" text-anchor="middle">Utas, Jual &amp; Polling</text>
 
         <!-- 5. Pesan Masuk -->
-        <rect x="270" y="457" width="180" height="46" rx="6" fill="#FFFFFF" stroke="#3D38F5" stroke-width="1.5" />
-        <text x="360" y="476" fill="#0F172A" font-size="11" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">4. Pesan (Direct Msg)</text>
-        <text x="360" y="491" fill="#64748B" font-size="8.5" font-family="'JetBrains Mono', monospace" text-anchor="middle">Inbox &amp; Obrolan COD</text>
+        <rect x="270" y="470" width="180" height="46" rx="6" fill="#FFFFFF" stroke="#3D38F5" stroke-width="1.5" />
+        <text x="360" y="489" fill="#0F172A" font-size="11" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">4. Pesan (Direct Msg)</text>
+        <text x="360" y="504" fill="#64748B" font-size="8.5" font-family="'JetBrains Mono', monospace" text-anchor="middle">Inbox &amp; Obrolan COD</text>
 
         <!-- 6. Profil Pengguna -->
-        <rect x="270" y="562" width="180" height="46" rx="6" fill="#FFFFFF" stroke="#3D38F5" stroke-width="1.5" />
-        <text x="360" y="581" fill="#0F172A" font-size="11" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">5. Profil Siswa</text>
-        <text x="360" y="596" fill="#64748B" font-size="8.5" font-family="'JetBrains Mono', monospace" text-anchor="middle">Bio, Dagangan &amp; Akun</text>
-
-        <!-- 7. Alur COD & Denah -->
-        <rect x="270" y="667" width="180" height="46" rx="6" fill="#FFFFFF" stroke="#3D38F5" stroke-width="1.5" />
-        <text x="360" y="686" fill="#0F172A" font-size="11" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Alur COD &amp; Denah</text>
-        <text x="360" y="701" fill="#64748B" font-size="8.5" font-family="'JetBrains Mono', monospace" text-anchor="middle">Checkout &amp; Blueprint 2D</text>
+        <rect x="270" y="580" width="180" height="46" rx="6" fill="#FFFFFF" stroke="#3D38F5" stroke-width="1.5" />
+        <text x="360" y="599" fill="#0F172A" font-size="11" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">5. Profil Siswa</text>
+        <text x="360" y="614" fill="#64748B" font-size="8.5" font-family="'JetBrains Mono', monospace" text-anchor="middle">Bio, Dagangan &amp; Akun</text>
 
 
         <!-- ================= TIER 2 · SUB-FITUR & KONTEN ================= -->
         <!-- Sub Auth -->
-        <rect x="520" y="24" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
-        <text x="630" y="42" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Masuk (Login NIS / Sandi)</text>
+        <rect x="520" y="26" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
+        <text x="630" y="44" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Masuk (Login NIS / Sandi)</text>
 
-        <rect x="520" y="60" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
-        <text x="630" y="78" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Daftar Akun (Pilih Jurusan/Kelas)</text>
+        <rect x="520" y="62" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
+        <text x="630" y="80" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Daftar Akun (Pilih Jurusan/Kelas)</text>
 
         <!-- Sub Beranda -->
-        <rect x="520" y="110" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
-        <text x="630" y="128" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Filter Jurusan (PPLG, DKV, Kuliner)</text>
+        <rect x="520" y="116" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
+        <text x="630" y="134" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Filter Jurusan (PPLG, DKV, Kuliner)</text>
 
-        <rect x="520" y="146" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
-        <text x="630" y="164" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Utas, Produk Preloved &amp; Polling</text>
+        <rect x="520" y="149" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
+        <text x="630" y="167" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Utas, Produk Preloved &amp; Polling</text>
 
         <rect x="520" y="182" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
         <text x="630" y="200" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Detail Post &amp; Balasan Komentar</text>
 
         <!-- Sub Jelajah -->
-        <rect x="520" y="238" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
-        <text x="630" y="256" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Pencarian Barang &amp; Postingan</text>
+        <rect x="520" y="240" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
+        <text x="630" y="258" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Pencarian Barang &amp; Postingan</text>
 
-        <rect x="520" y="274" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
-        <text x="630" y="292" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Saran Ikuti Teman Satu Sekolah</text>
+        <rect x="520" y="276" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
+        <text x="630" y="294" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Saran Ikuti Teman Satu Sekolah</text>
 
         <!-- Sub Buat Post -->
-        <rect x="520" y="334" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
-        <text x="630" y="352" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Utas Diskusi &amp; Unggah Foto</text>
+        <rect x="520" y="336" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
+        <text x="630" y="354" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Utas Diskusi &amp; Unggah Foto</text>
 
-        <rect x="520" y="361" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
-        <text x="630" y="379" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Form Jual Barang Preloved / Karya</text>
+        <rect x="520" y="369" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
+        <text x="630" y="387" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Form Jual Barang Preloved / Karya</text>
 
-        <rect x="520" y="388" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
-        <text x="630" y="406" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Polling Suara Vokasi</text>
+        <rect x="520" y="402" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
+        <text x="630" y="420" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Polling Suara Vokasi</text>
 
         <!-- Sub Pesan -->
-        <rect x="520" y="448" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
-        <text x="630" y="466" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Kotak Masuk (Filter Chat / Pembeli)</text>
+        <rect x="520" y="460" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
+        <text x="630" y="478" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Kotak Masuk (Filter Chat / Pembeli)</text>
 
-        <rect x="520" y="484" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
-        <text x="630" y="502" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Ruang Chat &amp; Kartu Konteks Produk</text>
+        <rect x="520" y="496" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
+        <text x="630" y="514" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Ruang Chat &amp; Kartu Konteks Produk</text>
 
         <!-- Sub Profil -->
-        <rect x="520" y="553" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
-        <text x="630" y="571" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Biodata Siswa &amp; Edit Profil</text>
+        <rect x="520" y="570" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
+        <text x="630" y="588" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Biodata Siswa &amp; Edit Profil</text>
 
-        <rect x="520" y="589" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
-        <text x="630" y="607" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Tab Utas, Balasan &amp; Barang Dijual</text>
-
-        <!-- Sub Alur COD -->
-        <rect x="520" y="658" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
-        <text x="630" y="676" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Checkout COD &amp; Titik Temu Kampus</text>
-
-        <rect x="520" y="694" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
-        <text x="630" y="712" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Denah Blueprint 2D (Lt 1 / Lt 2)</text>
+        <rect x="520" y="606" width="220" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
+        <text x="630" y="624" fill="#334155" font-size="10" font-family="'Inter', sans-serif" text-anchor="middle">Tab Utas, Balasan &amp; Barang Dijual</text>
       </svg>
     </div>
 
@@ -290,7 +273,7 @@
       </div>
       <div class="legend-item">
         <span class="legend-color legend-tier2"></span>
-        <span>Sub-Fitur & Konten (Tier 2)</span>
+        <span>Sub-Fitur &amp; Konten (Tier 2)</span>
       </div>
     </div>
   </div>
