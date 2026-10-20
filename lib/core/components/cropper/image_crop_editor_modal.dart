@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -87,21 +88,128 @@ class _ImageCropEditorModalState extends State<ImageCropEditorModal> {
     _loadImageDimensions();
   }
 
+  int? _getExifOrientation(Uint8List bytes) {
+    if (bytes.length < 4) return null;
+    if (bytes[0] != 0xFF || bytes[1] != 0xD8) return null; // Not JPEG
+
+    int offset = 2;
+    while (offset + 4 <= bytes.length) {
+      if (bytes[offset] != 0xFF) return null;
+      final marker = bytes[offset + 1];
+      if (marker == 0xDA || marker == 0xD9) break; // SOS or EOI
+      if (offset + 4 > bytes.length) return null;
+      final length = (bytes[offset + 2] << 8) | bytes[offset + 3];
+      if (length < 2) return null;
+
+      if (marker == 0xE1) {
+        // APP1 Exif marker
+        final exifOffset = offset + 4;
+        if (exifOffset + 6 <= bytes.length &&
+            bytes[exifOffset] == 0x45 && // E
+            bytes[exifOffset + 1] == 0x78 && // x
+            bytes[exifOffset + 2] == 0x69 && // i
+            bytes[exifOffset + 3] == 0x66 && // f
+            bytes[exifOffset + 4] == 0x00 &&
+            bytes[exifOffset + 5] == 0x00) {
+          final tiffOffset = exifOffset + 6;
+          if (tiffOffset + 8 > bytes.length) return null;
+          final isLittleEndian = bytes[tiffOffset] == 0x49 && bytes[tiffOffset + 1] == 0x49;
+          final isBigEndian = bytes[tiffOffset] == 0x4D && bytes[tiffOffset + 1] == 0x4D;
+          if (!isLittleEndian && !isBigEndian) return null;
+
+          int read16(int o) {
+            if (o + 2 > bytes.length) return 0;
+            return isLittleEndian ? (bytes[o] | (bytes[o + 1] << 8)) : ((bytes[o] << 8) | bytes[o + 1]);
+          }
+
+          int read32(int o) {
+            if (o + 4 > bytes.length) return 0;
+            return isLittleEndian
+                ? (bytes[o] | (bytes[o + 1] << 8) | (bytes[o + 2] << 16) | (bytes[o + 3] << 24))
+                : ((bytes[o] << 8) | (bytes[o + 1] << 16) | (bytes[o + 2] << 24) | bytes[o + 3]);
+          }
+
+          final ifdOffsetVal = read32(tiffOffset + 4);
+          final firstIfdOffset = tiffOffset + ifdOffsetVal;
+          if (firstIfdOffset + 2 > bytes.length) return null;
+
+          final numEntries = read16(firstIfdOffset);
+          for (int i = 0; i < numEntries; i++) {
+            final entryOffset = firstIfdOffset + 2 + (i * 12);
+            if (entryOffset + 12 > bytes.length) break;
+            final tag = read16(entryOffset);
+            if (tag == 0x0112) {
+              // Orientation tag
+              return read16(entryOffset + 8);
+            }
+          }
+        }
+      }
+      offset += 2 + length;
+    }
+    return null;
+  }
+
   Future<void> _loadImageDimensions() async {
     try {
       final bytes = await widget.imageFile.readAsBytes();
+      final orientation = _getExifOrientation(bytes);
+      final isSwapped = orientation == 5 ||
+          orientation == 6 ||
+          orientation == 7 ||
+          orientation == 8;
+
       final codec = await ui.instantiateImageCodec(bytes);
       final frame = await codec.getNextFrame();
-      if (mounted) {
-        final ratio = frame.image.width / frame.image.height;
+      final rawWidth = frame.image.width.toDouble();
+      final rawHeight = frame.image.height.toDouble();
+
+      final visualWidth = isSwapped ? rawHeight : rawWidth;
+      final visualHeight = isSwapped ? rawWidth : rawHeight;
+
+      if (mounted && visualHeight > 0) {
+        final ratio = visualWidth / visualHeight;
         setState(() {
           _imageAspectRatio = ratio;
           _hasLoadedDimensions = true;
         });
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _centerImage(_currentCropBoxSize);
+          }
+        });
+        return;
       }
     } catch (e) {
       debugPrint('[ImageCropEditorModal] Error decoding image: $e');
     }
+
+    // Fallback: resolve via ImageStream if direct bytes decoding fails
+    _resolveViaImageStream();
+  }
+
+  void _resolveViaImageStream() {
+    try {
+      final stream = FileImage(widget.imageFile).resolve(ImageConfiguration.empty);
+      late ImageStreamListener listener;
+      listener = ImageStreamListener((ImageInfo info, bool _) {
+        if (mounted && info.image.height > 0) {
+          setState(() {
+            _imageAspectRatio = info.image.width / info.image.height;
+            _hasLoadedDimensions = true;
+          });
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              _centerImage(_currentCropBoxSize);
+            }
+          });
+        }
+        stream.removeListener(listener);
+      }, onError: (dynamic error, StackTrace? stackTrace) {
+        stream.removeListener(listener);
+      });
+      stream.addListener(listener);
+    } catch (_) {}
   }
 
   Size _computeRenderSize(double boxSize) {
@@ -256,35 +364,46 @@ class _ImageCropEditorModalState extends State<ImageCropEditorModal> {
                             color: Colors.black,
                             width: cropBoxSize,
                             height: cropBoxSize,
-                            child: InteractiveViewer(
-                              transformationController: _transformController,
-                              minScale: 1.0,
-                              maxScale: 4.5,
-                              panEnabled: true,
-                              boundaryMargin: EdgeInsets.all(cropBoxSize * 1.5),
-                              clipBehavior: Clip.none,
-                              onInteractionStart: (_) =>
-                                  setState(() => _isInteracting = true),
-                              onInteractionEnd: (_) =>
-                                  setState(() => _isInteracting = false),
-                              child: RotatedBox(
-                                quarterTurns: _quarterTurns,
-                                child: Transform(
-                                  alignment: Alignment.center,
-                                  transform: Matrix4.diagonal3Values(
-                                    _isFlippedHorizontally ? -1.0 : 1.0,
-                                    1.0,
-                                    1.0,
+                            child: !_hasLoadedDimensions
+                                ? const Center(
+                                    child: SizedBox(
+                                      width: 28,
+                                      height: 28,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.5,
+                                        color: AppColors.primary,
+                                      ),
+                                    ),
+                                  )
+                                : InteractiveViewer(
+                                    transformationController: _transformController,
+                                    minScale: 1.0,
+                                    maxScale: 4.5,
+                                    panEnabled: true,
+                                    boundaryMargin: EdgeInsets.all(cropBoxSize * 1.5),
+                                    clipBehavior: Clip.none,
+                                    onInteractionStart: (_) =>
+                                        setState(() => _isInteracting = true),
+                                    onInteractionEnd: (_) =>
+                                        setState(() => _isInteracting = false),
+                                    child: RotatedBox(
+                                      quarterTurns: _quarterTurns,
+                                      child: Transform(
+                                        alignment: Alignment.center,
+                                        transform: Matrix4.diagonal3Values(
+                                          _isFlippedHorizontally ? -1.0 : 1.0,
+                                          1.0,
+                                          1.0,
+                                        ),
+                                        child: Image.file(
+                                          widget.imageFile,
+                                          fit: BoxFit.cover,
+                                          width: imageRenderSize.width,
+                                          height: imageRenderSize.height,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                  child: Image.file(
-                                    widget.imageFile,
-                                    fit: BoxFit.fill,
-                                    width: imageRenderSize.width,
-                                    height: imageRenderSize.height,
-                                  ),
-                                ),
-                              ),
-                            ),
                           ),
                         ),
                       ),
