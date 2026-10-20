@@ -3,8 +3,10 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/components/mention_suggestion_list.dart';
 import 'package:snapan_market/core/services/snaps_asset_picker.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/utils/mention_text_span_helper.dart';
 
 /// CommentInputBar Widget
 /// 100% Sliced 1:1 from Web React CommentInputBar.tsx
@@ -46,6 +48,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
   bool _hasText = false;
   bool _isSendPressed = false;
   final List<String> _attachedImages = [];
+  MentionToken? _activeMentionToken;
   String _cleanUsername(String raw) =>
       raw.trim().replaceAll('@', '').replaceAll(' ', '_');
 
@@ -105,7 +108,29 @@ class _CommentInputBarState extends State<CommentInputBar> {
         _hasText = hasVal;
       });
     }
+
+    final token = MentionTextSpanHelper.extractActiveMentionToken(_textController.value);
+    if (token?.query != _activeMentionToken?.query || (token == null) != (_activeMentionToken == null)) {
+      setState(() {
+        _activeMentionToken = token;
+      });
+    }
+
     widget.onDraftChange?.call(text);
+  }
+
+  void _onSelectMentionUser(String username) {
+    if (_activeMentionToken == null) return;
+    final updatedValue = MentionTextSpanHelper.applyMention(
+      _textController.value,
+      _activeMentionToken!,
+      username,
+    );
+    _textController.value = updatedValue;
+    setState(() {
+      _activeMentionToken = null;
+    });
+    _focusNode.requestFocus();
   }
   void _pickCommentImages() async {
     HapticFeedback.selectionClick();
@@ -156,6 +181,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
     _textController.clear();
     setState(() {
       _attachedImages.clear();
+      _activeMentionToken = null;
     });
     _focusNode.unfocus();
   }
@@ -186,6 +212,15 @@ class _CommentInputBarState extends State<CommentInputBar> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // ===============================================================
+          // MENTION AUTOCOMPLETE SUGGESTION LIST
+          // ===============================================================
+          if (_activeMentionToken != null)
+            MentionSuggestionList(
+              query: _activeMentionToken!.query,
+              onSelectUser: _onSelectMentionUser,
+            ),
+
           // ===============================================================
           // 0. REPLY PREVIEW BANNER (pen.dev Frame 1 Reply node HvRsZ)
           // ===============================================================

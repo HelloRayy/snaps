@@ -5,6 +5,7 @@ import 'package:snapan_market/core/services/mascot_feature_notice_service.dart';
 import 'package:snapan_market/core/components/mascot_flair_badge.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/ui/default_profile_avatar.dart';
+import 'package:snapan_market/core/utils/mention_text_span_helper.dart';
 import 'package:snapan_market/core/utils/string_utils.dart';
 import 'package:snapan_market/features/profile/models/profile_user_model.dart';
 
@@ -175,14 +176,20 @@ class ProfileInfoHeader extends StatelessWidget {
 
           if (user.bio.isNotEmpty) ...[
             const SizedBox(height: 10.0),
-            Text(
-              user.bio,
-              style: const TextStyle(
-                fontSize: 14.5,
-                fontWeight: FontWeight.normal,
-                color: Color(0xFF0F172A),
-                height: 1.35,
-                letterSpacing: -0.1,
+            Text.rich(
+              TextSpan(
+                children: MentionTextSpanHelper.buildSpans(
+                  context: context,
+                  text: user.bio,
+                  accentColor: AppColors.primary,
+                  defaultStyle: const TextStyle(
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.normal,
+                    color: Color(0xFF0F172A),
+                    height: 1.35,
+                    letterSpacing: -0.1,
+                  ),
+                ),
               ),
             ),
           ] else if (isOwnProfile) ...[

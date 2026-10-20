@@ -8,7 +8,7 @@ Direktori ini memuat tiket spesifikasi teknis dan panduan pengerjaan untuk tiket
 
 | Sequence | Judul Tiket | Domain | Prioritas | Status Plane | File Panduan |
 | :---: | :--- | :--- | :---: | :---: | :--- |
-| **SNAPS-84** | `feat(mention): add tag mention @username in many pages` | `mention / autocomplete / profile / chat / feed` | HIGH | `TICKET` | [`SNAPS-84.md`](./SNAPS-84.md) |
+| **SNAPS-84** | `feat(mention): add tag mention @username in many pages` | `mention / autocomplete / profile / chat / feed` | HIGH | `DONE` | [`SNAPS-84.md`](./SNAPS-84.md) |
 | **SNAPS-85** | `feat(mascot-icon): add mascot icon access for public` | `mascot / flair / profile / create_post / permission` | MEDIUM | `TICKET` | [`SNAPS-85.md`](./SNAPS-85.md) |
 | **SNAPS-86** | `fix(dm-notif): fix direct message notif not realtime` | `chat / direct_messages / realtime / supabase / notification` | HIGH | `TICKET` | [`SNAPS-86.md`](./SNAPS-86.md) |
 | **SNAPS-87** | `fix(zoom-behaviour): fix zoom finger gesture` | `gestures / zoom / lightbox / pinch_scale / interactive_viewer` | MEDIUM | `DONE` | [`SNAPS-87.md`](./SNAPS-87.md) |

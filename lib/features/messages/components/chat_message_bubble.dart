@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/utils/mention_text_span_helper.dart';
 import 'package:snapan_market/features/feed/components/lightbox/media_lightbox_dialog.dart';
 import 'package:snapan_market/features/messages/models/chat_message_model.dart';
 
@@ -119,14 +120,20 @@ class ChatMessageBubble extends StatelessWidget {
                     if (showText) const SizedBox(height: 6.0),
                   ],
                   if (showText)
-                    Text(
-                      message.text,
-                      style: const TextStyle(
-                        fontFamily: 'SFPro',
-                        fontSize: 14.5,
-                        color: Colors.white,
-                        height: 1.38,
-                        letterSpacing: -0.1,
+                    Text.rich(
+                      TextSpan(
+                        children: MentionTextSpanHelper.buildSpans(
+                          context: context,
+                          text: message.text,
+                          accentColor: const Color(0xFFBAE6FD),
+                          defaultStyle: const TextStyle(
+                            fontFamily: 'SFPro',
+                            fontSize: 14.5,
+                            color: Colors.white,
+                            height: 1.38,
+                            letterSpacing: -0.1,
+                          ),
+                        ),
                       ),
                     ),
                   const SizedBox(height: 3.0),
@@ -203,14 +210,20 @@ class ChatMessageBubble extends StatelessWidget {
                     runSpacing: 2.0,
                     children: [
                       if (showText)
-                        Text(
-                          message.text,
-                          style: const TextStyle(
-                            fontFamily: 'SFPro',
-                            fontSize: 14.5,
-                            color: Color(0xFF0F172A),
-                            height: 1.36,
-                            letterSpacing: -0.1,
+                        Text.rich(
+                          TextSpan(
+                            children: MentionTextSpanHelper.buildSpans(
+                              context: context,
+                              text: message.text,
+                              accentColor: const Color(0xFF1D64EC),
+                              defaultStyle: const TextStyle(
+                                fontFamily: 'SFPro',
+                                fontSize: 14.5,
+                                color: Color(0xFF0F172A),
+                                height: 1.36,
+                                letterSpacing: -0.1,
+                              ),
+                            ),
                           ),
                         ),
                       Padding(

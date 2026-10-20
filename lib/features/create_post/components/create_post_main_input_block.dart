@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/components/mention_suggestion_list.dart';
 import 'package:snapan_market/core/constants/app_constants.dart';
 import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/ui/default_profile_avatar.dart';
+import 'package:snapan_market/core/utils/mention_text_span_helper.dart';
 import 'package:snapan_market/features/create_post/components/create_post_author_line.dart';
 import 'package:snapan_market/features/create_post/components/create_post_bottom_sheets.dart';
 import 'package:snapan_market/features/create_post/components/create_post_media_preview.dart';
@@ -159,6 +161,26 @@ class CreatePostMainInputBlock extends StatelessWidget {
                       isDense: true,
                       contentPadding: EdgeInsets.zero,
                     ),
+                  ),
+                  ValueListenableBuilder<TextEditingValue>(
+                    valueListenable: captionController,
+                    builder: (context, value, _) {
+                      final token = MentionTextSpanHelper.extractActiveMentionToken(value);
+                      if (token == null) return const SizedBox.shrink();
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6.0),
+                        child: MentionSuggestionList(
+                          query: token.query,
+                          onSelectUser: (username) {
+                            captionController.value = MentionTextSpanHelper.applyMention(
+                              captionController.value,
+                              token,
+                              username,
+                            );
+                          },
+                        ),
+                      );
+                    },
                   ),
                   if (images.isNotEmpty) ...[
                     const SizedBox(height: 12.0),

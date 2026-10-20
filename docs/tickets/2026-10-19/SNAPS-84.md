@@ -4,7 +4,7 @@
 > - **Sequence**: SNAPS-84
 > - **Priority**: HIGH
 > - **Domain**: `mention / autocomplete / profile / chat / feed`
-> - **Status**: Ticket (Unstarted)
+> - **Status**: DONE (Implemented & Verified)
 
 ---
 
@@ -57,8 +57,8 @@
 
 ## 4. Definition of Done (DoD)
 
-- [ ] Teks `@username` di dalam bubble chat DM (`ChatMessageBubble`) dapat diklik dan membuka profil pengguna yang bersangkutan.
-- [ ] Teks `@username` di bio profil (`ProfileInfoHeader`) terformat sebagai mention aktif dan dapat diklik.
-- [ ] Warna mention pada pesan keluar di DM tetap kontras dan memenuhi standar keterbacaan (WCAG).
-- [ ] Tidak terjadi crash saat parsing teks dengan multiple mentions, karakter tanda baca, atau emoji di samping `@username`.
-- [ ] Lolos static analysis `flutter analyze` dengan 0 errors.
+- [x] Teks `@username` di dalam bubble chat DM (`ChatMessageBubble`) dapat diklik dan membuka profil pengguna yang bersangkutan.
+- [x] Teks `@username` di bio profil (`ProfileInfoHeader`) terformat sebagai mention aktif dan dapat diklik.
+- [x] Warna mention pada pesan keluar di DM tetap kontras dan memenuhi standar keterbacaan (WCAG).
+- [x] Tidak terjadi crash saat parsing teks dengan multiple mentions, karakter tanda baca, atau emoji di samping `@username`.
+- [x] Lolos static analysis `flutter analyze` dengan 0 errors.
