@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ota_update/ota_update.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:snapan_market/core/models/app_version_model.dart';
 import 'package:snapan_market/core/services/app_update_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -58,18 +57,6 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
   String? _errorMessage;
   bool _isInstalling = false;
 
-  Future<void> _openInBrowser() async {
-    HapticFeedback.lightImpact();
-    try {
-      final uri = Uri.parse(widget.update.downloadUrl);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      }
-    } catch (e) {
-      debugPrint('Error launching download URL: $e');
-    }
-  }
-
   void _startOtaUpdate() {
     if (_isDownloading) return;
     HapticFeedback.lightImpact();
@@ -120,14 +107,16 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
             case OtaStatus.ALREADY_RUNNING_ERROR:
               setState(() {
                 _isDownloading = false;
-                _errorMessage = 'Proses unduhan sedang berjalan di latar belakang. Silakan keluar dan buka kembali aplikasi.';
+                _isInstalling = false;
+                _errorMessage = 'Proses unduhan sedang berjalan di latar belakang. Silakan tunggu sejenak atau tekan "Coba Lagi".';
               });
               break;
 
             case OtaStatus.PERMISSION_NOT_GRANTED_ERROR:
               setState(() {
                 _isDownloading = false;
-                _errorMessage = 'Izin pemasangan aplikasi belum aktif. Buka Pengaturan HP > Aplikasi > Snaps > Aktifkan "Instal aplikasi tidak dikenal", lalu keluar dan buka kembali aplikasi.';
+                _isInstalling = false;
+                _errorMessage = 'Izin pemasangan aplikasi belum aktif. Buka Pengaturan HP > Aplikasi > Snaps > Aktifkan "Instal aplikasi tidak dikenal", lalu tekan "Coba Lagi".';
               });
               break;
 
@@ -135,7 +124,7 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
               setState(() {
                 _isDownloading = false;
                 _isInstalling = false;
-                _errorMessage = 'Gagal mengunduh pembaruan. Silakan keluar dari aplikasi dan masuk kembali.';
+                _errorMessage = 'Gagal mengunduh berkas pembaruan. Pastikan koneksi internet stabil lalu tekan "Coba Lagi".';
               });
               break;
 
@@ -155,7 +144,8 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
           if (!mounted) return;
           setState(() {
             _isDownloading = false;
-            _errorMessage = 'Terjadi kendala saat mengunduh pembaruan. Silakan keluar dari aplikasi dan masuk kembali.';
+            _isInstalling = false;
+            _errorMessage = 'Terjadi kendala saat mengunduh pembaruan. Silakan periksa jaringan lalu tekan "Coba Lagi".';
           });
         },
       );
@@ -163,7 +153,8 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
       if (!mounted) return;
       setState(() {
         _isDownloading = false;
-        _errorMessage = 'Gagal memulai unduhan. Silakan keluar dari aplikasi dan masuk kembali.';
+        _isInstalling = false;
+        _errorMessage = 'Gagal memulai unduhan pembaruan. Silakan tekan "Coba Lagi".';
       });
     }
   }
@@ -383,9 +374,9 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                         children: [
                           Expanded(
                             child: ElevatedButton.icon(
-                              onPressed: _openInBrowser,
-                              icon: const Icon(Icons.open_in_browser_rounded, size: 16.0),
-                              label: const Text('Unduh Manual via Browser'),
+                              onPressed: _startOtaUpdate,
+                              icon: const Icon(Icons.refresh_rounded, size: 16.0),
+                              label: const Text('Coba Lagi'),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primary,
                                 foregroundColor: Colors.white,
@@ -395,7 +386,7 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
                                 textStyle: const TextStyle(
-                                  fontSize: 12.0,
+                                  fontSize: 12.5,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -407,10 +398,10 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                               HapticFeedback.mediumImpact();
                               SystemNavigator.pop();
                             },
-                            tooltip: 'Keluar dari Aplikasi',
+                            tooltip: 'Tutup Aplikasi',
                             icon: const Icon(Icons.power_settings_new_rounded, size: 18.0),
                             style: IconButton.styleFrom(
-                              backgroundColor: const Color(0xFFB91C1C),
+                              backgroundColor: isDark ? const Color(0xFF7F1D1D) : const Color(0xFFEF4444),
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
@@ -496,38 +487,6 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                 ),
               ),
 
-              if (!_isDownloading && !_isInstalling) ...[
-                const SizedBox(height: 8.0),
-                Center(
-                  child: InkWell(
-                    onTap: _openInBrowser,
-                    borderRadius: BorderRadius.circular(6.0),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.cloud_download_outlined,
-                            size: 13.0,
-                            color: isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B),
-                          ),
-                          const SizedBox(width: 4.0),
-                          Text(
-                            'Kendala pembaruan? Unduh via browser',
-                            style: TextStyle(
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.w500,
-                              color: isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B),
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
 
               if (!widget.update.isMandatory && !_isDownloading && !_isInstalling) ...[
                 const SizedBox(height: 4.0),

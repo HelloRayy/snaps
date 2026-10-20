@@ -75,6 +75,6 @@ Sebelum membagikan tautan rilis ke publik atau menyebarkan APK:
 
 | Gejala Masalah | Penyebab | Solusi |
 |---|---|---|
-| **Stuck di 0% saat klik download** | Handshake SSL CDN GitHub lambat atau jaringan provider throttling. | UI kini menampilkan indeterminate pulse. Jika tetap macet > 30 detik, tap tombol *Buka di Browser* yang otomatis tersedia. |
+| **Stuck di 0% saat klik download** | Handshake SSL CDN Supabase lambat atau koneksi provider throttling. | UI menampilkan indikator unduh. Jika terjadi interupsi, ketuk tombol *Coba Lagi* di dalam aplikasi. |
 | **Aplikasi auto-close setelah klik update, tapi saat dibuka muncul lagi popup (Looping)** | `versionCode` APK baru lebih rendah atau sama dengan APK di HP. | Pastikan `versionCode` di APK baru dan Supabase bernilai `> 2021` (gunakan format `2024+`). |
 | **Error: Izin pemasangan aplikasi belum aktif** | Android memblokir instalasi APK pihak ketiga dari dalam app. | Buka Pengaturan HP > Aplikasi > Snaps > Izinkan "Instal aplikasi tidak dikenal". |
