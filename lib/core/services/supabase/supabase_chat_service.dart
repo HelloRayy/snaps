@@ -261,4 +261,38 @@ class SupabaseChatService {
         )
         .subscribe();
   }
+
+  /// Subscribe to live realtime global inbox updates (incoming DMs & conversation changes)
+  RealtimeChannel subscribeToGlobalInbox({
+    required void Function(Map<String, dynamic> messageRecord) onNewMessage,
+    required void Function(Map<String, dynamic> conversationRecord) onConversationUpdated,
+  }) {
+    final user = _currentUser;
+    final userId = user?.id ?? 'guest';
+    final channelName = 'inbox_global_$userId';
+
+    return _client
+        .channel(channelName)
+        .onPostgresChanges(
+          event: PostgresChangeEvent.insert,
+          schema: 'public',
+          table: 'direct_messages',
+          callback: (payload) {
+            if (payload.newRecord.isNotEmpty) {
+              onNewMessage(payload.newRecord);
+            }
+          },
+        )
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'conversations',
+          callback: (payload) {
+            if (payload.newRecord.isNotEmpty) {
+              onConversationUpdated(payload.newRecord);
+            }
+          },
+        )
+        .subscribe();
+  }
 }

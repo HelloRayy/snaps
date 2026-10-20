@@ -38,16 +38,12 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
   String _searchQuery = '';
   String _activeFilter = 'inbox'; // 'inbox' | 'requests' | 'unread'
   bool _showSearchBar = false;
-  RealtimeChannel? _inboxSubscription;
 
   @override
   void initState() {
     super.initState();
     DirectMessagesService.instance.addListener(_onServiceUpdate);
     DirectMessagesService.instance.loadConversations();
-    _inboxSubscription = SupabaseService.instance.subscribeToInbox(() {
-      DirectMessagesService.instance.loadConversations();
-    });
     _searchController.addListener(() {
       setState(() {
         _searchQuery = _searchController.text.trim();
@@ -61,7 +57,6 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
 
   @override
   void dispose() {
-    _inboxSubscription?.unsubscribe();
     DirectMessagesService.instance.removeListener(_onServiceUpdate);
     _searchController.dispose();
     super.dispose();

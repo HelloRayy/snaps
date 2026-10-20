@@ -69,6 +69,10 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
 
   void _onServiceChanged() {
     if (!mounted) return;
+    final resolvedId = DirectMessagesService.instance.resolveConversationId(_activeConvId);
+    if (resolvedId != _activeConvId) {
+      _resubscribeToNewConversationId(resolvedId);
+    }
     final updated = DirectMessagesService.instance.getMessages(_activeConvId);
     if (updated.isNotEmpty) {
       setState(() {
@@ -76,6 +80,34 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
       });
       _scrollToBottom();
     }
+  }
+
+  void _resubscribeToNewConversationId(String newId) {
+    _activeConvId = newId;
+    DirectMessagesService.instance.activeConversationId = newId;
+    final currentUserId = SupabaseService.instance.currentUser?.id ?? '';
+    _messagesSubscription?.unsubscribe();
+    _messagesSubscription = SupabaseService.instance.subscribeToMessages(
+      newId,
+      (newRecord) {
+        if (!mounted) return;
+        final msg = ChatMessageModel.fromJson(newRecord, currentUserId);
+        DirectMessagesService.instance.addMessage(
+          newId,
+          msg,
+          conversation: widget.conversation,
+        );
+        if (!msg.isMe) {
+          DirectMessagesService.instance.markAsRead(newId);
+        }
+        _scrollToBottom();
+      },
+      onMessageUpdated: (updatedRecord) {
+        if (!mounted) return;
+        final updatedMsg = ChatMessageModel.fromJson(updatedRecord, currentUserId);
+        DirectMessagesService.instance.updateMessage(newId, updatedMsg);
+      },
+    );
   }
 
   Future<void> _initRealtimeChat() async {
@@ -144,7 +176,9 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
 
   @override
   void dispose() {
-    if (DirectMessagesService.instance.activeConversationId == _activeConvId) {
+    final currentActive = DirectMessagesService.instance.activeConversationId;
+    if (currentActive == _activeConvId ||
+        DirectMessagesService.instance.resolveConversationId(currentActive ?? '') == _activeConvId) {
       DirectMessagesService.instance.activeConversationId = null;
     }
     DirectMessagesService.instance.removeListener(_onServiceChanged);

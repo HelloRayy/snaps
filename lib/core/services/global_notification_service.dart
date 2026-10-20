@@ -270,9 +270,11 @@ class GlobalNotificationService {
 
         // In-room chat suppression:
         // Jika user sedang aktif membuka ruang percakapan ini, abaikan notifikasi banner/suara
+        final activeId = DirectMessagesService.instance.activeConversationId;
         if (isDm &&
             conversationId.isNotEmpty &&
-            DirectMessagesService.instance.activeConversationId == conversationId) {
+            (activeId == conversationId ||
+                DirectMessagesService.instance.resolveConversationId(activeId ?? '') == conversationId)) {
           debugPrint('[FCM Foreground] Suppressed DM notification: user active in conversation $conversationId');
           return;
         }
@@ -283,6 +285,16 @@ class GlobalNotificationService {
         final body = message.notification?.body ?? message.data['message'] ?? '';
 
         if (isDm) {
+          // Anti-Duplikasi: Jika pesan sudah ditampilkan lewat Realtime WebSocket, abaikan duplikat FCM
+          if (isDmRecentlyHandled(conversationId, body)) {
+            debugPrint('[FCM Foreground] Suppressed duplicate DM: already displayed via Realtime');
+            return;
+          }
+          registerHandledDm(conversationId, body);
+
+          // Pastikan unread badge dan list percakapan ter-update
+          DirectMessagesService.instance.loadConversations();
+
           _showOsNotification(
             title: title,
             message: body,
@@ -729,6 +741,54 @@ class GlobalNotificationService {
     } catch (e) {
       debugPrint('Error showing OS notification: $e');
     }
+  }
+
+  final Map<String, DateTime> _recentlyHandledDms = {};
+
+  /// Cek apakah notifikasi DM untuk percakapan ini sudah ditangani dalam 6 detik terakhir
+  bool isDmRecentlyHandled(String conversationId, String messagePreview) {
+    final key = '$conversationId:${messagePreview.trim()}';
+    final lastTime = _recentlyHandledDms[key];
+    if (lastTime == null) return false;
+    if (DateTime.now().difference(lastTime).inSeconds < 6) return true;
+    _recentlyHandledDms.remove(key);
+    return false;
+  }
+
+  /// Catat pesan DM ke cache deduplikasi untuk mencegah flashing ganda
+  void registerHandledDm(String conversationId, String messagePreview) {
+    final key = '$conversationId:${messagePreview.trim()}';
+    _recentlyHandledDms[key] = DateTime.now();
+    if (_recentlyHandledDms.length > 50) {
+      _recentlyHandledDms.removeWhere(
+        (_, time) => DateTime.now().difference(time).inSeconds > 15,
+      );
+    }
+  }
+
+  /// Tampilkan in-app top banner untuk pesan masuk (DM) dengan deduplikasi otomatis
+  void showDmBanner({
+    required String messageId,
+    required String conversationId,
+    required String senderName,
+    required String messageText,
+  }) {
+    if (isDmRecentlyHandled(conversationId, messageText)) return;
+    registerHandledDm(conversationId, messageText);
+
+    HapticFeedback.lightImpact();
+
+    showTopBanner(
+      title: senderName.isNotEmpty ? senderName : 'Pesan Masuk',
+      message: messageText,
+      type: 'dm',
+      onTap: () {
+        final ctx = NavigationService.currentContext;
+        if (ctx != null && conversationId.isNotEmpty) {
+          navigateToChatConversation(ctx, conversationId);
+        }
+      },
+    );
   }
 
   void markAllRead() {
