@@ -2,6 +2,8 @@
 /// Matching Web `src/ui/components/marketplace/create-post/types.ts`
 library;
 
+import 'package:snapan_market/core/utils/mention_text_editing_controller.dart';
+
 enum PostMode {
   thread,
   product;
@@ -185,12 +187,21 @@ const List<PresetGif> kPresetGifs = [
 
 class SubThreadItem {
   final String id;
-  String caption;
+  late final MentionTextEditingController controller;
   List<String> images;
+
+  String get caption => controller.text;
+  set caption(String val) => controller.text = val;
 
   SubThreadItem({
     required this.id,
-    this.caption = '',
+    String caption = '',
     List<String>? images,
-  }) : images = images ?? [];
+  }) : images = images ?? [] {
+    controller = MentionTextEditingController(text: caption);
+  }
+
+  void dispose() {
+    controller.dispose();
+  }
 }

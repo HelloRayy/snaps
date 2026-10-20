@@ -338,17 +338,21 @@ class SupabaseProfileService {
     }
   }
 
-  /// Search user profiles by name or username
-  Future<List<Map<String, dynamic>>> searchProfiles(String query) async {
+  /// Search user profiles by name or username with selective lightweight columns
+  Future<List<Map<String, dynamic>>> searchProfiles(
+    String query, {
+    int limit = 20,
+    String selectColumns = 'id, username, full_name, display_name, avatar_url, class_group, is_verified, bio',
+  }) async {
     if (query.trim().isEmpty) return [];
 
     try {
       final clean = query.trim();
       final response = await _client
           .from('profiles')
-          .select()
-          .or('full_name.ilike.%$clean%,username.ilike.%$clean%')
-          .limit(20);
+          .select(selectColumns)
+          .or('username.ilike.$clean%,full_name.ilike.%$clean%,display_name.ilike.%$clean%')
+          .limit(limit);
 
       return (response as List<dynamic>).whereType<Map<String, dynamic>>().toList();
     } catch (e) {
@@ -357,13 +361,16 @@ class SupabaseProfileService {
     }
   }
 
-  /// Fetch suggested registered student profiles (excluding self)
-  Future<List<Map<String, dynamic>>> fetchSuggestedProfiles({int limit = 15}) async {
+  /// Fetch suggested registered student profiles (excluding self) with selective lightweight columns
+  Future<List<Map<String, dynamic>>> fetchSuggestedProfiles({
+    int limit = 15,
+    String selectColumns = 'id, username, full_name, display_name, avatar_url, class_group, is_verified, bio',
+  }) async {
     try {
       final currentUserId = _client.auth.currentUser?.id;
-      var query = _client.from('profiles').select().order('created_at', ascending: false).limit(limit);
+      var query = _client.from('profiles').select(selectColumns).order('created_at', ascending: false).limit(limit);
       if (currentUserId != null) {
-        query = _client.from('profiles').select().neq('id', currentUserId).order('created_at', ascending: false).limit(limit);
+        query = _client.from('profiles').select(selectColumns).neq('id', currentUserId).order('created_at', ascending: false).limit(limit);
       }
       final response = await query;
       return (response as List<dynamic>).whereType<Map<String, dynamic>>().toList();

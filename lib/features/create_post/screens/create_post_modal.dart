@@ -4,6 +4,7 @@ import 'package:snapan_market/core/constants/app_constants.dart';
 import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/utils/mention_text_editing_controller.dart';
 import 'package:snapan_market/features/create_post/components/create_post_bottom_sheets.dart';
 import 'package:snapan_market/features/create_post/components/create_post_footer_bar.dart';
 import 'package:snapan_market/features/create_post/components/create_post_header_bar.dart';
@@ -73,7 +74,7 @@ class CreatePostModal extends StatefulWidget {
 class _CreatePostModalState extends State<CreatePostModal> {
   late PostMode _postMode;
   final ScrollController _scrollController = ScrollController();
-  final TextEditingController _captionController = TextEditingController();
+  final MentionTextEditingController _captionController = MentionTextEditingController();
   final TextEditingController _productTitleController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _stockController = TextEditingController();
@@ -157,6 +158,9 @@ class _CreatePostModalState extends State<CreatePostModal> {
 
   @override
   void dispose() {
+    for (final s in _subThreads) {
+      s.dispose();
+    }
     for (final c in [_scrollController, _captionController, _productTitleController, _priceController, _stockController, _descController, _titleFocusNode, _priceFocusNode, _descFocusNode, ..._pollOptionControllers]) {
       c.dispose();
     }

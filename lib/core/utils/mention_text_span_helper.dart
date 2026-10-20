@@ -138,6 +138,98 @@ class MentionTextSpanHelper {
     return spans;
   }
 
+  /// Builds non-interactive highlight spans for input fields (TextField/TextEditingController)
+  /// so that @mentions and #hashtags are visually emphasized in realtime without gesture conflicts.
+  static List<InlineSpan> buildHighlightSpans({
+    required String text,
+    TextStyle? defaultStyle,
+    Color accentColor = AppColors.primary,
+  }) {
+    if (text.isEmpty) return const [];
+
+    final matches = mentionRegex.allMatches(text);
+    if (matches.isEmpty) {
+      return [TextSpan(text: text, style: defaultStyle)];
+    }
+
+    final List<InlineSpan> spans = [];
+    int lastEnd = 0;
+
+    for (final match in matches) {
+      if (match.start > lastEnd) {
+        spans.add(
+          TextSpan(
+            text: text.substring(lastEnd, match.start),
+            style: defaultStyle,
+          ),
+        );
+      }
+
+      final matchedText = match.group(0)!;
+      final isUrl = matchedText.startsWith('http');
+      final isMention = matchedText.startsWith('@');
+      final isHashtag = matchedText.startsWith('#');
+
+      String coreText = matchedText;
+      String trailingPunctuation = '';
+      if (isMention || isHashtag) {
+        final puncMatch = RegExp(r'[.,!?:;]+$').firstMatch(matchedText);
+        if (puncMatch != null) {
+          trailingPunctuation = puncMatch.group(0)!;
+          coreText = matchedText.substring(0, matchedText.length - trailingPunctuation.length);
+        }
+      }
+
+      if ((isMention || isHashtag) && coreText.length <= 1) {
+        spans.add(TextSpan(text: matchedText, style: defaultStyle));
+        lastEnd = match.end;
+        continue;
+      }
+
+      final highlightStyle = defaultStyle?.copyWith(
+            color: accentColor,
+            fontWeight: isMention ? FontWeight.w600 : FontWeight.w500,
+            decoration: isUrl ? TextDecoration.underline : TextDecoration.none,
+            decorationColor: accentColor,
+          ) ??
+          TextStyle(
+            color: accentColor,
+            fontWeight: isMention ? FontWeight.w600 : FontWeight.w500,
+            decoration: isUrl ? TextDecoration.underline : TextDecoration.none,
+            decorationColor: accentColor,
+          );
+
+      spans.add(
+        TextSpan(
+          text: coreText,
+          style: highlightStyle,
+        ),
+      );
+
+      if (trailingPunctuation.isNotEmpty) {
+        spans.add(
+          TextSpan(
+            text: trailingPunctuation,
+            style: defaultStyle,
+          ),
+        );
+      }
+
+      lastEnd = match.end;
+    }
+
+    if (lastEnd < text.length) {
+      spans.add(
+        TextSpan(
+          text: text.substring(lastEnd),
+          style: defaultStyle,
+        ),
+      );
+    }
+
+    return spans;
+  }
+
   /// Extracts the mention query currently being typed at the cursor position.
   static MentionToken? extractActiveMentionToken(TextEditingValue value) {
     if (!value.selection.isValid || value.selection.baseOffset < 0) return null;

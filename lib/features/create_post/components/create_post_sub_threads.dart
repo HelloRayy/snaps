@@ -82,6 +82,7 @@ class CreatePostSubThreads extends StatelessWidget {
                     const SizedBox(width: 12.0),
                     Expanded(
                       child: TextField(
+                        controller: subThreads[i].controller,
                         minLines: 1,
                         maxLines: null,
                         style: const TextStyle(
@@ -100,7 +101,6 @@ class CreatePostSubThreads extends StatelessWidget {
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.zero,
                         ),
-                        onChanged: (val) => subThreads[i].caption = val,
                       ),
                     ),
                     IconButton(

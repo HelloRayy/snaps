@@ -23,6 +23,7 @@ class MentionSuggestionList extends StatefulWidget {
 
 class _MentionSuggestionListState extends State<MentionSuggestionList> {
   static final Map<String, List<Map<String, dynamic>>> _memoryCache = {};
+  static List<Map<String, dynamic>>? _initialSuggestedCache;
   Timer? _debounceTimer;
   List<Map<String, dynamic>> _profiles = [];
   bool _isLoading = false;
@@ -41,6 +42,13 @@ class _MentionSuggestionListState extends State<MentionSuggestionList> {
       _debounceTimer?.cancel();
       final clean = widget.query.trim().toLowerCase();
       // Instant cache hit bypasses debounce delay completely
+      if (clean.isEmpty && _initialSuggestedCache != null) {
+        setState(() {
+          _profiles = _initialSuggestedCache!;
+          _isLoading = false;
+        });
+        return;
+      }
       if (_memoryCache.containsKey(clean)) {
         setState(() {
           _profiles = _memoryCache[clean]!;
@@ -49,7 +57,7 @@ class _MentionSuggestionListState extends State<MentionSuggestionList> {
         return;
       }
 
-      _debounceTimer = Timer(const Duration(milliseconds: 150), () {
+      _debounceTimer = Timer(const Duration(milliseconds: 250), () {
         if (mounted) {
           _fetchUsers(widget.query);
         }
@@ -68,6 +76,13 @@ class _MentionSuggestionListState extends State<MentionSuggestionList> {
     final clean = query.trim().toLowerCase();
 
     // Check memory cache first
+    if (clean.isEmpty && _initialSuggestedCache != null && _initialSuggestedCache!.isNotEmpty) {
+      setState(() {
+        _profiles = _initialSuggestedCache!;
+        _isLoading = false;
+      });
+      return;
+    }
     if (_memoryCache.containsKey(clean)) {
       setState(() {
         _profiles = _memoryCache[clean]!;
@@ -83,8 +98,9 @@ class _MentionSuggestionListState extends State<MentionSuggestionList> {
       List<Map<String, dynamic>> results;
       if (clean.isEmpty) {
         results = await SupabaseService.instance.fetchSuggestedProfiles(limit: 6);
+        _initialSuggestedCache = results;
       } else {
-        results = await SupabaseService.instance.searchProfiles(clean);
+        results = await SupabaseService.instance.searchProfiles(clean, limit: 8);
       }
 
       // Discard stale out-of-order network responses

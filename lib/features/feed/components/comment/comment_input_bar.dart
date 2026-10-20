@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/mention_suggestion_list.dart';
 import 'package:snapan_market/core/services/snaps_asset_picker.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/utils/mention_text_editing_controller.dart';
 import 'package:snapan_market/core/utils/mention_text_span_helper.dart';
 
 /// CommentInputBar Widget
@@ -42,7 +43,7 @@ class CommentInputBar extends StatefulWidget {
 }
 
 class _CommentInputBarState extends State<CommentInputBar> {
-  late TextEditingController _textController;
+  late MentionTextEditingController _textController;
   late FocusNode _focusNode;
   late ScrollController _scrollController;
   bool _hasText = false;
@@ -55,7 +56,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
   @override
   void initState() {
     super.initState();
-    _textController = TextEditingController();
+    _textController = MentionTextEditingController();
     _focusNode = FocusNode();
     _scrollController = ScrollController();
     _textController.addListener(_onTextChanged);

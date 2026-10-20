@@ -125,11 +125,22 @@ class SupabaseService {
   Future<bool> isUsernameTaken(String username) =>
       profile.isUsernameTaken(username);
 
-  Future<List<Map<String, dynamic>>> searchProfiles(String query) =>
-      profile.searchProfiles(query);
+  Future<List<Map<String, dynamic>>> searchProfiles(
+    String query, {
+    int limit = 20,
+    String? selectColumns,
+  }) =>
+      selectColumns != null
+          ? profile.searchProfiles(query, limit: limit, selectColumns: selectColumns)
+          : profile.searchProfiles(query, limit: limit);
 
-  Future<List<Map<String, dynamic>>> fetchSuggestedProfiles({int limit = 15}) =>
-      profile.fetchSuggestedProfiles(limit: limit);
+  Future<List<Map<String, dynamic>>> fetchSuggestedProfiles({
+    int limit = 15,
+    String? selectColumns,
+  }) =>
+      selectColumns != null
+          ? profile.fetchSuggestedProfiles(limit: limit, selectColumns: selectColumns)
+          : profile.fetchSuggestedProfiles(limit: limit);
 
   Future<void> syncProfileAuthCredentials() =>
       profile.syncProfileAuthCredentials();
