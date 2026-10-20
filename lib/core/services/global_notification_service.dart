@@ -16,6 +16,7 @@ import 'package:snapan_market/features/activity/models/activity_notification_mod
 import 'package:snapan_market/features/feed/screens/post_detail_screen.dart';
 import 'package:snapan_market/features/messages/screens/chat_conversation_screen.dart';
 import 'package:snapan_market/features/messages/services/direct_messages_service.dart';
+import 'package:snapan_market/features/profile/screens/profile_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -435,6 +436,16 @@ class GlobalNotificationService {
         }
       } catch (e) {
         debugPrint('Error navigating to post from notification: $e');
+      }
+    } else if (actionType == 'user_profile' || notif.type == ActivityType.follow) {
+      final targetUsername = actionUrl.isNotEmpty ? actionUrl : notif.actorUsername;
+      if (targetUsername.isNotEmpty && context.mounted) {
+        Navigator.push(
+          context,
+          AppSlidePageRoute(
+            builder: (_) => ProfileScreen(username: targetUsername),
+          ),
+        );
       }
     }
   }

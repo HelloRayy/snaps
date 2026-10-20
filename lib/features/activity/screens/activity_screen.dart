@@ -11,6 +11,7 @@ import "package:snapan_market/features/activity/components/broadcast_detail_moda
 import "package:snapan_market/features/activity/models/activity_list_item.dart";
 import "package:snapan_market/features/activity/models/activity_notification_model.dart";
 import "package:snapan_market/features/feed/screens/post_detail_screen.dart";
+import "package:snapan_market/features/profile/screens/profile_screen.dart";
 
 /// Screen orchestrator for the Activity & Notifications module.
 /// Manages live data subscriptions, category filtering, and timeline grouping.
@@ -211,6 +212,18 @@ class _ActivityScreenState extends State<ActivityScreen> {
                                           notif.actorName.toLowerCase().startsWith('admin');
                                       if (isAnnouncement) {
                                         BroadcastDetailModal.show(context, notif);
+                                      } else if (notif.type == ActivityType.follow || notif.actionType == 'user_profile') {
+                                        final targetUsername = notif.actionUrl?.isNotEmpty == true
+                                            ? notif.actionUrl!
+                                            : notif.actorUsername;
+                                        if (targetUsername.isNotEmpty) {
+                                          Navigator.push(
+                                            context,
+                                            AppSlidePageRoute(
+                                              builder: (_) => ProfileScreen(username: targetUsername),
+                                            ),
+                                          );
+                                        }
                                       } else if (notif.postId != null && notif.postId!.isNotEmpty) {
                                         _navigateToPost(notif.postId!);
                                       }

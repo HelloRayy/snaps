@@ -1,0 +1,155 @@
+================================================================================
+                    DOKUMEN SPESIFIKASI DESIGN SYSTEM
+                   SNAPAN MARKET MOBILE (sNaps) - SMKN 8 SEMARANG
+                     FOKUS: TATA WARNA (COLOR PALETTE) & TIPOGRAFI
+================================================================================
+
+1. PENDAHULUAN & TUJUAN
+--------------------------------------------------------------------------------
+Untuk memastikan konsistensi visual, efisiensi siklus pengembangan
+antarmuka (Flutter Mobile), serta menjamin kenyamanan pengalaman pengguna (User
+Experience / UX) bagi Snapanians, proyek Snaps menerapkan Design System terstandarisasi.
+
+
+================================================================================
+2. TATA WARNA (COLOR PALETTE)
+================================================================================
+Pemilihan palet warna Snaps dirancang berdasarkan psikologi warna digital,
+kebutuhan interaksi C2C (Commerce-to-Community), serta kepatuhan ketat terhadap
+standar aksesibilitas Web Content Accessibility Guidelines (WCAG 2.1 AA) dengan
+kontras rasio minimal 4.5:1 untuk teks normal dan 6.86:1 untuk teks kontras tinggi.
+
+Sistem tata warna sNaps diklasifikasikan ke dalam 4 kategori utama:
+
+--------------------------------------------------------------------------------
+A. WARNA UTAMA (BRAND SIGNATURE & PRIMARY COLORS)
+--------------------------------------------------------------------------------
+Warna primer merupakan jangkar identitas produk sNaps, memancarkan citra digital,
+profesionalisme rekayasa perangkat lunak, dan energi vokasi modern.
+
+1. Brand Primary (Electric Indigo)
+   - Hex Code : #3D38F5
+   - Fungsi   : Elemen aksi utama (Call to Action / CTA), tombol beli/checkout,
+                status aktif bottom navigation bar, toggle switch aktif, dan
+                fokus interaksi utama.
+
+2. Primary Dark (Deep Indigo)
+   - Hex Code : #312BD9
+   - Fungsi   : State interaksi tombol saat ditekan (pressed/hover state),
+                aksen bayangan gradien bawah header, dan batas kontur visual.
+
+3. Primary Pastel (Lavender Mist)
+   - Hex Code : #EEF0FF
+   - Fungsi   : Latar belakang badge/chips kategori (misal: "PPLG", "Preloved"),
+                kontainer penyorot notifikasi baru, dan tombol sekunder (soft CTA).
+
+4. Primary Border & Ring Focus
+   - Hex Code : #D8DBFE (Border) / #3D38F5 dengan 15% Alpha (Focus Ring)
+   - Fungsi   : Garis tepi kartu kategori aktif dan indikator fokus pada form input.
+
+5. Electric Spectrum Gradient (Header & Auth)
+   - Varian   : LinearGradient (Top #534EF7 -> Mid #3D38F5 -> Base #312BD9)
+   - Fungsi   : Latar belakang kartu banner promosi karya siswa, header profil,
+                dan kartu sambutan onboarding.
+
+
+--------------------------------------------------------------------------------
+B. WARNA SEKUNDER & AKSEN (SECONDARY & ACCENT COLORS)
+--------------------------------------------------------------------------------
+Digunakan untuk memperkuat hierarki fungsional, memandu perhatian pengguna pada
+elemen interaktif sekunder, serta validasi status profil pengguna.
+
+1. Verified / Meta Blue
+   - Hex Code : #1D64EC
+   - Fungsi   : Lencana centang verifikasi siswa resmi SMKN 8 Semarang (NIS valid),
+                tautan taut-ulang thread, dan penanda identitas resmi.
+
+2. Interactive Link Blue
+   - Hex Code : #008BFF
+   - Fungsi   : Tautan hyperlink eksternal, hashtag (#vokasi, #smkn8), dan mention
+                antar siswa (@siswa) di dalam kolom thread feed.
+
+3. Amber Accent (Spotlight / Rating)
+   - Hex Code : #F59E0B
+   - Fungsi   : Bintang rating kepuasan penjual, sorotan pengumuman COD penting,
+                dan indikator penawaran terbatas.
+
+
+--------------------------------------------------------------------------------
+C. WARNA NETRAL & KANVAS (NEUTRAL & CANVAS COLORS)
+--------------------------------------------------------------------------------
+sNaps mengadopsi prinsip Scandinavian Clean UI pada Light Theme serta Meta Threads
+Barcelona WDS (Pure OLED Black) pada Dark Theme untuk kenyamanan membaca feed dan
+efisiensi konsumsi daya baterai gawai siswa.
+
+[Mode Terang / Light Theme]:
+1. Canvas Background (#FFFFFF)
+   - Fungsi   : Latar belakang utama aplikasi, feed viewport, dan latar dialog.
+2. Slate Ink / Text Utama (#1A1A1A / #111827)
+   - Fungsi   : Warna tipografi judul, nama produk, isi thread pesan, dan nominal harga.
+3. Muted Gray / Text Sekunder (#727272 / #6B7280)
+   - Fungsi   : Timestamp waktu postingan, keterangan kelas/jurusan, dan label non-aktif.
+4. Slate Border & Separator (#E2E8F0 & #F1F5F9)
+   - Fungsi   : Garis pemisah antar balasan thread, border kartu produk, dan divider tab.
+
+--------------------------------------------------------------------------------
+D. WARNA SEMANTIK (SEMANTIC & STATUS FEEDBACK COLORS)
+--------------------------------------------------------------------------------
+Digunakan secara konsisten sebagai penanda status transaksi COD dan umpan balik
+sistem secara real-time.
+
+1. Success Emerald (#10B981)
+   - Fungsi   : Transaksi COD selesai, verifikasi NIS berhasil, ketersediaan
+                stok produk ("Tersedia"), dan notifikasi keberhasilan aksi.
+2. Warning Amber (#F59E0B)
+   - Fungsi   : Status pesanan COD "Menunggu Konfirmasi Penjual", peringatan stok
+                menipis (< 3 item), dan notifikasi perhatian sekolah.
+3. Danger / Error Rose (#EF4444)
+   - Fungsi   : Pembatalan pesanan COD, stok habis, indikator eror validasi form
+                (NIS tidak terdaftar / Password salah), dan tombol hapus postingan.
+
+
+================================================================================
+3. SISTEM TIPOGRAFI (TYPOGRAPHY SYSTEM)
+================================================================================
+Sistem tipografi sNaps dikonfigurasi untuk menghadirkan hierarki visual yang
+tegas dan ergonomis, mempermudah pengguna saat memindai linimasa (fast-scannable).
+
+A. Pilihan Font Family:
+   - Font Utama      : SF Pro (SF Pro Display & Text) / Inter (Sans-Serif)
+   - Alasan Pemilihan:
+     1. Nyaman di Mata: Bentuk hurufnya simpel, bersih, dan modern sehingga 
+        pengguna tidak cepat lelah saat membaca timeline postingan dan obrolan.
+     2. Mudah Dibaca di Layar HP: Teks tetap terlihat jelas dan tegas di berbagai 
+        ukuran layar smartphone, baik untuk tulisan kecil (seperti waktu postingan 
+        dan NIS) maupun judul yang besar.
+     3. Susunan Harga Lebih Rapi: Karakter angka nominal harga (seperti Rp15.000) 
+        tersusun lurus dan sejajar secara alami, sehingga mempermudah pembeli 
+        melihat daftar harga produk dan nota pesanan COD.
+
+--------------------------------------------------------------------------------
+B. TABEL STANDARISASI HIERARKI TEKS (TYPE SCALE SPECIFICATION)
+--------------------------------------------------------------------------------
+
++-------------+----------------------+-------------+-------------------+-------------+-----------------------------------------------------+
+| Kode / Role | Hierarki Teks        | Ukuran (px) | Ketebalan(Weight) | Line-Height | Jenis Penggunaan di Aplikasi sNaps                  |
++-------------+----------------------+-------------+-------------------+-------------+-----------------------------------------------------+
+| H1          | Heading 1 (Large)    | 28 - 32 px  | Bold (700)        | 36 - 40 px  | Judul utama halaman autentikasi, salam selamat      |
+|             |                      |             |                   |             | datang onboarding, judul modul utama.               |
++-------------+----------------------+-------------+-------------------+-------------+-----------------------------------------------------+
+| H2          | Heading 2 (Title)    | 20 - 24 px  | Semi-Bold (600)   | 28 - 32 px  | Nama produk di layar detail, judul section feed,    |
+|             |                      |             |                   |             | judul header modal Bottom Sheet checkout COD.       |
++-------------+----------------------+-------------+-------------------+-------------+-----------------------------------------------------+
+| H3          | Heading 3 (Subhead)  | 16 - 18 px  | Semi-Bold / Medium| 22 - 24 px  | Nama siswa/penjual di thread feed, judul kartu      |
+|             |                      |             | (600 / 500)       |             | transaksi COD, label utama input form data.         |
++-------------+----------------------+-------------+-------------------+-------------+-----------------------------------------------------+
+| Body 1      | Body Medium (Utama)  | 14 - 15 px  | Regular (400)     | 20 - 22 px  | Teks isi postingan thread, deskripsi lengkap        |
+|             |                      |             |                   |             | produk karya/jualan, balon teks percakapan chat DM. |
++-------------+----------------------+-------------+-------------------+-------------+-----------------------------------------------------+
+| Body 2      | Body Small (Caption) | 12 - 13 px  | Regular / Medium  | 16 - 18 px  | Metadata waktu postingan ("5m lalu"), badge NIS &   |
+|             |                      |             | (400 / 500)       |             | kelas siswa ("XII PPLG 1"), helper text form input. |
++-------------+----------------------+-------------+-------------------+-------------+-----------------------------------------------------+
+| Micro       | Overline / Tag Badge | 10 - 11 px  | Semi-Bold (600)   | 14 - 16 px  | Pill badge status pesanan ("MENUNGGU COD"), tag     |
+|             |                      |             |                   |             | kategori vokasi ("DKV", "KULINER"), counter teks.   |
++-------------+----------------------+-------------+-------------------+-------------+-----------------------------------------------------+
+================================================================================
