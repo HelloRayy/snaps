@@ -49,6 +49,18 @@
       "skillPath": "skills/taste-skill/SKILL.md",
       "computedHash": "6d838b246d0e35d0b53f4f23f98ba7a1dd561937e64f7d0c7553b0928e376c3e"
     },
+    "diagram-design": {
+      "source": "cathrynlavery/diagram-design",
+      "sourceType": "github",
+      "skillPath": "skills/diagram-design/SKILL.md",
+      "computedHash": "115a126a5bff5abd547b125e9865269c4ad737e4cb134df153118e0ffd679f82"
+    },
+    "security": {
+      "source": "./local",
+      "sourceType": "local",
+      "skillPath": ".agents/skills/security/SKILL.md",
+      "computedHash": "custom-security-skill"
+    },
     "supabase": {
       "source": "supabase/agent-skills",
       "sourceType": "github",
@@ -60,12 +72,6 @@
       "sourceType": "github",
       "skillPath": "skills/supabase-postgres-best-practices/SKILL.md",
       "computedHash": "128fac78002d916c8ca908245d398e634f540d8bcf20915b2b2359aeb18eba59"
-    },
-    "security": {
-      "source": "local",
-      "sourceType": "local",
-      "skillPath": ".agents/skills/security/SKILL.md",
-      "computedHash": "custom-security-skill"
     }
   }
 }
