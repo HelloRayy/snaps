@@ -44,22 +44,22 @@ export function AdminSidebar({
   return (
     <aside className="menu-sidebar" id="main-sidebar">
       {/* Atlassian Jira / Confluence Project & Workspace Header */}
-      <div className="logo d-flex align-items-center justify-content-between">
+      <div className="logo d-flex align-items-center justify-content-between" style={{ height: '56px', padding: '0 18px' }}>
         <a
           href="#/admin"
           onClick={(e) => {
             e.preventDefault();
             handleNav('overview');
           }}
-          className="d-flex align-items-center gap-2 text-decoration-none"
+          className="d-flex align-items-center gap-2.5 text-decoration-none"
           title="Beranda Snaps Admin"
-          style={{ height: '38px', minWidth: 0 }}
+          style={{ height: '40px', minWidth: 0 }}
         >
           <img
             src="/snaps-logo-clean.svg"
             alt="Snaps"
             style={{
-              height: '24px',
+              height: '26px',
               width: 'auto',
               objectFit: 'contain',
               display: 'block',
@@ -72,10 +72,10 @@ export function AdminSidebar({
           <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
             <span
               style={{
-                fontSize: '13px',
+                fontSize: '13.5px',
                 fontWeight: 600,
                 color: '#172b4d',
-                lineHeight: 1.2,
+                lineHeight: 1.25,
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -87,7 +87,7 @@ export function AdminSidebar({
               style={{
                 fontSize: '11px',
                 color: '#626f86',
-                lineHeight: 1.2,
+                lineHeight: 1.25,
                 whiteSpace: 'nowrap',
               }}
             >
@@ -301,24 +301,24 @@ export function AdminSidebar({
         </nav>
 
         {/* Bottom Section: Connected Profile Card, Live DB, Logout */}
-        <div style={{ padding: '12px', borderTop: '1px solid #edf0f2' }}>
+        <div style={{ padding: '16px 14px', borderTop: '1px solid #edf0f2' }}>
           {/* Connected Admin Profile Card */}
           <div
             style={{
-              padding: '8px 10px',
-              borderRadius: '4px',
+              padding: '10px 12px',
+              borderRadius: '6px',
               background: '#f7f8f9',
               border: '1px solid #edf0f2',
-              marginBottom: '8px',
+              marginBottom: '10px',
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
+              gap: '10px',
             }}
           >
             <UserAvatar
               avatarUrl={adminProfile?.avatar_url}
               name={displayName}
-              size={32}
+              size={36}
               role={adminProfile?.role || 'admin'}
               style={{
                 border: '1px solid #edf0f2',
@@ -328,31 +328,32 @@ export function AdminSidebar({
             <div style={{ flex: 1, minWidth: 0 }}>
               <div
                 style={{
-                  fontSize: '12px',
+                  fontSize: '13px',
                   fontWeight: 600,
                   color: '#172b4d',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
-                  lineHeight: 1.2,
+                  lineHeight: 1.25,
                 }}
               >
                 {displayName}
               </div>
               <div
                 style={{
-                  fontSize: '11px',
+                  fontSize: '11.5px',
                   color: '#626f86',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
+                  marginTop: '1px',
                 }}
               >
                 {displayUsername}
               </div>
             </div>
 
-            <span className="ads-lozenge ads-lozenge-inprogress" style={{ fontSize: '10px' }}>
+            <span className="ads-lozenge ads-lozenge-inprogress" style={{ fontSize: '10px', padding: '2px 5px' }}>
               Admin
             </span>
           </div>
@@ -360,24 +361,24 @@ export function AdminSidebar({
           {/* Database Live Ping */}
           <div
             style={{
-              padding: '6px 10px',
-              borderRadius: '4px',
+              padding: '8px 12px',
+              borderRadius: '6px',
               background: '#f7f8f9',
               border: '1px solid #edf0f2',
-              marginBottom: '8px',
+              marginBottom: '10px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
             }}
           >
-            <span style={{ fontSize: '11px', color: '#626f86', fontWeight: 500 }}>
+            <span style={{ fontSize: '11.5px', color: '#626f86', fontWeight: 500 }}>
               Database PostgreSQL
             </span>
             <span
               className="ads-lozenge ads-lozenge-success"
               style={{
                 fontSize: '10px',
-                padding: '1px 5px',
+                padding: '2px 6px',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '4px',
@@ -394,14 +395,15 @@ export function AdminSidebar({
             onClick={onLogout}
             className="w-100 text-start ads-btn ads-btn-subtle"
             style={{
-              borderRadius: '4px',
-              padding: '8px 10px',
-              fontSize: '12px',
+              height: '36px',
+              borderRadius: '6px',
+              padding: '0 12px',
+              fontSize: '13px',
               fontWeight: 500,
               color: '#c9372c',
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
+              gap: '10px',
               cursor: 'pointer',
               border: '1px solid transparent',
               background: 'transparent',
@@ -416,7 +418,7 @@ export function AdminSidebar({
               e.currentTarget.style.color = '#c9372c';
             }}
           >
-            <i className="fa-solid fa-arrow-right-from-bracket"></i>
+            <i className="fa-solid fa-arrow-right-from-bracket" style={{ fontSize: '14px' }}></i>
             <span>Keluar dari Admin</span>
           </button>
         </div>
