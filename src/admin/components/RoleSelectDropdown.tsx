@@ -14,16 +14,16 @@ const ROLE_OPTIONS = [
     title: 'Siswa / Warga Sekolah',
     desc: 'Akses penuh C2C: bebas beli & jual produk, posting utas sosial, dan transaksi COD.',
     icon: 'fa-user-graduate',
-    badgeBg: '#f0fdf4',
-    badgeColor: '#16a34a',
+    badgeBg: '#dffcf0',
+    badgeColor: '#1f845a',
   },
   {
     id: 'admin' as const,
     title: 'Staff Admin',
     desc: 'Akses penuh ke portal manajemen, moderasi konten, dan sistem sekolah.',
     icon: 'fa-shield-halved',
-    badgeBg: '#eff6ff',
-    badgeColor: '#2563eb',
+    badgeBg: '#e9f2ff',
+    badgeColor: '#0c66e4',
   },
 ];
 
@@ -81,11 +81,11 @@ export function RoleSelectDropdown({
           alignItems: 'center',
           justifyContent: 'space-between',
           background: '#ffffff',
-          border: isOpen ? '1.5px solid #4272d7' : '1px solid #e4e7ec',
-          borderRadius: '8px',
+          border: isOpen ? '1.5px solid #0c66e4' : '1px solid #dcdfe4',
+          borderRadius: '4px',
           boxShadow: isOpen
-            ? '0 0 0 3px rgba(66, 114, 215, 0.15)'
-            : '0 1px 2px rgba(0, 0, 0, 0.04)',
+            ? '0 0 0 2px rgba(12, 102, 228, 0.2)'
+            : 'none',
           cursor: disabled ? 'not-allowed' : 'pointer',
           opacity: disabled ? 0.6 : 1,
           transition: 'all 150ms ease',
@@ -96,7 +96,7 @@ export function RoleSelectDropdown({
             style={{
               width: '26px',
               height: '26px',
-              borderRadius: '6px',
+              borderRadius: '3px',
               background: selectedOption.badgeBg,
               color: selectedOption.badgeColor,
               display: 'flex',
@@ -107,22 +107,15 @@ export function RoleSelectDropdown({
           >
             <i className={`fa-solid ${selectedOption.icon}`}></i>
           </div>
-          <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#1f2937' }}>
+          <span style={{ fontSize: '13px', fontWeight: 600, color: '#172b4d' }}>
             {selectedOption.title}
           </span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span
-            style={{
-              fontSize: '11px',
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              padding: '2px 8px',
-              borderRadius: '4px',
-              background: selectedOption.badgeBg,
-              color: selectedOption.badgeColor,
-            }}
+            className={`ads-lozenge ${selectedOption.id === 'admin' ? 'ads-lozenge-inprogress' : 'ads-lozenge-success'}`}
+            style={{ fontSize: '10px' }}
           >
             {selectedOption.id}
           </span>
@@ -143,18 +136,18 @@ export function RoleSelectDropdown({
         <div
           style={{
             position: 'absolute',
-            top: 'calc(100% + 6px)',
+            top: 'calc(100% + 4px)',
             left: 0,
             right: 0,
             zIndex: 100,
             background: '#ffffff',
-            border: '1px solid #e2e8f0',
-            borderRadius: '8px',
-            boxShadow: '0 12px 28px rgba(0, 0, 0, 0.12)',
-            padding: '6px',
+            border: '1px solid #dcdfe4',
+            borderRadius: '4px',
+            boxShadow: '0 4px 8px -2px rgba(9, 30, 66, 0.15), 0 0 1px 1px rgba(9, 30, 66, 0.12)',
+            padding: '4px',
             display: 'flex',
             flexDirection: 'column',
-            gap: '4px',
+            gap: '2px',
           }}
         >
           {ROLE_OPTIONS.map((opt) => {
@@ -167,15 +160,15 @@ export function RoleSelectDropdown({
                   display: 'flex',
                   alignItems: 'flex-start',
                   justifyContent: 'space-between',
-                  padding: '10px 12px',
-                  borderRadius: '6px',
+                  padding: '8px 10px',
+                  borderRadius: '3px',
                   cursor: 'pointer',
-                  background: isSelected ? '#f0f5ff' : 'transparent',
-                  border: isSelected ? '1px solid #c7d9fc' : '1px solid transparent',
-                  transition: 'background 120ms ease',
+                  background: isSelected ? '#e9f2ff' : 'transparent',
+                  border: isSelected ? '1px solid #cce0ff' : '1px solid transparent',
+                  transition: 'background-color 100ms ease',
                 }}
                 onMouseEnter={(e) => {
-                  if (!isSelected) e.currentTarget.style.background = '#f8fafc';
+                  if (!isSelected) e.currentTarget.style.background = '#f1f2f4';
                 }}
                 onMouseLeave={(e) => {
                   if (!isSelected) e.currentTarget.style.background = 'transparent';

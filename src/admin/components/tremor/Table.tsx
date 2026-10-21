@@ -9,7 +9,7 @@ export function Table({
   return (
     <div className="w-full overflow-auto">
       <table
-        className={cn('w-full text-left border-collapse caption-bottom text-xs', className)}
+        className={cn('w-full text-left border-collapse caption-bottom text-[13px]', className)}
         {...props}
       >
         {children}
@@ -25,7 +25,7 @@ export function TableHead({
 }: React.HTMLAttributes<HTMLTableSectionElement>) {
   return (
     <thead
-      className={cn('border-b border-slate-200/80 bg-slate-50/75', className)}
+      className={cn('border-b-2 border-[#dcdfe4] bg-[#fafbfc]', className)}
       {...props}
     >
       {children}
@@ -41,7 +41,7 @@ export function TableHeaderCell({
   return (
     <th
       className={cn(
-        'px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500 whitespace-nowrap',
+        'px-3.5 py-2.5 text-left text-[11px] font-bold uppercase tracking-wider text-[#626f86] whitespace-nowrap',
         className
       )}
       {...props}
@@ -58,7 +58,7 @@ export function TableBody({
 }: React.HTMLAttributes<HTMLTableSectionElement>) {
   return (
     <tbody
-      className={cn('divide-y divide-slate-100 bg-white', className)}
+      className={cn('divide-y divide-[#dcdfe4] bg-white', className)}
       {...props}
     >
       {children}
@@ -74,7 +74,7 @@ export function TableRow({
   return (
     <tr
       className={cn(
-        'transition-colors hover:bg-slate-50/80',
+        'transition-colors hover:bg-[#f7f8f9]',
         className
       )}
       {...props}
@@ -91,7 +91,7 @@ export function TableCell({
 }: React.TdHTMLAttributes<HTMLTableCellElement>) {
   return (
     <td
-      className={cn('px-4 py-3.5 align-middle text-slate-700 whitespace-nowrap', className)}
+      className={cn('px-3.5 py-2.5 align-middle text-[#172b4d] whitespace-nowrap', className)}
       {...props}
     >
       {children}

@@ -203,22 +203,19 @@ export function AdminHeader({
           <div className="header-wrap">
             {/* Mobile Hamburger Drawer Trigger */}
             <button
-              className="sidebar-toggle d-lg-none"
+              className="sidebar-toggle d-lg-none ads-btn ads-btn-subtle"
               type="button"
               aria-label="Toggle navigation"
               onClick={onToggleMobileSidebar}
               style={{
-                width: '38px',
-                height: '38px',
-                background: 'transparent',
-                border: '1px solid #e4e7ec',
-                borderRadius: '6px',
-                color: '#475569',
+                width: '32px',
+                height: '32px',
+                padding: 0,
+                color: '#44546f',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                cursor: 'pointer',
-                marginRight: '12px',
+                marginRight: '8px',
               }}
             >
               <i className="fa-solid fa-bars" aria-hidden="true"></i>
@@ -365,44 +362,35 @@ export function AdminHeader({
                       style={{
                         position: 'absolute',
                         right: 0,
-                        top: 'calc(100% + 8px)',
+                        top: 'calc(100% + 4px)',
                         width: '320px',
                         background: '#ffffff',
-                        borderRadius: '8px',
-                        border: '1px solid #e4e7ec',
-                        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
+                        borderRadius: '4px',
+                        border: '1px solid #dcdfe4',
+                        boxShadow: '0 4px 8px -2px rgba(9, 30, 66, 0.15), 0 0 1px 1px rgba(9, 30, 66, 0.12)',
                         zIndex: 1050,
                         overflow: 'hidden',
                       }}
                     >
                       <div
                         style={{
-                          padding: '12px 16px',
-                          borderBottom: '1px solid #f1f3f5',
+                          padding: '10px 14px',
+                          borderBottom: '1px solid #dcdfe4',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
-                          background: '#f8fafc',
+                          background: '#fafbfc',
                         }}
                       >
                         <div>
-                          <div style={{ fontSize: '13px', fontWeight: 700, color: '#1f2937' }}>
+                          <div style={{ fontSize: '13px', fontWeight: 600, color: '#172b4d' }}>
                             Laporan & Pengawasan
                           </div>
-                          <div style={{ fontSize: '11px', color: '#64748b' }}>
+                          <div style={{ fontSize: '11px', color: '#626f86' }}>
                             {unreadCount} laporan butuh tindakan
                           </div>
                         </div>
-                        <span
-                          style={{
-                            fontSize: '10px',
-                            fontWeight: 700,
-                            padding: '2px 6px',
-                            borderRadius: '4px',
-                            background: '#fee2e2',
-                            color: '#b91c1c',
-                          }}
-                        >
+                        <span className="ads-lozenge ads-lozenge-danger" style={{ fontSize: '10px' }}>
                           LIVE
                         </span>
                       </div>

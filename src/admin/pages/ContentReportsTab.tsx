@@ -335,22 +335,23 @@ export function ContentReportsTab({ isActive = true }: ContentReportsTabProps) {
           height: 30px;
           padding: 0 12px;
           border-radius: 4px;
-          font-size: 12.5px;
+          font-size: 13px;
           font-weight: 500;
-          color: var(--m-text-muted, #475569);
+          color: var(--ads-neutral-text, #44546f);
           background: transparent;
           border: 0;
           cursor: pointer;
           transition: all 120ms ease;
         }
         .reports-tab-item:hover {
-          color: var(--m-text, #1f2937);
+          color: var(--ads-text, #172b4d);
+          background: var(--ads-surface-hovered, #f1f2f4);
         }
         .reports-tab-item.active {
           background: #ffffff;
-          color: var(--m-accent, #4272d7);
+          color: var(--ads-brand, #0c66e4);
           font-weight: 600;
-          box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+          box-shadow: 0 1px 2px rgba(9, 30, 66, 0.08);
         }
         .reports-tab-badge {
           display: inline-flex;
@@ -359,16 +360,16 @@ export function ContentReportsTab({ isActive = true }: ContentReportsTabProps) {
           min-width: 18px;
           height: 18px;
           padding: 0 5px;
-          border-radius: 999px;
+          border-radius: 3px;
           font-size: 11px;
-          font-weight: 600;
-          background: #e2e8f0;
-          color: #475569;
+          font-weight: 700;
+          background: #f1f2f4;
+          color: #44546f;
           line-height: 1;
         }
         .reports-tab-item.active .reports-tab-badge {
-          background: var(--m-accent-soft, #eaf0fc);
-          color: var(--m-accent, #4272d7);
+          background: #e9f2ff;
+          color: #0c66e4;
         }
 
         /* CoolAdmin Native Table Data Feature & Row Alignments */
@@ -766,18 +767,18 @@ export function ContentReportsTab({ isActive = true }: ContentReportsTabProps) {
                         </div>
                       </td>
 
-                      {/* Col 5: Status (Consistent CoolAdmin Pills) */}
+                      {/* Col 5: Status (Atlassian Lozenges) */}
                       <td>
                         {report.status === 'pending' ? (
-                          <span className="status--process" style={{ background: '#fef3c7', color: '#92400e' }}>
+                          <span className="ads-lozenge ads-lozenge-warning">
                             Perlu Tindakan
                           </span>
                         ) : report.status === 'resolved' ? (
-                          <span className="status--process">
+                          <span className="ads-lozenge ads-lozenge-success">
                             Selesai
                           </span>
                         ) : (
-                          <span className="status--denied">
+                          <span className="ads-lozenge ads-lozenge-default">
                             Diabaikan
                           </span>
                         )}
@@ -914,18 +915,13 @@ export function ContentReportsTab({ isActive = true }: ContentReportsTabProps) {
                     Tinjau Laporan Konten
                   </h3>
                   <span
-                    className={
+                    className={`ads-lozenge ${
                       selectedReport.status === 'pending'
-                        ? 'status--process'
+                        ? 'ads-lozenge-warning'
                         : selectedReport.status === 'resolved'
-                        ? 'status--process'
-                        : 'status--denied'
-                    }
-                    style={
-                      selectedReport.status === 'pending'
-                        ? { background: '#fef3c7', color: '#92400e' }
-                        : undefined
-                    }
+                        ? 'ads-lozenge-success'
+                        : 'ads-lozenge-default'
+                    }`}
                   >
                     {selectedReport.status === 'pending'
                       ? 'Perlu Tindakan'

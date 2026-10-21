@@ -1,7 +1,15 @@
 import type { ProfileRow, AdminStats } from '../services/adminService';
 import { UserAvatar } from './UserAvatar';
 
-export type AdminTab = 'overview' | 'users' | 'moderation' | 'reports' | 'broadcast' | 'devices' | 'meeting-points' | 'server';
+export type AdminTab =
+  | 'overview'
+  | 'users'
+  | 'moderation'
+  | 'reports'
+  | 'broadcast'
+  | 'devices'
+  | 'meeting-points'
+  | 'server';
 
 interface AdminSidebarProps {
   activeTab: AdminTab;
@@ -28,35 +36,64 @@ export function AdminSidebar({
   const displayName = adminProfile?.full_name || adminEmail.split('@')[0] || 'Administrator';
   const displayUsername = adminProfile?.username ? `@${adminProfile.username}` : adminEmail;
 
+  const handleNav = (tab: AdminTab) => {
+    onTabChange(tab);
+    onCloseMobile?.();
+  };
+
   return (
     <aside className="menu-sidebar" id="main-sidebar">
-      {/* Brand Header: Logo Snaps Clean SVG */}
-      <div className="logo d-flex align-items-center justify-content-between" style={{ padding: '0 24px' }}>
+      {/* Atlassian Jira / Confluence Project & Workspace Header */}
+      <div className="logo d-flex align-items-center justify-content-between">
         <a
           href="#/admin"
           onClick={(e) => {
             e.preventDefault();
-            onTabChange('overview');
+            handleNav('overview');
           }}
-          className="d-flex align-items-center text-decoration-none"
+          className="d-flex align-items-center gap-2 text-decoration-none"
           title="Beranda Snaps Admin"
-          style={{ height: '38px', display: 'inline-flex', alignItems: 'center' }}
+          style={{ height: '38px', minWidth: 0 }}
         >
           <img
             src="/snaps-logo-clean.svg"
             alt="Snaps"
             style={{
-              height: '32px',
+              height: '24px',
               width: 'auto',
               objectFit: 'contain',
               display: 'block',
             }}
             onError={(e) => {
-              // Fallback ke asset brand jika needed
               e.currentTarget.onerror = null;
               e.currentTarget.src = '/assets/logo/snaps-logo-clean.svg';
             }}
           />
+          <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+            <span
+              style={{
+                fontSize: '13px',
+                fontWeight: 600,
+                color: '#172b4d',
+                lineHeight: 1.2,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              Snaps Admin
+            </span>
+            <span
+              style={{
+                fontSize: '11px',
+                color: '#626f86',
+                lineHeight: 1.2,
+                whiteSpace: 'nowrap',
+              }}
+            >
+              SMKN 8 Semarang
+            </span>
+          </div>
         </a>
 
         {/* Mobile close button */}
@@ -69,10 +106,11 @@ export function AdminSidebar({
             style={{
               background: 'transparent',
               border: 0,
-              color: '#94a3b8',
-              fontSize: '18px',
+              color: '#626f86',
+              fontSize: '16px',
               padding: '6px',
               cursor: 'pointer',
+              borderRadius: '3px',
             }}
           >
             <i className="fa-solid fa-xmark"></i>
@@ -87,21 +125,18 @@ export function AdminSidebar({
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 'calc(100vh - 64px)',
+          minHeight: 'calc(100vh - 56px)',
         }}
       >
-        <nav className="navbar-sidebar" style={{ flex: 1 }}>
-          <ul className="list-unstyled navbar__list">
-            <li className="nav-group-label" style={{ textTransform: 'none', letterSpacing: 'normal' }}>
-              Menu Utama
-            </li>
+        <nav className="navbar-sidebar" style={{ flex: 1, padding: '8px' }}>
+          <ul className="list-unstyled navbar__list mb-0">
+            <li className="nav-group-label">Perencanaan & Ringkasan</li>
             <li className={activeTab === 'overview' ? 'active' : ''}>
               <a
                 href="#overview"
                 onClick={(e) => {
                   e.preventDefault();
-                  onTabChange('overview');
-                  onCloseMobile?.();
+                  handleNav('overview');
                 }}
               >
                 <i className="fa-solid fa-gauge-high"></i>
@@ -109,31 +144,23 @@ export function AdminSidebar({
               </a>
             </li>
 
-            <li className="nav-group-label" style={{ textTransform: 'none', letterSpacing: 'normal' }}>
-              Manajemen & Pengawasan
-            </li>
+            <li className="nav-group-label">Manajemen Siswa & Konten</li>
             <li className={activeTab === 'users' ? 'active' : ''}>
               <a
                 href="#users"
                 onClick={(e) => {
                   e.preventDefault();
-                  onTabChange('users');
-                  onCloseMobile?.();
+                  handleNav('users');
                 }}
               >
                 <i className="fa-solid fa-users"></i>
                 <span style={{ flex: 1, whiteSpace: 'nowrap' }}>Data Siswa</span>
                 {stats?.totalUsers != null && stats.totalUsers > 0 && (
                   <span
-                    style={{
-                      fontSize: '10px',
-                      fontWeight: 700,
-                      padding: '2px 7px',
-                      borderRadius: '10px',
-                      background: activeTab === 'users' ? '#4272d7' : '#f1f5f9',
-                      color: activeTab === 'users' ? '#ffffff' : '#64748b',
-                      fontVariantNumeric: 'tabular-nums',
-                    }}
+                    className={`ads-lozenge ${
+                      activeTab === 'users' ? 'ads-lozenge-inprogress' : 'ads-lozenge-default'
+                    }`}
+                    style={{ fontSize: '10px', padding: '1px 5px' }}
                   >
                     {stats.totalUsers}
                   </span>
@@ -146,23 +173,17 @@ export function AdminSidebar({
                 href="#moderation"
                 onClick={(e) => {
                   e.preventDefault();
-                  onTabChange('moderation');
-                  onCloseMobile?.();
+                  handleNav('moderation');
                 }}
               >
                 <i className="fa-solid fa-shield-halved"></i>
                 <span style={{ flex: 1, whiteSpace: 'nowrap' }}>Moderasi Feed</span>
                 {stats?.totalPosts != null && stats.totalPosts > 0 && (
                   <span
-                    style={{
-                      fontSize: '10px',
-                      fontWeight: 700,
-                      padding: '2px 7px',
-                      borderRadius: '10px',
-                      background: activeTab === 'moderation' ? '#4272d7' : '#f1f5f9',
-                      color: activeTab === 'moderation' ? '#ffffff' : '#64748b',
-                      fontVariantNumeric: 'tabular-nums',
-                    }}
+                    className={`ads-lozenge ${
+                      activeTab === 'moderation' ? 'ads-lozenge-inprogress' : 'ads-lozenge-default'
+                    }`}
+                    style={{ fontSize: '10px', padding: '1px 5px' }}
                   >
                     {stats.totalPosts}
                   </span>
@@ -170,60 +191,46 @@ export function AdminSidebar({
               </a>
             </li>
 
-            {/* Navlink Laporan Konten Pengguna (Tab Tersendiri: activeTab === 'reports') */}
             <li className={activeTab === 'reports' ? 'active' : ''}>
               <a
                 href="#reports"
                 onClick={(e) => {
                   e.preventDefault();
-                  onTabChange('reports');
-                  onCloseMobile?.();
+                  handleNav('reports');
                 }}
               >
-                <i className="fa-solid fa-flag" style={{ color: activeTab === 'reports' ? '#ffffff' : '#64748b' }}></i>
+                <i className="fa-solid fa-flag"></i>
                 <span style={{ flex: 1, whiteSpace: 'nowrap' }}>Laporan Konten</span>
               </a>
             </li>
 
-            {/* Navlink Broadcast Notifikasi Pengguna (activeTab === 'broadcast') */}
             <li className={activeTab === 'broadcast' ? 'active' : ''}>
               <a
                 href="#broadcast"
                 onClick={(e) => {
                   e.preventDefault();
-                  onTabChange('broadcast');
-                  onCloseMobile?.();
+                  handleNav('broadcast');
                 }}
               >
-                <i className="fa-solid fa-bullhorn" style={{ color: activeTab === 'broadcast' ? '#ffffff' : '#64748b' }}></i>
+                <i className="fa-solid fa-bullhorn"></i>
                 <span style={{ flex: 1, whiteSpace: 'nowrap' }}>Broadcast Notif</span>
               </a>
             </li>
 
-            {/* Navlink Keamanan Perangkat (Batas 1 HP Max 3 Akun & Analisis NIS) */}
             <li className={activeTab === 'devices' ? 'active' : ''}>
               <a
                 href="#devices"
                 onClick={(e) => {
                   e.preventDefault();
-                  onTabChange('devices');
-                  onCloseMobile?.();
+                  handleNav('devices');
                 }}
               >
-                <i className="fa-solid fa-mobile-screen" style={{ color: activeTab === 'devices' ? '#ffffff' : '#64748b' }}></i>
+                <i className="fa-solid fa-mobile-screen"></i>
                 <span style={{ flex: 1, whiteSpace: 'nowrap' }}>Keamanan Device</span>
                 {securityAlertsCount != null && securityAlertsCount > 0 && (
                   <span
-                    style={{
-                      fontSize: '10px',
-                      fontWeight: 700,
-                      padding: '2px 7px',
-                      borderRadius: '10px',
-                      background: '#ef4444',
-                      color: '#ffffff',
-                      fontVariantNumeric: 'tabular-nums',
-                      boxShadow: '0 1px 3px rgba(239, 68, 68, 0.4)',
-                    }}
+                    className="ads-lozenge ads-lozenge-danger"
+                    style={{ fontSize: '10px', padding: '1px 5px' }}
                   >
                     {securityAlertsCount}
                   </span>
@@ -231,31 +238,25 @@ export function AdminSidebar({
               </a>
             </li>
 
-            <li className="nav-group-label" style={{ textTransform: 'none', letterSpacing: 'normal' }}>
-              Logistik
-            </li>
+            <li className="nav-group-label">Operasional & Infrastruktur</li>
             <li className={activeTab === 'meeting-points' ? 'active' : ''}>
               <a
                 href="#meeting-points"
                 onClick={(e) => {
                   e.preventDefault();
-                  onTabChange('meeting-points');
-                  onCloseMobile?.();
+                  handleNav('meeting-points');
                 }}
               >
                 <i className="fa-solid fa-map-location-dot"></i>
                 <span style={{ flex: 1, whiteSpace: 'nowrap' }}>Titik COD</span>
                 {stats?.totalMeetingPoints != null && stats.totalMeetingPoints > 0 && (
                   <span
-                    style={{
-                      fontSize: '10px',
-                      fontWeight: 700,
-                      padding: '2px 7px',
-                      borderRadius: '10px',
-                      background: activeTab === 'meeting-points' ? '#4272d7' : '#f1f5f9',
-                      color: activeTab === 'meeting-points' ? '#ffffff' : '#64748b',
-                      fontVariantNumeric: 'tabular-nums',
-                    }}
+                    className={`ads-lozenge ${
+                      activeTab === 'meeting-points'
+                        ? 'ads-lozenge-inprogress'
+                        : 'ads-lozenge-default'
+                    }`}
+                    style={{ fontSize: '10px', padding: '1px 5px' }}
                   >
                     {stats.totalMeetingPoints}
                   </span>
@@ -263,39 +264,32 @@ export function AdminSidebar({
               </a>
             </li>
 
-            <li className="nav-group-label" style={{ textTransform: 'none', letterSpacing: 'normal' }}>
-              Infrastruktur
-            </li>
             <li className={activeTab === 'server' ? 'active' : ''}>
               <a
                 href="#server"
                 onClick={(e) => {
                   e.preventDefault();
-                  onTabChange('server');
-                  onCloseMobile?.();
+                  handleNav('server');
                 }}
               >
                 <i className="fa-solid fa-server"></i>
                 <span style={{ flex: 1, whiteSpace: 'nowrap' }}>Status Server</span>
                 <span
+                  className="ads-lozenge ads-lozenge-success"
                   style={{
+                    fontSize: '10px',
+                    padding: '1px 5px',
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '4px',
-                    fontSize: '10px',
-                    fontWeight: 700,
-                    padding: '2px 6px',
-                    borderRadius: '10px',
-                    background: activeTab === 'server' ? '#4272d7' : '#e0f3f1',
-                    color: activeTab === 'server' ? '#ffffff' : '#059669',
                   }}
                 >
                   <span
                     style={{
-                      width: '6px',
-                      height: '6px',
+                      width: '5px',
+                      height: '5px',
                       borderRadius: '50%',
-                      background: activeTab === 'server' ? '#ffffff' : '#10b981',
+                      background: '#1f845a',
                       display: 'inline-block',
                     }}
                   />
@@ -307,36 +301,36 @@ export function AdminSidebar({
         </nav>
 
         {/* Bottom Section: Connected Profile Card, Live DB, Logout */}
-        <div style={{ padding: '16px 14px', borderTop: '1px solid #e4e7ec' }}>
+        <div style={{ padding: '12px', borderTop: '1px solid #dcdfe4' }}>
           {/* Connected Admin Profile Card */}
           <div
             style={{
-              padding: '10px 12px',
-              borderRadius: '8px',
-              background: '#f8fafc',
-              border: '1px solid #e4e7ec',
-              marginBottom: '10px',
+              padding: '8px 10px',
+              borderRadius: '4px',
+              background: '#ffffff',
+              border: '1px solid #dcdfe4',
+              marginBottom: '8px',
               display: 'flex',
               alignItems: 'center',
-              gap: '10px',
+              gap: '8px',
             }}
           >
             <UserAvatar
               avatarUrl={adminProfile?.avatar_url}
               name={displayName}
-              size={36}
+              size={32}
               role={adminProfile?.role || 'admin'}
               style={{
-                border: '1px solid #d4e2fa',
+                border: '1px solid #dcdfe4',
               }}
             />
 
             <div style={{ flex: 1, minWidth: 0 }}>
               <div
                 style={{
-                  fontSize: '12.5px',
+                  fontSize: '12px',
                   fontWeight: 600,
-                  color: '#1f2937',
+                  color: '#172b4d',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -347,8 +341,8 @@ export function AdminSidebar({
               </div>
               <div
                 style={{
-                  fontSize: '10.5px',
-                  color: '#64748b',
+                  fontSize: '11px',
+                  color: '#626f86',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -358,18 +352,7 @@ export function AdminSidebar({
               </div>
             </div>
 
-            <span
-              style={{
-                fontSize: '10px',
-                fontWeight: 700,
-                padding: '2px 6px',
-                borderRadius: '4px',
-                background: '#eaf0fc',
-                color: '#4272d7',
-                border: '1px solid #d4e2fa',
-                textTransform: 'none',
-              }}
-            >
+            <span className="ads-lozenge ads-lozenge-inprogress" style={{ fontSize: '10px' }}>
               Admin
             </span>
           </div>
@@ -377,30 +360,30 @@ export function AdminSidebar({
           {/* Database Live Ping */}
           <div
             style={{
-              padding: '8px 12px',
-              borderRadius: '6px',
-              background: '#f8fafc',
-              border: '1px solid #e4e7ec',
-              marginBottom: '10px',
+              padding: '6px 10px',
+              borderRadius: '4px',
+              background: '#ffffff',
+              border: '1px solid #dcdfe4',
+              marginBottom: '8px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
             }}
           >
-            <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>
+            <span style={{ fontSize: '11px', color: '#626f86', fontWeight: 500 }}>
               Database PostgreSQL
             </span>
             <span
+              className="ads-lozenge ads-lozenge-success"
               style={{
                 fontSize: '10px',
-                color: '#10b981',
-                fontWeight: 700,
-                display: 'flex',
+                padding: '1px 5px',
+                display: 'inline-flex',
                 alignItems: 'center',
-                gap: '5px',
+                gap: '4px',
               }}
             >
-              <i className="fa-solid fa-circle" style={{ fontSize: '6px' }}></i>
+              <i className="fa-solid fa-circle" style={{ fontSize: '5px' }}></i>
               LIVE
             </span>
           </div>
@@ -409,23 +392,29 @@ export function AdminSidebar({
           <button
             type="button"
             onClick={onLogout}
-            className="w-100 text-start"
+            className="w-100 text-start ads-btn ads-btn-subtle"
             style={{
-              background: '#fff1f2',
-              border: '1px solid #fecdd3',
-              color: '#e11d48',
-              borderRadius: '6px',
-              padding: '9px 12px',
-              fontSize: '12.5px',
-              fontWeight: 600,
+              borderRadius: '4px',
+              padding: '8px 10px',
+              fontSize: '12px',
+              fontWeight: 500,
+              color: '#c9372c',
               display: 'flex',
               alignItems: 'center',
-              gap: '10px',
+              gap: '8px',
               cursor: 'pointer',
-              transition: 'background-color 120ms ease',
+              border: '1px solid transparent',
+              background: 'transparent',
+              transition: 'background-color 100ms ease, color 100ms ease',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = '#ffe4e6')}
-            onMouseLeave={(e) => (e.currentTarget.style.background = '#fff1f2')}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#ffedeb';
+              e.currentTarget.style.color = '#ae2e24';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = '#c9372c';
+            }}
           >
             <i className="fa-solid fa-arrow-right-from-bracket"></i>
             <span>Keluar dari Admin</span>

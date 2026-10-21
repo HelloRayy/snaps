@@ -6,20 +6,20 @@ interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 const badgeVariants = {
-  emerald: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20',
-  indigo: 'bg-[#EEF0FF] text-[#3D38F5] ring-[#D8DBFE]',
-  amber: 'bg-amber-50 text-amber-700 ring-amber-600/20',
-  rose: 'bg-rose-50 text-rose-700 ring-rose-600/20',
-  slate: 'bg-slate-50 text-slate-700 ring-slate-500/20',
-  blue: 'bg-blue-50 text-blue-700 ring-blue-600/20',
-  purple: 'bg-purple-50 text-purple-700 ring-purple-600/20',
+  emerald: 'bg-[#dffcf0] text-[#1f845a] border-[#bff7dc]',
+  indigo: 'bg-[#e9f2ff] text-[#0c66e4] border-[#cce0ff]',
+  amber: 'bg-[#fff7d6] text-[#974f0c] border-[#fde380]',
+  rose: 'bg-[#ffedeb] text-[#c9372c] border-[#ffd2cc]',
+  slate: 'bg-[#f1f2f4] text-[#44546f] border-[#dcdfe4]',
+  blue: 'bg-[#e9f2ff] text-[#0c66e4] border-[#cce0ff]',
+  purple: 'bg-[#f3f0ff] text-[#6e5dc6] border-[#dfd8fd]',
 };
 
 export function Badge({ variant = 'slate', className, children, ...props }: BadgeProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-x-1.5 rounded-md px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset tracking-wide',
+        'inline-flex items-center gap-x-1 rounded-[3px] px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider border',
         badgeVariants[variant],
         className
       )}

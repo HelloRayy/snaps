@@ -15,10 +15,10 @@ interface StatsCardProps {
 }
 
 const colorMap: Record<StatTileColor, { accent: string; fillStart: string }> = {
-  c1: { accent: '#4272d7', fillStart: 'rgba(66, 114, 215, 0.22)' },
-  c2: { accent: '#11998e', fillStart: 'rgba(17, 153, 142, 0.22)' },
-  c3: { accent: '#f97316', fillStart: 'rgba(249, 115, 22, 0.22)' },
-  c4: { accent: '#ec4899', fillStart: 'rgba(236, 72, 153, 0.22)' },
+  c1: { accent: '#0c66e4', fillStart: 'rgba(12, 102, 228, 0.16)' },
+  c2: { accent: '#1f845a', fillStart: 'rgba(31, 132, 90, 0.16)' },
+  c3: { accent: '#e27b00', fillStart: 'rgba(226, 123, 0, 0.16)' },
+  c4: { accent: '#6e5dc6', fillStart: 'rgba(110, 93, 198, 0.16)' },
 };
 
 const defaultSparklines: Record<StatTileColor, number[]> = {
@@ -70,14 +70,22 @@ export function StatsCard({
         </span>
       </div>
       <p className="stat-card__value">{value}</p>
-      <p className={`stat-card__delta stat-card__delta--${deltaPositive ? 'up' : 'down'}`}>
-        <i
-          className={`fa-solid fa-arrow-${deltaPositive ? 'up' : 'down'}`}
-          aria-hidden="true"
-        ></i>
-        {delta}
-        <span className="stat-card__delta-period">{deltaPeriod}</span>
-      </p>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+        <span
+          className={`ads-lozenge ${deltaPositive ? 'ads-lozenge-success' : 'ads-lozenge-danger'}`}
+          style={{ textTransform: 'none', letterSpacing: 'normal' }}
+        >
+          <i
+            className={`fa-solid fa-arrow-${deltaPositive ? 'up' : 'down'}`}
+            style={{ fontSize: '9px' }}
+            aria-hidden="true"
+          ></i>
+          {delta}
+        </span>
+        <span className="stat-card__delta-period" style={{ fontSize: '11px', color: '#626f86' }}>
+          {deltaPeriod}
+        </span>
+      </div>
       <div className="stat-card__sparkline">
         <svg
           viewBox={`0 0 ${width} ${height}`}

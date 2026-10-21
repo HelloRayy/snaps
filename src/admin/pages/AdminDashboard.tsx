@@ -14,6 +14,7 @@ import { DeviceSecurityTab } from './DeviceSecurityTab';
 import { useAdminSecurity } from '../hooks/useAdminSecurity';
 import { adminSecurityService, ADMIN_SESSION_STORAGE_KEY } from '../services/adminSecurityService';
 import '../styles/cooladmin.css';
+import '../styles/atlassian-design-system.css';
 
 interface AdminDashboardProps {
   onLogout: () => void;

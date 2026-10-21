@@ -30,22 +30,22 @@ export function AdminAccountDropdown({
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '10px',
+          gap: '8px',
           padding: '4px 8px',
-          borderRadius: '6px',
+          borderRadius: '4px',
           cursor: 'pointer',
-          background: isOpen ? '#f1f5f9' : 'transparent',
-          transition: 'background 120ms ease',
+          background: isOpen ? '#f1f2f4' : 'transparent',
+          transition: 'background-color 100ms ease',
         }}
       >
         <UserAvatar
           avatarUrl={adminProfile?.avatar_url}
           name={displayName}
-          size={36}
+          size={32}
           borderRadius="50%"
           role={adminRole}
           style={{
-            border: '1.5px solid #d4e2fa',
+            border: '1.5px solid #dcdfe4',
           }}
         />
         <div className="content d-none d-sm-block text-start">
@@ -53,7 +53,7 @@ export function AdminAccountDropdown({
             style={{
               fontSize: '13px',
               fontWeight: 600,
-              color: '#1f2937',
+              color: '#172b4d',
               display: 'block',
               lineHeight: 1.2,
               maxWidth: '120px',
@@ -65,13 +65,12 @@ export function AdminAccountDropdown({
             {displayName}
           </span>
           <span
+            className="ads-lozenge ads-lozenge-inprogress"
             style={{
-              fontSize: '10.5px',
-              color: '#4272d7',
-              fontWeight: 600,
-              display: 'block',
-              textTransform: 'uppercase',
-              letterSpacing: '0.04em',
+              fontSize: '9.5px',
+              padding: '0 4px',
+              marginTop: '2px',
+              display: 'inline-block',
             }}
           >
             {adminRole}
@@ -79,7 +78,7 @@ export function AdminAccountDropdown({
         </div>
         <i
           className="fa-solid fa-chevron-down d-none d-sm-inline-block"
-          style={{ fontSize: '10px', color: '#94a3b8', marginLeft: '4px' }}
+          style={{ fontSize: '10px', color: '#626f86', marginLeft: '4px' }}
         ></i>
       </div>
 
@@ -88,74 +87,113 @@ export function AdminAccountDropdown({
           style={{
             position: 'absolute',
             right: 0,
-            top: '110%',
-            width: '220px',
+            top: 'calc(100% + 4px)',
+            width: '240px',
             background: '#ffffff',
-            borderRadius: '8px',
-            border: '1px solid #e4e7ec',
-            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
+            borderRadius: '4px',
+            border: '1px solid #dcdfe4',
+            boxShadow: '0 4px 8px -2px rgba(9, 30, 66, 0.15), 0 0 1px 1px rgba(9, 30, 66, 0.12)',
             zIndex: 1000,
             overflow: 'hidden',
           }}
         >
-          <div style={{ padding: '12px 14px', borderBottom: '1px solid #f1f3f5' }}>
-            <div style={{ fontSize: '13px', fontWeight: 700, color: '#1f2937' }}>
+          {/* User info head */}
+          <div
+            style={{
+              padding: '12px 14px',
+              background: '#fafbfc',
+              borderBottom: '1px solid #dcdfe4',
+            }}
+          >
+            <div
+              style={{
+                fontSize: '13px',
+                fontWeight: 600,
+                color: '#172b4d',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
               {displayName}
             </div>
-            <div style={{ fontSize: '11.5px', color: '#64748b', marginTop: '2px' }}>
+            <div
+              style={{
+                fontSize: '11px',
+                color: '#626f86',
+                marginTop: '2px',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
               {displayUsername}
             </div>
           </div>
-          <div style={{ padding: '6px' }}>
-            <a
-              href="/@radityarayhannnn"
+
+          {/* Account details */}
+          <div style={{ padding: '8px 12px', borderBottom: '1px solid #dcdfe4' }}>
+            <div
               style={{
+                fontSize: '11px',
+                color: '#626f86',
+                display: 'flex',
+                justifyContent: 'space-between',
+                padding: '4px 0',
+              }}
+            >
+              <span>Otorisasi</span>
+              <span className="ads-lozenge ads-lozenge-inprogress" style={{ fontSize: '10px' }}>
+                {adminRole.toUpperCase()}
+              </span>
+            </div>
+            <div
+              style={{
+                fontSize: '11px',
+                color: '#626f86',
+                display: 'flex',
+                justifyContent: 'space-between',
+                padding: '4px 0',
+              }}
+            >
+              <span>Status Sistem</span>
+              <span className="ads-lozenge ads-lozenge-success" style={{ fontSize: '10px' }}>
+                AKTIF
+              </span>
+            </div>
+          </div>
+
+          {/* Action logout */}
+          <div style={{ padding: '4px' }}>
+            <button
+              type="button"
+              onClick={() => {
+                setIsOpen(false);
+                onLogout?.();
+              }}
+              style={{
+                width: '100%',
+                padding: '8px 10px',
+                textAlign: 'left',
+                background: 'transparent',
+                border: 0,
+                color: '#c9372c',
+                fontSize: '12px',
+                fontWeight: 500,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '10px',
-                padding: '8px 10px',
-                fontSize: '12.5px',
-                color: '#475569',
-                textDecoration: 'none',
-                borderRadius: '4px',
+                gap: '8px',
+                cursor: 'pointer',
+                borderRadius: '3px',
+                transition: 'background-color 100ms ease',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = '#f8fafc')}
+              onMouseEnter={(e) => (e.currentTarget.style.background = '#ffedeb')}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
-              <i className="fa-solid fa-user" style={{ width: '14px', color: '#94a3b8' }}></i>
-              Lihat Profil Publik
-            </a>
+              <i className="fa-solid fa-arrow-right-from-bracket"></i>
+              <span>Keluar dari Sesi</span>
+            </button>
           </div>
-          {onLogout && (
-            <div style={{ padding: '6px', borderTop: '1px solid #f1f3f5' }}>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsOpen(false);
-                  onLogout();
-                }}
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  padding: '8px 10px',
-                  fontSize: '12.5px',
-                  color: '#dc3545',
-                  background: 'transparent',
-                  border: 0,
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = '#fef2f2')}
-                onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-              >
-                <i className="fa-solid fa-arrow-right-from-bracket" style={{ width: '14px' }}></i>
-                Keluar dari Akun
-              </button>
-            </div>
-          )}
         </div>
       )}
     </div>
