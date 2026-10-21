@@ -267,7 +267,7 @@ class GlobalNotificationService {
       });
 
       // When app is in foreground and FCM receives a message
-      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
         final isDm = message.data['type']?.toString() == 'dm';
         final conversationId = message.data['conversation_id']?.toString() ?? '';
 
