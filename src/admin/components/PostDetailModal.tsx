@@ -38,9 +38,9 @@ export function PostDetailModal({
           width: '100%',
           maxWidth: '740px',
           background: '#ffffff',
-          borderRadius: '10px',
+          borderRadius: '8px',
           border: '1px solid #e4e7ec',
-          boxShadow: '0 20px 35px rgba(0, 0, 0, 0.15)',
+          boxShadow: '0 8px 16px -4px rgba(9, 30, 66, 0.16), 0 0 1px 1px rgba(9, 30, 66, 0.10)',
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
@@ -50,8 +50,8 @@ export function PostDetailModal({
         {/* Modal Header */}
         <div
           style={{
-            padding: '18px 24px',
-            borderBottom: '1px solid #f1f3f5',
+            padding: '16px 24px',
+            borderBottom: '1px solid #edf0f2',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',

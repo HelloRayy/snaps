@@ -301,14 +301,14 @@ export function AdminSidebar({
         </nav>
 
         {/* Bottom Section: Connected Profile Card, Live DB, Logout */}
-        <div style={{ padding: '12px', borderTop: '1px solid #dcdfe4' }}>
+        <div style={{ padding: '12px', borderTop: '1px solid #edf0f2' }}>
           {/* Connected Admin Profile Card */}
           <div
             style={{
               padding: '8px 10px',
               borderRadius: '4px',
-              background: '#ffffff',
-              border: '1px solid #dcdfe4',
+              background: '#f7f8f9',
+              border: '1px solid #edf0f2',
               marginBottom: '8px',
               display: 'flex',
               alignItems: 'center',
@@ -321,7 +321,7 @@ export function AdminSidebar({
               size={32}
               role={adminProfile?.role || 'admin'}
               style={{
-                border: '1px solid #dcdfe4',
+                border: '1px solid #edf0f2',
               }}
             />
 
@@ -362,8 +362,8 @@ export function AdminSidebar({
             style={{
               padding: '6px 10px',
               borderRadius: '4px',
-              background: '#ffffff',
-              border: '1px solid #dcdfe4',
+              background: '#f7f8f9',
+              border: '1px solid #edf0f2',
               marginBottom: '8px',
               display: 'flex',
               alignItems: 'center',

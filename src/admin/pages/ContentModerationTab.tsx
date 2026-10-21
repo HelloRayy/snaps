@@ -450,7 +450,7 @@ export function ContentModerationTab({ isActive = true }: ContentModerationTabPr
                             justifyContent: 'space-between',
                             marginTop: '12px',
                             paddingTop: '10px',
-                            borderTop: '1px solid #f1f3f5',
+                            borderTop: '1px solid #edf0f2',
                           }}
                         >
                           <span style={{ fontSize: '13px', fontWeight: 700, color: '#4272d7' }}>
@@ -497,7 +497,7 @@ export function ContentModerationTab({ isActive = true }: ContentModerationTabPr
             justifyContent: 'space-between',
             paddingTop: '16px',
             marginTop: '8px',
-            borderTop: '1px solid #f1f3f5',
+            borderTop: '1px solid #edf0f2',
           }}
         >
           <div style={{ fontSize: '12.5px', color: '#94a3b8' }}>

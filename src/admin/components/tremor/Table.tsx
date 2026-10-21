@@ -25,7 +25,7 @@ export function TableHead({
 }: React.HTMLAttributes<HTMLTableSectionElement>) {
   return (
     <thead
-      className={cn('border-b-2 border-[#dcdfe4] bg-[#fafbfc]', className)}
+      className={cn('border-b border-[#e4e7ec] bg-[#fafbfc]', className)}
       {...props}
     >
       {children}
@@ -58,7 +58,7 @@ export function TableBody({
 }: React.HTMLAttributes<HTMLTableSectionElement>) {
   return (
     <tbody
-      className={cn('divide-y divide-[#dcdfe4] bg-white', className)}
+      className={cn('divide-y divide-[#edf0f2] bg-white', className)}
       {...props}
     >
       {children}

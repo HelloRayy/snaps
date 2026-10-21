@@ -48,9 +48,9 @@ export function UserDetailModal({
           width: '100%',
           maxWidth: '820px',
           background: '#ffffff',
-          borderRadius: '12px',
+          borderRadius: '8px',
           border: '1px solid #e4e7ec',
-          boxShadow: '0 25px 45px rgba(0, 0, 0, 0.16)',
+          boxShadow: '0 8px 16px -4px rgba(9, 30, 66, 0.16), 0 0 1px 1px rgba(9, 30, 66, 0.10)',
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
@@ -62,7 +62,7 @@ export function UserDetailModal({
         <div
           style={{
             padding: '16px 24px',
-            borderBottom: '1px solid #f1f3f5',
+            borderBottom: '1px solid #edf0f2',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',

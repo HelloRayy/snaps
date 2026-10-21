@@ -9,7 +9,7 @@ export function Divider({ children, className, ...props }: DividerProps) {
   if (!children) {
     return (
       <div
-        className={cn('w-full border-t border-slate-200/80 my-4', className)}
+        className={cn('w-full border-t border-[#edf0f2] my-4', className)}
         {...props}
       />
     );
@@ -21,9 +21,9 @@ export function Divider({ children, className, ...props }: DividerProps) {
       {...props}
     >
       <div className="absolute inset-0 flex items-center">
-        <div className="w-full border-t border-slate-200/80" />
+        <div className="w-full border-t border-[#edf0f2]" />
       </div>
-      <div className="relative bg-white px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+      <div className="relative bg-white px-3 text-[11px] font-semibold uppercase tracking-wider text-[#626f86]">
         {children}
       </div>
     </div>

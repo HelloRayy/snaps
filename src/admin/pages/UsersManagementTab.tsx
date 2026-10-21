@@ -799,7 +799,7 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
             justifyContent: 'space-between',
             paddingTop: '16px',
             marginTop: '8px',
-            borderTop: '1px solid #f1f3f5',
+            borderTop: '1px solid #edf0f2',
           }}
         >
           <div style={{ fontSize: '12.5px', color: '#94a3b8' }}>

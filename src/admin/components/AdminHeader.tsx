@@ -366,8 +366,8 @@ export function AdminHeader({
                         width: '320px',
                         background: '#ffffff',
                         borderRadius: '4px',
-                        border: '1px solid #dcdfe4',
-                        boxShadow: '0 4px 8px -2px rgba(9, 30, 66, 0.15), 0 0 1px 1px rgba(9, 30, 66, 0.12)',
+                        border: '1px solid #e4e7ec',
+                        boxShadow: '0 4px 8px -2px rgba(9, 30, 66, 0.12), 0 0 1px 1px rgba(9, 30, 66, 0.08)',
                         zIndex: 1050,
                         overflow: 'hidden',
                       }}
@@ -375,7 +375,7 @@ export function AdminHeader({
                       <div
                         style={{
                           padding: '10px 14px',
-                          borderBottom: '1px solid #dcdfe4',
+                          borderBottom: '1px solid #edf0f2',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
@@ -422,7 +422,7 @@ export function AdminHeader({
                               }}
                               style={{
                                 padding: '12px 16px',
-                                borderBottom: '1px solid #f1f3f5',
+                                borderBottom: '1px solid #edf0f2',
                                 cursor: 'pointer',
                                 background: noti.unread ? '#fafcff' : '#ffffff',
                                 transition: 'background 120ms ease',
@@ -508,8 +508,8 @@ export function AdminHeader({
                       <div
                         style={{
                           padding: '8px 12px',
-                          background: '#f8fafc',
-                          borderTop: '1px solid #f1f3f5',
+                          background: '#fafbfc',
+                          borderTop: '1px solid #edf0f2',
                           textAlign: 'center',
                         }}
                       >

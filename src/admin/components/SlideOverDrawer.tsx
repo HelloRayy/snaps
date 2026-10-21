@@ -52,10 +52,10 @@ export function SlideOverDrawer({
 
       <div className="fixed inset-y-0 right-0 flex pl-10 max-w-full">
         <div
-          className={`w-screen ${width} bg-white border-l border-[#dcdfe4] shadow-[0_8px_16px_-4px_rgba(9,30,66,0.2),0_0_1px_1px_rgba(9,30,66,0.15)] flex flex-col transform transition-transform ease-out duration-300 animate-in slide-in-from-right`}
+          className={`w-screen ${width} bg-white border-l border-[#e4e7ec] shadow-[0_8px_16px_-4px_rgba(9,30,66,0.16),0_0_1px_1px_rgba(9,30,66,0.10)] flex flex-col transform transition-transform ease-out duration-300 animate-in slide-in-from-right`}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-[#dcdfe4] bg-white sticky top-0 z-10">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-[#edf0f2] bg-white sticky top-0 z-10">
             <div>
               <h2 className="text-[15px] font-semibold tracking-tight text-[#172b4d]">
                 {title}

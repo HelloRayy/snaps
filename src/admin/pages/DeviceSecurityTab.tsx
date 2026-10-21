@@ -298,7 +298,7 @@ export function DeviceSecurityTab({ isActive = true }: DeviceSecurityTabProps) {
           alignItems: 'center',
           gap: '8px',
           marginBottom: '20px',
-          borderBottom: '1px solid #e2e8f0',
+          borderBottom: '1px solid #edf0f2',
           paddingBottom: '8px',
         }}
       >
@@ -306,13 +306,13 @@ export function DeviceSecurityTab({ isActive = true }: DeviceSecurityTabProps) {
           type="button"
           onClick={() => setSubTab('registration_limits')}
           style={{
-            padding: '8px 16px',
+            padding: '6px 12px',
             fontSize: '13px',
-            fontWeight: 600,
-            borderRadius: '6px',
+            fontWeight: 500,
+            borderRadius: '4px',
             border: 'none',
-            background: subTab === 'registration_limits' ? '#eff6ff' : 'transparent',
-            color: subTab === 'registration_limits' ? '#1d4ed8' : '#64748b',
+            background: subTab === 'registration_limits' ? '#e9f2ff' : 'transparent',
+            color: subTab === 'registration_limits' ? '#0c66e4' : '#626f86',
             cursor: 'pointer',
             display: 'inline-flex',
             alignItems: 'center',
@@ -326,10 +326,11 @@ export function DeviceSecurityTab({ isActive = true }: DeviceSecurityTabProps) {
             <span
               style={{
                 fontSize: '11px',
-                background: subTab === 'registration_limits' ? '#dbeafe' : '#f1f5f9',
-                color: subTab === 'registration_limits' ? '#1e40af' : '#64748b',
+                background: subTab === 'registration_limits' ? '#cce0ff' : '#f1f2f4',
+                color: subTab === 'registration_limits' ? '#0c66e4' : '#44546f',
                 padding: '1px 6px',
-                borderRadius: '10px',
+                borderRadius: '3px',
+                fontWeight: 700,
               }}
             >
               {data.devices.length}
@@ -341,13 +342,13 @@ export function DeviceSecurityTab({ isActive = true }: DeviceSecurityTabProps) {
           type="button"
           onClick={() => setSubTab('nis_investigation')}
           style={{
-            padding: '8px 16px',
+            padding: '6px 12px',
             fontSize: '13px',
-            fontWeight: 600,
-            borderRadius: '6px',
+            fontWeight: 500,
+            borderRadius: '4px',
             border: 'none',
-            background: subTab === 'nis_investigation' ? '#eff6ff' : 'transparent',
-            color: subTab === 'nis_investigation' ? '#1d4ed8' : '#64748b',
+            background: subTab === 'nis_investigation' ? '#e9f2ff' : 'transparent',
+            color: subTab === 'nis_investigation' ? '#0c66e4' : '#626f86',
             cursor: 'pointer',
             display: 'inline-flex',
             alignItems: 'center',
