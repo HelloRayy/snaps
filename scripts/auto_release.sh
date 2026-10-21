@@ -85,7 +85,8 @@ CHANGELOG=""
 AUTO_CONFIRM=false
 DRY_RUN=false
 SKIP_BUILD=false
-ARM64_ONLY=false
+ARM64_ONLY=true
+IS_MANDATORY=false
 
 # CLI argument parser
 while [[ $# -gt 0 ]]; do
@@ -104,6 +105,14 @@ while [[ $# -gt 0 ]]; do
       ;;
     --arm64)
       ARM64_ONLY=true
+      shift
+      ;;
+    --universal)
+      ARM64_ONLY=false
+      shift
+      ;;
+    --mandatory)
+      IS_MANDATORY=true
       shift
       ;;
     -m|--message|--changelog)
@@ -344,7 +353,9 @@ elif [ -n "$SUPABASE_KEY" ]; then
     echo -e "${GREEN}✓ APK berhasil diunggah ke Supabase Storage CDN!${NC}"
     DOWNLOAD_URL="${SUPABASE_URL_VAL}/storage/v1/object/public/app_releases/v${VERSION_NAME}/app-release.apk"
   else
-    echo -e "${YELLOW}⚠️ Upload ke Storage: $UPLOAD_STORAGE_RESP. Tetap menggunakan URL fallback.${NC}"
+    echo -e "${RED}❌ Upload ke Supabase Storage Gagal: $UPLOAD_STORAGE_RESP${NC}"
+    echo -e "${YELLOW}⚠️ PERINGATAN: Repositori GitHub bersifat privat sehingga URL aset GitHub Release tidak dapat diunduh tanpa otentikasi. Batalkan registrasi Supabase.${NC}"
+    exit 1
   fi
 
   # 2. Nonaktifkan versi sebelumnya agar rilis ini menjadi satu-satunya yang aktif
@@ -357,6 +368,11 @@ elif [ -n "$SUPABASE_KEY" ]; then
 
   # 3. Daftarkan versi baru
   echo "• Mendaftarkan versi baru v${VERSION_NAME}..."
+  MANDATORY_VAL="False"
+  if [ "$IS_MANDATORY" = "true" ]; then
+    MANDATORY_VAL="True"
+  fi
+
   SUPABASE_PAYLOAD=$(python3 -c "
 import json
 print(json.dumps({
@@ -365,7 +381,7 @@ print(json.dumps({
     'download_url': '${DOWNLOAD_URL}',
     'title': 'Pembaruan Snaps v${VERSION_NAME}',
     'changelog': '''${CHANGELOG}''',
-    'is_mandatory': True,
+    'is_mandatory': ${MANDATORY_VAL},
     'is_active': True
 }))
 ")
