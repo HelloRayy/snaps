@@ -5,6 +5,7 @@ import { UserAvatar } from './UserAvatar';
 import { AdminModalPortal } from './AdminModalPortal';
 import { RoleSelectDropdown, type UserRole } from './RoleSelectDropdown';
 import { AdminTooltip } from './AdminTooltip';
+import { AppVersionBadge } from './AppVersionBadge';
 
 interface UserDetailModalProps {
   user: ProfileRow | null;
@@ -17,6 +18,7 @@ interface UserDetailModalProps {
   onRequestUnsuspend?: (user: ProfileRow) => void;
   onRequestDelete?: (user: ProfileRow) => void;
   isUpdating: boolean;
+  latestVersion?: string | null;
 }
 
 export function UserDetailModal({
@@ -30,6 +32,7 @@ export function UserDetailModal({
   onRequestUnsuspend,
   onRequestDelete,
   isUpdating,
+  latestVersion,
 }: UserDetailModalProps) {
   const [copiedId, setCopiedId] = useState(false);
 
@@ -267,13 +270,12 @@ export function UserDetailModal({
                     Versi Aplikasi di HP
                   </span>
                   <span style={{ fontWeight: 600 }}>
-                    {user.last_app_version ? (
-                      <span style={{ background: '#f0fdf4', color: '#166534', padding: '2.5px 8px', borderRadius: '6px', border: '1px solid #bbf7d0', fontSize: '11.5px', fontWeight: 700 }}>
-                        {user.last_app_version}
-                      </span>
-                    ) : (
-                      <span style={{ color: '#94a3b8', fontSize: '11.5px', fontWeight: 500 }}>Belum Tersinkron</span>
-                    )}
+                    <AppVersionBadge
+                      version={user.last_app_version}
+                      latestVersion={latestVersion}
+                      emptyLabel="Belum Tersinkron"
+                      size="md"
+                    />
                   </span>
                 </div>
 

@@ -6,6 +6,8 @@ import { UserDetailModal } from '../components/UserDetailModal';
 import { UserAvatar } from '../components/UserAvatar';
 import { AdminModalPortal } from '../components/AdminModalPortal';
 import { AdminTooltip } from '../components/AdminTooltip';
+import { AppVersionBadge } from '../components/AppVersionBadge';
+import { getEffectiveLatestVersion } from '../utils/versionUtils';
 
 // Daftar pilihan standar SMKN 8 Semarang
 const SMKN8_GRADES = ['X', 'XI', 'XII'] as const;
@@ -28,6 +30,7 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
   const pageSize = 10;
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [feedbackMsg, setFeedbackMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [latestAppVersion, setLatestAppVersion] = useState<string | null>(null);
 
   // Inspector Modal
   const [selectedStudent, setSelectedStudent] = useState<ProfileRow | null>(null);
@@ -100,6 +103,30 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
       fetchUsers();
     }
   }, [isActive, fetchUsers]);
+
+  // Muat versi rilis aplikasi aktif dari database Supabase
+  useEffect(() => {
+    let isMounted = true;
+    async function loadLatestVersion() {
+      try {
+        const ver = await adminService.getLatestAppVersion();
+        if (isMounted && ver?.raw) {
+          setLatestAppVersion(ver.raw);
+        }
+      } catch (err) {
+        console.warn('Could not load latest app version:', err);
+      }
+    }
+    loadLatestVersion();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const effectiveLatestVersion = getEffectiveLatestVersion(
+    latestAppVersion,
+    users.map((u) => u.last_app_version)
+  );
 
   const handleRowClick = (user: ProfileRow) => {
     setSelectedStudent(user);
@@ -477,7 +504,27 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
               <tr>
                 <th>Siswa</th>
                 <th>NIS & Jurusan</th>
-                <th>Versi App</th>
+                <th>
+                  <span>Versi App</span>
+                  {effectiveLatestVersion && (
+                    <span
+                      style={{
+                        marginLeft: '6px',
+                        fontSize: '9.5px',
+                        fontWeight: 600,
+                        padding: '1px 5px',
+                        borderRadius: '3px',
+                        background: '#f1f2f4',
+                        color: '#626f86',
+                        border: '1px solid #dcdfe4',
+                        textTransform: 'none',
+                      }}
+                      title={`Rilis terbaru aktif: ${effectiveLatestVersion}`}
+                    >
+                      {effectiveLatestVersion}
+                    </span>
+                  )}
+                </th>
                 <th>Role</th>
                 <th>Status Verifikasi</th>
                 <th>Status Akun</th>
@@ -535,28 +582,10 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
                       </div>
                     </td>
                     <td>
-                      {u.last_app_version ? (
-                        <span
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '4.5px',
-                            padding: '2.5px 7.5px',
-                            borderRadius: '6px',
-                            fontSize: '11px',
-                            fontWeight: 700,
-                            background: '#f0fdf4',
-                            color: '#166534',
-                            border: '1px solid #bbf7d0',
-                          }}
-                          title={`Versi aplikasi terpasang di HP: ${u.last_app_version}`}
-                        >
-                          <i className="fa-solid fa-mobile-screen" style={{ fontSize: '10px' }}></i>
-                          {u.last_app_version}
-                        </span>
-                      ) : (
-                        <span style={{ color: '#94a3b8', fontSize: '11.5px' }} title="Belum pernah membuka rilis v1.0.35">-</span>
-                      )}
+                      <AppVersionBadge
+                        version={u.last_app_version}
+                        latestVersion={effectiveLatestVersion}
+                      />
                     </td>
                     <td>
                       <span
@@ -855,6 +884,7 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
           setPendingDeleteTarget(user);
         }}
         isUpdating={updatingId === selectedStudent?.id}
+        latestVersion={effectiveLatestVersion}
       />
 
       {/* Modal Popup Konfirmasi Verifikasi Siswa (Mencegah Miss-Click) */}

@@ -5,7 +5,9 @@ import { StatsCard } from '../components/StatsCard';
 import { ServerStatusCard } from '../components/ServerStatusCard';
 import { ServerStatusGaugeCard } from '../components/ServerStatusGaugeCard';
 import { UserAvatar } from '../components/UserAvatar';
-import type { AdminStats } from '../services/adminService';
+import { AppVersionBadge } from '../components/AppVersionBadge';
+import { getEffectiveLatestVersion } from '../utils/versionUtils';
+import { adminService, type AdminStats } from '../services/adminService';
 import type { AdminTab } from '../components/AdminSidebar';
 
 type DateRange = 'today' | '7d' | '30d' | 'all';
@@ -28,6 +30,30 @@ export function OverviewTab({
   const [dateRange, setDateRange] = useState<DateRange>('today');
   const [isDateMenuOpen, setIsDateMenuOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [latestAppVersion, setLatestAppVersion] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadLatestVersion() {
+      try {
+        const ver = await adminService.getLatestAppVersion();
+        if (isMounted && ver?.raw) {
+          setLatestAppVersion(ver.raw);
+        }
+      } catch (err) {
+        console.warn('Could not load latest app version in OverviewTab:', err);
+      }
+    }
+    loadLatestVersion();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const effectiveLatestVersion = getEffectiveLatestVersion(
+    latestAppVersion,
+    stats?.recentUsers?.map((u) => u.last_app_version)
+  );
 
   // Real server health telemetry state
   const [serverHealth, setServerHealth] = useState<{
@@ -492,7 +518,27 @@ export function OverviewTab({
                   <tr>
                     <th>Siswa</th>
                     <th>Kelas & Jurusan</th>
-                    <th>Versi App</th>
+                    <th>
+                      <span>Versi App</span>
+                      {effectiveLatestVersion && (
+                        <span
+                          style={{
+                            marginLeft: '6px',
+                            fontSize: '9.5px',
+                            fontWeight: 600,
+                            padding: '1px 5px',
+                            borderRadius: '3px',
+                            background: '#f1f2f4',
+                            color: '#626f86',
+                            border: '1px solid #dcdfe4',
+                            textTransform: 'none',
+                          }}
+                          title={`Rilis terbaru aktif: ${effectiveLatestVersion}`}
+                        >
+                          {effectiveLatestVersion}
+                        </span>
+                      )}
+                    </th>
                     <th>Role</th>
                     <th className="num">Waktu</th>
                   </tr>
@@ -542,27 +588,10 @@ export function OverviewTab({
                           </div>
                         </td>
                         <td>
-                          {u.last_app_version ? (
-                            <span
-                              style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '4px',
-                                padding: '2.5px 7.5px',
-                                borderRadius: '6px',
-                                fontSize: '11px',
-                                fontWeight: 700,
-                                background: '#f0fdf4',
-                                color: '#166534',
-                                border: '1px solid #bbf7d0',
-                              }}
-                            >
-                              <i className="fa-solid fa-mobile-screen" style={{ fontSize: '10px' }}></i>
-                              {u.last_app_version}
-                            </span>
-                          ) : (
-                            <span style={{ color: '#94a3b8', fontSize: '11px' }}>-</span>
-                          )}
+                          <AppVersionBadge
+                            version={u.last_app_version}
+                            latestVersion={effectiveLatestVersion}
+                          />
                         </td>
                         <td>
                           <span

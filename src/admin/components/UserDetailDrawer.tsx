@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { SlideOverDrawer } from './SlideOverDrawer';
 import { UserAvatar } from './UserAvatar';
+import { AppVersionBadge } from './AppVersionBadge';
 import type { ProfileRow } from '../services/adminService';
 
 interface UserDetailDrawerProps {
@@ -22,6 +23,7 @@ interface UserDetailDrawerProps {
   onChangeRole: (user: ProfileRow, newRole: 'user' | 'admin' | 'buyer' | 'seller') => void;
   onToggleMascotAccess?: (userId: string, currentStatus: boolean) => Promise<void>;
   isUpdating: boolean;
+  latestVersion?: string | null;
 }
 
 export function UserDetailDrawer({
@@ -32,6 +34,7 @@ export function UserDetailDrawer({
   onChangeRole,
   isUpdating,
   onToggleMascotAccess,
+  latestVersion,
 }: UserDetailDrawerProps) {
   const [copiedId, setCopiedId] = useState(false);
 
@@ -124,13 +127,12 @@ export function UserDetailDrawer({
               <Smartphone className="h-4 w-4 text-slate-400" /> Versi Aplikasi di HP
             </span>
             <span className="font-semibold text-slate-900">
-              {user.last_app_version ? (
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  {user.last_app_version}
-                </span>
-              ) : (
-                <span className="text-slate-400 text-xs font-medium">Belum Tersinkron</span>
-              )}
+              <AppVersionBadge
+                version={user.last_app_version}
+                latestVersion={latestVersion}
+                emptyLabel="Belum Tersinkron"
+                size="md"
+              />
             </span>
           </div>
 

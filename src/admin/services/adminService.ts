@@ -145,7 +145,7 @@ export const adminService = {
       supabase.from('orders').select('id', { count: 'exact', head: true }),
       supabase
         .from('profiles')
-        .select('id, full_name, username, avatar_url, role, class_group, created_at')
+        .select('id, full_name, username, avatar_url, role, class_group, created_at, is_verified, last_app_version')
         .order('created_at', { ascending: false })
         .limit(5),
       supabase
@@ -1576,6 +1576,33 @@ export const adminService = {
     } catch (err: any) {
       console.error('Failed resetStudentClaim:', err);
       throw new Error(err?.message || 'Gagal me-reset status klaim NIS.');
+    }
+  },
+
+  /**
+   * Mengambil versi rilis aplikasi terbaru dari tabel app_versions
+   */
+  async getLatestAppVersion(): Promise<{ versionName: string; versionCode: number; raw: string } | null> {
+    try {
+      const { data, error } = await (supabase as any)
+        .from('app_versions')
+        .select('version_name, version_code, is_active')
+        .order('version_code', { ascending: false })
+        .limit(1);
+
+      if (error || !data || data.length === 0) return null;
+      const row = data[0];
+      const name = (row.version_name || '').trim();
+      const code = Number(row.version_code) || 0;
+      const raw = `v${name}+${code}`;
+      return {
+        versionName: name,
+        versionCode: code,
+        raw,
+      };
+    } catch (err) {
+      console.warn('Failed getLatestAppVersion:', err);
+      return null;
     }
   },
 };
