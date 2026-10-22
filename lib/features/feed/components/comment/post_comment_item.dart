@@ -355,7 +355,7 @@ class _PostCommentItemState extends State<PostCommentItem> {
                   const SizedBox(width: 4.0),
                   MascotFlairBadge(
                     flair: widget.comment.user.mascotFlair!,
-                    size: 18.0,
+                    size: 26.0,
                   ),
                 ],
                 if (widget.comment.user.isAuthor) ...[

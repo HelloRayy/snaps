@@ -183,7 +183,7 @@ class _CommentReplyTileState extends State<CommentReplyTile> {
                   const SizedBox(width: 4.0),
                   MascotFlairBadge(
                     flair: widget.reply.user.mascotFlair!,
-                    size: 16.0,
+                    size: 26.0,
                   ),
                 ],
                 if (widget.reply.user.isAuthor) ...[
