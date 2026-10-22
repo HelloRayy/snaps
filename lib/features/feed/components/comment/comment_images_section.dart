@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:snapan_market/features/feed/components/post_card/adaptive_carousel_card.dart';
+import 'package:snapan_market/features/feed/components/post_card/dynamic_feed_image.dart';
 
-/// Preview section for attached images in a comment (single 16:10 or multi-image horizontal carousel)
-class CommentImagesSection extends StatelessWidget {
+/// Preview section for attached images in a comment with dynamic aspect ratio parity to the home feed.
+class CommentImagesSection extends StatefulWidget {
   final List<String> images;
   final void Function(List<String> images, int index)? onImageClick;
 
@@ -12,74 +14,112 @@ class CommentImagesSection extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    if (images.isEmpty) return const SizedBox.shrink();
+  State<CommentImagesSection> createState() => _CommentImagesSectionState();
+}
 
-    if (images.length == 1) {
-      return GestureDetector(
-        onTap: () => onImageClick?.call(images, 0),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(14.0),
-          child: Container(
-            constraints: const BoxConstraints(maxHeight: 220.0),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF1F5F9),
-              borderRadius: BorderRadius.circular(14.0),
-              border: Border.all(color: const Color(0x14000000), width: 1.0),
-            ),
-            child: AspectRatio(
-              aspectRatio: 16 / 10,
-              child: Image.network(
-                images.first,
-                fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => Container(
-                  color: const Color(0xFFF1F5F9),
-                  child: const Center(
-                    child: Icon(Icons.image_outlined, color: Color(0xFF94A3B8), size: 32.0),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
+class _CommentImagesSectionState extends State<CommentImagesSection> {
+  static const double _commentCarouselHeight = 170.0;
+  static const double _carouselGap = 6.0;
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.images.isEmpty) return const SizedBox.shrink();
+
+    // 1. Single Image Display (Dynamic Aspect Ratio up to 4:5, max height 360)
+    if (widget.images.length == 1) {
+      return DynamicFeedImage(
+        imageUrl: widget.images.first,
+        maxHeight: 360.0,
+        borderRadius: 14.0,
+        onTap: () => widget.onImageClick?.call(widget.images, 0),
       );
     }
 
-    return SizedBox(
-      height: 140.0,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        clipBehavior: Clip.none,
-        physics: const BouncingScrollPhysics(),
-        child: Row(
-          children: List.generate(images.length, (idx) {
-            final imgUrl = images[idx];
-            final isLast = idx == images.length - 1;
-            return Padding(
-              padding: EdgeInsets.only(right: isLast ? 0.0 : 8.0),
-              child: GestureDetector(
-                onTap: () => onImageClick?.call(images, idx),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(14.0),
-                  child: Container(
-                    width: 180.0,
-                    height: 140.0,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF1F5F9),
-                      borderRadius: BorderRadius.circular(14.0),
-                      border: Border.all(color: const Color(0x14000000), width: 1.0),
-                    ),
-                    child: Image.network(
-                      imgUrl,
-                      fit: BoxFit.cover,
+    // 2. Multi-Image Display (2+ photos) - Threads Dual Strategy: 50-50 Split or Peeking Carousel
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isFiniteWidth = constraints.maxWidth.isFinite;
+        final availableWidth = isFiniteWidth ? constraints.maxWidth : 0.0;
+        final maxCardWidth = (isFiniteWidth && availableWidth > 0)
+            ? (availableWidth * 0.82)
+            : 260.0;
+
+        // POLA A: Exactly 2 photos, both portrait or square (naturalRatio <= 1.15)
+        if (widget.images.length == 2 && availableWidth > 0) {
+          final ratio0 = AdaptiveCarouselCard.getCachedRatio(widget.images[0]);
+          final ratio1 = AdaptiveCarouselCard.getCachedRatio(widget.images[1]);
+          final bool isBothPortraitOrSquare = (ratio0 != null && ratio0 <= 1.15) &&
+              (ratio1 != null && ratio1 <= 1.15);
+
+          if (isBothPortraitOrSquare) {
+            final halfWidth = (availableWidth - _carouselGap) / 2;
+
+            return SizedBox(
+              height: _commentCarouselHeight,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: AdaptiveCarouselCard(
+                      imageUrl: widget.images[0],
+                      height: _commentCarouselHeight,
+                      customWidth: halfWidth,
+                      borderRadius: 14.0,
+                      onTap: () => widget.onImageClick?.call(widget.images, 0),
+                      onRatioResolved: (_) {
+                        if (mounted) setState(() {});
+                      },
                     ),
                   ),
-                ),
+                  const SizedBox(width: _carouselGap),
+                  Expanded(
+                    child: AdaptiveCarouselCard(
+                      imageUrl: widget.images[1],
+                      height: _commentCarouselHeight,
+                      customWidth: halfWidth,
+                      borderRadius: 14.0,
+                      onTap: () => widget.onImageClick?.call(widget.images, 1),
+                      onRatioResolved: (_) {
+                        if (mounted) setState(() {});
+                      },
+                    ),
+                  ),
+                ],
               ),
             );
-          }),
-        ),
-      ),
+          }
+        }
+
+        // POLA B: 3+ photos, mixed ratios, or while ratios are resolving
+        return SizedBox(
+          height: _commentCarouselHeight,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            clipBehavior: Clip.none,
+            physics: const BouncingScrollPhysics(),
+            child: Row(
+              children: List.generate(widget.images.length, (idx) {
+                final imgUrl = widget.images[idx];
+                final isLast = idx == widget.images.length - 1;
+
+                return Padding(
+                  padding: EdgeInsets.only(right: isLast ? 0.0 : _carouselGap),
+                  child: AdaptiveCarouselCard(
+                    imageUrl: imgUrl,
+                    height: _commentCarouselHeight,
+                    borderRadius: 14.0,
+                    minCardWidth: 100.0,
+                    maxCardWidth: maxCardWidth,
+                    onTap: () => widget.onImageClick?.call(widget.images, idx),
+                    onRatioResolved: (_) {
+                      if (mounted) setState(() {});
+                    },
+                  ),
+                );
+              }),
+            ),
+          ),
+        );
+      },
     );
   }
 }

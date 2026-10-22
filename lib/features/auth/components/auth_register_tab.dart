@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:snapan_market/core/services/student_registry_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/features/auth/components/auth_footer_switcher.dart';
 import 'package:snapan_market/features/auth/components/auth_text_field.dart';
 import 'package:snapan_market/features/auth/components/student_nis_combobox.dart';
 
@@ -25,6 +26,7 @@ class AuthRegisterTab extends StatelessWidget {
   final bool isSubmitting;
   final bool isGeneratingUsername;
   final VoidCallback onSubmit;
+  final VoidCallback onSwitchToLogin;
 
   const AuthRegisterTab({
     super.key,
@@ -45,6 +47,7 @@ class AuthRegisterTab extends StatelessWidget {
     required this.isSubmitting,
     this.isGeneratingUsername = false,
     required this.onSubmit,
+    required this.onSwitchToLogin,
   });
 
   @override
@@ -124,6 +127,42 @@ class AuthRegisterTab extends StatelessWidget {
 
         // 5. PERSETUJUAN KETENTUAN
         _buildRegisterTermsRow(),
+        const SizedBox(height: 22.0),
+
+        // 6. TOMBOL AKSI DAFTAR (Fixed di bawah form, scrollable)
+        ListenableBuilder(
+          listenable: Listenable.merge([
+            nisController,
+            displayNameController,
+            usernameController,
+            passwordController,
+          ]),
+          builder: (context, _) {
+            final rawDisplayName = displayNameController.text.trim();
+            final bool isDisplayNameValid = rawDisplayName.isEmpty ||
+                (rawDisplayName.length >= 6 && rawDisplayName.length <= 20);
+            final bool isFormValid = verifiedStudent != null &&
+                nisController.text.trim().isNotEmpty &&
+                usernameController.text.trim().isNotEmpty &&
+                passwordController.text.length >= 6 &&
+                agreedTerms &&
+                isDisplayNameValid;
+
+            return PrimaryAuthButton(
+              text: 'Aktifkan Akun & Masuk',
+              isLoading: isSubmitting,
+              isEnabled: isFormValid,
+              onPressed: onSubmit,
+            );
+          },
+        ),
+        const SizedBox(height: 16.0),
+
+        // 7. FOOTER SWITCHER (Kembali ke Masuk Akun)
+        AuthFooterSwitcher(
+          isLogin: false,
+          onSwitch: onSwitchToLogin,
+        ),
       ],
     );
   }

@@ -75,7 +75,7 @@ class _DynamicFeedImageState extends State<DynamicFeedImage> {
           });
         }
       },
-      onError: (_, __) {
+      onError: (exception, stackTrace) {
         // Fallback gracefully without breaking layout
       },
     );
@@ -116,7 +116,7 @@ class _DynamicFeedImageState extends State<DynamicFeedImage> {
               widget.imageUrl,
               cacheWidth: 800,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
+              errorBuilder: (context, error, stackTrace) => Container(
                 color: placeholderColor,
                 child: Center(
                   child: Icon(

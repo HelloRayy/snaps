@@ -211,84 +211,88 @@ class ProfileInfoHeader extends StatelessWidget {
           const SizedBox(height: 10.0),
 
           // Row 3: Follower & Market Stats
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              if (user.followerAvatars.isNotEmpty) ...[
-                FollowerAvatarStack(
-                  avatars: user.followerAvatars,
-                  size: 24.0,
-                ),
-                const SizedBox(width: 6.0),
-              ],
-              Text(
-                '${user.followersCount} pengikut',
-                style: const TextStyle(
-                  fontSize: 14.0,
-                  color: Color(0xFF64748B),
-                  fontWeight: FontWeight.normal,
-                ),
-              ),
-
-              // Sold & Rating stats if applicable
-              if (user.soldCount > 0) ...[
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5.0),
-                  child: Text('·', style: TextStyle(color: Color(0xFFCBD5E1))),
-                ),
-                RichText(
-                  text: TextSpan(
-                    style: const TextStyle(
-                      fontSize: 14.0,
-                      color: Color(0xFF64748B),
-                    ),
-                    children: [
-                      TextSpan(
-                        text: '${user.soldCount} ',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF0F172A),
-                        ),
-                      ),
-                      const TextSpan(text: 'terjual'),
-                    ],
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (user.followerAvatars.isNotEmpty) ...[
+                  FollowerAvatarStack(
+                    avatars: user.followerAvatars,
+                    size: 28.0,
+                  ),
+                  const SizedBox(width: 8.0),
+                ],
+                Text(
+                  '${user.followersCount} pengikut',
+                  style: const TextStyle(
+                    fontSize: 14.0,
+                    color: Color(0xFF64748B),
+                    fontWeight: FontWeight.normal,
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5.0),
-                  child: Text('·', style: TextStyle(color: Color(0xFFCBD5E1))),
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      CupertinoIcons.star_fill,
-                      size: 15.0,
-                      color: Color(0xFFEAB308),
-                    ),
-                    const SizedBox(width: 2.0),
-                    RichText(
-                      text: TextSpan(
-                        style: const TextStyle(
-                          fontSize: 14.0,
-                          color: Color(0xFF64748B),
-                        ),
-                        children: [
-                          TextSpan(
-                            text: '${user.rating} ',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF0F172A),
-                            ),
-                          ),
-                          TextSpan(text: '(${user.reviewsCount})'),
-                        ],
+
+                // Sold & Rating stats if applicable
+                if (user.soldCount > 0) ...[
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 5.0),
+                    child: Text('·', style: TextStyle(color: Color(0xFFCBD5E1))),
+                  ),
+                  RichText(
+                    text: TextSpan(
+                      style: const TextStyle(
+                        fontSize: 14.0,
+                        color: Color(0xFF64748B),
                       ),
+                      children: [
+                        TextSpan(
+                          text: '${user.soldCount} ',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF0F172A),
+                          ),
+                        ),
+                        const TextSpan(text: 'terjual'),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 5.0),
+                    child: Text('·', style: TextStyle(color: Color(0xFFCBD5E1))),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        CupertinoIcons.star_fill,
+                        size: 15.0,
+                        color: Color(0xFFEAB308),
+                      ),
+                      const SizedBox(width: 2.0),
+                      RichText(
+                        text: TextSpan(
+                          style: const TextStyle(
+                            fontSize: 14.0,
+                            color: Color(0xFF64748B),
+                          ),
+                          children: [
+                            TextSpan(
+                              text: '${user.rating} ',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF0F172A),
+                              ),
+                            ),
+                            TextSpan(text: '(${user.reviewsCount})'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
 
 
