@@ -217,7 +217,7 @@ class ProfileInfoHeader extends StatelessWidget {
               if (user.followerAvatars.isNotEmpty) ...[
                 FollowerAvatarStack(
                   avatars: user.followerAvatars,
-                  size: 20.0,
+                  size: 24.0,
                 ),
                 const SizedBox(width: 6.0),
               ],

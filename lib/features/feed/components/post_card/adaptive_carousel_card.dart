@@ -10,6 +10,7 @@ class AdaptiveCarouselCard extends StatefulWidget {
   final double maxCardWidth;
   final double minCardWidth;
   final double? customWidth;
+  final double borderRadius;
   final Widget? child;
   final VoidCallback? onTap;
   final ValueChanged<double>? onRatioResolved;
@@ -24,6 +25,7 @@ class AdaptiveCarouselCard extends StatefulWidget {
     this.height = 230.0,
     this.maxCardWidth = 340.0,
     this.minCardWidth = 120.0,
+    this.borderRadius = 16.0,
     this.customWidth,
     this.child,
     this.onTap,
@@ -114,13 +116,13 @@ class _AdaptiveCarouselCardState extends State<AdaptiveCarouselCard> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final content = ClipRRect(
-      borderRadius: BorderRadius.circular(16.0),
+      borderRadius: BorderRadius.circular(widget.borderRadius),
       child: Container(
         width: calculatedWidth,
         height: widget.height,
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF1B1D1E) : const Color(0xFFF8FAFC),
-          borderRadius: BorderRadius.circular(16.0),
+          borderRadius: BorderRadius.circular(widget.borderRadius),
           border: Border.all(
             color: isDark ? const Color(0x1AFFFFFF) : const Color(0xFFE2E8F0),
             width: 0.8,

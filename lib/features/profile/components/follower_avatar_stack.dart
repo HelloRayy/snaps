@@ -12,7 +12,7 @@ class FollowerAvatarStack extends StatelessWidget {
   const FollowerAvatarStack({
     super.key,
     required this.avatars,
-    this.size = 20.0,
+    this.size = 24.0,
   });
 
   @override

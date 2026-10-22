@@ -10,6 +10,8 @@ class DynamicFeedImage extends StatefulWidget {
   final VoidCallback? onTap;
   final double minAspectRatio;
   final double maxAspectRatio;
+  final double? maxHeight;
+  final double borderRadius;
 
   const DynamicFeedImage({
     super.key,
@@ -17,6 +19,8 @@ class DynamicFeedImage extends StatefulWidget {
     this.onTap,
     this.minAspectRatio = 0.8,
     this.maxAspectRatio = 1.91,
+    this.maxHeight = 460.0,
+    this.borderRadius = 16.0,
   });
 
   @override
@@ -95,12 +99,12 @@ class _DynamicFeedImageState extends State<DynamicFeedImage> {
     return GestureDetector(
       onTap: widget.onTap,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16.0),
+        borderRadius: BorderRadius.circular(widget.borderRadius),
         child: Container(
-          constraints: const BoxConstraints(maxHeight: 460.0),
+          constraints: BoxConstraints(maxHeight: widget.maxHeight ?? 460.0),
           decoration: BoxDecoration(
             color: isDark ? const Color(0xFF1B1D1E) : const Color(0xFFF8FAFC),
-            borderRadius: BorderRadius.circular(16.0),
+            borderRadius: BorderRadius.circular(widget.borderRadius),
             border: Border.all(
               color: isDark ? const Color(0x1AFFFFFF) : const Color(0xFFE2E8F0),
               width: 0.6,
