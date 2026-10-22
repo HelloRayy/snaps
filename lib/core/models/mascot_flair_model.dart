@@ -1,7 +1,26 @@
 /// Supported mascot bundles and emotions from page-mascot (SNAPS-13)
 enum MascotBundle {
+  bear('Bear', 'assets/mascots/bear'),
+  bunny('Bunny', 'assets/mascots/bunny'),
+  cat('Cat', 'assets/mascots/cat'),
+  deer('Deer', 'assets/mascots/deer'),
+  dino('Dino', 'assets/mascots/dino'),
+  fox('Fox', 'assets/mascots/fox'),
+  frog('Frog', 'assets/mascots/frog'),
+  hamster('Hamster', 'assets/mascots/hamster'),
+  hedgehog('Hedgehog', 'assets/mascots/hedgehog'),
   koala('Koala', 'assets/mascots/koala'),
-  fox('Fox', 'assets/mascots/fox');
+  mouse('Mouse', 'assets/mascots/mouse'),
+  otter('Otter', 'assets/mascots/otter'),
+  owl('Owl', 'assets/mascots/owl'),
+  panda('Panda', 'assets/mascots/panda'),
+  penguin('Penguin', 'assets/mascots/penguin'),
+  pug('Pug', 'assets/mascots/pug'),
+  raccoon('Raccoon', 'assets/mascots/raccoon'),
+  redpanda('Red Panda', 'assets/mascots/redpanda'),
+  sheep('Sheep', 'assets/mascots/sheep'),
+  sloth('Sloth', 'assets/mascots/sloth'),
+  tiger('Tiger', 'assets/mascots/tiger');
 
   final String label;
   final String basePath;

@@ -77,8 +77,27 @@ flutter:
     - assets/fonts/
     - assets/logo/
     - assets/data/
-    - assets/mascots/koala/
+    - assets/mascots/bear/
+    - assets/mascots/bunny/
+    - assets/mascots/cat/
+    - assets/mascots/deer/
+    - assets/mascots/dino/
     - assets/mascots/fox/
+    - assets/mascots/frog/
+    - assets/mascots/hamster/
+    - assets/mascots/hedgehog/
+    - assets/mascots/koala/
+    - assets/mascots/mouse/
+    - assets/mascots/otter/
+    - assets/mascots/owl/
+    - assets/mascots/panda/
+    - assets/mascots/penguin/
+    - assets/mascots/pug/
+    - assets/mascots/raccoon/
+    - assets/mascots/redpanda/
+    - assets/mascots/sheep/
+    - assets/mascots/sloth/
+    - assets/mascots/tiger/
 
   fonts:
     - family: SFPro
