@@ -80,23 +80,25 @@ class _MascotGalleryBottomSheetState extends State<MascotGalleryBottomSheet> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final mediaQuery = MediaQuery.of(context);
     final bottomInset = mediaQuery.viewInsets.bottom;
-    final sheetHeight = (mediaQuery.size.height * 0.75).clamp(380.0, 580.0);
+    final availableHeight = mediaQuery.size.height - mediaQuery.padding.top - bottomInset;
+    final sheetHeight = (availableHeight * 0.82).clamp(320.0, 580.0);
 
-    return Container(
-      height: sheetHeight + bottomInset,
-      margin: EdgeInsets.only(bottom: bottomInset),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.darkSurfaceElevated : Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x24000000),
-            blurRadius: 24.0,
-            offset: Offset(0, -6),
-          ),
-        ],
-      ),
-      child: SafeArea(
+    return Padding(
+      padding: EdgeInsets.only(bottom: bottomInset),
+      child: Container(
+        height: sheetHeight,
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.darkSurfaceElevated : Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x24000000),
+              blurRadius: 24.0,
+              offset: Offset(0, -6),
+            ),
+          ],
+        ),
+        child: SafeArea(
         top: false,
         child: Column(
           children: [
@@ -118,38 +120,49 @@ class _MascotGalleryBottomSheetState extends State<MascotGalleryBottomSheet> {
               padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 6.0),
               child: Row(
                 children: [
-                  Text(
-                    'Katalog Maskot Snaps',
-                    style: TextStyle(
-                      fontSize: 16.5,
-                      fontWeight: FontWeight.w700,
-                      color: isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A),
-                      letterSpacing: -0.2,
+                  Flexible(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            'Katalog Maskot Snaps',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 16.5,
+                              fontWeight: FontWeight.w700,
+                              color: isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A),
+                              letterSpacing: -0.2,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8.0),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 2.5),
+                          decoration: BoxDecoration(
+                            color: isDark ? AppColors.darkPrimaryPastel : const Color(0xFFEEF0FF),
+                            borderRadius: BorderRadius.circular(10.0),
+                            border: Border.all(
+                              color: isDark
+                                  ? AppColors.darkPrimary.withValues(alpha: 0.35)
+                                  : AppColors.primary.withValues(alpha: 0.25),
+                              width: 0.8,
+                            ),
+                          ),
+                          child: Text(
+                            '${MascotBundle.values.length} Mascot',
+                            style: TextStyle(
+                              fontSize: 11.0,
+                              fontWeight: FontWeight.w700,
+                              color: isDark ? AppColors.darkPrimary : AppColors.primary,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(width: 8.0),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 2.5),
-                    decoration: BoxDecoration(
-                      color: isDark ? AppColors.darkPrimaryPastel : const Color(0xFFEEF0FF),
-                      borderRadius: BorderRadius.circular(10.0),
-                      border: Border.all(
-                        color: isDark
-                            ? AppColors.darkPrimary.withValues(alpha: 0.35)
-                            : AppColors.primary.withValues(alpha: 0.25),
-                        width: 0.8,
-                      ),
-                    ),
-                    child: Text(
-                      '${MascotBundle.values.length} Mascot',
-                      style: TextStyle(
-                        fontSize: 11.0,
-                        fontWeight: FontWeight.w700,
-                        color: isDark ? AppColors.darkPrimary : AppColors.primary,
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
                   IconButton(
                     onPressed: () => Navigator.of(context).pop(),
                     icon: Icon(
@@ -236,7 +249,7 @@ class _MascotGalleryBottomSheetState extends State<MascotGalleryBottomSheet> {
                         crossAxisCount: 4,
                         crossAxisSpacing: 10.0,
                         mainAxisSpacing: 10.0,
-                        childAspectRatio: 0.86,
+                        childAspectRatio: 0.82,
                       ),
                       itemCount: _filteredBundles.length,
                       itemBuilder: (context, index) {
@@ -284,28 +297,31 @@ class _MascotGalleryBottomSheetState extends State<MascotGalleryBottomSheet> {
                                 children: [
                                   Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
                                       MascotFlairBadge(
                                         flair: MascotFlairModel(
                                           bundle: bundle,
                                           emotion: MascotEmotion.delighted,
                                         ),
-                                        size: 38.0,
+                                        size: 36.0,
                                         enableGradientFade: false,
                                       ),
-                                      const SizedBox(height: 5.0),
-                                      Text(
-                                        bundle.label,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontSize: 11.5,
-                                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                                          color: isSelected
-                                              ? AppColors.primary
-                                              : (isDark
-                                                  ? AppColors.darkTextPrimary
-                                                  : const Color(0xFF1E293B)),
+                                      const SizedBox(height: 4.0),
+                                      Flexible(
+                                        child: Text(
+                                          bundle.label,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: 11.5,
+                                            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                                            color: isSelected
+                                                ? AppColors.primary
+                                                : (isDark
+                                                    ? AppColors.darkTextPrimary
+                                                    : const Color(0xFF1E293B)),
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -338,7 +354,8 @@ class _MascotGalleryBottomSheetState extends State<MascotGalleryBottomSheet> {
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 
   Widget _buildEmptyState(bool isDark) {

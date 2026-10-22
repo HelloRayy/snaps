@@ -489,7 +489,7 @@ class _MascotPickerPopoverContentState extends State<_MascotPickerPopoverContent
                       splashColor: AppColors.primary.withValues(alpha: 0.12),
                       highlightColor: AppColors.primary.withValues(alpha: 0.06),
                       child: Container(
-                        width: 78.5,
+                        width: 77.0,
                         padding: const EdgeInsets.symmetric(vertical: 6.0),
                         decoration: BoxDecoration(
                           color: isCurrentActive ? const Color(0xFFEFF6FF) : Colors.white,
@@ -533,12 +533,10 @@ class _MascotPickerPopoverContentState extends State<_MascotPickerPopoverContent
                 }).toList(),
               ),
 
-              const SizedBox(height: 6.0),
-              const Divider(height: 1.0, thickness: 0.8, color: Color(0xFFF1F5F9)),
-              const SizedBox(height: 3.0),
-
-              // Footer: Hapus Maskot Action
-              if (widget.currentFlair != null)
+              if (widget.currentFlair != null) ...[
+                const SizedBox(height: 6.0),
+                const Divider(height: 1.0, thickness: 0.8, color: Color(0xFFF1F5F9)),
+                const SizedBox(height: 3.0),
                 InkWell(
                   onTap: () {
                     HapticFeedback.selectionClick();
@@ -568,6 +566,7 @@ class _MascotPickerPopoverContentState extends State<_MascotPickerPopoverContent
                     ),
                   ),
                 ),
+              ],
             ],
           ),
         ),

@@ -302,80 +302,61 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Text(
-                    'Pilihan Maskot Bundle',
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.w600,
-                      color: isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A),
-                      letterSpacing: -0.1,
-                    ),
-                  ),
-                  const SizedBox(width: 6.0),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
-                    decoration: BoxDecoration(
-                      color: isDark ? AppColors.darkPrimaryPastel : const Color(0xFFF1F5F9),
-                      borderRadius: BorderRadius.circular(4.0),
-                    ),
-                    child: const Text(
-                      'BARU',
-                      style: TextStyle(
-                        fontSize: 10.0,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      MascotGalleryBottomSheet.show(
-                        context,
-                        selectedBundle: activeBundle,
-                        onSelected: (bundle) {
-                          widget.onMascotFlairChanged(
-                            MascotFlairModel(
-                              bundle: bundle,
-                              emotion: widget.currentMascotFlair?.emotion ?? MascotEmotion.delighted,
-                            ),
-                          );
-                        },
-                      );
-                    },
-                    child: const Text(
-                      'Lihat Semua (21)',
-                      style: TextStyle(
-                        fontSize: 13.0,
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  if (widget.currentMascotFlair != null) ...[
-                    const SizedBox(width: 12.0),
-                    GestureDetector(
-                      onTap: () {
-                        HapticFeedback.lightImpact();
-                        widget.onMascotFlairChanged(null);
-                      },
-                      child: const Text(
-                        'Hapus',
+              Flexible(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        'Pilihan Maskot Bundle',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: 13.0,
-                          color: Color(0xFFEF4444),
+                          fontSize: 14.0,
                           fontWeight: FontWeight.w600,
+                          color: isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A),
+                          letterSpacing: -0.1,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 6.0),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
+                      decoration: BoxDecoration(
+                        color: isDark ? AppColors.darkPrimaryPastel : const Color(0xFFF1F5F9),
+                        borderRadius: BorderRadius.circular(4.0),
+                      ),
+                      child: const Text(
+                        'BARU',
+                        style: TextStyle(
+                          fontSize: 10.0,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.primary,
                         ),
                       ),
                     ),
                   ],
-                ],
+                ),
               ),
+              if (widget.currentMascotFlair != null)
+                GestureDetector(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    widget.onMascotFlairChanged(null);
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
+                    child: Text(
+                      'Hapus',
+                      style: TextStyle(
+                        fontSize: 13.0,
+                        color: Color(0xFFEF4444),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
           const SizedBox(height: 12.0),

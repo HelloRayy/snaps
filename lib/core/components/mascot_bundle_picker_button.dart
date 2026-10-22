@@ -151,6 +151,8 @@ class MascotBundlePickerButton extends StatelessWidget {
                   children: [
                     Text(
                       selectedBundle.label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 14.5,
                         fontWeight: FontWeight.w700,
@@ -161,6 +163,8 @@ class MascotBundlePickerButton extends StatelessWidget {
                     const SizedBox(height: 2.0),
                     Text(
                       'Pilih dari ${MascotBundle.values.length} karakter maskot',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 12.0,
                         color: isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B),
