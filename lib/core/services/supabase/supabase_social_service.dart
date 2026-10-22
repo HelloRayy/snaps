@@ -227,6 +227,261 @@ class SupabaseSocialService {
     }
   }
 
+  /// Fetch up to [limit] follower profiles for facepile avatar stack.
+  /// If [currentUserId] is provided and distinct from [targetUserId],
+  /// mutual connections (followers also followed by current user) are prioritized first.
+  Future<List<Map<String, dynamic>>> fetchProfileFollowerAvatars({
+    required String targetUserId,
+    String? currentUserId,
+    int limit = 3,
+  }) async {
+    if (targetUserId.isEmpty || limit <= 0) return [];
+
+    try {
+      final isOwnOrGuest = currentUserId == null ||
+          currentUserId.isEmpty ||
+          currentUserId == targetUserId;
+
+      if (isOwnOrGuest) {
+        return await _fetchRecentFollowerProfiles(targetUserId, limit: limit);
+      }
+
+      // Skenario 2: Melihat profil pengguna lain saat login
+      // 1. Ambil ID pengguna yang diikuti oleh currentUserId
+      final myFollowingRes = await _client
+          .from('user_follows')
+          .select('following_id')
+          .eq('follower_id', currentUserId);
+
+      final myFollowingIds = (myFollowingRes as List<dynamic>)
+          .map((row) => (row as Map<String, dynamic>)['following_id']?.toString())
+          .whereType<String>()
+          .where((id) => id.isNotEmpty)
+          .toSet();
+
+      final List<Map<String, dynamic>> results = [];
+
+      // 2. Query pengikut targetUserId yang juga ada di myFollowingIds (mutual follows)
+      if (myFollowingIds.isNotEmpty) {
+        try {
+          final mutualRes = await _client
+              .from('user_follows')
+              .select('follower_id, created_at, follower:profiles!user_follows_follower_id_fkey(id, username, display_name, full_name, avatar_url)')
+              .eq('following_id', targetUserId)
+              .inFilter('follower_id', myFollowingIds.toList())
+              .order('created_at', ascending: false)
+              .limit(limit);
+
+          for (final row in (mutualRes as List<dynamic>)) {
+            if (row is Map<String, dynamic>) {
+              final profile = _extractProfile(row);
+              if (profile != null) {
+                profile['is_mutual'] = true;
+                results.add(profile);
+              }
+            }
+          }
+        } catch (e) {
+          debugPrint('Error fetching mutual followers join: $e');
+          try {
+            final mutualSimple = await _client
+                .from('user_follows')
+                .select('follower_id')
+                .eq('following_id', targetUserId)
+                .inFilter('follower_id', myFollowingIds.toList())
+                .order('created_at', ascending: false)
+                .limit(limit);
+
+            final mutualIds = (mutualSimple as List<dynamic>)
+                .map((r) => (r as Map<String, dynamic>)['follower_id']?.toString())
+                .whereType<String>()
+                .toList();
+
+            if (mutualIds.isNotEmpty) {
+              final pRes = await _client
+                  .from('profiles')
+                  .select('id, username, display_name, full_name, avatar_url')
+                  .inFilter('id', mutualIds);
+
+              for (final p in (pRes as List<dynamic>)) {
+                if (p is Map<String, dynamic>) {
+                  results.add({
+                    'id': p['id']?.toString() ?? '',
+                    'username': p['username']?.toString() ?? '',
+                    'display_name': p['display_name'] ?? p['full_name'],
+                    'avatar_url': p['avatar_url'] as String?,
+                    'is_mutual': true,
+                  });
+                }
+              }
+            }
+          } catch (e2) {
+            debugPrint('Error fetching mutual followers fallback: $e2');
+          }
+        }
+      }
+
+      // 3. Jika mutual < limit, lengkapi sisa slot dengan pengikut terbaru non-mutual
+      if (results.length < limit) {
+        final existingIds = results.map((r) => r['id']?.toString()).whereType<String>().toSet();
+        final needed = limit - results.length;
+
+        try {
+          final recentRes = await _client
+              .from('user_follows')
+              .select('follower_id, created_at, follower:profiles!user_follows_follower_id_fkey(id, username, display_name, full_name, avatar_url)')
+              .eq('following_id', targetUserId)
+              .order('created_at', ascending: false)
+              .limit(limit + existingIds.length);
+
+          for (final row in (recentRes as List<dynamic>)) {
+            if (row is Map<String, dynamic>) {
+              final profile = _extractProfile(row);
+              if (profile != null) {
+                final id = profile['id']?.toString();
+                if (id != null && !existingIds.contains(id)) {
+                  existingIds.add(id);
+                  profile['is_mutual'] = false;
+                  results.add(profile);
+                  if (results.length >= limit) break;
+                }
+              }
+            }
+          }
+        } catch (e) {
+          debugPrint('Error fetching non-mutual followers join: $e');
+          try {
+            final recentSimple = await _client
+                .from('user_follows')
+                .select('follower_id')
+                .eq('following_id', targetUserId)
+                .order('created_at', ascending: false)
+                .limit(limit + existingIds.length);
+
+            final nonMutualIds = (recentSimple as List<dynamic>)
+                .map((r) => (r as Map<String, dynamic>)['follower_id']?.toString())
+                .whereType<String>()
+                .where((id) => !existingIds.contains(id))
+                .take(needed)
+                .toList();
+
+            if (nonMutualIds.isNotEmpty) {
+              final pRes = await _client
+                  .from('profiles')
+                  .select('id, username, display_name, full_name, avatar_url')
+                  .inFilter('id', nonMutualIds);
+
+              for (final p in (pRes as List<dynamic>)) {
+                if (p is Map<String, dynamic>) {
+                  results.add({
+                    'id': p['id']?.toString() ?? '',
+                    'username': p['username']?.toString() ?? '',
+                    'display_name': p['display_name'] ?? p['full_name'],
+                    'avatar_url': p['avatar_url'] as String?,
+                    'is_mutual': false,
+                  });
+                }
+              }
+            }
+          } catch (e2) {
+            debugPrint('Error fetching non-mutual followers fallback: $e2');
+          }
+        }
+      }
+
+      return results;
+    } catch (e) {
+      debugPrint('Error fetchProfileFollowerAvatars: $e');
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> _fetchRecentFollowerProfiles(
+    String targetUserId, {
+    required int limit,
+  }) async {
+    try {
+      final res = await _client
+          .from('user_follows')
+          .select('follower_id, created_at, follower:profiles!user_follows_follower_id_fkey(id, username, display_name, full_name, avatar_url)')
+          .eq('following_id', targetUserId)
+          .order('created_at', ascending: false)
+          .limit(limit);
+
+      final List<Map<String, dynamic>> list = [];
+      for (final row in (res as List<dynamic>)) {
+        if (row is Map<String, dynamic>) {
+          final profile = _extractProfile(row);
+          if (profile != null) {
+            profile['is_mutual'] = false;
+            list.add(profile);
+          }
+        }
+      }
+      return list;
+    } catch (e) {
+      debugPrint('Error _fetchRecentFollowerProfiles join: $e');
+      try {
+        final resSimple = await _client
+            .from('user_follows')
+            .select('follower_id')
+            .eq('following_id', targetUserId)
+            .order('created_at', ascending: false)
+            .limit(limit);
+
+        final followerIds = (resSimple as List<dynamic>)
+            .map((r) => (r as Map<String, dynamic>)['follower_id']?.toString())
+            .whereType<String>()
+            .toList();
+
+        if (followerIds.isEmpty) return [];
+
+        final profilesRes = await _client
+            .from('profiles')
+            .select('id, username, display_name, full_name, avatar_url')
+            .inFilter('id', followerIds);
+
+        final Map<String, Map<String, dynamic>> profileMap = {};
+        for (final p in (profilesRes as List<dynamic>)) {
+          if (p is Map<String, dynamic> && p['id'] != null) {
+            profileMap[p['id'].toString()] = Map<String, dynamic>.from(p);
+          }
+        }
+
+        final List<Map<String, dynamic>> list = [];
+        for (final id in followerIds) {
+          if (profileMap.containsKey(id)) {
+            final p = profileMap[id]!;
+            list.add({
+              'id': p['id'],
+              'username': p['username'] ?? '',
+              'display_name': p['display_name'] ?? p['full_name'],
+              'avatar_url': p['avatar_url'],
+              'is_mutual': false,
+            });
+          }
+        }
+        return list;
+      } catch (e2) {
+        debugPrint('Error _fetchRecentFollowerProfiles fallback: $e2');
+        return [];
+      }
+    }
+  }
+
+  Map<String, dynamic>? _extractProfile(Map<String, dynamic> row) {
+    if (row['follower'] is Map<String, dynamic>) {
+      final f = Map<String, dynamic>.from(row['follower'] as Map<String, dynamic>);
+      return {
+        'id': f['id']?.toString() ?? row['follower_id']?.toString() ?? '',
+        'username': f['username']?.toString() ?? '',
+        'display_name': f['display_name'] ?? f['full_name'],
+        'avatar_url': f['avatar_url'] as String?,
+      };
+    }
+    return null;
+  }
+
   /// Subscribe to realtime changes on user_follows for a specific user
   RealtimeChannel subscribeToFollowers(String userId, void Function() onFollowChange) {
     return _client

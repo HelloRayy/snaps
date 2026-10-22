@@ -342,6 +342,17 @@ class SupabaseService {
   Future<int> getFollowingCount(String userId) =>
       social.getFollowingCount(userId);
 
+
+  Future<List<Map<String, dynamic>>> fetchProfileFollowerAvatars({
+    required String targetUserId,
+    String? currentUserId,
+    int limit = 3,
+  }) =>
+      social.fetchProfileFollowerAvatars(
+        targetUserId: targetUserId,
+        currentUserId: currentUserId,
+        limit: limit,
+      );
   RealtimeChannel subscribeToFollowers(
     String userId,
     void Function() onFollowChange,

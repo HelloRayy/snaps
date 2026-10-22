@@ -1,5 +1,6 @@
 import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
+import 'package:snapan_market/features/profile/models/follower_avatar_preview.dart';
 
 /// Profile User Information Model matching Web Profile Data
 class ProfileUserModel {
@@ -20,6 +21,7 @@ class ProfileUserModel {
   final bool isVerified;
   final MascotFlairModel? mascotFlair;
   final bool canUseMascot;
+  final List<FollowerAvatarPreview> followerAvatars;
 
   const ProfileUserModel({
     required this.id,
@@ -39,6 +41,7 @@ class ProfileUserModel {
     this.isVerified = false,
     this.mascotFlair,
     this.canUseMascot = true,
+    this.followerAvatars = const [],
   });
 
   ProfileUserModel copyWith({
@@ -59,6 +62,7 @@ class ProfileUserModel {
     bool? isVerified,
     MascotFlairModel? mascotFlair,
     bool? canUseMascot,
+    List<FollowerAvatarPreview>? followerAvatars,
   }) {
     return ProfileUserModel(
       id: id ?? this.id,
@@ -78,6 +82,7 @@ class ProfileUserModel {
       isVerified: isVerified ?? this.isVerified,
       mascotFlair: mascotFlair ?? this.mascotFlair,
       canUseMascot: canUseMascot ?? this.canUseMascot,
+      followerAvatars: followerAvatars ?? this.followerAvatars,
     );
   }
 

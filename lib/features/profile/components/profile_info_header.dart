@@ -8,6 +8,7 @@ import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 import 'package:snapan_market/core/utils/mention_text_span_helper.dart';
 import 'package:snapan_market/core/utils/string_utils.dart';
 import 'package:snapan_market/features/profile/models/profile_user_model.dart';
+import 'package:snapan_market/features/profile/components/follower_avatar_stack.dart';
 
 
 
@@ -211,7 +212,15 @@ class ProfileInfoHeader extends StatelessWidget {
 
           // Row 3: Follower & Market Stats
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              if (user.followerAvatars.isNotEmpty) ...[
+                FollowerAvatarStack(
+                  avatars: user.followerAvatars,
+                  size: 20.0,
+                ),
+                const SizedBox(width: 6.0),
+              ],
               Text(
                 '${user.followersCount} pengikut',
                 style: const TextStyle(

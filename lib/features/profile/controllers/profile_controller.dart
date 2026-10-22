@@ -9,6 +9,7 @@ import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/features/auth/models/auth_constants.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/profile/models/profile_user_model.dart';
+import 'package:snapan_market/features/profile/models/follower_avatar_preview.dart';
 
 class ProfileController extends ChangeNotifier {
   ProfileUserModel? user;
@@ -72,6 +73,12 @@ class ProfileController extends ChangeNotifier {
         final profile = await SupabaseService.instance.getProfile(currentUser.id);
         final livePosts = await SupabaseService.instance.fetchUserPosts(currentUser.id);
         final ownFollowers = await FollowService.instance.loadFollowerCount(currentUser.id);
+        final rawAvatars = await SupabaseService.instance.fetchProfileFollowerAvatars(
+          targetUserId: currentUser.id,
+          currentUserId: currentUser.id,
+          limit: 3,
+        );
+        final followerAvatars = rawAvatars.map((m) => FollowerAvatarPreview.fromMap(m)).toList();
 
         user = _buildUserModel(
           id: currentUser.id,
@@ -79,6 +86,7 @@ class ProfileController extends ChangeNotifier {
           meta: currentUser.userMetadata ?? {},
           followersCount: ownFollowers,
           fallbackUsername: currentUser.email?.split('@').first,
+          followerAvatars: followerAvatars,
         );
 
         // Self-healing: jika class_group di DB masih 'Siswa Snapan' tapi terdeteksi kelas spesifik dari NIS/meta, perbarui DB di latar belakang
@@ -133,12 +141,20 @@ class ProfileController extends ChangeNotifier {
           final targetId = p['id'] as String? ?? '';
           final targetPosts = await SupabaseService.instance.fetchUserPosts(targetId);
           final followers = await FollowService.instance.loadFollowerCount(targetId);
+          final currentUserId = SupabaseService.instance.currentUser?.id;
+          final rawAvatars = await SupabaseService.instance.fetchProfileFollowerAvatars(
+            targetUserId: targetId,
+            currentUserId: currentUserId,
+            limit: 3,
+          );
+          final followerAvatars = rawAvatars.map((m) => FollowerAvatarPreview.fromMap(m)).toList();
 
           user = _buildUserModel(
             id: targetId,
             profile: p,
             followersCount: followers,
             fallbackUsername: cleanUsername,
+            followerAvatars: followerAvatars,
           );
           allUserPosts = await _enrichPosts(targetPosts);
           isLoading = false;
@@ -186,8 +202,22 @@ class ProfileController extends ChangeNotifier {
         notifyListeners();
       }
     });
-    _followRealtimeSubscription = SupabaseService.instance.subscribeToFollowers(userId, () {
+    _followRealtimeSubscription = SupabaseService.instance.subscribeToFollowers(userId, () async {
       FollowService.instance.loadFollowerCount(userId);
+      try {
+        final currentUserId = SupabaseService.instance.currentUser?.id;
+        final rawAvatars = await SupabaseService.instance.fetchProfileFollowerAvatars(
+          targetUserId: userId,
+          currentUserId: currentUserId,
+          limit: 3,
+        );
+        if (user != null) {
+          user = user!.copyWith(
+            followerAvatars: rawAvatars.map((m) => FollowerAvatarPreview.fromMap(m)).toList(),
+          );
+          notifyListeners();
+        }
+      } catch (_) {}
     });
   }
 
@@ -310,6 +340,7 @@ class ProfileController extends ChangeNotifier {
     Map<String, dynamic> meta = const {},
     required int followersCount,
     String? fallbackUsername,
+    List<FollowerAvatarPreview> followerAvatars = const [],
   }) {
     final rawInterests = profile?['interests'];
     final metaTags = meta['tags'];
@@ -381,6 +412,7 @@ class ProfileController extends ChangeNotifier {
       isVerified: profile?['is_verified'] as bool? ?? false,
       mascotFlair: parsedFlair,
       canUseMascot: canUseMascot,
+      followerAvatars: followerAvatars,
     );
   }
 }
