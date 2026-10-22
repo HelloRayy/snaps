@@ -134,7 +134,7 @@ class ConversationListItem extends StatelessWidget {
                           const SizedBox(width: 4.0),
                           MascotFlairBadge(
                             flair: conversation.user.mascotFlair!,
-                            size: 18.0,
+                            size: 26.0,
                           ),
                         ],
                       ],

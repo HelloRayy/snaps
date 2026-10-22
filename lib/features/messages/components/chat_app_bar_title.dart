@@ -116,7 +116,7 @@ class ChatAppBarTitle extends StatelessWidget {
                       const SizedBox(width: 4.0),
                       MascotFlairBadge(
                         flair: user.mascotFlair!,
-                        size: 20.0,
+                        size: 26.0,
                       ),
                     ],
                   ],
