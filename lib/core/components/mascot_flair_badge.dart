@@ -12,7 +12,7 @@ class MascotFlairBadge extends StatelessWidget {
   const MascotFlairBadge({
     super.key,
     required this.flair,
-    this.size = 24.0,
+    this.size = 26.0,
     this.onTap,
     this.enableGradientFade = false,
   });

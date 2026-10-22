@@ -84,7 +84,7 @@ class SuggestedAccountTile extends StatelessWidget {
                         const SizedBox(width: 4.0),
                         MascotFlairBadge(
                           flair: account.mascotFlair!,
-                          size: 16.0,
+                          size: 26.0,
                         ),
                       ],
                     ],

@@ -141,7 +141,7 @@ class _MascotGalleryBottomSheetState extends State<MascotGalleryBottomSheet> {
                       ),
                     ),
                     child: Text(
-                      '${MascotBundle.values.length} Hewan',
+                      '${MascotBundle.values.length} Mascot',
                       style: TextStyle(
                         fontSize: 11.0,
                         fontWeight: FontWeight.w700,
@@ -362,7 +362,7 @@ class _MascotGalleryBottomSheetState extends State<MascotGalleryBottomSheet> {
           ),
           const SizedBox(height: 4.0),
           Text(
-            'Coba cari dengan kata kunci hewan lain',
+            'Coba cari dengan kata kunci maskot lain',
             style: TextStyle(
               fontSize: 12.5,
               color: isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B),

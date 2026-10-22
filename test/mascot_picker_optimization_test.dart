@@ -94,7 +94,7 @@ void main() {
 
       // Verify header and badge
       expect(find.text('Katalog Maskot Snaps'), findsOneWidget);
-      expect(find.text('21 Hewan'), findsOneWidget);
+      expect(find.text('21 Mascot'), findsOneWidget);
 
       // Filter by "cat"
       await tester.enterText(find.byType(TextField), 'cat');

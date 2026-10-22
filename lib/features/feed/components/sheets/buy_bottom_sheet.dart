@@ -126,7 +126,7 @@ class _BuyBottomSheetState extends State<BuyBottomSheet> {
                               const SizedBox(width: 4.0),
                               MascotFlairBadge(
                                 flair: widget.post.seller.mascotFlair!,
-                                size: 22.0,
+                                size: 26.0,
                               ),
                             ],
                           ],

@@ -123,7 +123,7 @@ class _ProfileReplyThreadCardState extends State<ProfileReplyThreadCard> {
                               const SizedBox(width: 4.0),
                               MascotFlairBadge(
                                 flair: parent.seller.mascotFlair!,
-                                size: 20.0,
+                                size: 26.0,
                               ),
                             ],
                             const SizedBox(width: 4.0),
@@ -256,7 +256,7 @@ class _ProfileReplyThreadCardState extends State<ProfileReplyThreadCard> {
                             const SizedBox(width: 4.0),
                             MascotFlairBadge(
                               flair: reply.user.mascotFlair!,
-                              size: 18.0,
+                              size: 26.0,
                             ),
                           ],
                           const SizedBox(width: 4.0),
