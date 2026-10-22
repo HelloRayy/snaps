@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:snapan_market/core/components/mascot_flair_badge.dart';
-import 'package:snapan_market/core/components/mascot_bundle_selector_bar.dart';
+import 'package:snapan_market/core/components/mascot_bundle_picker_button.dart';
 import 'package:snapan_market/core/components/mascot_gallery_bottom_sheet.dart';
 import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/core/services/media_cropper_service.dart';
@@ -380,8 +380,8 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
           ),
           const SizedBox(height: 12.0),
 
-          // Horizontal Virtualized Mascot Bundle Selector Strip
-          MascotBundleSelectorBar(
+          // Mascot Bundle Picker Button (Directly opens bottom sheet catalog)
+          MascotBundlePickerButton(
             selectedBundle: activeBundle,
             compact: false,
             onBundleSelected: (bundle) {

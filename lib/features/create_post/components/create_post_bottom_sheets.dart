@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/mascot_flair_badge.dart';
-import 'package:snapan_market/core/components/mascot_bundle_selector_bar.dart';
+import 'package:snapan_market/core/components/mascot_bundle_picker_button.dart';
 import 'package:snapan_market/core/components/mascot_gallery_bottom_sheet.dart';
 import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -445,8 +445,8 @@ class _MascotPickerPopoverContentState extends State<_MascotPickerPopoverContent
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Horizontal Virtualized Mascot Bundle Selector Strip
-              MascotBundleSelectorBar(
+              // Mascot Bundle Picker Button (Directly opens bottom sheet catalog)
+              MascotBundlePickerButton(
                 selectedBundle: _selectedBundle,
                 compact: true,
                 onBundleSelected: (bundle) {

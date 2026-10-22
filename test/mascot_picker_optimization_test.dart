@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:snapan_market/core/components/mascot_bundle_selector_bar.dart';
+import 'package:snapan_market/core/components/mascot_bundle_picker_button.dart';
 import 'package:snapan_market/core/components/mascot_gallery_bottom_sheet.dart';
 import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/features/create_post/components/create_post_bottom_sheets.dart';
@@ -9,7 +9,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('MascotPickerOptimizationTests', () {
-    testWidgets('MascotBundleSelectorBar renders without overflow in compact 264px popover constraint', (tester) async {
+    testWidgets('MascotBundlePickerButton renders without overflow in compact 264px popover constraint', (tester) async {
       MascotBundle selected = MascotBundle.koala;
 
       await tester.pumpWidget(
@@ -18,7 +18,7 @@ void main() {
             body: Center(
               child: SizedBox(
                 width: 264.0,
-                child: MascotBundleSelectorBar(
+                child: MascotBundlePickerButton(
                   selectedBundle: selected,
                   compact: true,
                   onBundleSelected: (bundle) => selected = bundle,
@@ -33,12 +33,13 @@ void main() {
 
       // Expect no overflow errors
       expect(tester.takeException(), isNull);
-
-      // Verify ListView horizontal scroll is present
-      expect(find.byType(ListView), findsOneWidget);
+      expect(find.text('Koala'), findsOneWidget);
+      expect(find.text('Ganti'), findsOneWidget);
+      // Expect zero horizontal scroll list view
+      expect(find.byType(ListView), findsNothing);
     });
 
-    testWidgets('MascotBundleSelectorBar renders in non-compact mode and handles selection', (tester) async {
+    testWidgets('MascotBundlePickerButton renders in non-compact mode with catalog label', (tester) async {
       MascotBundle selected = MascotBundle.bear;
 
       await tester.pumpWidget(
@@ -46,7 +47,7 @@ void main() {
           home: Scaffold(
             body: SizedBox(
               width: 380.0,
-              child: MascotBundleSelectorBar(
+              child: MascotBundlePickerButton(
                 selectedBundle: selected,
                 compact: false,
                 onBundleSelected: (bundle) => selected = bundle,
@@ -59,7 +60,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(tester.takeException(), isNull);
-      expect(find.byType(ListView), findsOneWidget);
+      expect(find.text('Bear'), findsOneWidget);
+      expect(find.text('Katalog'), findsOneWidget);
+      expect(find.byType(ListView), findsNothing);
     });
 
     testWidgets('MascotGalleryBottomSheet filters mascots correctly by search text', (tester) async {
@@ -140,7 +143,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(tester.takeException(), isNull);
-      expect(find.byType(MascotBundleSelectorBar), findsOneWidget);
+      expect(find.byType(MascotBundlePickerButton), findsOneWidget);
     });
   });
 }
