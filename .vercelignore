@@ -17,4 +17,5 @@ dist
 supabase
 graphify-out
 docs
-scripts
+scripts/*.sh
+scripts/*.py
