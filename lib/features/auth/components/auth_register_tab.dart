@@ -124,25 +124,6 @@ class AuthRegisterTab extends StatelessWidget {
 
         // 5. PERSETUJUAN KETENTUAN
         _buildRegisterTermsRow(),
-        const SizedBox(height: 22.0),
-
-        // 6. TOMBOL AKSI (Disable abu-abu jika belum lengkap atau belum setuju S&K)
-        ListenableBuilder(
-          listenable: Listenable.merge([nisController, usernameController, passwordController]),
-          builder: (context, _) {
-            final bool isFormComplete = nisController.text.trim().isNotEmpty &&
-                usernameController.text.trim().isNotEmpty &&
-                passwordController.text.isNotEmpty &&
-                agreedTerms;
-
-            return PrimaryAuthButton(
-              text: 'Aktifkan Akun & Masuk',
-              isLoading: isSubmitting,
-              isEnabled: isFormComplete,
-              onPressed: onSubmit,
-            );
-          },
-        ),
       ],
     );
   }

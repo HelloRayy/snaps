@@ -7,14 +7,15 @@ class LightboxImageViewer extends StatefulWidget {
   final String imageUrl;
   final double screenWidth;
   final ValueChanged<bool>? onZoomChanged;
+  final ValueChanged<bool>? onInteractionChanged;
 
   const LightboxImageViewer({
     super.key,
     required this.imageUrl,
     required this.screenWidth,
     this.onZoomChanged,
+    this.onInteractionChanged,
   });
-
   @override
   State<LightboxImageViewer> createState() => _LightboxImageViewerState();
 }
@@ -54,11 +55,35 @@ class _LightboxImageViewerState extends State<LightboxImageViewer>
 
   void _handleTransform() {
     final scale = _controller.value.getMaxScaleOnAxis();
-    final zoomed = scale > 1.05;
+    final zoomed = scale > 1.02;
     if (zoomed != _isZoomed) {
       setState(() => _isZoomed = zoomed);
       widget.onZoomChanged?.call(zoomed);
     }
+  }
+
+  void _animateToMatrix(
+    Matrix4 targetMatrix, {
+    Duration duration = const Duration(milliseconds: 240),
+  }) {
+    _animController.stop();
+    _zoomAnimation = Matrix4Tween(
+      begin: _controller.value,
+      end: targetMatrix,
+    ).animate(CurvedAnimation(
+      parent: _animController,
+      curve: Curves.easeOutCubic,
+    ));
+    _animController.duration = duration;
+    _animController.forward(from: 0.0);
+  }
+
+  void _animateReset() {
+    if (_controller.value == Matrix4.identity()) return;
+    _animateToMatrix(
+      Matrix4.identity(),
+      duration: const Duration(milliseconds: 200),
+    );
   }
 
   void _handleDoubleTap() {
@@ -66,53 +91,55 @@ class _LightboxImageViewerState extends State<LightboxImageViewer>
     final currentMatrix = _controller.value;
     final currentScale = currentMatrix.getMaxScaleOnAxis();
 
-    Matrix4 targetMatrix;
-    if (currentScale > 1.05) {
-      targetMatrix = Matrix4.identity();
+    if (currentScale > 1.02) {
+      _animateToMatrix(Matrix4.identity());
     } else {
       final tapPos = _doubleTapDetails?.localPosition ??
           Offset(widget.screenWidth / 2, widget.screenWidth / 2);
       const targetScale = 2.5;
       final dx = -tapPos.dx * (targetScale - 1);
       final dy = -tapPos.dy * (targetScale - 1);
-      targetMatrix = Matrix4.identity()
-        ..translate(dx, dy)
-        ..scale(targetScale);
+      final targetMatrix = Matrix4.identity()
+        ..translateByDouble(dx, dy, 0.0, 1.0)
+        ..scaleByDouble(targetScale, targetScale, 1.0, 1.0);
+
+      _animateToMatrix(targetMatrix);
     }
-
-    _zoomAnimation = Matrix4Tween(
-      begin: currentMatrix,
-      end: targetMatrix,
-    ).animate(CurvedAnimation(
-      parent: _animController,
-      curve: Curves.easeOutCubic,
-    ));
-
-    _animController.forward(from: 0.0);
   }
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onDoubleTapDown: (details) => _doubleTapDetails = details,
         onDoubleTap: _handleDoubleTap,
         child: InteractiveViewer(
           transformationController: _controller,
-          minScale: 1.0,
-          maxScale: 4.0,
-          panEnabled: true,
-          boundaryMargin: const EdgeInsets.symmetric(
-            horizontal: 48.0,
-            vertical: 64.0,
-          ),
+          minScale: 0.8,
+          maxScale: 4.5,
+          panEnabled: _isZoomed,
+          boundaryMargin: EdgeInsets.zero,
           clipBehavior: Clip.none,
-          onInteractionEnd: (_) {
+          onInteractionStart: (_) {
+            widget.onInteractionChanged?.call(true);
+            if (_animController.isAnimating) {
+              _animController.stop();
+            }
+          },
+          onInteractionUpdate: (_) {
             final scale = _controller.value.getMaxScaleOnAxis();
-            if (scale <= 1.02 && !_animController.isAnimating) {
-              if (_controller.value != Matrix4.identity()) {
-                _controller.value = Matrix4.identity();
-              }
+            final zoomed = scale > 1.02;
+            if (zoomed != _isZoomed) {
+              setState(() => _isZoomed = zoomed);
+              widget.onZoomChanged?.call(zoomed);
+            }
+          },
+          onInteractionEnd: (_) {
+            widget.onInteractionChanged?.call(false);
+            final scale = _controller.value.getMaxScaleOnAxis();
+            if (scale <= 1.02) {
+              _animateReset();
             }
           },
           child: SizedBox(

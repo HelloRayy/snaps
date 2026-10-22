@@ -1,3 +1,5 @@
+import 'package:snapan_market/core/models/mascot_flair_model.dart';
+
 /// Model data percakapan untuk halaman Direct Messages (Pesan)
 class ConversationUser {
   final String? id;
@@ -7,6 +9,7 @@ class ConversationUser {
   final String? classGroup;
   final bool isVerified;
   final bool isOnline;
+  final MascotFlairModel? mascotFlair;
 
   const ConversationUser({
     this.id,
@@ -16,8 +19,8 @@ class ConversationUser {
     this.classGroup,
     this.isVerified = false,
     this.isOnline = false,
+    this.mascotFlair,
   });
-
   ConversationUser copyWith({
     String? id,
     String? name,
@@ -26,6 +29,7 @@ class ConversationUser {
     String? classGroup,
     bool? isVerified,
     bool? isOnline,
+    MascotFlairModel? mascotFlair,
   }) {
     return ConversationUser(
       id: id ?? this.id,
@@ -35,6 +39,7 @@ class ConversationUser {
       classGroup: classGroup ?? this.classGroup,
       isVerified: isVerified ?? this.isVerified,
       isOnline: isOnline ?? this.isOnline,
+      mascotFlair: mascotFlair ?? this.mascotFlair,
     );
   }
 }
@@ -141,6 +146,12 @@ class ConversationModel {
         : (rawFullName != null && rawFullName.isNotEmpty
             ? rawFullName
             : (cleanUsername != null ? '@$cleanUsername' : 'Siswa'));
+    MascotFlairModel? otherFlair;
+    if (otherProfile['mascot_flair'] != null && otherProfile['mascot_flair'] is Map) {
+      otherFlair = MascotFlairModel.fromJson(Map<String, dynamic>.from(otherProfile['mascot_flair'] as Map));
+    } else if (otherProfile['mascotFlair'] != null && otherProfile['mascotFlair'] is Map) {
+      otherFlair = MascotFlairModel.fromJson(Map<String, dynamic>.from(otherProfile['mascotFlair'] as Map));
+    }
 
     return ConversationModel(
       id: json['id'] as String? ?? '',
@@ -152,6 +163,7 @@ class ConversationModel {
         avatar: otherProfile['avatar_url'] as String? ?? '',
         classGroup: otherProfile['class_group'] as String? ?? 'SMKN 8 Semarang',
         isVerified: otherProfile['is_verified'] == true,
+        mascotFlair: otherFlair,
       ),
       lastMessage: json['last_message'] as String? ?? '',
       timestamp: timeStr,

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 import 'package:snapan_market/features/messages/models/conversation_model.dart';
+import 'package:snapan_market/core/components/mascot_flair_badge.dart';
 
 /// Conversation Row item sliced 1:1 from pen.dev redesigned Row (`snaps-design.pen` node `bzgQS`)
 ///
@@ -127,6 +128,13 @@ class ConversationListItem extends StatelessWidget {
                             CupertinoIcons.checkmark_seal_fill,
                             size: 14.5,
                             color: AppColors.verifiedBlue,
+                          ),
+                        ],
+                        if (conversation.user.mascotFlair != null) ...[
+                          const SizedBox(width: 4.0),
+                          MascotFlairBadge(
+                            flair: conversation.user.mascotFlair!,
+                            size: 18.0,
                           ),
                         ],
                       ],

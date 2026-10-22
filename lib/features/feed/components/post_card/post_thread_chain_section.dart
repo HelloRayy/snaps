@@ -3,6 +3,7 @@ import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 import 'package:snapan_market/features/feed/components/post_card/market_feed_icons.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
+import 'package:snapan_market/core/components/mascot_flair_badge.dart';
 
 class PostThreadChainItem extends StatelessWidget {
   final MarketPostModel post;
@@ -95,6 +96,13 @@ class PostThreadChainItem extends StatelessWidget {
                             Icons.verified_rounded,
                             size: 15.0,
                             color: AppColors.verifiedBlue,
+                          ),
+                        ],
+                        if (post.seller.mascotFlair != null) ...[
+                          const SizedBox(width: 4.0),
+                          MascotFlairBadge(
+                            flair: post.seller.mascotFlair!,
+                            size: 20.0,
                           ),
                         ],
                         const SizedBox(width: 6.0),

@@ -9,6 +9,7 @@ import 'package:snapan_market/features/feed/components/comment/comment_images_se
 import 'package:snapan_market/features/feed/components/comment/comment_options_sheet.dart';
 import 'package:snapan_market/features/feed/components/comment/comment_sub_action_row.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
+import 'package:snapan_market/core/components/mascot_flair_badge.dart';
 
 /// Single Child Reply Tile styled with clean minimalist Instagram / X indent
 class CommentReplyTile extends StatefulWidget {
@@ -176,6 +177,13 @@ class _CommentReplyTileState extends State<CommentReplyTile> {
                     Icons.verified_rounded,
                     size: 13.0,
                     color: AppColors.verifiedBlue,
+                  ),
+                ],
+                if (widget.reply.user.mascotFlair != null) ...[
+                  const SizedBox(width: 4.0),
+                  MascotFlairBadge(
+                    flair: widget.reply.user.mascotFlair!,
+                    size: 16.0,
                   ),
                 ],
                 if (widget.reply.user.isAuthor) ...[

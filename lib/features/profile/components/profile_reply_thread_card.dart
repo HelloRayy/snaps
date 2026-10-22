@@ -4,6 +4,7 @@ import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/profile/models/profile_user_model.dart';
+import 'package:snapan_market/core/components/mascot_flair_badge.dart';
 
 /// Reply Thread Card for "Balasan" Tab matching ReplyThreadCard.tsx 1:1
 /// Shows parent post connected to user's reply with a vertical branch spine line
@@ -117,6 +118,13 @@ class _ProfileReplyThreadCardState extends State<ProfileReplyThreadCard> {
                             if (parent.seller.isVerified) ...[
                               const SizedBox(width: 3.0),
                               const Icon(CupertinoIcons.checkmark_seal_fill, size: 14.0, color: AppColors.verifiedBlue),
+                            ],
+                            if (parent.seller.mascotFlair != null) ...[
+                              const SizedBox(width: 4.0),
+                              MascotFlairBadge(
+                                flair: parent.seller.mascotFlair!,
+                                size: 20.0,
+                              ),
                             ],
                             const SizedBox(width: 4.0),
                             Text(
@@ -243,6 +251,13 @@ class _ProfileReplyThreadCardState extends State<ProfileReplyThreadCard> {
                           if (reply.user.isVerified) ...[
                             const SizedBox(width: 3.0),
                             const Icon(CupertinoIcons.checkmark_seal_fill, size: 14.0, color: AppColors.verifiedBlue),
+                          ],
+                          if (reply.user.mascotFlair != null) ...[
+                            const SizedBox(width: 4.0),
+                            MascotFlairBadge(
+                              flair: reply.user.mascotFlair!,
+                              size: 18.0,
+                            ),
                           ],
                           const SizedBox(width: 4.0),
                           Text(

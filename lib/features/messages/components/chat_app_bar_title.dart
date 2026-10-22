@@ -3,6 +3,7 @@ import 'package:snapan_market/core/components/avatar/avatar_viewer_dialog.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 import 'package:snapan_market/features/messages/models/conversation_model.dart';
+import 'package:snapan_market/core/components/mascot_flair_badge.dart';
 
 /// Top bar header title widget displaying user avatar, name, verification, and presence.
 class ChatAppBarTitle extends StatelessWidget {
@@ -109,6 +110,13 @@ class ChatAppBarTitle extends StatelessWidget {
                         Icons.verified_rounded,
                         size: 14.5,
                         color: AppColors.verifiedBlue,
+                      ),
+                    ],
+                    if (user.mascotFlair != null) ...[
+                      const SizedBox(width: 4.0),
+                      MascotFlairBadge(
+                        flair: user.mascotFlair!,
+                        size: 20.0,
                       ),
                     ],
                   ],

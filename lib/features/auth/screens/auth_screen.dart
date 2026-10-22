@@ -9,6 +9,7 @@ import 'package:snapan_market/core/components/snaps_logo.dart';
 import 'package:snapan_market/features/auth/components/auth_login_tab.dart';
 import 'package:snapan_market/features/auth/components/auth_register_tab.dart';
 import 'package:snapan_market/features/auth/components/auth_footer_switcher.dart';
+import 'package:snapan_market/features/auth/components/auth_text_field.dart';
 import 'package:snapan_market/features/auth/controllers/auth_controller.dart';
 import 'package:snapan_market/features/auth/components/student_confirmation_dialog.dart';
 
@@ -260,6 +261,7 @@ class _AuthScreenState extends State<AuthScreen> {
     if (_verifiedStudent == null) {
       var student = StudentRegistryService.instance.findByNis(rawNis);
       student ??= await StudentRegistryService.instance.findByNisRemote(rawNis);
+      if (!mounted) return;
       if (student == null) {
         setState(() => _nisError = 'NIS $rawNis belum terdaftar di buku induk SMKN 8');
         return;
@@ -302,6 +304,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
     if (!_agreedTerms) {
       HapticFeedback.vibrate();
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Anda harus menyetujui Ketentuan Komunitas & Privasi SMKN 8'),
@@ -367,79 +370,83 @@ class _AuthScreenState extends State<AuthScreen> {
           backgroundColor: Colors.white,
           resizeToAvoidBottomInset: true,
           body: SafeArea(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // 1. Header Bar Atas: Tombol kembali lingkaran 38x38 px
+                Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: constraints.maxHeight - 16.0,
-                    ),
-                    child: IntrinsicHeight(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // 1. TOP BAR: Back button
-                          GestureDetector(
-                            onTap: _handleBack,
-                            behavior: HitTestBehavior.opaque,
-                            child: Container(
-                              width: 38.0,
-                              height: 38.0,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: const Color(0xFFE2E8F0),
-                                  width: 1.0,
-                                ),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Color(0x08000000),
-                                    blurRadius: 4.0,
-                                    offset: Offset(0, 1),
-                                  ),
-                                ],
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: _handleBack,
+                        behavior: HitTestBehavior.opaque,
+                        child: Container(
+                          width: 38.0,
+                          height: 38.0,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: const Color(0xFFE2E8F0),
+                              width: 1.0,
+                            ),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color(0x08000000),
+                                blurRadius: 4.0,
+                                offset: Offset(0, 1),
                               ),
-                              child: const Center(
-                                child: Icon(
-                                  Icons.chevron_left_rounded,
-                                  size: 24.0,
-                                  color: Color(0xFF0F172A),
-                                ),
-                              ),
+                            ],
+                          ),
+                          child: const Center(
+                            child: Icon(
+                              Icons.chevron_left_rounded,
+                              size: 24.0,
+                              color: Color(0xFF0F172A),
                             ),
                           ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
-                          // Equal top spacer pushes central block to optical center
-                          const Spacer(flex: 1),
-                          const SizedBox(height: 12.0),
+                // 2. Area Form Dinamis (Expanded + SingleChildScrollView)
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: isKeyboardOpen ? 8.0 : 20.0),
 
-                          // 2. CENTRAL CONTENT BLOCK (Logo + Header + Form tightly grouped)
-                          const Center(
-                            child: SnapsLogo(height: 44.0),
-                          ),
-                          const SizedBox(height: 20.0),
+                        // Logo Snaps (responsif: mengecil saat keyboard aktif)
+                        Center(
+                          child: SnapsLogo(height: isKeyboardOpen ? 32.0 : 44.0),
+                        ),
+                        SizedBox(height: isKeyboardOpen ? 12.0 : 20.0),
 
-                          // Headline & Subtitle center-aligned directly attached to inputs
-                          Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  _authMode == AuthMode.login ? 'Masuk Akun' : 'Daftar Akun Baru',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontFamily: 'SFPro',
-                                    fontSize: 24.0,
-                                    fontWeight: FontWeight.w800,
-                                    color: Color(0xFF0F172A),
-                                    letterSpacing: -0.5,
-                                  ),
+                        // Headline & Subtitle
+                        Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                _authMode == AuthMode.login ? 'Masuk Akun' : 'Daftar Akun Baru',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontFamily: 'SFPro',
+                                  fontSize: 24.0,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFF0F172A),
+                                  letterSpacing: -0.5,
                                 ),
+                              ),
+                              if (!isKeyboardOpen) ...[
                                 const SizedBox(height: 6.0),
                                 Text(
                                   _authMode == AuthMode.login
@@ -455,139 +462,215 @@ class _AuthScreenState extends State<AuthScreen> {
                                   ),
                                 ),
                               ],
-                            ),
+                            ],
                           ),
-                          const SizedBox(height: 24.0), // Gap rapat & presisi ke form input
+                        ),
+                        SizedBox(height: isKeyboardOpen ? 16.0 : 24.0),
 
-                          // Banner Notifikasi: Akun Direset / Dihapus oleh Admin
-                          if (_showAccountDeletedNotice) ...[
-                            Container(
-                              margin: const EdgeInsets.only(bottom: 20.0),
-                              padding: const EdgeInsets.all(14.0),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFFFBEB),
-                                borderRadius: BorderRadius.circular(16.0),
-                                border: Border.all(color: const Color(0xFFFDE68A)),
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(7.0),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFFEF3C7),
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    child: const Icon(
-                                      Icons.person_off_outlined,
-                                      size: 18.0,
-                                      color: Color(0xFFD97706),
-                                    ),
+                        // Banner Notifikasi: Akun Direset / Dihapus oleh Admin
+                        if (_showAccountDeletedNotice) ...[
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 20.0),
+                            padding: const EdgeInsets.all(14.0),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFFBEB),
+                              borderRadius: BorderRadius.circular(16.0),
+                              border: Border.all(color: const Color(0xFFFDE68A)),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(7.0),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFFEF3C7),
+                                    borderRadius: BorderRadius.circular(10.0),
                                   ),
-                                  const SizedBox(width: 12.0),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            const Text(
-                                              'AKUN TELAH DIRESET',
-                                              style: TextStyle(
-                                                fontSize: 12.0,
-                                                fontWeight: FontWeight.w800,
-                                                letterSpacing: 0.4,
-                                                color: Color(0xFF92400E),
-                                              ),
+                                  child: const Icon(
+                                    Icons.person_off_outlined,
+                                    size: 18.0,
+                                    color: Color(0xFFD97706),
+                                  ),
+                                ),
+                                const SizedBox(width: 12.0),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text(
+                                            'AKUN TELAH DIRESET',
+                                            style: TextStyle(
+                                              fontSize: 12.0,
+                                              fontWeight: FontWeight.w800,
+                                              letterSpacing: 0.4,
+                                              color: Color(0xFF92400E),
                                             ),
-                                            GestureDetector(
-                                              onTap: () => setState(() => _showAccountDeletedNotice = false),
-                                              behavior: HitTestBehavior.opaque,
-                                              child: const Padding(
-                                                padding: EdgeInsets.only(left: 6.0),
-                                                child: Icon(
-                                                  Icons.close_rounded,
-                                                  size: 16.0,
-                                                  color: Color(0xFFB45309),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 4.0),
-                                        const Text(
-                                          'Akun kamu sebelumnya tidak lagi terdaftar di sistem Snaps. NIS kamu sudah dibebaskan dan siap didaftarkan kembali sebagai akun baru di bawah ini.',
-                                          style: TextStyle(
-                                            fontSize: 12.5,
-                                            height: 1.4,
-                                            color: Color(0xFF78350F),
                                           ),
+                                          GestureDetector(
+                                            onTap: () => setState(() => _showAccountDeletedNotice = false),
+                                            behavior: HitTestBehavior.opaque,
+                                            child: const Padding(
+                                              padding: EdgeInsets.only(left: 6.0),
+                                              child: Icon(
+                                                Icons.close_rounded,
+                                                size: 16.0,
+                                                color: Color(0xFFB45309),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4.0),
+                                      const Text(
+                                        'Akun kamu sebelumnya tidak lagi terdaftar di sistem Snaps. NIS kamu sudah dibebaskan dan siap didaftarkan kembali sebagai akun baru di bawah ini.',
+                                        style: TextStyle(
+                                          fontSize: 12.5,
+                                          height: 1.4,
+                                          color: Color(0xFF78350F),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
-
-                          // Form Tab (Login / Register)
-                          if (_authMode == AuthMode.login)
-                            AuthLoginTab(
-                              usernameController: _loginUsernameController,
-                              passwordController: _loginPasswordController,
-                              showPassword: _showLoginPassword,
-                              onTogglePassword: () => setState(() => _showLoginPassword = !_showLoginPassword),
-                              usernameError: _loginUsernameError,
-                              passwordError: _loginPasswordError,
-                              rememberMe: _rememberMe,
-                              onToggleRememberMe: () => setState(() => _rememberMe = !_rememberMe),
-                              isSubmitting: _isSubmitting,
-                              onSubmit: _submitLogin,
-                              suspensionInfo: _suspensionInfo,
-                              onDismissSuspension: () => setState(() => _suspensionInfo = null),
-                            )
-                          else
-                            AuthRegisterTab(
-                              nisController: _nisController,
-                              nisError: _nisError,
-                              verifiedStudent: _verifiedStudent,
-                              onStudentSelected: _handleStudentSelected,
-                              displayNameController: _regDisplayNameController,
-                              displayNameError: _regDisplayNameError,
-                              usernameController: _regUsernameController,
-                              usernameError: _regUsernameError,
-                              passwordController: _regPasswordController,
-                              passwordError: _regPasswordError,
-                              showPassword: _showRegPassword,
-                              onTogglePassword: () => setState(() => _showRegPassword = !_showRegPassword),
-                              agreedTerms: _agreedTerms,
-                              onToggleAgreedTerms: () => setState(() => _agreedTerms = !_agreedTerms),
-                              isSubmitting: _isSubmitting,
-                              isGeneratingUsername: _isGeneratingUsername,
-                              onSubmit: _submitRegister,
-                            ),
-
-                          // Equal bottom spacer
-                          const Spacer(flex: 1),
-                          const SizedBox(height: 16.0),
-
-                          // 3. FOOTER SWITCHER
-                          AuthFooterSwitcher(
-                            isLogin: _authMode == AuthMode.login,
-                            onSwitch: () => setState(() {
-                              _authMode = _authMode == AuthMode.login ? AuthMode.register : AuthMode.login;
-                              _clearAllErrors();
-                            }),
                           ),
-                          const SizedBox(height: 8.0),
                         ],
-                      ),
+
+                        // Form Tab (Login / Register)
+                        if (_authMode == AuthMode.login)
+                          AuthLoginTab(
+                            usernameController: _loginUsernameController,
+                            passwordController: _loginPasswordController,
+                            showPassword: _showLoginPassword,
+                            onTogglePassword: () => setState(() => _showLoginPassword = !_showLoginPassword),
+                            usernameError: _loginUsernameError,
+                            passwordError: _loginPasswordError,
+                            rememberMe: _rememberMe,
+                            onToggleRememberMe: () => setState(() => _rememberMe = !_rememberMe),
+                            isSubmitting: _isSubmitting,
+                            onSubmit: _submitLogin,
+                            suspensionInfo: _suspensionInfo,
+                            onDismissSuspension: () => setState(() => _suspensionInfo = null),
+                          )
+                        else
+                          AuthRegisterTab(
+                            nisController: _nisController,
+                            nisError: _nisError,
+                            verifiedStudent: _verifiedStudent,
+                            onStudentSelected: _handleStudentSelected,
+                            displayNameController: _regDisplayNameController,
+                            displayNameError: _regDisplayNameError,
+                            usernameController: _regUsernameController,
+                            usernameError: _regUsernameError,
+                            passwordController: _regPasswordController,
+                            passwordError: _regPasswordError,
+                            showPassword: _showRegPassword,
+                            onTogglePassword: () => setState(() => _showRegPassword = !_showRegPassword),
+                            agreedTerms: _agreedTerms,
+                            onToggleAgreedTerms: () => setState(() => _agreedTerms = !_agreedTerms),
+                            isSubmitting: _isSubmitting,
+                            isGeneratingUsername: _isGeneratingUsername,
+                            onSubmit: _submitRegister,
+                          ),
+
+                        const SizedBox(height: 24.0),
+                      ],
                     ),
                   ),
-                );
-              },
+                ),
+
+                // 3. Kontainer Sticky Bottom Action
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: isKeyboardOpen
+                        ? const Border(
+                            top: BorderSide(
+                              color: Color(0xFFF1F5F9),
+                              width: 1.0,
+                            ),
+                          )
+                        : null,
+                    boxShadow: isKeyboardOpen
+                        ? const [
+                            BoxShadow(
+                              color: Color(0x0A0F172A),
+                              blurRadius: 10,
+                              offset: Offset(0, -3),
+                            ),
+                          ]
+                        : null,
+                  ),
+                  padding: EdgeInsets.only(
+                    left: 24.0,
+                    right: 24.0,
+                    top: 10.0,
+                    bottom: isKeyboardOpen ? 10.0 : 16.0,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (_authMode == AuthMode.login)
+                        ListenableBuilder(
+                          listenable: Listenable.merge([_loginUsernameController, _loginPasswordController]),
+                          builder: (context, _) {
+                            final bool isLoginValid = _loginUsernameController.text.trim().isNotEmpty &&
+                                _loginPasswordController.text.isNotEmpty;
+
+                            return PrimaryAuthButton(
+                              text: 'Masuk ke Akun',
+                              isLoading: _isSubmitting,
+                              isEnabled: isLoginValid,
+                              onPressed: _submitLogin,
+                            );
+                          },
+                        )
+                      else
+                        ListenableBuilder(
+                          listenable: Listenable.merge([
+                            _nisController,
+                            _regDisplayNameController,
+                            _regUsernameController,
+                            _regPasswordController,
+                          ]),
+                          builder: (context, _) {
+                            final rawDisplayName = _regDisplayNameController.text.trim();
+                            final bool isDisplayNameValid = rawDisplayName.isEmpty ||
+                                (rawDisplayName.length >= 6 && rawDisplayName.length <= 20);
+                            final bool isRegisterValid = _verifiedStudent != null &&
+                                _nisController.text.trim().isNotEmpty &&
+                                _regUsernameController.text.trim().isNotEmpty &&
+                                _regPasswordController.text.length >= 6 &&
+                                _agreedTerms &&
+                                isDisplayNameValid;
+
+                            return PrimaryAuthButton(
+                              text: 'Aktifkan Akun & Masuk',
+                              isLoading: _isSubmitting,
+                              isEnabled: isRegisterValid,
+                              onPressed: _submitRegister,
+                            );
+                          },
+                        ),
+
+                      if (!isKeyboardOpen) ...[
+                        const SizedBox(height: 12.0),
+                        AuthFooterSwitcher(
+                          isLogin: _authMode == AuthMode.login,
+                          onSwitch: () => setState(() {
+                            _authMode = _authMode == AuthMode.login ? AuthMode.register : AuthMode.login;
+                            _clearAllErrors();
+                          }),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ),

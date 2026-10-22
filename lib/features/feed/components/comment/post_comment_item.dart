@@ -5,6 +5,7 @@ import 'package:snapan_market/core/utils/formatters.dart';
 import 'package:snapan_market/core/utils/mention_text_span_helper.dart';
 import 'package:snapan_market/features/feed/components/comment/comment.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
+import 'package:snapan_market/core/components/mascot_flair_badge.dart';
 
 /// PostCommentItem Widget
 /// Modular Threads conversation card with continuous threadline tree
@@ -348,6 +349,13 @@ class _PostCommentItemState extends State<PostCommentItem> {
                     Icons.verified_rounded,
                     size: 13.5,
                     color: AppColors.verifiedBlue,
+                  ),
+                ],
+                if (widget.comment.user.mascotFlair != null) ...[
+                  const SizedBox(width: 4.0),
+                  MascotFlairBadge(
+                    flair: widget.comment.user.mascotFlair!,
+                    size: 18.0,
                   ),
                 ],
                 if (widget.comment.user.isAuthor) ...[

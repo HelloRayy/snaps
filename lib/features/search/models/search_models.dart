@@ -1,3 +1,5 @@
+import 'package:snapan_market/core/models/mascot_flair_model.dart';
+
 enum SearchResultsTab { top, latest, profiles }
 
 class SuggestedAccount {
@@ -6,6 +8,7 @@ class SuggestedAccount {
   final String fullName;
   final String avatar;
   final bool isVerified;
+  final MascotFlairModel? mascotFlair;
   final String bio;
   final String followersCount;
   final bool isFollowing;
@@ -16,6 +19,7 @@ class SuggestedAccount {
     required this.fullName,
     required this.avatar,
     this.isVerified = false,
+    this.mascotFlair,
     required this.bio,
     required this.followersCount,
     this.isFollowing = false,
@@ -27,6 +31,7 @@ class SuggestedAccount {
     String? fullName,
     String? avatar,
     bool? isVerified,
+    MascotFlairModel? mascotFlair,
     String? bio,
     String? followersCount,
     bool? isFollowing,
@@ -37,6 +42,7 @@ class SuggestedAccount {
       fullName: fullName ?? this.fullName,
       avatar: avatar ?? this.avatar,
       isVerified: isVerified ?? this.isVerified,
+      mascotFlair: mascotFlair ?? this.mascotFlair,
       bio: bio ?? this.bio,
       followersCount: followersCount ?? this.followersCount,
       isFollowing: isFollowing ?? this.isFollowing,

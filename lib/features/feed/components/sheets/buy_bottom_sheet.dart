@@ -7,6 +7,7 @@ import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
 import 'package:snapan_market/features/feed/components/post_card/market_feed_icons.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
+import 'package:snapan_market/core/components/mascot_flair_badge.dart';
 
 /// Interactive Buy Bottom Sheet for Instant COD Order Placement in SMKN 8
 class BuyBottomSheet extends StatefulWidget {
@@ -120,6 +121,13 @@ class _BuyBottomSheetState extends State<BuyBottomSheet> {
                             if (widget.post.seller.isVerified) ...[
                               const SizedBox(width: 4.0),
                               const VerifiedBadgeIcon(size: 14.0),
+                            ],
+                            if (widget.post.seller.mascotFlair != null) ...[
+                              const SizedBox(width: 4.0),
+                              MascotFlairBadge(
+                                flair: widget.post.seller.mascotFlair!,
+                                size: 22.0,
+                              ),
                             ],
                           ],
                         ),

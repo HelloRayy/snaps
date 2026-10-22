@@ -41,6 +41,9 @@ jspm_packages/
 
 # dotenv environment variables file
 .env
+
+# OCR trained data binaries
+*.traineddata
 .env.local
 .env.development.local
 .env.test.local

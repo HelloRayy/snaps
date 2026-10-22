@@ -219,6 +219,7 @@ class CommentUserModel {
   final String? classGroup;
   final bool isVerified;
   final bool isAuthor;
+  final MascotFlairModel? mascotFlair;
 
   const CommentUserModel({
     required this.id,
@@ -229,9 +230,22 @@ class CommentUserModel {
     this.classGroup,
     this.isVerified = false,
     this.isAuthor = false,
+    this.mascotFlair,
   });
 
   factory CommentUserModel.fromJson(Map<String, dynamic> json) {
+    MascotFlairModel? parsedFlair;
+    if (json['mascot_flair'] != null && json['mascot_flair'] is Map) {
+      parsedFlair = MascotFlairModel.fromJson(Map<String, dynamic>.from(json['mascot_flair'] as Map));
+    } else if (json['mascotFlair'] != null && json['mascotFlair'] is Map) {
+      parsedFlair = MascotFlairModel.fromJson(Map<String, dynamic>.from(json['mascotFlair'] as Map));
+    } else if (json['username']?.toString().toLowerCase() == 'snaps') {
+      parsedFlair = const MascotFlairModel(
+        bundle: MascotBundle.koala,
+        emotion: MascotEmotion.delighted,
+      );
+    }
+
     return CommentUserModel(
       id: json['id']?.toString() ?? '',
       name: json['full_name']?.toString() ?? json['name']?.toString() ?? 'Pengguna Snapan',
@@ -241,6 +255,43 @@ class CommentUserModel {
       classGroup: json['class_group']?.toString() ?? json['classGroup']?.toString(),
       isVerified: json['is_verified'] == true || json['isVerified'] == true,
       isAuthor: json['is_author'] == true || json['isAuthor'] == true,
+      mascotFlair: parsedFlair,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'full_name': name,
+    'display_name': displayName,
+    'avatar_url': avatar,
+    'username': username,
+    'class_group': classGroup,
+    'is_verified': isVerified,
+    'is_author': isAuthor,
+    if (mascotFlair != null) 'mascot_flair': mascotFlair!.toJson(),
+  };
+
+  CommentUserModel copyWith({
+    String? id,
+    String? name,
+    String? displayName,
+    String? avatar,
+    String? username,
+    String? classGroup,
+    bool? isVerified,
+    bool? isAuthor,
+    MascotFlairModel? mascotFlair,
+  }) {
+    return CommentUserModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      displayName: displayName ?? this.displayName,
+      avatar: avatar ?? this.avatar,
+      username: username ?? this.username,
+      classGroup: classGroup ?? this.classGroup,
+      isVerified: isVerified ?? this.isVerified,
+      isAuthor: isAuthor ?? this.isAuthor,
+      mascotFlair: mascotFlair ?? this.mascotFlair,
     );
   }
 }

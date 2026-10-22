@@ -5,6 +5,7 @@ import "package:snapan_market/core/theme/app_colors.dart";
 import "package:snapan_market/core/ui/default_profile_avatar.dart";
 import "package:snapan_market/core/services/follow_service.dart";
 import "package:snapan_market/features/search/models/search_models.dart";
+import "package:snapan_market/core/components/mascot_flair_badge.dart";
 
 class SuggestedAccountTile extends StatelessWidget {
   final SuggestedAccount account;
@@ -77,6 +78,13 @@ class SuggestedAccountTile extends StatelessWidget {
                           CupertinoIcons.checkmark_seal_fill,
                           size: 15.0,
                           color: AppColors.verifiedBlue,
+                        ),
+                      ],
+                      if (account.mascotFlair != null) ...[
+                        const SizedBox(width: 4.0),
+                        MascotFlairBadge(
+                          flair: account.mascotFlair!,
+                          size: 16.0,
                         ),
                       ],
                     ],

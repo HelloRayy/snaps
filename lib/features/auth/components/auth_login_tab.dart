@@ -169,21 +169,6 @@ class AuthLoginTab extends StatelessWidget {
         ),
         const SizedBox(height: 14.0),
         _buildLoginOptionsRow(context),
-        const SizedBox(height: 22.0),
-        ListenableBuilder(
-          listenable: Listenable.merge([usernameController, passwordController]),
-          builder: (context, _) {
-            final bool isFormValid = usernameController.text.trim().isNotEmpty &&
-                passwordController.text.isNotEmpty;
-
-            return PrimaryAuthButton(
-              text: 'Masuk ke Akun',
-              isLoading: isSubmitting,
-              isEnabled: isFormValid,
-              onPressed: onSubmit,
-            );
-          },
-        ),
       ],
     );
   }

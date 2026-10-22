@@ -4,6 +4,7 @@ import 'package:snapan_market/core/services/poll_sync_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/search/models/search_models.dart';
+import 'package:snapan_market/core/models/mascot_flair_model.dart';
 
 /// Controller managing search state, queries, and optimistic interactions (<200 lines).
 class AppSearchController extends ChangeNotifier {
@@ -56,6 +57,12 @@ class AppSearchController extends ChangeNotifier {
   SuggestedAccount _mapAccount(Map<String, dynamic> p) {
     final uName = p['username'] as String? ?? '';
     final dName = (p['display_name'] as String?)?.trim();
+    MascotFlairModel? parsedFlair;
+    if (p['mascot_flair'] != null && p['mascot_flair'] is Map) {
+      parsedFlair = MascotFlairModel.fromJson(Map<String, dynamic>.from(p['mascot_flair'] as Map));
+    } else if (p['mascotFlair'] != null && p['mascotFlair'] is Map) {
+      parsedFlair = MascotFlairModel.fromJson(Map<String, dynamic>.from(p['mascotFlair'] as Map));
+    }
     return SuggestedAccount(
       id: p['id'] as String? ?? '',
       fullName: (dName != null && dName.isNotEmpty) ? dName : (uName.isNotEmpty ? '@$uName' : 'Pengguna'),
@@ -64,6 +71,7 @@ class AppSearchController extends ChangeNotifier {
       bio: p['bio'] as String? ?? '',
       followersCount: '',
       isVerified: p['is_verified'] == true,
+      mascotFlair: parsedFlair,
     );
   }
 

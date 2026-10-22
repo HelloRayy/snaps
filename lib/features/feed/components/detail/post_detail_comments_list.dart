@@ -47,6 +47,7 @@ class PostDetailCommentsList extends StatelessWidget {
                 classGroup: post.seller.classGroup,
                 isVerified: post.seller.isVerified,
                 isAuthor: true,
+                mascotFlair: post.seller.mascotFlair,
               ),
               content: chain.caption,
               images: chain.images,

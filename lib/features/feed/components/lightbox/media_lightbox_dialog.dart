@@ -93,9 +93,9 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
   int _activePointerCount = 0;
   double _dragOffsetY = 0.0;
   bool _isCurrentZoomed = false;
+  bool _isInteractingWithViewer = false;
   late AnimationController _springBackAnimController;
   Animation<double>? _springBackAnim;
-
   @override
   void initState() {
     super.initState();
@@ -136,8 +136,38 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
     super.dispose();
   }
 
+  void _springBackToZero() {
+    if (_dragOffsetY == 0.0) return;
+    _springBackAnimController.stop();
+    _springBackAnim = Tween<double>(begin: _dragOffsetY, end: 0.0).animate(
+      CurvedAnimation(
+        parent: _springBackAnimController,
+        curve: Curves.easeOutCubic,
+      ),
+    )..addListener(() {
+        setState(() {
+          _dragOffsetY = _springBackAnim!.value;
+        });
+      });
+    _springBackAnimController.forward(from: 0.0);
+  }
+
+  void _handleVerticalDragStart(DragStartDetails details) {
+    if (_isCurrentZoomed || _activePointerCount > 1 || _isInteractingWithViewer) {
+      if (_dragOffsetY != 0.0) {
+        _springBackToZero();
+      }
+      return;
+    }
+  }
+
   void _handleVerticalDragUpdate(DragUpdateDetails details) {
-    if (_isCurrentZoomed || _activePointerCount > 1) return;
+    if (_isCurrentZoomed || _activePointerCount > 1 || _isInteractingWithViewer) {
+      if (_dragOffsetY != 0.0) {
+        _springBackToZero();
+      }
+      return;
+    }
     setState(() {
       _dragOffsetY += details.delta.dy;
       if (_dragOffsetY < 0) {
@@ -147,23 +177,18 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
   }
 
   void _handleVerticalDragEnd(DragEndDetails details) {
-    if (_isCurrentZoomed || _activePointerCount > 1) return;
+    if (_isCurrentZoomed || _activePointerCount > 1 || _isInteractingWithViewer) {
+      if (_dragOffsetY != 0.0) {
+        _springBackToZero();
+      }
+      return;
+    }
     final velocity = details.primaryVelocity ?? 0.0;
     if (_dragOffsetY > 110.0 || velocity > 650.0) {
       HapticFeedback.lightImpact();
       Navigator.of(context).pop();
     } else if (_dragOffsetY != 0.0) {
-      _springBackAnim = Tween<double>(begin: _dragOffsetY, end: 0.0).animate(
-        CurvedAnimation(
-          parent: _springBackAnimController,
-          curve: Curves.easeOutCubic,
-        ),
-      )..addListener(() {
-          setState(() {
-            _dragOffsetY = _springBackAnim!.value;
-          });
-        });
-      _springBackAnimController.forward(from: 0.0);
+      _springBackToZero();
     }
   }
 
@@ -246,7 +271,7 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
             setState(() {
               _activePointerCount++;
               if (_activePointerCount > 1 && _dragOffsetY != 0.0) {
-                _dragOffsetY = 0.0;
+                _springBackToZero();
               }
             });
           },
@@ -262,6 +287,7 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
           },
           child: GestureDetector(
             behavior: HitTestBehavior.translucent,
+            onVerticalDragStart: _handleVerticalDragStart,
             onVerticalDragUpdate: _handleVerticalDragUpdate,
             onVerticalDragEnd: _handleVerticalDragEnd,
             child: Stack(
@@ -274,17 +300,33 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
                       scale: imageScale,
                       child: PageView.builder(
                         controller: _pageController,
-                        physics: (_isCurrentZoomed || _activePointerCount > 1)
+                        physics: (_isCurrentZoomed ||
+                                _activePointerCount > 1 ||
+                                _isInteractingWithViewer)
                             ? const NeverScrollableScrollPhysics()
                             : const BouncingScrollPhysics(),
                         itemCount: widget.images.length,
-                        onPageChanged: (idx) => setState(() => _currentIndex = idx),
+                        onPageChanged: (idx) => setState(() {
+                          _currentIndex = idx;
+                          _isCurrentZoomed = false;
+                          _isInteractingWithViewer = false;
+                        }),
                         itemBuilder: (context, index) {
                           return LightboxImageViewer(
                             imageUrl: widget.images[index],
                             screenWidth: mediaQuery.size.width,
                             onZoomChanged: (zoomed) {
-                              _isCurrentZoomed = zoomed;
+                              setState(() {
+                                _isCurrentZoomed = zoomed;
+                              });
+                            },
+                            onInteractionChanged: (interacting) {
+                              setState(() {
+                                _isInteractingWithViewer = interacting;
+                                if (interacting && _dragOffsetY != 0.0) {
+                                  _springBackToZero();
+                                }
+                              });
                             },
                           );
                         },
