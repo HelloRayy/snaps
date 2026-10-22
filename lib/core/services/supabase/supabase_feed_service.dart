@@ -506,36 +506,6 @@ class SupabaseFeedService {
     }
   }
 
-  /// Fetch a single market post by its UUID with seller profile and interaction counts.
-  /// Fully anonymous / guest safe (SNAPS MVP Share Content).
-  Future<MarketPostModel?> fetchPostById(String postId) async {
-    try {
-      final response = await _client
-          .from('market_posts')
-          .select('*, seller:profiles!market_posts_seller_id_fkey(*), post_likes(count), post_comments(count)')
-          .eq('id', postId)
-          .maybeSingle();
-
-      if (response == null) return null;
-
-      final post = MarketPostModel.fromJson(response);
-      if (post.isDeleted) return null;
-
-      if (post.poll != null) {
-        final hydrated = await PollSyncService.instance.hydrateAndSyncPosts(
-          client: _client,
-          posts: [post],
-        );
-        return hydrated.isNotEmpty ? hydrated.first : post;
-      }
-
-      return post;
-    } catch (e) {
-      debugPrint('Error fetchPostById: $e');
-      return null;
-    }
-  }
-
   /// Submit a content report to Supabase for admin review (SNAPS-16/Reports)
   Future<void> reportPost({
     required String postId,
