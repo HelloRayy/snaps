@@ -6,6 +6,7 @@ import { MediaLightboxModal } from './MediaLightboxModal';
 import { PostSubmenuDropdown } from './PostSubmenuDropdown';
 import { togglePostBookmark } from '@/services/api/bookmarkService';
 import { triggerHaptic } from '@/utils/haptics';
+import { useAuth } from '@/ui/hooks/useAuth';
 import { PostCardHeader } from './post-card/PostCardHeader';
 import { PostCardMediaGallery } from './post-card/PostCardMediaGallery';
 import { PostCardActionBar } from './post-card/PostCardActionBar';
@@ -27,6 +28,9 @@ export const MarketPostCard = memo<MarketPostCardProps>(function MarketPostCard(
   onUserClick,
   variant = 'feed',
 }) {
+  const { user } = useAuth();
+  const isGuest = !user;
+
   const [isLiked, setIsLiked] = useState(item.isLiked || false);
   const [likesCount, setLikesCount] = useState(item.likesCount);
 
@@ -46,6 +50,10 @@ export const MarketPostCard = memo<MarketPostCardProps>(function MarketPostCard(
 
   const handleBookmarkToggle = async (e?: React.MouseEvent) => {
     e?.stopPropagation();
+    if (isGuest) {
+      showToast('Masuk untuk berinteraksi');
+      return;
+    }
     setIsMenuOpen(false);
     const nextState = !isSaved;
     setIsSaved(nextState);
@@ -60,6 +68,10 @@ export const MarketPostCard = memo<MarketPostCardProps>(function MarketPostCard(
 
   const handleLikeToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (isGuest) {
+      showToast('Masuk untuk berinteraksi');
+      return;
+    }
     triggerHaptic('light');
     if (isLiked) {
       setIsLiked(false);
@@ -72,6 +84,10 @@ export const MarketPostCard = memo<MarketPostCardProps>(function MarketPostCard(
 
   const handleRepostToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (isGuest) {
+      showToast('Masuk untuk berinteraksi');
+      return;
+    }
     triggerHaptic('medium');
     if (isReposted) {
       setIsReposted(false);
@@ -88,10 +104,10 @@ export const MarketPostCard = memo<MarketPostCardProps>(function MarketPostCard(
     e?.stopPropagation();
     triggerHaptic('light');
     const authorHandle = item.seller.username || item.seller.name.toLowerCase().replace(/\s+/g, '') || 'post';
-    const shareUrl = `${window.location.origin}/@${authorHandle.replace(/^@/, '')}/post/${item.id}`;
+    const shareUrl = `https://snaps.web.id/post/${item.id}`;
     const shareText = item.price
-      ? `🛍️ ${item.caption}\n💰 Rp ${item.price.toLocaleString('id-ID')}\n👤 Penjual: ${item.seller.name} (@${authorHandle})`
-      : `🧵 ${item.caption}\n👤 Oleh: ${item.seller.name} (@${authorHandle})`;
+      ? `🛍️ ${item.caption}\n💰 Rp ${item.price.toLocaleString('id-ID')}\n👤 Penjual: ${item.seller.name} (@${authorHandle})\n🔗 ${shareUrl}`
+      : `🧵 ${item.caption}\n👤 Oleh: ${item.seller.name} (@${authorHandle})\n🔗 ${shareUrl}`;
 
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {

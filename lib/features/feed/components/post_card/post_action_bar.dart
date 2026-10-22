@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
 import 'package:snapan_market/core/utils/snaps_toast.dart';
+import 'package:snapan_market/core/utils/share_helper.dart';
 import 'package:snapan_market/features/feed/components/post_card/interactive_like_button.dart';
 import 'package:snapan_market/features/feed/components/post_card/market_feed_icons.dart';
 import 'package:snapan_market/features/feed/components/post_card/tactile_bounce_wrapper.dart';
@@ -152,8 +153,7 @@ class PostActionBar extends StatelessWidget {
                 if (onShareClick != null) {
                   onShareClick!(item);
                 } else {
-                  Clipboard.setData(ClipboardData(text: 'https://snapan.id/post/${item.id}'));
-                  SnapsToast.show(context, 'Tautan disalin ke papan klip');
+                  ShareHelper.sharePost(context, item);
                 }
               },
               child: Container(

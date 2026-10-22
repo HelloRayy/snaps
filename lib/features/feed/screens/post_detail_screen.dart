@@ -8,6 +8,7 @@ import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/constants/app_constants.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/snaps_toast.dart';
+import 'package:snapan_market/core/utils/share_helper.dart';
 import 'package:snapan_market/features/feed/components/sheets/buy_bottom_sheet.dart';
 import 'package:snapan_market/features/feed/components/post_card/market_post_card.dart';
 import 'package:snapan_market/features/feed/components/lightbox/media_lightbox_dialog.dart';
@@ -179,15 +180,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
             GlassToolbarAction(
               icon: CupertinoIcons.share,
               tooltip: 'Bagikan postingan',
-              onTap: () {
-                HapticFeedback.lightImpact();
-                Clipboard.setData(ClipboardData(text: 'https://snapan.id/post/${post.id}'));
-                SnapsToast.show(
-                  context,
-                  'Tautan postingan berhasil disalin',
-                  hasBottomNav: false,
-                );
-              },
+              onTap: () => ShareHelper.sharePost(context, post),
             ),
             GlassToolbarAction(
               icon: CupertinoIcons.ellipsis,

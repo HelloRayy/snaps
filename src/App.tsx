@@ -96,8 +96,10 @@ export function App() {
   const isProfileRoute = currentRoute.startsWith('/@') || currentRoute.startsWith('/profile');
   const isColorsRoute = currentRoute === '/colors' || (typeof window !== 'undefined' && window.location.hash === '#colors');
   const isMapRoute = currentRoute === '/map' || (typeof window !== 'undefined' && window.location.hash === '#map');
+  const isPostRoute = currentRoute.startsWith('/post/') || Boolean(selectedPost);
   const isLandingRoute =
     !isAdminRoute &&
+    !isPostRoute &&
     (currentRoute === '/' ||
       currentRoute === '/download' ||
       (typeof window !== 'undefined' &&
@@ -111,6 +113,7 @@ export function App() {
     !isProfileRoute &&
     !isColorsRoute &&
     !isMapRoute &&
+    !isPostRoute &&
     !isAdminRoute;
 
   const targetProfileUsername = isProfileRoute
@@ -134,9 +137,9 @@ export function App() {
     return false;
   });
 
-  // Prompt Threads-style login popover on arrival for unauthenticated users
+  // Prompt Threads-style login popover on arrival for unauthenticated users (only when on generic Home feed, not post detail)
   useEffect(() => {
-    if (!user && isHomeRoute) {
+    if (!user && isHomeRoute && !selectedPost && !isPostRoute) {
       const dismissed = sessionStorage.getItem('snapan_auth_prompt_dismissed');
       if (!dismissed) {
         const timer = setTimeout(() => {
@@ -145,7 +148,7 @@ export function App() {
         return () => clearTimeout(timer);
       }
     }
-  }, [user, isHomeRoute]);
+  }, [user, isHomeRoute, selectedPost, isPostRoute]);
 
   // Fallback to login prompt on account suspension (SNAPS-16)
   useEffect(() => {

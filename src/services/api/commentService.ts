@@ -156,3 +156,35 @@ export async function deletePostComment(commentId: string, userId: string) {
     throw error;
   }
 }
+
+/**
+ * Maps a Supabase PostCommentWithUser record to UI PostComment model
+ */
+export function mapSupabaseCommentToPostComment(
+  c: PostCommentWithUser,
+  postSellerId?: string
+): import('@/types/marketFeed').PostComment {
+  const username = c.user?.username || 'user';
+  return {
+    id: c.id,
+    postId: c.post_id,
+    user: {
+      id: c.user?.id || c.user_id,
+      name: c.user?.full_name || 'Pengguna Snaps',
+      avatar: c.user?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(username)}`,
+      username: username,
+      classGroup: c.user?.class_group || 'Siswa Snapan',
+      isVerified: c.user?.is_verified ?? false,
+      isAuthor: postSellerId ? c.user_id === postSellerId : false,
+    },
+    content: c.content,
+    timestamp: new Date(c.created_at).toLocaleDateString('id-ID', {
+      hour: '2-digit',
+      minute: '2-digit',
+    }),
+    likesCount: c.likes_count || 0,
+    isLiked: c.is_liked_by_user,
+    images: c.images || undefined,
+    replies: (c.replies || []).map((r) => mapSupabaseCommentToPostComment(r, postSellerId)),
+  };
+}

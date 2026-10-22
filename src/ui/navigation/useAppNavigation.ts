@@ -2,29 +2,42 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { MarketPostItem } from '@/types/marketFeed';
 import { MOCK_MARKET_POSTS } from '@/data/mockMarketData';
 import { triggerHaptic } from '@/utils/haptics';
+import { getPostById, mapSupabasePostToFeedItem } from '@/services/api/marketPostsService';
+import { getPostComments, mapSupabaseCommentToPostComment } from '@/services/api/commentService';
 
-export function getPostFromLocation(): MarketPostItem | null {
+export function getPostIdFromLocation(): string | null {
   if (typeof window === 'undefined') return null;
   const path = window.location.pathname;
   const hash = window.location.hash;
 
-  if (path.startsWith('/@') || path.startsWith('/post/')) {
-    const parts = path.split('/').filter(Boolean);
-    const potentialPostId = parts[parts.length - 1];
-    if (potentialPostId && potentialPostId !== parts[0]) {
-      const found = MOCK_MARKET_POSTS.find(
-        (p) => p.id === potentialPostId || p.id === decodeURIComponent(potentialPostId)
-      );
-      if (found) return found;
-    }
+  if (path.startsWith('/post/')) {
+    const parts = path.split('/post/').filter(Boolean);
+    const id = parts[0]?.split('/')[0];
+    if (id) return decodeURIComponent(id);
+  }
+
+  if (path.startsWith('/@') && path.includes('/post/')) {
+    const parts = path.split('/post/').filter(Boolean);
+    const id = parts[1]?.split('/')[0];
+    if (id) return decodeURIComponent(id);
   }
 
   if (hash.startsWith('#post-')) {
-    const rawId = hash.replace(/^#post-/, '');
-    const found = MOCK_MARKET_POSTS.find((p) => p.id === rawId || `post-${p.id}` === rawId);
-    if (found) return found;
+    return decodeURIComponent(hash.replace(/^#post-/, ''));
   }
 
+  return null;
+}
+
+export function getPostFromLocation(): MarketPostItem | null {
+  if (typeof window === 'undefined') return null;
+  const potentialPostId = getPostIdFromLocation();
+  if (potentialPostId) {
+    const found = MOCK_MARKET_POSTS.find(
+      (p) => p.id === potentialPostId || p.id === decodeURIComponent(potentialPostId)
+    );
+    if (found) return found;
+  }
   return null;
 }
 
@@ -122,9 +135,44 @@ export function useAppNavigation() {
     setSelectedPost(post);
     isPostDetailActiveRef.current = true;
 
-    const username = post.seller.username || 'user';
-    window.history.pushState({ postId: post.id }, '', `/@${username}/post/${post.id}`);
+    window.history.pushState({ postId: post.id }, '', `/post/${post.id}`);
   }, [currentRoute]);
+
+  const loadPostById = useCallback(async (postId: string) => {
+    // 1. Check local mock data first
+    const mockFound = MOCK_MARKET_POSTS.find(
+      (p) => p.id === postId || `post-${p.id}` === postId || decodeURIComponent(postId) === p.id
+    );
+    if (mockFound) {
+      setSelectedPost(mockFound);
+      isPostDetailActiveRef.current = true;
+      return;
+    }
+
+    // 2. Fetch from Supabase
+    try {
+      const data = await getPostById(postId);
+      if (data) {
+        const mapped = mapSupabasePostToFeedItem(data);
+        try {
+          const liveComments = await getPostComments(postId);
+          mapped.comments = liveComments.map((c) => mapSupabaseCommentToPostComment(c, data.seller_id));
+        } catch {}
+        setSelectedPost(mapped);
+        isPostDetailActiveRef.current = true;
+      }
+    } catch (err) {
+      console.warn('Failed to load shared post:', err);
+    }
+  }, []);
+
+  // Initial load check for deep linked post URL (/post/:id or /@username/post/:id or #post-:id)
+  useEffect(() => {
+    const initialPostId = getPostIdFromLocation();
+    if (initialPostId) {
+      loadPostById(initialPostId);
+    }
+  }, [loadPostById]);
 
   const handleClosePostDetail = useCallback(() => {
     triggerHaptic('light');
@@ -154,10 +202,9 @@ export function useAppNavigation() {
       const chatThread = getChatThreadFromLocation();
       setActiveChatThreadId(chatThread);
 
-      const matchedPost = getPostFromLocation();
-      if (matchedPost) {
-        setSelectedPost(matchedPost);
-        isPostDetailActiveRef.current = true;
+      const postId = getPostIdFromLocation();
+      if (postId) {
+        loadPostById(postId);
       } else {
         setSelectedPost(null);
         isPostDetailActiveRef.current = false;
@@ -167,7 +214,7 @@ export function useAppNavigation() {
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
+  }, [loadPostById]);
 
   // PWA Double-Back Exit Guard
   useEffect(() => {

@@ -18,6 +18,7 @@ import 'package:snapan_market/features/auth/screens/auth_screen.dart';
 import 'package:snapan_market/features/messages/services/direct_messages_service.dart';
 import 'package:snapan_market/core/services/student_registry_service.dart';
 import 'package:snapan_market/core/services/mascot_feature_notice_service.dart';
+import 'package:snapan_market/core/services/deep_link_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -62,6 +63,9 @@ Future<void> main() async {
 
   // Clean obsolete OTA APK installers in background to reclaim disk space (SNAPS-36)
   unawaited(AppUpdateService.instance.cleanObsoleteInstallers());
+
+  // Initialize deep link listeners for content sharing & guest mode (SNAPS-MVP)
+  unawaited(DeepLinkService.instance.init());
 
   // Initialize mascot feature announcement state & notice listener
   unawaited(MascotFeatureNoticeService.instance.init());

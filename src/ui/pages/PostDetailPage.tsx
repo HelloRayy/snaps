@@ -13,6 +13,7 @@ import { useAuth } from '@/ui/hooks/useAuth';
 import { triggerHaptic } from '@/utils/haptics';
 import { toUsernameSlug } from '@/utils/formatters';
 import { getOreoAvatarUrl } from '@/utils/oreoAvatar';
+import { getPostComments, mapSupabaseCommentToPostComment } from '@/services/api/commentService';
 
 interface PostDetailPageProps {
   post: MarketPostItem;
@@ -27,7 +28,8 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   onAddToCart,
   onUserClick,
 }) => {
-  const { profile } = useAuth();
+  const { user, profile } = useAuth();
+  const isGuest = !user;
   const [comments, setComments] = useState<PostComment[]>(post.comments || []);
   const [replyToCommentId, setReplyToCommentId] = useState<string | null>(null);
   const [replyTarget, setReplyTarget] = useState<{ id: string; username: string } | null>(null);
@@ -42,8 +44,9 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   // Determine if this post is a Marketplace Product Post
   const isProductMode = post.postType === 'product' && !!post.price && post.price > 0;
 
-  // Smooth reset & scroll to top when opening post detail
+  // Smooth reset & scroll to top when opening post detail, plus live comments fetch
   useEffect(() => {
+    let isMounted = true;
     if (containerRef.current) {
       containerRef.current.scrollTop = 0;
     }
@@ -54,7 +57,21 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
     setFocusedComment(null);
     setIsBuySheetOpen(false);
     setIsCommentingActive(false);
-  }, [post.id, post.comments]);
+
+    if (post.id && (!post.comments || post.comments.length === 0)) {
+      getPostComments(post.id)
+        .then((live) => {
+          if (isMounted && live.length > 0) {
+            setComments(live.map((c) => mapSupabaseCommentToPostComment(c, post.seller.id)));
+          }
+        })
+        .catch(() => {});
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [post.id, post.comments, post.seller.id]);
 
   const handleAddComment = (content: string, specificCommentId?: string) => {
     const targetParentId = specificCommentId || replyTarget?.id || replyToCommentId;
@@ -116,6 +133,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   };
 
   const handleReplyClick = (username: string, commentId?: string) => {
+    if (isGuest) return;
     triggerHaptic('light');
     const cleanUsername = username.replace(/^@/, '');
     const targetId = commentId || '';
@@ -135,11 +153,13 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   };
 
   const handleChatClick = () => {
+    if (isGuest) return;
     triggerHaptic('light');
     setIsCommentingActive(true);
   };
 
   const handleBuyClick = () => {
+    if (isGuest) return;
     triggerHaptic('medium');
     setIsCheckoutOpen(true);
     onAddToCart?.(post);
@@ -206,6 +226,30 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         {/* Spacer for center title balance */}
         <div className="w-10 h-10 pointer-events-none" />
       </header>
+
+      {/* Smart App Banner */}
+      <div className="bg-gradient-to-r from-blue-50/90 via-indigo-50/70 to-blue-50/90 border-b border-indigo-100/70 px-4 py-2.5 flex items-center justify-between gap-3 max-w-xl mx-auto select-none">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-8 h-8 rounded-xl bg-[#3D38F5] flex items-center justify-center shrink-0 shadow-xs text-white">
+            <SnapsLogoSvg height={16} />
+          </div>
+          <div className="min-w-0">
+            <p className="text-xs font-bold text-slate-900 truncate">Buka di Aplikasi Snaps</p>
+            <p className="text-[11px] text-slate-500 truncate">Buka langsung di aplikasi ponsel Anda</p>
+          </div>
+        </div>
+        <a
+          href={`snaps://post/${post.id}`}
+          onClick={() => {
+            setTimeout(() => {
+              window.location.href = 'https://snaps.web.id/download';
+            }, 1200);
+          }}
+          className="shrink-0 bg-[#3D38F5] hover:bg-[#312BD9] text-white text-xs font-semibold px-3.5 py-1.5 rounded-full transition-all shadow-xs active:scale-95 cursor-pointer"
+        >
+          Buka di App
+        </a>
+      </div>
 
       {/* Main Content Area */}
       <main className="max-w-xl mx-auto pt-0">
@@ -286,8 +330,40 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         </section>
       </main>
 
-      {/* MODE 1: Marketplace Product Posts (Morphing between StickyBuyBar and CommentInputBar) */}
-      {isProductMode ? (
+      {/* Bottom Action / Interaction Bar */}
+      {isGuest ? (
+        isProductMode ? (
+          <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-neutral-200/80 px-4 py-3 max-w-xl mx-auto flex items-center justify-between gap-3 shadow-lg">
+            <div>
+              <span className="text-[11px] text-neutral-400 block font-medium">Harga</span>
+              <span className="text-base font-bold text-slate-900 tracking-tight">
+                Rp {post.price?.toLocaleString('id-ID')}
+              </span>
+            </div>
+            <div
+              className="flex items-center gap-1.5 bg-neutral-100 text-neutral-400 text-xs font-semibold px-4 py-2 rounded-full cursor-not-allowed select-none border border-neutral-200/60"
+              title="Masuk untuk berinteraksi"
+            >
+              <span>Masuk untuk berinteraksi</span>
+            </div>
+          </div>
+        ) : (
+          <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-neutral-200/80 px-4 py-3 max-w-xl mx-auto flex items-center justify-between gap-3 shadow-lg">
+            <div
+              className="flex items-center gap-2 text-neutral-400 text-xs py-2 px-3.5 rounded-full bg-neutral-100 flex-1 border border-neutral-200/60 select-none cursor-not-allowed"
+              title="Masuk untuk berinteraksi"
+            >
+              <span>Masuk untuk berinteraksi...</span>
+            </div>
+            <a
+              href={`snaps://post/${post.id}`}
+              className="shrink-0 text-xs font-semibold text-[#3D38F5] hover:underline px-2 py-1"
+            >
+              Buka di App
+            </a>
+          </div>
+        )
+      ) : isProductMode ? (
         isCommentingActive ? (
           <CommentInputBar
             targetAuthor={post.seller.username || post.seller.name}

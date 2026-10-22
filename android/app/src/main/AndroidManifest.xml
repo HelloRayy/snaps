@@ -40,6 +40,23 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="io.supabase.snapanmarket" android:host="login-callback" />
             </intent-filter>
+
+            <!-- Snaps Custom Scheme Deep Link (snaps://post/{id}) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="snaps" android:host="post" />
+            </intent-filter>
+
+            <!-- Snaps Universal Web App Link (https://snaps.web.id/post/{id}) -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="snaps.web.id" android:pathPrefix="/post/" />
+                <data android:scheme="http" android:host="snaps.web.id" android:pathPrefix="/post/" />
+            </intent-filter>
         </activity>
         <!-- FileProvider required by ota_update plugin for installing downloaded APKs -->
         <provider

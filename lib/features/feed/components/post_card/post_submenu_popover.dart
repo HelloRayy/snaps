@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/snaps_toast.dart';
+import 'package:snapan_market/core/utils/share_helper.dart';
 import 'package:snapan_market/features/feed/components/post_card/post_submenu_item.dart';
 import 'package:snapan_market/features/feed/components/sheets/report_content_bottom_sheet.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
@@ -167,7 +168,7 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
             icon: CupertinoIcons.link,
             label: 'Salin Tautan',
             onTap: () {
-              Clipboard.setData(ClipboardData(text: 'https://snapan.id/post/${widget.post.id}'));
+              Clipboard.setData(ClipboardData(text: ShareHelper.getPostShareUrl(widget.post.id)));
               Navigator.pop(context);
               _showFeedback('Tautan disalin ke papan klip');
             },
