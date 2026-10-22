@@ -19,6 +19,7 @@ export function mapSupabasePostToFeedItem(p: MarketPostWithSeller): MarketPostIt
     likesCount: p.likes_count || 0,
     commentsCount: p.comments_count || 0,
     repostsCount: 0,
+    viewsCount: (p as any).views_count || 0,
     timestamp: new Date(p.created_at).toLocaleDateString('id-ID', {
       hour: '2-digit',
       minute: '2-digit',

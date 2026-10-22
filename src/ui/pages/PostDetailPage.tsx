@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { ChevronLeft, Share2, MoreHorizontal, ChevronDown, Check } from 'lucide-react';
+import { ChevronLeft, Share2, MoreHorizontal, ChevronDown, Check, MessageSquare } from 'lucide-react';
 import { MarketPostItem, PostComment } from '@/types/marketFeed';
 import { MarketPostCard } from '@/ui/components/marketplace/MarketPostCard';
 import { PostCommentItem } from '@/ui/components/marketplace/PostCommentItem';
@@ -262,9 +262,9 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         WebkitOverflowScrolling: 'touch',
       }}
     >
-      {/* 1:1 GlassToolbarTop Header */}
+      {/* 1:1 GlassToolbarTop Header (Flutter Parity) */}
       <header
-        className="sticky top-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200/80 px-4 h-13 flex items-center justify-between max-w-xl mx-auto"
+        className="sticky top-0 left-0 right-0 z-40 bg-white/85 backdrop-blur-2xl border-b border-slate-200/80 px-3.5 h-[52px] flex items-center justify-between max-w-xl mx-auto"
         style={{
           paddingTop: 'env(safe-area-inset-top, 0px)',
         }}
@@ -272,18 +272,18 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         <button
           type="button"
           onClick={handleBack}
-          className="w-9 h-9 rounded-full flex items-center justify-center text-slate-800 hover:bg-slate-100 transition-all cursor-pointer active:scale-90"
+          className="w-10 h-10 rounded-full flex items-center justify-center text-slate-800 hover:bg-slate-100/80 transition-all cursor-pointer active:scale-90"
           aria-label="Kembali ke Halaman Unduh"
           title="Kembali"
         >
           <ChevronLeft className="w-5 h-5 stroke-[2.25] text-slate-800" />
         </button>
 
-        <h1 className="font-semibold text-[16px] text-slate-900 tracking-[-0.3px] select-none">
+        <h1 className="font-semibold text-[17px] text-slate-900 tracking-[-0.4px] select-none">
           Postingan
         </h1>
 
-        <div className="flex items-center gap-1 h-[34px] px-1.5 rounded-full border border-slate-200/80 bg-white/80 backdrop-blur-md shadow-2xs">
+        <div className="flex items-center gap-1 h-[38px] px-1.5 rounded-full border border-slate-200/80 bg-gradient-to-b from-white to-slate-50 shadow-xs">
           <button
             type="button"
             onClick={handleShare}
@@ -293,7 +293,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
           >
             <Share2 className="w-4 h-4 stroke-[2]" />
           </button>
-          <div className="w-[1px] h-3 bg-slate-200" />
+          <div className="w-[1px] h-3.5 bg-slate-200" />
           <button
             type="button"
             onClick={handleMoreOptions}
@@ -420,11 +420,12 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
               ))}
             </div>
           ) : (
-            <div className="py-12 px-6 text-center max-w-[280px] mx-auto space-y-1.5 select-none">
-              <p className="text-slate-800 font-semibold text-[14.5px] leading-snug">
+            <div className="py-12 px-6 text-center max-w-[280px] mx-auto flex flex-col items-center select-none">
+              <MessageSquare className="w-10 h-10 text-slate-300 stroke-[1.5] mb-3" />
+              <p className="text-slate-900 font-semibold text-[15px] leading-snug mb-1">
                 {isProductMode ? 'Belum ada pertanyaan' : 'Belum ada komentar'}
               </p>
-              <p className="text-neutral-500 text-[12.5px] leading-relaxed">
+              <p className="text-slate-500 text-[12.5px] leading-relaxed">
                 {isProductMode
                   ? 'Ingin tahu kondisi atau ketersediaan stok? Tanyakan langsung ke penjual.'
                   : 'Mulai percakapan dan jadilah yang pertama memberi tanggapan.'}
@@ -434,7 +435,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         </section>
       </main>
 
-      {/* 1:1 Floating Capsule Bottom Bar */}
+      {/* 1:1 Floating Capsule Bottom Bar (Flutter StickyBuyBar & CommentInputBar Parity) */}
       {isGuest ? (
         isProductMode ? (
           <StickyBuyBar
@@ -455,9 +456,9 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
                 triggerHaptic('light');
                 window.location.href = '/download';
               }}
-              className="bg-white/95 backdrop-blur-xl border border-neutral-200/80 p-2 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.12)] flex items-center gap-2.5 cursor-pointer active:scale-[0.98] transition-transform"
+              className="bg-white/85 backdrop-blur-2xl border border-white/90 p-1.5 rounded-[32px] shadow-[0_12px_40px_rgba(0,0,0,0.12)] flex items-center gap-2.5 cursor-pointer active:scale-[0.98] transition-transform"
             >
-              <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-neutral-200 bg-neutral-100 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-neutral-200 bg-neutral-100 flex items-center justify-center ml-0.5">
                 <img
                   src={getOreoAvatarUrl('guest-user', { size: 100 })}
                   alt="Tamu"

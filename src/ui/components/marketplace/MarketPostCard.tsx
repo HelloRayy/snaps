@@ -189,6 +189,7 @@ export const MarketPostCard = memo<MarketPostCardProps>(function MarketPostCard(
               onPostClick?.(item);
             }}
             onShare={handleShare}
+            isDetail={true}
           />
         </div>
       ) : (

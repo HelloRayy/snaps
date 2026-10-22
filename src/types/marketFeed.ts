@@ -60,6 +60,7 @@ export interface MarketPostItem {
   likesCount: number;
   commentsCount: number;
   repostsCount: number;
+  viewsCount?: number;
   timestamp: string; // e.g. '10m', '2j', '1h', 'Baru saja'
   isLiked?: boolean;
   isReposted?: boolean;

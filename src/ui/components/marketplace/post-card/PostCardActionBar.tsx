@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Repeat2, Send, Box } from 'lucide-react';
+import { Heart, Repeat2, Send, Box, Eye } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 import { SmoothCommentIcon } from '@/ui/components/icons';
 import { triggerHaptic } from '@/utils/haptics';
@@ -16,6 +16,7 @@ interface PostCardActionBarProps {
   onToggleRepost: (e: React.MouseEvent) => void;
   onCommentClick: (e: React.MouseEvent) => void;
   onShare: (e: React.MouseEvent) => void;
+  isDetail?: boolean;
 }
 
 export const PostCardActionBar: React.FC<PostCardActionBarProps> = ({
@@ -28,6 +29,7 @@ export const PostCardActionBar: React.FC<PostCardActionBarProps> = ({
   onToggleRepost,
   onCommentClick,
   onShare,
+  isDetail = false,
 }) => {
   const handleLikeClick = (e: React.MouseEvent) => {
     triggerHaptic(isLiked ? 'light' : 'medium');
@@ -149,16 +151,28 @@ export const PostCardActionBar: React.FC<PostCardActionBarProps> = ({
         </motion.button>
       </div>
 
-      {/* Sisa Stok */}
-      {item.postType !== 'thread' && !!item.price && item.price > 0 && item.stock !== undefined && item.stock > 0 && (
-        <div
-          className="flex items-center gap-1 min-h-[26px] px-2 py-0.5 text-neutral-600 bg-neutral-100/90 border border-neutral-200/60 rounded-full text-[12px] select-none ml-auto shrink-0 whitespace-nowrap font-medium transition-colors"
-          title={`Sisa stok: ${item.stock} item`}
-        >
-          <Box className="w-3.5 h-3.5 stroke-[1.8] text-neutral-500 shrink-0" />
-          <span className="font-semibold text-slate-800 tabular-nums tracking-tight whitespace-nowrap">{item.stock}</span>
-        </div>
-      )}
+      {/* Trailing Metrics: Views Count (Detail mode) & Sisa Stok */}
+      <div className="flex items-center gap-2 select-none ml-auto shrink-0">
+        {isDetail && (
+          <div
+            className="flex items-center gap-1 text-[12px] text-slate-500 font-normal tabular-nums px-1"
+            title={`Dilihat ${formatCompactNumber(item.viewsCount || 0)} kali`}
+          >
+            <Eye className="w-3.5 h-3.5 stroke-[1.8] text-slate-400 shrink-0" />
+            <span>{formatCompactNumber(item.viewsCount || 0)}</span>
+          </div>
+        )}
+
+        {item.postType !== 'thread' && !!item.price && item.price > 0 && item.stock !== undefined && item.stock > 0 && (
+          <div
+            className="flex items-center gap-1 min-h-[26px] px-2 py-0.5 text-neutral-600 bg-neutral-100/90 border border-neutral-200/60 rounded-full text-[12px] shrink-0 whitespace-nowrap font-medium transition-colors"
+            title={`Sisa stok: ${item.stock} item`}
+          >
+            <Box className="w-3.5 h-3.5 stroke-[1.8] text-neutral-500 shrink-0" />
+            <span className="font-semibold text-slate-800 tabular-nums tracking-tight whitespace-nowrap">{item.stock}</span>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
