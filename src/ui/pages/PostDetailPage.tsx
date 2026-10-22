@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft } from 'lucide-react';
-import { SnapsLogoSvg } from '@/ui/components/brand/SnapsLogoSvg';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { ChevronLeft, Share2, MoreHorizontal, ChevronDown, Check } from 'lucide-react';
 import { MarketPostItem, PostComment } from '@/types/marketFeed';
 import { MarketPostCard } from '@/ui/components/marketplace/MarketPostCard';
 import { PostCommentItem } from '@/ui/components/marketplace/PostCommentItem';
@@ -8,12 +7,15 @@ import { CommentInputBar } from '@/ui/components/marketplace/CommentInputBar';
 import { StickyBuyBar } from '@/ui/components/marketplace/StickyBuyBar';
 import { BuyBottomSheet } from '@/ui/components/marketplace/BuyBottomSheet';
 import { CommentDetailPage } from '@/ui/components/marketplace/CommentDetailPage';
+import { ToastNotification } from '@/ui/components/ui/ToastNotification';
 import { CheckoutPage } from './CheckoutPage';
 import { useAuth } from '@/ui/hooks/useAuth';
 import { triggerHaptic } from '@/utils/haptics';
 import { toUsernameSlug } from '@/utils/formatters';
 import { getOreoAvatarUrl } from '@/utils/oreoAvatar';
 import { getPostComments, mapSupabaseCommentToPostComment } from '@/services/api/commentService';
+
+type CommentSortOrder = 'newest' | 'top' | 'oldest';
 
 interface PostDetailPageProps {
   post: MarketPostItem;
@@ -38,13 +40,14 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   const [isBuySheetOpen, setIsBuySheetOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isCommentingActive, setIsCommentingActive] = useState(false);
+  const [selectedSort, setSelectedSort] = useState<CommentSortOrder>('newest');
+  const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const containerRef = React.useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Determine if this post is a Marketplace Product Post
   const isProductMode = post.postType === 'product' && !!post.price && post.price > 0;
 
-  // Smooth reset & scroll to top when opening post detail, plus live comments fetch
   useEffect(() => {
     let isMounted = true;
     if (containerRef.current) {
@@ -72,6 +75,45 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
       isMounted = false;
     };
   }, [post.id, post.comments, post.seller.id]);
+
+  const handleBack = () => {
+    triggerHaptic('light');
+    if (onBack) {
+      onBack();
+    } else {
+      window.location.href = '/download';
+    }
+  };
+
+  const handleShare = async () => {
+    triggerHaptic('light');
+    const shareUrl = window.location.href;
+    const shareTitle = post.title || `Postingan oleh ${post.seller.name}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: shareTitle,
+          text: post.caption,
+          url: shareUrl,
+        });
+        return;
+      } catch {}
+    }
+
+    if (navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        setToastMessage('Tautan postingan berhasil disalin!');
+      } catch {
+        setToastMessage('Gagal menyalin tautan');
+      }
+    }
+  };
+
+  const handleMoreOptions = () => {
+    triggerHaptic('light');
+    handleShare();
+  };
 
   const handleAddComment = (content: string, specificCommentId?: string) => {
     const targetParentId = specificCommentId || replyTarget?.id || replyToCommentId;
@@ -101,7 +143,6 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
     };
 
     if (targetParentId) {
-      // Nest directly inside the target parent comment or sibling sub-reply's parent!
       setComments((prev) =>
         prev.map((c) => {
           if (c.id === targetParentId || c.replies?.some((r) => r.id === targetParentId)) {
@@ -114,7 +155,6 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         })
       );
     } else {
-      // Regular root-level comment to post
       setComments((prev) => [newComment, ...prev]);
     }
 
@@ -123,7 +163,6 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
     setDraftText('');
     setIsCommentingActive(false);
 
-    // Smooth auto-scroll to the newly created comment
     setTimeout(() => {
       const el = document.getElementById(`comment-${createdId}`);
       if (el) {
@@ -133,7 +172,10 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   };
 
   const handleReplyClick = (username: string, commentId?: string) => {
-    if (isGuest) return;
+    if (isGuest) {
+      setToastMessage('Masuk untuk berinteraksi');
+      return;
+    }
     triggerHaptic('light');
     const cleanUsername = username.replace(/^@/, '');
     const targetId = commentId || '';
@@ -141,7 +183,6 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
     setReplyToCommentId(targetId);
     setIsCommentingActive(true);
 
-    // Smooth auto-scroll to the target comment
     if (targetId) {
       setTimeout(() => {
         const el = document.getElementById(`comment-${targetId}`);
@@ -153,21 +194,42 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   };
 
   const handleChatClick = () => {
-    if (isGuest) return;
+    if (isGuest) {
+      window.location.href = '/download';
+      return;
+    }
     triggerHaptic('light');
     setIsCommentingActive(true);
   };
 
   const handleBuyClick = () => {
-    if (isGuest) return;
+    if (isGuest) {
+      window.location.href = '/download';
+      return;
+    }
     triggerHaptic('medium');
     setIsCheckoutOpen(true);
     onAddToCart?.(post);
   };
 
+  const sortedComments = useMemo(() => {
+    const list = [...comments];
+    switch (selectedSort) {
+      case 'newest':
+        return list;
+      case 'top':
+        return list.sort((a, b) => (b.likesCount || 0) - (a.likesCount || 0));
+      case 'oldest':
+        return list.reverse();
+      default:
+        return list;
+    }
+  }, [comments, selectedSort]);
+
+  const totalCommentsCount = (post.threadChain?.length || 0) + comments.length;
+
   const userAvatar =
     profile?.avatar_url || getOreoAvatarUrl(profile?.full_name || 'radityarayhannnn', { size: 120 });
-
   const replyingToUsername = replyTarget?.username || null;
 
   const draftReplyObj = replyTarget
@@ -181,7 +243,6 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
       }
     : null;
 
-  // Single Page Mode: CheckoutPage
   if (isCheckoutOpen) {
     return (
       <CheckoutPage
@@ -201,59 +262,52 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         WebkitOverflowScrolling: 'touch',
       }}
     >
-      {/* Top Header Bar: [Left: ← Back Button] --- [Center: Postingan] --- [Right: Spacer] */}
+      {/* 1:1 GlassToolbarTop Header */}
       <header
-        className="sticky top-0 left-0 right-0 z-40 bg-white border-b border-neutral-200/80 px-4 h-14 flex items-center justify-between max-w-xl mx-auto"
+        className="sticky top-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200/80 px-4 h-13 flex items-center justify-between max-w-xl mx-auto"
         style={{
           paddingTop: 'env(safe-area-inset-top, 0px)',
         }}
       >
         <button
           type="button"
-          onClick={onBack}
-          className="w-10 h-10 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-90"
-          aria-label="Kembali ke Feed Utama"
+          onClick={handleBack}
+          className="w-9 h-9 rounded-full flex items-center justify-center text-slate-800 hover:bg-slate-100 transition-all cursor-pointer active:scale-90"
+          aria-label="Kembali ke Halaman Unduh"
+          title="Kembali"
         >
-          <ArrowLeft className="w-5 h-5 stroke-[2.25]" />
+          <ChevronLeft className="w-5 h-5 stroke-[2.25] text-slate-800" />
         </button>
 
-        <div className="flex items-center gap-2">
-          <SnapsLogoSvg height={20} />
-          <span className="text-neutral-300 font-light select-none">/</span>
-          <h1 className="font-semibold text-[14.5px] text-slate-900">Postingan</h1>
-        </div>
+        <h1 className="font-semibold text-[16px] text-slate-900 tracking-[-0.3px] select-none">
+          Postingan
+        </h1>
 
-        {/* Spacer for center title balance */}
-        <div className="w-10 h-10 pointer-events-none" />
+        <div className="flex items-center gap-1 h-[34px] px-1.5 rounded-full border border-slate-200/80 bg-white/80 backdrop-blur-md shadow-2xs">
+          <button
+            type="button"
+            onClick={handleShare}
+            className="w-7 h-7 flex items-center justify-center rounded-full text-slate-700 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
+            aria-label="Bagikan postingan"
+            title="Bagikan"
+          >
+            <Share2 className="w-4 h-4 stroke-[2]" />
+          </button>
+          <div className="w-[1px] h-3 bg-slate-200" />
+          <button
+            type="button"
+            onClick={handleMoreOptions}
+            className="w-7 h-7 flex items-center justify-center rounded-full text-slate-700 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
+            aria-label="Menu lainnya"
+            title="Menu lainnya"
+          >
+            <MoreHorizontal className="w-4 h-4 stroke-[2]" />
+          </button>
+        </div>
       </header>
-
-      {/* Smart App Banner */}
-      <div className="bg-gradient-to-r from-blue-50/90 via-indigo-50/70 to-blue-50/90 border-b border-indigo-100/70 px-4 py-2.5 flex items-center justify-between gap-3 max-w-xl mx-auto select-none">
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-8 h-8 rounded-xl bg-[#3D38F5] flex items-center justify-center shrink-0 shadow-xs text-white">
-            <SnapsLogoSvg height={16} />
-          </div>
-          <div className="min-w-0">
-            <p className="text-xs font-bold text-slate-900 truncate">Buka di Aplikasi Snaps</p>
-            <p className="text-[11px] text-slate-500 truncate">Buka langsung di aplikasi ponsel Anda</p>
-          </div>
-        </div>
-        <a
-          href={`snaps://post/${post.id}`}
-          onClick={() => {
-            setTimeout(() => {
-              window.location.href = 'https://snaps.web.id/download';
-            }, 1200);
-          }}
-          className="shrink-0 bg-[#3D38F5] hover:bg-[#312BD9] text-white text-xs font-semibold px-3.5 py-1.5 rounded-full transition-all shadow-xs active:scale-95 cursor-pointer"
-        >
-          Buka di App
-        </a>
-      </div>
 
       {/* Main Content Area */}
       <main className="max-w-xl mx-auto pt-0">
-        {/* Focused Main Post Card */}
         <MarketPostCard
           item={post}
           onAddToCart={onAddToCart}
@@ -261,20 +315,71 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
           variant="detail"
         />
 
-        {/* Comments Section (Includes Author Thread Continuations 2/N, 3/N at top) */}
+        {/* 1:1 PostDetailCommentsHeader */}
         <section id="comments-section" className="w-full pt-1">
-          {/* Section Divider Header */}
           <div className="px-3.5 py-2.5 flex items-center justify-between border-b border-neutral-100">
             <h2 className="font-semibold text-sm text-slate-900">
-              {isProductMode ? 'Tanya Jawab & Diskusi' : 'Komentar'} ({post.threadChain && post.threadChain.length > 0 ? comments.length + post.threadChain.length : comments.length})
+              {isProductMode ? 'Tanya Jawab & Diskusi' : 'Komentar'} ({totalCommentsCount})
             </h2>
-            <span className="text-xs text-neutral-400">Urutkan dari Terbaru</span>
+
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setIsSortMenuOpen((prev) => !prev)}
+                className="flex items-center gap-1 text-[12px] text-slate-500 hover:text-slate-800 font-medium px-2 py-1 rounded-md hover:bg-slate-100 transition-colors cursor-pointer select-none"
+              >
+                <span>
+                  {selectedSort === 'newest' ? 'Terbaru' : selectedSort === 'top' ? 'Teratas' : 'Terlama'}
+                </span>
+                <ChevronDown className="w-3.5 h-3.5" />
+              </button>
+
+              {isSortMenuOpen && (
+                <div className="absolute right-0 mt-1 w-32 bg-white rounded-xl shadow-lg border border-slate-200 py-1 z-30 animate-in fade-in zoom-in-95">
+                  <button
+                    onClick={() => {
+                      setSelectedSort('newest');
+                      setIsSortMenuOpen(false);
+                    }}
+                    className={`w-full text-left px-3 py-1.5 text-xs flex items-center justify-between cursor-pointer ${
+                      selectedSort === 'newest' ? 'font-semibold text-slate-900 bg-slate-50' : 'text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>Terbaru</span>
+                    {selectedSort === 'newest' && <Check className="w-3.5 h-3.5 text-slate-900" />}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedSort('top');
+                      setIsSortMenuOpen(false);
+                    }}
+                    className={`w-full text-left px-3 py-1.5 text-xs flex items-center justify-between cursor-pointer ${
+                      selectedSort === 'top' ? 'font-semibold text-slate-900 bg-slate-50' : 'text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>Teratas</span>
+                    {selectedSort === 'top' && <Check className="w-3.5 h-3.5 text-slate-900" />}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedSort('oldest');
+                      setIsSortMenuOpen(false);
+                    }}
+                    className={`w-full text-left px-3 py-1.5 text-xs flex items-center justify-between cursor-pointer ${
+                      selectedSort === 'oldest' ? 'font-semibold text-slate-900 bg-slate-50' : 'text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>Terlama</span>
+                    {selectedSort === 'oldest' && <Check className="w-3.5 h-3.5 text-slate-900" />}
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Combined Comment List: Author Thread Continuations + General Comments */}
-          {(post.threadChain && post.threadChain.length > 0) || comments.length > 0 ? (
+          {/* Combined Comment List */}
+          {(post.threadChain && post.threadChain.length > 0) || sortedComments.length > 0 ? (
             <div className="w-full">
-              {/* 1. Author Thread Continuation Comments (Part 2, Part 3, etc.) */}
               {post.threadChain?.map((chain) => (
                 <PostCommentItem
                   key={chain.id}
@@ -304,8 +409,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
                 />
               ))}
 
-              {/* 2. General Comments from Other Users */}
-              {comments.map((comment) => (
+              {sortedComments.map((comment) => (
                 <PostCommentItem
                   key={comment.id}
                   draftReply={draftReplyObj}
@@ -330,37 +434,40 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         </section>
       </main>
 
-      {/* Bottom Action / Interaction Bar */}
+      {/* 1:1 Floating Capsule Bottom Bar */}
       {isGuest ? (
         isProductMode ? (
-          <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-neutral-200/80 px-4 py-3 max-w-xl mx-auto flex items-center justify-between gap-3 shadow-lg">
-            <div>
-              <span className="text-[11px] text-neutral-400 block font-medium">Harga</span>
-              <span className="text-base font-bold text-slate-900 tracking-tight">
-                Rp {post.price?.toLocaleString('id-ID')}
+          <StickyBuyBar
+            price={post.price || 0}
+            stockCount={post.stock || 1}
+            onBuyClick={handleBuyClick}
+            onChatClick={handleChatClick}
+          />
+        ) : (
+          <div
+            className="fixed left-4 right-4 max-w-md mx-auto z-40 font-gt-standard select-none transition-all duration-200 ease-out"
+            style={{
+              bottom: 'max(1rem, calc(env(safe-area-inset-bottom, 0px) + 8px))',
+            }}
+          >
+            <div
+              onClick={() => {
+                triggerHaptic('light');
+                window.location.href = '/download';
+              }}
+              className="bg-white/95 backdrop-blur-xl border border-neutral-200/80 p-2 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.12)] flex items-center gap-2.5 cursor-pointer active:scale-[0.98] transition-transform"
+            >
+              <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-neutral-200 bg-neutral-100 flex items-center justify-center">
+                <img
+                  src={getOreoAvatarUrl('guest-user', { size: 100 })}
+                  alt="Tamu"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <span className="flex-1 text-[13px] text-neutral-400 font-normal">
+                Masuk untuk berinteraksi...
               </span>
             </div>
-            <div
-              className="flex items-center gap-1.5 bg-neutral-100 text-neutral-400 text-xs font-semibold px-4 py-2 rounded-full cursor-not-allowed select-none border border-neutral-200/60"
-              title="Masuk untuk berinteraksi"
-            >
-              <span>Masuk untuk berinteraksi</span>
-            </div>
-          </div>
-        ) : (
-          <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-neutral-200/80 px-4 py-3 max-w-xl mx-auto flex items-center justify-between gap-3 shadow-lg">
-            <div
-              className="flex items-center gap-2 text-neutral-400 text-xs py-2 px-3.5 rounded-full bg-neutral-100 flex-1 border border-neutral-200/60 select-none cursor-not-allowed"
-              title="Masuk untuk berinteraksi"
-            >
-              <span>Masuk untuk berinteraksi...</span>
-            </div>
-            <a
-              href={`snaps://post/${post.id}`}
-              className="shrink-0 text-xs font-semibold text-[#3D38F5] hover:underline px-2 py-1"
-            >
-              Buka di App
-            </a>
           </div>
         )
       ) : isProductMode ? (
@@ -403,7 +510,6 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
           </>
         )
       ) : (
-        /* MODE 2: Docked Bottom Bar ala Threads / X for Discussion / Utas Posts */
         <CommentInputBar
           targetAuthor={post.seller.username || post.seller.name}
           userAvatar={userAvatar}
@@ -419,7 +525,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         />
       )}
 
-      {/* Threads-style Sub-Thread Comment Detail Modal / Fullscreen Sub-Page */}
+      {/* Sub-Thread Comment Detail Modal */}
       {focusedComment && (
         <CommentDetailPage
           parentPost={post}
@@ -431,6 +537,13 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
               prev.map((c) => (c.id === updated.id ? updated : c))
             );
           }}
+        />
+      )}
+
+      {toastMessage && (
+        <ToastNotification
+          message={toastMessage}
+          onClose={() => setToastMessage(null)}
         />
       )}
     </div>

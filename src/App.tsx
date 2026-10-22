@@ -5,7 +5,7 @@ import { SearchPage } from '@/ui/pages/SearchPage';
 import { DirectMessagesPage } from '@/ui/pages/DirectMessagesPage';
 import { NavigationDrawer } from '@/ui/components/navigation/NavigationDrawer';
 import { MarketBottomNav } from '@/ui/components/marketplace/MarketBottomNav';
-import { AppEntranceSplash } from '@/ui/components/splash/AppEntranceSplash';
+import { PostDetailSkeleton } from '@/ui/components/skeletons/PostDetailSkeleton';
 import { useAuth } from '@/ui/hooks/useAuth';
 import { useSmoothScroll } from '@/ui/hooks/useSmoothScroll';
 import { useAppNavigation, getPostFromLocation } from '@/ui/navigation/useAppNavigation';
@@ -130,13 +130,6 @@ export function App() {
     profile.role !== 'admin'
   );
 
-  const [showSplash, setShowSplash] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      return !sessionStorage.getItem('snaps_splash_seen');
-    }
-    return false;
-  });
-
   // Prompt Threads-style login popover on arrival for unauthenticated users (only when on generic Home feed, not post detail)
   useEffect(() => {
     if (!user && isHomeRoute && !selectedPost && !isPostRoute) {
@@ -235,18 +228,6 @@ export function App() {
         />
       ) : (
         <>
-          {/* 0. Staggered Entrance Splash Animation */}
-          {showSplash && hasCompletedOnboarding && !isLandingRoute && (
-            <AppEntranceSplash
-              onComplete={() => {
-                try {
-                  sessionStorage.setItem('snaps_splash_seen', 'true');
-                } catch {}
-                setShowSplash(false);
-              }}
-            />
-          )}
-
           {/* 1. First-time User Onboarding Screen */}
           {!hasCompletedOnboarding ? (
             <OnboardingScreen
@@ -370,7 +351,7 @@ export function App() {
           />
 
           {/* Bottom Navigation */}
-          {!selectedPost && !activeChatThreadId && !isColorsRoute && !isMapRoute && (
+          {!isPostRoute && !selectedPost && !activeChatThreadId && !isColorsRoute && !isMapRoute && (
             <MarketBottomNav
               activeTab={
                 isMessagesRoute
@@ -398,10 +379,10 @@ export function App() {
             />
           )}
 
-          {/* Post Detail Modal Layer */}
-          {selectedPost && (
+          {/* Post Detail Route or Modal Layer */}
+          {(isPostRoute || selectedPost) && (
             <div
-              key={selectedPost.id}
+              key={selectedPost ? selectedPost.id : 'post-skeleton'}
               data-lenis-prevent
               className="fixed inset-0 z-50 bg-white overflow-hidden transform-gpu animate-page-zoom touch-pan-y"
               style={{
@@ -410,14 +391,27 @@ export function App() {
                 WebkitBackfaceVisibility: 'hidden',
               }}
             >
-              <PostDetailPage
-                post={selectedPost}
-                onBack={handleClosePostDetail}
-                onUserClick={(uname) => {
-                  handleClosePostDetail();
-                  navigateToProfile(uname);
-                }}
-              />
+              {selectedPost ? (
+                <PostDetailPage
+                  post={selectedPost}
+                  onBack={() => {
+                    handleClosePostDetail();
+                    setCurrentRoute('/download');
+                    window.history.pushState({}, '', '/download');
+                  }}
+                  onUserClick={(uname) => {
+                    handleClosePostDetail();
+                    navigateToProfile(uname);
+                  }}
+                />
+              ) : (
+                <PostDetailSkeleton
+                  onBack={() => {
+                    setCurrentRoute('/download');
+                    window.location.href = '/download';
+                  }}
+                />
+              )}
             </div>
           )}
 
