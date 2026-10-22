@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
-/// "Undang Teman SMKN 8" action tile matching iOS pen.dev specs.
+/// "Undang temanmu" action tile matching iOS pen.dev specs.
 class DirectMessagesInviteTile extends StatelessWidget {
   final VoidCallback onTap;
 
@@ -40,7 +40,7 @@ class DirectMessagesInviteTile extends StatelessWidget {
               ),
               Expanded(
                 child: Text(
-                  'Undang Teman SMKN 8',
+                  'Undang temanmu',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(

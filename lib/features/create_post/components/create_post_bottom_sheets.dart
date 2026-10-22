@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/mascot_flair_badge.dart';
+import 'package:snapan_market/core/components/mascot_bundle_selector_bar.dart';
+import 'package:snapan_market/core/components/mascot_gallery_bottom_sheet.dart';
 import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/create_post/models/create_post_types.dart';
@@ -443,53 +445,26 @@ class _MascotPickerPopoverContentState extends State<_MascotPickerPopoverContent
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Segmented Bundle Switcher (Koala / Fox) - Hugged centered icon-first pills
-              Center(
-                child: Container(
-                  height: 32.0,
-                  padding: const EdgeInsets.all(2.5),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF1F5F9),
-                    borderRadius: BorderRadius.circular(9.0),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: MascotBundle.values.map((bundle) {
-                      final isSelected = _selectedBundle == bundle;
-                      return GestureDetector(
-                        onTap: () {
-                          HapticFeedback.selectionClick();
-                          setState(() {
-                            _selectedBundle = bundle;
-                          });
-                        },
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 140),
-                          padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                          decoration: BoxDecoration(
-                            color: isSelected ? Colors.white : Colors.transparent,
-                            borderRadius: BorderRadius.circular(7.0),
-                            boxShadow: isSelected
-                                ? const [
-                                    BoxShadow(
-                                      color: Color(0x0E000000),
-                                      blurRadius: 3.0,
-                                      offset: Offset(0, 1),
-                                    ),
-                                  ]
-                                : null,
-                          ),
-                          alignment: Alignment.center,
-                          child: MascotFlairBadge(
-                            flair: MascotFlairModel(bundle: bundle, emotion: MascotEmotion.delighted),
-                            size: 20.0,
-                            enableGradientFade: false,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
+              // Horizontal Virtualized Mascot Bundle Selector Strip
+              MascotBundleSelectorBar(
+                selectedBundle: _selectedBundle,
+                compact: true,
+                onBundleSelected: (bundle) {
+                  setState(() {
+                    _selectedBundle = bundle;
+                  });
+                },
+                onOpenGallery: () {
+                  MascotGalleryBottomSheet.show(
+                    context,
+                    selectedBundle: _selectedBundle,
+                    onSelected: (bundle) {
+                      setState(() {
+                        _selectedBundle = bundle;
+                      });
+                    },
+                  );
+                },
               ),
 
               const SizedBox(height: 8.0),

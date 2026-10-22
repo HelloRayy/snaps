@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:snapan_market/core/components/mascot_flair_badge.dart';
+import 'package:snapan_market/core/components/mascot_bundle_selector_bar.dart';
+import 'package:snapan_market/core/components/mascot_gallery_bottom_sheet.dart';
 import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/core/services/media_cropper_service.dart';
 import 'package:snapan_market/core/services/media_upload_service.dart';
@@ -94,7 +96,7 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
       ),
     );
 
-    if (source == null) return;
+    if (source == null || !mounted) return;
 
     XFile? picked;
     if (source == ImageSource.gallery) {
@@ -329,75 +331,81 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                   ),
                 ],
               ),
-              if (widget.currentMascotFlair != null)
-                GestureDetector(
-                  onTap: () {
-                    HapticFeedback.lightImpact();
-                    widget.onMascotFlairChanged(null);
-                  },
-                  child: const Text(
-                    'Hapus',
-                    style: TextStyle(
-                      fontSize: 13.0,
-                      color: Color(0xFFEF4444),
-                      fontWeight: FontWeight.w600,
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      MascotGalleryBottomSheet.show(
+                        context,
+                        selectedBundle: activeBundle,
+                        onSelected: (bundle) {
+                          widget.onMascotFlairChanged(
+                            MascotFlairModel(
+                              bundle: bundle,
+                              emotion: widget.currentMascotFlair?.emotion ?? MascotEmotion.delighted,
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    child: const Text(
+                      'Lihat Semua (21)',
+                      style: TextStyle(
+                        fontSize: 13.0,
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                ),
+                  if (widget.currentMascotFlair != null) ...[
+                    const SizedBox(width: 12.0),
+                    GestureDetector(
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                        widget.onMascotFlairChanged(null);
+                      },
+                      child: const Text(
+                        'Hapus',
+                        style: TextStyle(
+                          fontSize: 13.0,
+                          color: Color(0xFFEF4444),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
             ],
           ),
           const SizedBox(height: 12.0),
 
-          // Segmented Bundle Switcher (Koala / Fox) - Hugged centered icon-first pills matching CreatePost
-          Center(
-            child: Container(
-              height: 36.0,
-              padding: const EdgeInsets.all(3.0),
-              decoration: BoxDecoration(
-                color: isDark ? AppColors.darkSurfaceElevated : const Color(0xFFF1F5F9),
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: MascotBundle.values.map((bundle) {
-                  final isSelected = activeBundle == bundle;
-                  return GestureDetector(
-                    onTap: () {
-                      HapticFeedback.selectionClick();
-                      widget.onMascotFlairChanged(
-                        MascotFlairModel(
-                          bundle: bundle,
-                          emotion: widget.currentMascotFlair?.emotion ?? MascotEmotion.delighted,
-                        ),
-                      );
-                    },
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 140),
-                      padding: const EdgeInsets.symmetric(horizontal: 22.0),
-                      decoration: BoxDecoration(
-                        color: isSelected ? (isDark ? AppColors.darkSurface : Colors.white) : Colors.transparent,
-                        borderRadius: BorderRadius.circular(8.0),
-                        boxShadow: isSelected
-                            ? const [
-                                BoxShadow(
-                                  color: Color(0x0E000000),
-                                  blurRadius: 4.0,
-                                  offset: Offset(0, 1),
-                                ),
-                              ]
-                            : null,
-                      ),
-                      alignment: Alignment.center,
-                      child: MascotFlairBadge(
-                        flair: MascotFlairModel(bundle: bundle, emotion: MascotEmotion.delighted),
-                        size: 22.0,
-                        enableGradientFade: false,
-                      ),
+          // Horizontal Virtualized Mascot Bundle Selector Strip
+          MascotBundleSelectorBar(
+            selectedBundle: activeBundle,
+            compact: false,
+            onBundleSelected: (bundle) {
+              widget.onMascotFlairChanged(
+                MascotFlairModel(
+                  bundle: bundle,
+                  emotion: widget.currentMascotFlair?.emotion ?? MascotEmotion.delighted,
+                ),
+              );
+            },
+            onOpenGallery: () {
+              MascotGalleryBottomSheet.show(
+                context,
+                selectedBundle: activeBundle,
+                onSelected: (bundle) {
+                  widget.onMascotFlairChanged(
+                    MascotFlairModel(
+                      bundle: bundle,
+                      emotion: widget.currentMascotFlair?.emotion ?? MascotEmotion.delighted,
                     ),
                   );
-                }).toList(),
-              ),
-            ),
+                },
+              );
+            },
           ),
 
           const SizedBox(height: 12.0),
