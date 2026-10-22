@@ -60,12 +60,46 @@ void main() {
     // Verify Title changed to 'Daftar Akun Baru'
     expect(find.text('Daftar Akun Baru'), findsOneWidget);
 
-    // Verify Sticky CTA button changed to 'Aktifkan Akun & Masuk'
+    // Verify CTA button inside Register form with 'Aktifkan Akun & Masuk'
     expect(find.text('Aktifkan Akun & Masuk'), findsOneWidget);
 
     // Incomplete form keeps button disabled
     final registerButton = tester.widget<PrimaryAuthButton>(find.byType(PrimaryAuthButton));
     expect(registerButton.isEnabled, isFalse);
+
+    // Verify CTA button is inside SingleChildScrollView (fixed in form, scrollable)
+    expect(
+      find.descendant(
+        of: find.byType(SingleChildScrollView),
+        matching: find.text('Aktifkan Akun & Masuk'),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('In Register mode, CTA button stays scrollable inside SingleChildScrollView', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AuthScreen(
+          onBack: () {},
+          onSuccess: () {},
+          initialAccountDeletedNotice: true, // starts directly in register mode
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Verify Title is 'Daftar Akun Baru'
+    expect(find.text('Daftar Akun Baru'), findsOneWidget);
+
+    // CTA is inside SingleChildScrollView
+    expect(
+      find.descendant(
+        of: find.byType(SingleChildScrollView),
+        matching: find.text('Aktifkan Akun & Masuk'),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('When keyboard is open, sticky CTA remains visible and footer switcher is hidden', (tester) async {

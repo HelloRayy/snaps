@@ -26,6 +26,7 @@ void main() {
               onToggleAgreedTerms: () {},
               isSubmitting: false,
               onSubmit: () {},
+              onSwitchToLogin: () {},
             ),
           ),
         ),

@@ -575,6 +575,10 @@ class _AuthScreenState extends State<AuthScreen> {
                             isSubmitting: _isSubmitting,
                             isGeneratingUsername: _isGeneratingUsername,
                             onSubmit: _submitRegister,
+                            onSwitchToLogin: () => setState(() {
+                              _authMode = AuthMode.login;
+                              _clearAllErrors();
+                            }),
                           ),
 
                         const SizedBox(height: 24.0),
@@ -583,23 +587,24 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                 ),
 
-                // 3. Kontainer Sticky Bottom Action
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: isKeyboardOpen
-                        ? const Border(
-                            top: BorderSide(
-                              color: Color(0xFFF1F5F9),
-                              width: 1.0,
-                            ),
-                          )
-                        : null,
-                    boxShadow: isKeyboardOpen
-                        ? const [
-                            BoxShadow(
-                              color: Color(0x0A0F172A),
-                              blurRadius: 10,
+                // 3. Kontainer Sticky Bottom Action (Hanya untuk Login Mode agar CTA mengikuti keyboard)
+                if (_authMode == AuthMode.login)
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: isKeyboardOpen
+                          ? const Border(
+                              top: BorderSide(
+                                color: Color(0xFFF1F5F9),
+                                width: 1.0,
+                              ),
+                            )
+                          : null,
+                      boxShadow: isKeyboardOpen
+                          ? const [
+                              BoxShadow(
+                                color: Color(0x0A0F172A),
+                                blurRadius: 10,
                               offset: Offset(0, -3),
                             ),
                           ]
@@ -614,55 +619,26 @@ class _AuthScreenState extends State<AuthScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      if (_authMode == AuthMode.login)
-                        ListenableBuilder(
-                          listenable: Listenable.merge([_loginUsernameController, _loginPasswordController]),
-                          builder: (context, _) {
-                            final bool isLoginValid = _loginUsernameController.text.trim().isNotEmpty &&
-                                _loginPasswordController.text.isNotEmpty;
+                      ListenableBuilder(
+                        listenable: Listenable.merge([_loginUsernameController, _loginPasswordController]),
+                        builder: (context, _) {
+                          final bool isLoginValid = _loginUsernameController.text.trim().isNotEmpty &&
+                              _loginPasswordController.text.isNotEmpty;
 
-                            return PrimaryAuthButton(
-                              text: 'Masuk ke Akun',
-                              isLoading: _isSubmitting,
-                              isEnabled: isLoginValid,
-                              onPressed: _submitLogin,
-                            );
-                          },
-                        )
-                      else
-                        ListenableBuilder(
-                          listenable: Listenable.merge([
-                            _nisController,
-                            _regDisplayNameController,
-                            _regUsernameController,
-                            _regPasswordController,
-                          ]),
-                          builder: (context, _) {
-                            final rawDisplayName = _regDisplayNameController.text.trim();
-                            final bool isDisplayNameValid = rawDisplayName.isEmpty ||
-                                (rawDisplayName.length >= 6 && rawDisplayName.length <= 20);
-                            final bool isRegisterValid = _verifiedStudent != null &&
-                                _nisController.text.trim().isNotEmpty &&
-                                _regUsernameController.text.trim().isNotEmpty &&
-                                _regPasswordController.text.length >= 6 &&
-                                _agreedTerms &&
-                                isDisplayNameValid;
-
-                            return PrimaryAuthButton(
-                              text: 'Aktifkan Akun & Masuk',
-                              isLoading: _isSubmitting,
-                              isEnabled: isRegisterValid,
-                              onPressed: _submitRegister,
-                            );
-                          },
-                        ),
-
+                          return PrimaryAuthButton(
+                            text: 'Masuk ke Akun',
+                            isLoading: _isSubmitting,
+                            isEnabled: isLoginValid,
+                            onPressed: _submitLogin,
+                          );
+                        },
+                      ),
                       if (!isKeyboardOpen) ...[
                         const SizedBox(height: 12.0),
                         AuthFooterSwitcher(
-                          isLogin: _authMode == AuthMode.login,
+                          isLogin: true,
                           onSwitch: () => setState(() {
-                            _authMode = _authMode == AuthMode.login ? AuthMode.register : AuthMode.login;
+                            _authMode = AuthMode.register;
                             _clearAllErrors();
                           }),
                         ),
