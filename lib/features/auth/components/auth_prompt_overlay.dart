@@ -102,7 +102,7 @@ class AuthPromptOverlay extends StatelessWidget {
 
                         // Subtitle
                         const Text(
-                          'Gabung ke komunitas SMKN 8. Temukan obrolan seru, info tongkrongan kampus, dan karya terbaik warga delapan.',
+                          'Gabung ke komunitas Snaps. Ngobrol seru bareng Snapanians dan jualan karya siswa.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 14.5,

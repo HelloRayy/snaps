@@ -23,7 +23,7 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
   isOpen,
   onClose,
   onSuccess,
-  subtitle = "Gabung ke komunitas SMKN 8. Temukan obrolan seru, info tongkrongan kampus, dan karya terbaik warga delapan."
+  subtitle = "Gabung ke komunitas Snaps. Ngobrol seru bareng Snapanians dan jualan karya siswa."
 }) => {
   const [authMode, setAuthMode] = useState<'options' | 'email-signin' | 'email-signup'>('options');
   const [email, setEmail] = useState('');
