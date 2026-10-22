@@ -102,7 +102,7 @@ class PostThreadChainItem extends StatelessWidget {
                           const SizedBox(width: 4.0),
                           MascotFlairBadge(
                             flair: post.seller.mascotFlair!,
-                            size: 20.0,
+                            size: 26.0,
                           ),
                         ],
                         const SizedBox(width: 6.0),
