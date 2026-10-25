@@ -1,0 +1,172 @@
+/* ================================================================
+   Reset & token dasar
+   Token warna disamakan dengan lib/core/theme/app_colors.dart
+   ================================================================ */
+
+:root {
+  --canvas: #ffffff;
+  --surface: #f8f9fa;
+  --ink: #111827;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+
+  --primary: #3d38f5;
+  --primary-hover: #312bd9;
+  --primary-soft: #eef0ff;
+
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --content-max: 1120px;
+  --gutter: clamp(16px, 4vw, 40px);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote {
+  margin: 0;
+}
+
+ul[role="list"],
+ol[role="list"] {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: var(--primary);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Area hasil copy dari Figma. Jangan diberi max-width di sini supaya
+   layout full-bleed dari Figma tetap utuh. */
+#figma-root {
+  min-height: 100dvh;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ================================================================
+   Placeholder — aman dihapus setelah desain Figma ditempel
+   ================================================================ */
+
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 100dvh;
+  max-width: 560px;
+  margin-inline: auto;
+  padding: 48px var(--gutter);
+}
+
+.placeholder__eyebrow {
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.placeholder__title {
+  font-size: clamp(28px, 6vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.placeholder__body {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.placeholder__body code {
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.9em;
+}
+
+.placeholder__hint {
+  margin-top: 8px;
+  padding: 10px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--primary-soft);
+  color: var(--primary-hover);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ================================================================
+   PASTE CSS FIGMA DI BAWAH INI
+   Tips:
+   - Ganti width/height piksel tetap dengan max-width + aspect-ratio
+     kalau frame-nya harus responsif.
+   - Ganti position:absolute hasil export dengan flex/grid bila perlu.
+   ================================================================ */

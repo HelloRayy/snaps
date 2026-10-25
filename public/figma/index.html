@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#ffffff" />
+    <title>Figma → Website</title>
+
+    <!-- Inter, font yang dipakai di desain Snaps -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <!--
+      ================================================================
+      CARA PAKAI
+      1. Buka http://localhost:5173/figma/ (jalankan `npm run dev`).
+      2. Copy frame dari Figma (Dev Mode → Code → Copy as code,
+         atau plugin HTML/CSS exporter).
+      3. Tempel HTML-nya di dalam <main id="figma-root"> di bawah,
+         menggantikan <section data-figma-placeholder>.
+      4. Tempel CSS-nya di style.css pada bagian PASTE CSS FIGMA.
+      5. Tempel JS-nya di script.js pada bagian PASTE JS FIGMA.
+      6. Export gambar/ikon Figma ke folder assets/, lalu ganti URL
+         absolut hasil export jadi path relatif:
+         ./assets/nama-file.png
+      ================================================================
+    -->
+    <main id="figma-root">
+      <section class="placeholder" data-figma-placeholder>
+        <p class="placeholder__eyebrow">Figma → Website</p>
+        <h1 class="placeholder__title">Area tempel desain</h1>
+        <p class="placeholder__body">
+          Copy frame dari Figma, lalu tempel HTML-nya ke dalam
+          <code>&lt;main id="figma-root"&gt;</code> di file
+          <code>public/figma/index.html</code>. CSS dan JS-nya punya slot
+          masing-masing di <code>style.css</code> dan <code>script.js</code>.
+        </p>
+        <p class="placeholder__hint">
+          Hapus blok ini setelah desain asli masuk.
+        </p>
+      </section>
+    </main>
+
+    <script src="./script.js" defer></script>
+  </body>
+</html>
