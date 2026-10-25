@@ -30,7 +30,7 @@ class ShareHelper {
     try {
       await Clipboard.setData(ClipboardData(text: url));
       if (context.mounted) {
-        SnapsToast.show(
+        SnapsToast.success(
           context,
           'Tautan postingan berhasil disalin',
           hasBottomNav: false,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/ui/default_profile_avatar.dart';
+import 'package:snapan_market/core/utils/snaps_toast.dart';
 
 class AccountSuspendedScreen extends StatefulWidget {
   final Map<String, dynamic> suspensionData;
@@ -111,12 +112,7 @@ class _AccountSuspendedScreenState extends State<AccountSuspendedScreen> {
                       onPressed: () {
                         Clipboard.setData(const ClipboardData(text: '+6281234567890'));
                         Navigator.pop(ctx);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Nomor kontak WhatsApp admin berhasil disalin.'),
-                            backgroundColor: Color(0xFF10B981),
-                          ),
-                        );
+                        SnapsToast.success(context, 'Nomor kontak WhatsApp admin berhasil disalin.', hasBottomNav: false);
                       },
                     ),
                   ],

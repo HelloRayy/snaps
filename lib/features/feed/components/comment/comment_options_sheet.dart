@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
+import 'package:snapan_market/core/utils/snaps_toast.dart';
 
 /// Modal bottom sheet for comment options (Reply, Copy Text, Report, Delete)
 class CommentOptionsSheet {
@@ -70,9 +71,7 @@ class CommentOptionsSheet {
                 onTap: () {
                   Navigator.pop(ctx);
                   Clipboard.setData(ClipboardData(text: comment.content));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Teks komentar disalin ke papan klip')),
-                  );
+                  SnapsToast.success(context, 'Teks komentar disalin ke papan klip', hasBottomNav: false);
                 },
               ),
               if (canDelete)
@@ -99,9 +98,7 @@ class CommentOptionsSheet {
                   ),
                   onTap: () {
                     Navigator.pop(ctx);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Laporan terkirim, terima kasih atas masukan Anda')),
-                    );
+                    SnapsToast.info(context, 'Laporan terkirim, terima kasih atas masukan Anda', hasBottomNav: false);
                   },
                 ),
             ],

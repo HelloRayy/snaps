@@ -6,6 +6,7 @@ import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/services/mascot_feature_notice_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/utils/snaps_toast.dart';
 import 'package:snapan_market/features/auth/models/auth_constants.dart';
 import 'package:snapan_market/features/profile/components/discard_changes_dialog.dart';
 import 'package:snapan_market/features/profile/components/edit_profile_avatar_section.dart';
@@ -214,16 +215,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (mounted) {
         setState(() => _isSaving = false);
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profil berhasil diperbarui'), behavior: SnackBarBehavior.floating),
-        );
+        SnapsToast.success(context, 'Profil berhasil diperbarui', hasBottomNav: false);
       }
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menyimpan profil: $e'), backgroundColor: const Color(0xFFEF4444), behavior: SnackBarBehavior.floating),
-        );
+        SnapsToast.error(context, 'Gagal menyimpan profil: $e', hasBottomNav: false);
       }
     }
   }

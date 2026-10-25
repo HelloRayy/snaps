@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/utils/share_helper.dart';
+import 'package:snapan_market/core/utils/snaps_toast.dart';
 import 'package:snapan_market/features/feed/components/lightbox/lightbox_action_bar.dart';
 import 'package:snapan_market/features/feed/components/lightbox/lightbox_image_viewer.dart';
 import 'package:snapan_market/features/feed/components/lightbox/lightbox_nav_arrows.dart';
@@ -239,13 +240,7 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
     HapticFeedback.lightImpact();
     final postId = widget.post?.id ?? 'preview';
     Clipboard.setData(ClipboardData(text: ShareHelper.getPostShareUrl(postId)));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Tautan disalin ke papan klip'),
-        duration: Duration(seconds: 1),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    SnapsToast.success(context, 'Tautan disalin ke papan klip', hasBottomNav: false);
   }
 
   @override

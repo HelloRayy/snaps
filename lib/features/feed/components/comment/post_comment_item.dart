@@ -6,6 +6,7 @@ import 'package:snapan_market/core/utils/mention_text_span_helper.dart';
 import 'package:snapan_market/features/feed/components/comment/comment.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/core/components/mascot_flair_badge.dart';
+import 'package:snapan_market/core/utils/snaps_toast.dart';
 
 /// PostCommentItem Widget
 /// Modular Threads conversation card with continuous threadline tree
@@ -90,14 +91,7 @@ class _PostCommentItemState extends State<PostCommentItem> {
 
   void _copyToClipboard(String text) {
     Clipboard.setData(ClipboardData(text: text));
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Teks komentar disalin ke papan klip'),
-        duration: Duration(seconds: 1),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    SnapsToast.success(context, 'Teks komentar disalin ke papan klip', hasBottomNav: false);
   }
 
   String _resolveTargetHandle(CommentUserModel user) {

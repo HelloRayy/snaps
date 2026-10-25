@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:snapan_market/core/utils/snaps_toast.dart";
 import "package:snapan_market/core/components/snaps_skeleton.dart";
 import "package:snapan_market/core/navigation/app_slide_page_route.dart";
 import "package:snapan_market/core/services/global_notification_service.dart";
@@ -145,12 +146,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
       _notifications = _notifications.map((n) => n.copyWith(isRead: true)).toList();
     });
     SupabaseService.instance.markNotificationsAsRead();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Semua notifikasi ditandai sudah dibaca"),
-        duration: Duration(seconds: 2),
-      ),
-    );
+    SnapsToast.success(context, "Semua notifikasi ditandai sudah dibaca", hasBottomNav: true);
   }
 
   @override

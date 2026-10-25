@@ -5,6 +5,7 @@ import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/ui/oreo_avatar_helper.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
+import 'package:snapan_market/core/utils/snaps_toast.dart';
 
 /// 42x42px circular author avatar with thumb-friendly '+' follow badge (Threads standard)
 class PostAuthorAvatar extends StatelessWidget {
@@ -67,14 +68,7 @@ class PostAuthorAvatar extends StatelessWidget {
                           HapticFeedback.lightImpact();
                           if (!SupabaseService.instance.isAuthenticated) {
                             if (context.mounted) {
-                              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Silakan masuk untuk mengikuti akun ini.'),
-                                  duration: Duration(seconds: 2),
-                                  behavior: SnackBarBehavior.floating,
-                                ),
-                              );
+                              SnapsToast.info(context, 'Silakan masuk untuk mengikuti akun ini.', hasBottomNav: true);
                             }
                             return;
                           }
@@ -86,14 +80,7 @@ class PostAuthorAvatar extends StatelessWidget {
                           if (context.mounted) {
                             onFollowToggle?.call();
                             if (newStatus) {
-                              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Mengikuti ${seller.name}'),
-                                  duration: const Duration(seconds: 1),
-                                  behavior: SnackBarBehavior.floating,
-                                ),
-                              );
+                              SnapsToast.success(context, 'Mengikuti ${seller.name}', hasBottomNav: true);
                             }
                           }
                         },

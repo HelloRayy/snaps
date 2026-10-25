@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/features/feed/components/post_card/market_feed_icons.dart';
+import 'package:snapan_market/core/utils/snaps_toast.dart';
 
 /// 4-Icon Action Bar: Heart (Like), Comment (Reply), Repost, Share
 /// Sliced 1:1 with Threads Web interaction flow
@@ -135,14 +136,7 @@ class _CommentActionBarState extends State<CommentActionBar>
             if (widget.onRepost != null) {
               widget.onRepost!();
             } else {
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Komentar dipost ulang'),
-                  duration: Duration(seconds: 1),
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
+              SnapsToast.success(context, 'Komentar dipost ulang', hasBottomNav: false);
             }
           },
           behavior: HitTestBehavior.opaque,

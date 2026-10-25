@@ -4,6 +4,7 @@ import 'package:snapan_market/core/constants/app_constants.dart';
 import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/utils/snaps_toast.dart';
 import 'package:snapan_market/core/utils/mention_text_editing_controller.dart';
 import 'package:snapan_market/features/create_post/components/create_post_bottom_sheets.dart';
 import 'package:snapan_market/features/create_post/components/create_post_footer_bar.dart';
@@ -289,9 +290,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
     if (mounted) {
       setState(() => _isSubmitting = false);
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(isProduct ? 'Produk berhasil diposting!' : 'Utas berhasil diposting!'), behavior: SnackBarBehavior.floating),
-      );
+      SnapsToast.success(context, isProduct ? 'Produk berhasil diposting!' : 'Utas berhasil diposting!', hasBottomNav: false);
     }
   }
 

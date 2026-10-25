@@ -119,7 +119,7 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
   }
 
   void _showFeedback(String message) {
-    SnapsToast.show(context, message, hasBottomNav: true);
+    SnapsToast.success(context, message, hasBottomNav: true);
   }
 
   @override
