@@ -51,7 +51,7 @@ class BroadcastDetailModal extends StatelessWidget {
       }
     } else if (actionType == 'external_url' && actionUrl.isNotEmpty) {
       final uri = Uri.tryParse(actionUrl);
-      if (uri != null) {
+      if (uri != null && (uri.scheme == 'https' || uri.scheme == 'http') && uri.host.isNotEmpty) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       }
     } else if (actionType == 'post_link' && actionUrl.isNotEmpty) {

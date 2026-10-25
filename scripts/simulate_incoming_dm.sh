@@ -14,8 +14,19 @@
 
 set -e
 
-SUPABASE_URL="https://lcwsxldnoqjdfqxqcqja.supabase.co"
-SERVICE_ROLE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxjd3N4bGRub3FqZGZxeHFjcWphIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NjA1NjEwNCwiZXhwIjoyMTAxNjMyMTA0fQ.Hb48YZ42zA7aOjVbE2a2E8XvplchlGLwJGYmyAh8Tuw"
+SUPABASE_URL="${SUPABASE_URL:-https://lcwsxldnoqjdfqxqcqja.supabase.co}"
+
+# Baca SERVICE_ROLE_KEY dari environment variable atau .env.local (jangan di-hardcode)
+SERVICE_ROLE_KEY="${SUPABASE_SERVICE_ROLE_KEY:-}"
+if [ -z "$SERVICE_ROLE_KEY" ] && [ -f .env.local ]; then
+  SERVICE_ROLE_KEY=$(grep -E "^SUPABASE_SERVICE_ROLE_KEY=" .env.local | cut -d '=' -f2- | tr -d '"'\'' ' || true)
+fi
+
+if [ -z "$SERVICE_ROLE_KEY" ]; then
+  echo "Error: Variabel lingkungan SUPABASE_SERVICE_ROLE_KEY belum disetel atau .env.local tidak ditemukan!"
+  echo "Silakan export SUPABASE_SERVICE_ROLE_KEY='<token>' sebelum menjalankan skrip ini."
+  exit 1
+fi
 
 # Akun resmi sistem @snaps sebagai pengirim tunggal yang diizinkan untuk simulasi
 SNAPS_SENDER_ID="d3410370-2df1-425d-8c23-3ae980dd5d38"

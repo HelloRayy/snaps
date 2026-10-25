@@ -254,6 +254,7 @@ class AuthController {
           'username': cleanUsername,
           'class_group': finalClassGroup,
           if (cleanNis != null && cleanNis.isNotEmpty) 'nis': cleanNis,
+          'device_id': await DeviceSecurityService.instance.getDeviceId(),
         },
       );
 

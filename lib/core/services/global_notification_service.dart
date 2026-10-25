@@ -35,7 +35,7 @@ Future<void> _notificationTapBackgroundHandler(NotificationResponse details) asy
     if (details.actionId == 'open_url') {
       if (actionUrl != null && actionUrl.isNotEmpty) {
         final uri = Uri.tryParse(actionUrl);
-        if (uri != null) {
+        if (uri != null && (uri.scheme == 'https' || uri.scheme == 'http') && uri.host.isNotEmpty) {
           await launchUrl(uri, mode: LaunchMode.externalApplication);
         }
       }
@@ -449,7 +449,7 @@ class GlobalNotificationService {
       }
     } else if (actionType == 'external_url' && actionUrl.isNotEmpty) {
       final uri = Uri.tryParse(actionUrl);
-      if (uri != null) {
+      if (uri != null && (uri.scheme == 'https' || uri.scheme == 'http') && uri.host.isNotEmpty) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       }
     } else if (actionType == 'post_link' && actionUrl.isNotEmpty) {
@@ -527,7 +527,7 @@ class GlobalNotificationService {
                   final url = notif.actionUrl ?? json['action_url']?.toString();
                   if (url != null && url.isNotEmpty) {
                     final uri = Uri.tryParse(url);
-                    if (uri != null) {
+                    if (uri != null && (uri.scheme == 'https' || uri.scheme == 'http') && uri.host.isNotEmpty) {
                       await launchUrl(uri, mode: LaunchMode.externalApplication);
                       return;
                     }

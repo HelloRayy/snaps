@@ -52,6 +52,8 @@ declare
   v_avatar text;
   v_bio text;
   v_link text;
+  v_device_id text;
+  v_device_count int;
 begin
   -- Ekstraksi metadata dari raw_user_meta_data
   v_nis := nullif(trim(coalesce(new.raw_user_meta_data->>'nis', '')), '');
@@ -62,9 +64,29 @@ begin
   v_avatar := coalesce(new.raw_user_meta_data->>'avatar_url', new.raw_user_meta_data->>'picture', '');
   v_bio := nullif(trim(coalesce(new.raw_user_meta_data->>'bio', '')), '');
   v_link := nullif(trim(coalesce(new.raw_user_meta_data->>'link', '')), '');
+  v_device_id := nullif(trim(coalesce(new.raw_user_meta_data->>'device_id', '')), '');
 
-  -- 1. Jika NIS disertakan, periksa ke student_registry
-  if v_nis is not null and exists (\n    select 1 from information_schema.tables 
+  -- A. Validasi Kuota Perangkat Fisik di Sisi Server (Max 3 Akun per HP)
+  if v_device_id is not null and exists (
+    select 1 from information_schema.tables 
+    where table_schema = 'public' and table_name = 'device_registrations'
+  ) then
+    select count(*) into v_device_count 
+    from public.device_registrations 
+    where device_id = v_device_id;
+
+    if v_device_count >= 3 then
+      raise exception 'Batas kuota pendaftaran tercapai untuk perangkat fisik ini (maksimal 3 akun).';
+    end if;
+
+    insert into public.device_registrations (device_id, user_id, username, created_at)
+    values (v_device_id, new.id, v_username, timezone('utc'::text, now()))
+    on conflict do nothing;
+  end if;
+
+  -- B. Jika NIS disertakan, periksa dan klaim ke student_registry
+  if v_nis is not null and exists (
+    select 1 from information_schema.tables 
     where table_schema = 'public' and table_name = 'student_registry'
   ) then
     select class_group, full_name into v_class, v_full_name
@@ -76,7 +98,7 @@ begin
     set is_claimed = true,
         claimed_by = new.id,
         claimed_at = timezone('utc'::text, now())
-    where nis = v_nis;
+    where nis = v_nis and (is_claimed = false or claimed_by = new.id);
   end if;
 
   -- 2. Fallback kelas jika masih kosong atau bernilai 'Siswa Snapan'
@@ -304,6 +326,32 @@ on public.profiles
 for delete
 to authenticated
 using (public.is_admin());
+
+-- Trigger Database: Cegah Eskalasi Hak Akses Mandiri & Anti-Unsuspend Mandiri
+create or replace function public.fn_protect_profile_sensitive_fields()
+returns trigger as $$
+begin
+  if (old.role is distinct from new.role) or
+     (old.is_verified is distinct from new.is_verified) or
+     (old.is_suspended is distinct from new.is_suspended) or
+     (old.suspended_at is distinct from new.suspended_at) or
+     (old.suspended_until is distinct from new.suspended_until) or
+     (old.suspend_reason is distinct from new.suspend_reason) or
+     (old.nis is not null and old.nis is distinct from new.nis) then
+    if not public.is_admin() then
+      raise exception 'Akses Ditolak: Anda tidak memiliki izin untuk memodifikasi hak akses, status suspensi, atau NIS akun ini.';
+    end if;
+  end if;
+
+  return new;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists trg_protect_profile_sensitive_fields on public.profiles;
+create trigger trg_protect_profile_sensitive_fields
+  before update on public.profiles
+  for each row
+  execute function public.fn_protect_profile_sensitive_fields();
 
 -- Market Posts Policies
 drop policy if exists "Market posts viewable by everyone" on public.market_posts;
@@ -1187,6 +1235,32 @@ create policy "Participants can update messages"
 create policy "Users can delete own messages"
   on public.direct_messages for delete to authenticated
   using ((select auth.uid()) = sender_id);
+
+-- Trigger Database: Cegah Manipulasi Pesan Chat oleh Penerima (Message Tampering Protection)
+create or replace function public.fn_protect_direct_message_fields()
+returns trigger as $$
+begin
+  if (old.sender_id is distinct from new.sender_id) or (old.conversation_id is distinct from new.conversation_id) then
+    raise exception 'Akses Ditolak: Identitas pengirim dan percakapan tidak dapat diubah.';
+  end if;
+
+  if auth.uid() is distinct from old.sender_id then
+    if (old.message_text is distinct from new.message_text) or
+       (old.created_at is distinct from new.created_at) or
+       (old.attachment_url is distinct from new.attachment_url) then
+      raise exception 'Akses Ditolak: Hanya pengirim asli yang berhak mengubah isi pesan.';
+    end if;
+  end if;
+
+  return new;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists trg_protect_direct_message_fields on public.direct_messages;
+create trigger trg_protect_direct_message_fields
+  before update on public.direct_messages
+  for each row
+  execute function public.fn_protect_direct_message_fields();
 
 -- Trigger auto-update snapshot last_message pada tabel conversations
 create or replace function public.handle_direct_message_created()
