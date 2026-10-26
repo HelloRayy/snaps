@@ -22,6 +22,7 @@ class ProfileUserModel {
   final MascotFlairModel? mascotFlair;
   final bool canUseMascot;
   final List<FollowerAvatarPreview> followerAvatars;
+  final String? nis;
 
   const ProfileUserModel({
     required this.id,
@@ -42,6 +43,7 @@ class ProfileUserModel {
     this.mascotFlair,
     this.canUseMascot = true,
     this.followerAvatars = const [],
+    this.nis,
   });
 
   ProfileUserModel copyWith({
@@ -63,6 +65,7 @@ class ProfileUserModel {
     MascotFlairModel? mascotFlair,
     bool? canUseMascot,
     List<FollowerAvatarPreview>? followerAvatars,
+    String? nis,
   }) {
     return ProfileUserModel(
       id: id ?? this.id,
@@ -83,6 +86,7 @@ class ProfileUserModel {
       mascotFlair: mascotFlair ?? this.mascotFlair,
       canUseMascot: canUseMascot ?? this.canUseMascot,
       followerAvatars: followerAvatars ?? this.followerAvatars,
+      nis: nis ?? this.nis,
     );
   }
 

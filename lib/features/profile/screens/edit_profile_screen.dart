@@ -100,7 +100,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return _nameController.text.trim() != widget.initialUser.name.trim() ||
         cleanCurrentUsername != cleanInitialUsername ||
         _bioController.text.trim() != widget.initialUser.bio.trim() ||
-        _currentClassGroup.trim() != widget.initialUser.classGroup.trim() ||
+        ((widget.initialUser.nis == null || widget.initialUser.nis!.isEmpty) &&
+            _currentClassGroup.trim() != widget.initialUser.classGroup.trim()) ||
         _linkController.text.trim() != (widget.initialUser.link ?? '').trim() ||
         _avatar != widget.initialUser.avatar ||
         _mascotFlair?.toJson().toString() != widget.initialUser.mascotFlair?.toJson().toString() ||
@@ -142,7 +143,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final cleanUsername = _usernameController.text.trim().isEmpty
         ? widget.initialUser.username
         : _usernameController.text.trim().toLowerCase().replaceAll(RegExp(r'[^a-z0-9._]'), '');
-    final cleanClass = _currentClassGroup.isEmpty ? widget.initialUser.classGroup : _currentClassGroup;
+    final isClassLocked = widget.initialUser.nis != null && widget.initialUser.nis!.trim().isNotEmpty;
+    final cleanClass = isClassLocked ? widget.initialUser.classGroup : (_currentClassGroup.isEmpty ? widget.initialUser.classGroup : _currentClassGroup);
     final cleanInitialUsername = widget.initialUser.username.replaceAll('@', '').toLowerCase();
 
     setState(() => _isSaving = true);
@@ -296,6 +298,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       selectedMajor: _selectedMajor,
                       selectedClassNum: _selectedClassNum,
                       showClassError: _showClassError,
+                      isClassLocked: widget.initialUser.nis != null && widget.initialUser.nis!.trim().isNotEmpty,
+                      userNis: widget.initialUser.nis,
                       onGradeChanged: (val) => _updateClass(grade: val),
                       onMajorChanged: (val) => _updateClass(major: val),
                       onClassNumChanged: (val) => _updateClass(classNum: val),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:snapan_market/core/components/app_dropdown_field.dart';
-import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/auth/models/auth_constants.dart';
 import 'package:snapan_market/features/profile/components/edit_profile_chips_editor.dart';
 
@@ -44,6 +44,8 @@ class EditProfileFormFields extends StatelessWidget {
   final bool showSalesStats;
   final ValueChanged<bool> onToggleSalesStats;
   final bool showClassError;
+  final bool isClassLocked;
+  final String? userNis;
 
   const EditProfileFormFields({
     super.key,
@@ -61,8 +63,9 @@ class EditProfileFormFields extends StatelessWidget {
     required this.showSalesStats,
     required this.onToggleSalesStats,
     this.showClassError = false,
+    this.isClassLocked = false,
+    this.userNis,
   });
-
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -163,55 +166,114 @@ class EditProfileFormFields extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 10.0),
-              Row(
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: AppDropdownField(
-                      label: 'Kelas',
-                      value: selectedGrade,
-                      options: AuthConstants.gradeOptions,
-                      hasError: showClassError && selectedGrade == null,
-                      onChanged: onGradeChanged,
+              if (isClassLocked) ...[
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(12.0),
+                    border: Border.all(
+                      color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
                     ),
                   ),
-                  const SizedBox(width: 8.0),
-                  Expanded(
-                    flex: 4,
-                    child: AppDropdownField(
-                      label: 'Jurusan',
-                      value: selectedMajor,
-                      options: AuthConstants.majorOptions,
-                      hasError: showClassError && selectedMajor == null,
-                      onChanged: onMajorChanged,
-                    ),
-                  ),
-                  const SizedBox(width: 8.0),
-                  Expanded(
-                    flex: 3,
-                    child: AppDropdownField(
-                      label: 'Ruang',
-                      value: selectedClassNum,
-                      options: AuthConstants.classNumOptions,
-                      hasError: showClassError && selectedClassNum == null,
-                      onChanged: onClassNumChanged,
-                    ),
-                  ),
-                ],
-              ),
-              if (showClassError && (selectedGrade == null || selectedMajor == null || selectedClassNum == null))
-                const Padding(
-                  padding: EdgeInsets.only(top: 6.0, left: 4.0),
-                  child: Text(
-                    'Lengkapi data Kelas, Jurusan, dan Ruang',
-                    style: TextStyle(
-                      fontFamily: 'SFPro',
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.error,
-                    ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(7.0),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          LucideIcons.lock,
+                          size: 14.0,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      const SizedBox(width: 10.0),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              (selectedGrade != null && selectedMajor != null && selectedClassNum != null)
+                                  ? '$selectedGrade $selectedMajor $selectedClassNum'
+                                  : 'Kelas Siswa Resmi',
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.w700,
+                                color: primaryTextColor,
+                                letterSpacing: -0.2,
+                              ),
+                            ),
+                            const SizedBox(height: 2.0),
+                            Text(
+                              userNis != null && userNis!.isNotEmpty
+                                  ? 'Terkunci sesuai NIS $userNis buku induk SMKN 8'
+                                  : 'Terkunci sesuai data buku induk resmi SMKN 8',
+                              style: const TextStyle(
+                                fontSize: 11.5,
+                                color: AppColors.lightMuted,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+              ] else ...[
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: AppDropdownField(
+                        label: 'Kelas',
+                        value: selectedGrade,
+                        options: AuthConstants.gradeOptions,
+                        hasError: showClassError && selectedGrade == null,
+                        onChanged: onGradeChanged,
+                      ),
+                    ),
+                    const SizedBox(width: 8.0),
+                    Expanded(
+                      flex: 4,
+                      child: AppDropdownField(
+                        label: 'Jurusan',
+                        value: selectedMajor,
+                        options: AuthConstants.majorOptions,
+                        hasError: showClassError && selectedMajor == null,
+                        onChanged: onMajorChanged,
+                      ),
+                    ),
+                    const SizedBox(width: 8.0),
+                    Expanded(
+                      flex: 3,
+                      child: AppDropdownField(
+                        label: 'Ruang',
+                        value: selectedClassNum,
+                        options: AuthConstants.classNumOptions,
+                        hasError: showClassError && selectedClassNum == null,
+                        onChanged: onClassNumChanged,
+                      ),
+                    ),
+                  ],
+                ),
+                if (showClassError && (selectedGrade == null || selectedMajor == null || selectedClassNum == null))
+                  const Padding(
+                    padding: EdgeInsets.only(top: 6.0, left: 4.0),
+                    child: Text(
+                      'Lengkapi data Kelas, Jurusan, dan Ruang',
+                      style: TextStyle(
+                        fontFamily: 'SFPro',
+                        fontSize: 12.0,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.error,
+                      ),
+                    ),
+                  ),
+              ],
             ],
           ),
         ),

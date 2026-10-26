@@ -413,6 +413,7 @@ class ProfileController extends ChangeNotifier {
       mascotFlair: parsedFlair,
       canUseMascot: canUseMascot,
       followerAvatars: followerAvatars,
+      nis: userNis,
     );
   }
 }
