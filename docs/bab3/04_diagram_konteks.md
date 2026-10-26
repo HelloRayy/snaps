@@ -42,8 +42,8 @@ flowchart LR
     App -->|e. Bukti Pesanan Digital & QR Transaksi| Siswa
 
     %% ALIRAN DATA ADMIN -> SISTEM
-    Admin -->|1. Master Registry Data Siswa (NIS, Nama, Kelas)| App
-    Admin -->|2. Master Titik Temu Resmi COD (Gazebo/Kantin/Lab)| App
+    Admin -->|"1. Master Registry Data Siswa (NIS, Nama, Kelas)"| App
+    Admin -->|"2. Master Titik Temu Resmi COD (Gazebo/Kantin/Lab)"| App
     Admin -->|3. Kebijakan Moderasi Konten & Suspend Akun| App
 
     %% ALIRAN DATA SISTEM -> ADMIN

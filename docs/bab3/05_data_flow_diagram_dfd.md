@@ -56,9 +56,9 @@ flowchart TD
 
     %% Aliran Proses 4.0 (Transaksi COD)
     Siswa -->|Pilih Produk & Titik Temu COD| P4
-    D4 -->|Data Spot Resmi (Gazebo/Kantin/Lab)| P4
+    D4 -->|"Data Spot Resmi (Gazebo/Kantin/Lab)"| P4
     P4 -->|Validasi Ketersediaan Stok| D3
-    P4 -->|Simpan Record Pesanan (PENDING)| D5
+    P4 -->|"Simpan Record Pesanan (PENDING)"| D5
     P4 -->|Kurangi Kuantitas Stok| D3
     D5 -->|Ambil Status & Riwayat Order| P4
     P4 -->|Notifikasi Pesanan & Kode COD| Siswa
@@ -106,7 +106,7 @@ flowchart TD
     P42 -->|Payload Checkout Lengkap| P43
 
     %% 4.3
-    P43 -->|Simpan Order Baru (Status: PENDING)| D5
+    P43 -->|"Simpan Order Baru (Status: PENDING)"| D5
     P43 -->|Potong Sisa Stok Barang| D3
     P43 -->|Push Notification Order Masuk| Penjual
     P43 -->|Tanda Terima Digital & QR Code| Pembeli

@@ -113,9 +113,9 @@ flowchart LR
     App -->|d. Pesan Chat Masuk Realtime| Siswa
 
     %% Admin -> Sistem
-    Admin -->|1. Master Data Registry Siswa (NIS & Kelas)| App
+    Admin -->|"1. Master Data Registry Siswa (NIS & Kelas)"| App
     Admin -->|2. Master Titik Temu COD Sekolah| App
-    Admin -->|3. Tindakan Moderasi (Banned Akun/Take Down Post)| App
+    Admin -->|"3. Tindakan Moderasi (Banned Akun/Take Down Post)"| App
 
     %% Sistem -> Admin
     App -->|a. Notifikasi Laporan Konten Siswa| Admin
@@ -172,7 +172,7 @@ flowchart TD
 
     Siswa -->|Laporkan Konten| P5
     P5 -->|Simpan Laporan| D6
-    Admin -->|Master Siswa (NIS/Kelas)| P5
+    Admin -->|"Master Siswa (NIS/Kelas)"| P5
     P5 -->|Update Registry| D1
     Admin -->|Kelola Spot COD| P5
     P5 -->|Update Titik Temu| D4
@@ -205,14 +205,14 @@ flowchart TD
     Pembeli -->|Pilih Titik Kumpul & Catatan Jam| P42
     P42 -->|Data Lengkap Checkout| P43
 
-    P43 -->|Simpan Pesanan (Status: PENDING)| D5
+    P43 -->|"Simpan Pesanan (Status: PENDING)"| D5
     P43 -->|Kurangi Kuantitas Stok| D3
     P43 -->|Push Notifikasi Pesanan Baru| Penjual
     P43 -->|Ringkasan Pesanan Digital| Pembeli
 
     Pembeli -->|Konfirmasi Terima Barang| P44
     Penjual -->|Konfirmasi Penyerahan Fisik & Uang| P44
-    P44 -->|Update Status (COMPLETED)| D5
+    P44 -->|"Update Status (COMPLETED)"| D5
 ```
 
 ---
