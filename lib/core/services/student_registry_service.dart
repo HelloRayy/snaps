@@ -90,6 +90,33 @@ class StudentRegistryService {
           } catch (_) {}
         }
         _students = allRows.map(RegisteredStudent.fromJson).toList();
+
+        // Cross-check dengan tabel profiles untuk menandai NIS yang sudah memiliki akun aktif
+        try {
+          final claimedProfiles = await SupabaseService.instance.client
+              .from('profiles')
+              .select('nis, id')
+              .not('nis', 'is', null);
+          if (claimedProfiles.isNotEmpty) {
+            final claimedMap = <String, String>{};
+            for (final row in claimedProfiles) {
+              final n = (row['nis'] as String?)?.trim();
+              final uid = (row['id'] as String?)?.trim();
+              if (n != null && n.isNotEmpty && uid != null) {
+                claimedMap[n] = uid;
+              }
+            }
+            if (claimedMap.isNotEmpty) {
+              _students = _students.map((s) {
+                if (claimedMap.containsKey(s.nis) && !s.isClaimed) {
+                  return s.copyWith(isClaimed: true, claimedBy: claimedMap[s.nis]);
+                }
+                return s;
+              }).toList();
+            }
+          }
+        } catch (_) {}
+
         _isLoaded = true;
         return;
       }
@@ -146,7 +173,22 @@ class StudentRegistryService {
           .maybeSingle();
 
       if (res != null) {
-        final student = RegisteredStudent.fromJson(res);
+        var student = RegisteredStudent.fromJson(res);
+        if (!student.isClaimed) {
+          try {
+            final prof = await SupabaseService.instance.client
+                .from('profiles')
+                .select('id')
+                .eq('nis', clean)
+                .maybeSingle();
+            if (prof != null) {
+              student = student.copyWith(
+                isClaimed: true,
+                claimedBy: prof['id']?.toString(),
+              );
+            }
+          } catch (_) {}
+        }
         registerStudent(student);
         return student;
       }
