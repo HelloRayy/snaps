@@ -1,4 +1,4 @@
-# Sanitasi Input Auth: Display Name & Username (Karakter, Simbol, & Best Practices Kompetitor)
+# Sanitasi Input Auth: Display Name & Username (Karakter, Simbol, & 5 Solusi Best Practices)
 
 > **Dokumen Spesifikasi Teknis & Pendekatan Arsitektur**
 > - **Tanggal**: 2026-10-29
@@ -7,87 +7,126 @@
 
 ---
 
-## 1. Analisis Kebutuhan Baru: Tanpa Simbol & Tanpa Spasi
+## 1. Analisis Kebutuhan: Tanpa Simbol & Tanpa Spasi
 
 - **Display Name**:
-  - Saat ini: Belum memiliki filter sama sekali (`LengthLimitingTextInputFormatter(20)` saja). Masih bisa disusupi simbol, emoji, spasi berulang, dan zero-width character.
-  - Kebutuhan: Dibatasi murni alfanumerik tanpa simbol dan tanpa spasi, panjang **3–20 karakter**.
+  - Batasan: Murni alfanumerik `[a-zA-Z0-9]`, tanpa simbol dan tanpa spasi.
+  - Panjang: Opsional. Boleh kosong, jika diisi wajib **3–20 karakter**.
 - **Username**:
-  - Saat ini: Memblokir spasi dan mengizinkan huruf, angka, titik, dan garis bawah (`[a-zA-Z0-9._]`).
-  - Kebutuhan: Dibatasi murni alfanumerik tanpa simbol (`.` dan `_` dihilangkan) dan tanpa spasi (`[a-zA-Z0-9]`), panjang **3–20 karakter**.
+  - Batasan: Murni alfanumerik `[a-zA-Z0-9]`, tanpa simbol (`.` dan `_` ditutup) dan tanpa spasi.
+  - Panjang: Wajib diisi, **3–20 karakter**, otomatis dipaksa huruf kecil (*lowercase*).
 
 ---
 
-## 2. Benchmark Best Practices Aplikasi Kompetitor (Twitter, Instagram, Telegram, TikTok)
+## 2. Rincian Teknis 5 Solusi Best Practices Kompetitor
 
-Selain pemblokiran simbol dan spasi, berikut 5 praktik standar industri yang diterapkan kompetitor untuk mencegah penipuan, bug visual, dan celah keamanan:
+Kelima solusi standar industri diterapkan secara terintegrasi pada arsitektur validasi registrasi Snapan:
 
-1. **Daftar Kata Terlarang (Reserved & System Words Whitelist/Blacklist)**:
-   - *Penerapan di Kompetitor*: Melarang pembuatan username/display name yang meniru identitas sistem resmi, seperti `admin`, `administrator`, `root`, `snaps`, `snapan`, `official`, `support`, `system`, `moderator`, `help`.
-   - *Tujuan di Snapan*: Mencegah siswa iseng membuat akun berpura-pura menjadi admin sekolah atau akun resmi OSIS/Snaps saat bertransaksi.
+### Solusi 1: Pemblokiran Kata Terlarang (Reserved Words Engine)
+- **Mekanisme**: Memvalidasi input terhadap daftar hitam nama sistem resmi (`AuthConstants.reservedUsernames`).
+- **Daftar Kata Terlarang**:
+  `admin`, `administrator`, `root`, `snaps`, `snapan`, `official`, `support`, `system`, `moderator`, `help`, `superuser`, `operator`.
+- **Feedback**: Jika cocok, langsung tampilkan error: `"Username ini dilindungi dan tidak dapat digunakan"`.
 
-2. **Pencegahan Karakter Tak Terlihat (Zero-Width & Invisible Characters)**:
-   - *Penerapan di Kompetitor*: Menolak karakter unicode transparan (seperti Zero-Width Space `\u200B`, Non-Breaking Space `\u00A0`, Right-to-Left Override `\u202E`).
-   - *Tujuan di Snapan*: Karakter tak terlihat sering digunakan untuk membuat username tiruan yang tampak sama persis di mata korban. Dengan membatasi strictly ke regex `[a-zA-Z0-9]`, seluruh karakter tak terlihat otomatis ditolak di level keyboard formatter.
+### Solusi 2: Pencegahan Karakter Tak Terlihat (Zero-Width & Invisible Characters)
+- **Mekanisme**: Menggunakan `FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]'))` dan `FilteringTextInputFormatter.deny(RegExp(r'\s'))`.
+- **Dampak**: Karakter unicode transparan (seperti Zero-Width Space `\u200B`, Non-Breaking Space `\u00A0`, Right-to-Left Override `\u202E`) ditolak 100% pada level penekanan tombol keyboard.
 
-3. **Auto-Lowercase & Case-Insensitive Collision**:
-   - *Penerapan di Kompetitor*: Username selalu dipaksa huruf kecil (`a-z0-9`), baik saat diketik di form maupun saat disimpan di database.
-   - *Tujuan di Snapan*: Menghilangkan kerancuan antara `Rayhan`, `RAYHAN`, dan `rayhan`. Di Snaps, input formatter otomatis mengubah huruf kapital menjadi huruf kecil secara real-time.
-
-4. **Pemeriksaan Ketersediaan Real-Time dengan Debounce (300–400ms)**:
-   - *Penerapan di Kompetitor*: Saat mengetik username, ada indikator kecil (centang hijau jika tersedia, silang merah jika sudah dipakai) tanpa perlu menekan tombol daftar terlebih dahulu.
-   - *Tujuan di Snapan*: Mencegah frustrasi pengguna baru yang baru tahu username-nya bentrok setelah selesai mengisi seluruh form.
-
-5. **Penyaringan Kata Kasar / Profanity Filter Lokal**:
-   - *Penerapan di Kompetitor*: Memblokir kata-kata kotor, umpatan, atau konten SARA di nama pengguna.
-   - *Tujuan di Snapan*: Menjaga kesopanan linimasa di lingkungan edukasi sekolah menengah kejuruan.
-
----
-
-## 3. Spesifikasi Teknis Input Formatters & Validasi
-
-### A. Display Name Input Formatter
-```dart
-inputFormatters: [
-  LengthLimitingTextInputFormatter(20),
-  FilteringTextInputFormatter.deny(RegExp(r'\s')), // Tolak semua jenis spasi
-  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')), // Hanya huruf dan angka
-]
-```
-- Validasi Panjang: Boleh kosong (opsional). Jika diisi, panjang wajib $3 \le \text{length} \le 20$.
-- Error Real-time: Jika panjang 1–2 karakter, tampilkan: `"Nama tampilan minimal 3 karakter (atau kosongkan)"`.
-
-### B. Username Input Formatter
-```dart
-inputFormatters: [
-  LengthLimitingTextInputFormatter(20),
-  FilteringTextInputFormatter.deny(RegExp(r'\s')), // Tolak spasi
-  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')), // Tanpa simbol (. dan _ ditutup)
+### Solusi 3: Auto-Lowercase & Normalisasi Konsisten
+- **Mekanisme**: Menggunakan `TextInputFormatter` khusus pada kolom username:
+  ```dart
   TextInputFormatter.withFunction((oldValue, newValue) {
-    return newValue.copyWith(text: newValue.text.toLowerCase()); // Paksa lowercase
-  }),
-]
+    return newValue.copyWith(text: newValue.text.toLowerCase());
+  })
+  ```
+- **Dampak**: Tidak ada disparitas antara huruf besar dan kecil, menjamin pencarian mention `@` dan index database unik tanpa tabrakan.
+
+### Solusi 4: Pemeriksaan Ketersediaan Real-Time dengan Debounce (350ms)
+- **Mekanisme**:
+  1. Pasang listener pada `usernameController` dengan `Timer? _usernameDebounceTimer`.
+  2. Saat pengguna berhenti mengetik selama $350\text{ ms}$ dan panjang username $\ge 3$:
+     - Tampilkan mini spinner di `customSuffixIcon`.
+     - Panggil `SupabaseService.instance.isUsernameTaken(cleanUsername)`.
+     - Jika sudah terpakai, set `_regUsernameError = 'Username @$cleanUsername sudah terpakai'`.
+     - Jika tersedia, tampilkan ikon centang hijau kecil dan set error ke `null`.
+
+### Solusi 5: Filter Kata Kasar / Profanity Filter Lokal
+- **Mekanisme**: Mencegah nama pengguna yang mengandung kata kasar, pornografi, atau ujaran kebencian dalam bahasa Indonesia dan bahasa daerah (Jawa).
+- **Daftar Filter**: Didefinisikan dalam `ProfanityFilterHelper` (misal kata-kata tabu/vulgar).
+- **Feedback**: Jika terdeteksi, tampilkan pesan: `"Nama mengandung kata yang tidak diperbolehkan"`.
+
+---
+
+## 3. Spesifikasi Teknis Input Formatters & Controller
+
+### A. Display Name Input Formatter (`auth_register_tab.dart`)
+```dart
+AuthInputField(
+  label: 'Display Name (Opsional)',
+  hint: 'Nama panggilan (3-20 karakter)',
+  prefixIcon: LucideIcons.user,
+  controller: displayNameController,
+  errorText: displayNameError,
+  maxLength: 20,
+  textInputAction: TextInputAction.next,
+  inputFormatters: [
+    LengthLimitingTextInputFormatter(20),
+    FilteringTextInputFormatter.deny(RegExp(r'\s')),
+    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
+  ],
+)
 ```
-- Validasi Panjang: Wajib diisi, panjang $3 \le \text{length} \le 20$.
-- Cek Kata Terlarang: Tolak jika cocok dengan daftar reserved words (`admin`, `snaps`, `snapan`, `support`).
+
+### B. Username Input Formatter (`auth_register_tab.dart`)
+```dart
+AuthInputField(
+  label: isGeneratingUsername ? 'Memilih username...' : 'Username',
+  hint: '@username (3-20 karakter)',
+  prefixIcon: LucideIcons.atSign,
+  controller: usernameController,
+  errorText: usernameError,
+  customSuffixIcon: isCheckingUsername
+      ? const SizedBox(
+          width: 16.0,
+          height: 16.0,
+          child: CircularProgressIndicator(strokeWidth: 2.0),
+        )
+      : isUsernameAvailable
+          ? const Icon(Icons.check_circle_rounded, size: 18.0, color: Color(0xFF10B981))
+          : null,
+  maxLength: 20,
+  textInputAction: TextInputAction.next,
+  inputFormatters: [
+    LengthLimitingTextInputFormatter(20),
+    FilteringTextInputFormatter.deny(RegExp(r'\s')),
+    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
+    TextInputFormatter.withFunction((oldValue, newValue) {
+      return newValue.copyWith(text: newValue.text.toLowerCase());
+    }),
+  ],
+)
+```
 
 ---
 
 ## 4. Cakupan File Target (Target File Scope)
 
-| File Path | Tanggung Jawab Perubahan |
+| File Path | Tanggung Jawab & Rencana Perubahan |
 | :--- | :--- |
-| `lib/features/auth/components/auth_register_tab.dart` | Terapkan filter alfanumerik strictly `[a-zA-Z0-9]` pada display name dan username, serta perbarui hint teks |
-| `lib/features/auth/screens/auth_screen.dart` | Sinkronkan regex validation dan pengecekan reserved words saat submit form |
-| `lib/features/profile/screens/edit_profile_screen.dart` | Sinkronkan aturan alfanumerik yang sama pada halaman Edit Profil pengguna yang sudah login |
+| `lib/features/auth/components/auth_register_tab.dart` | Terapkan filter strictly `[a-zA-Z0-9]`, deny `\s`, indikator suffix check availability, dan inline error |
+| `lib/features/auth/screens/auth_screen.dart` | Pasang debounce timer $350\text{ ms}$ untuk check username, validasi reserved words, dan profanity check |
+| `lib/core/constants/auth_constants.dart` | Tambahkan `reservedUsernames` set dan helper validasi |
+| `lib/features/profile/screens/edit_profile_screen.dart` | Sinkronkan sanitasi formatters yang sama pada halaman Edit Profil |
 
 ---
 
 ## 5. Kriteria Selesai (Definition of Done)
 
-- [ ] Kolom display name menolak semua jenis spasi, simbol, tanda baca, dan emoji secara real-time saat diketik.
-- [ ] Kolom username menolak semua jenis spasi dan simbol (termasuk titik `.` dan garis bawah `_`), serta otomatis mengubah huruf kapital menjadi kecil.
-- [ ] Batas panjang untuk display name (jika diisi) dan username adalah minimal 3 karakter dan maksimal 20 karakter.
-- [ ] Terdapat teks error inline real-time jika display name diisi kurang dari 3 karakter.
-- [ ] Sistem menolak username yang termasuk dalam daftar kata terlarang (`admin`, `snaps`, `snapan`, `support`, `official`).
-- [ ] Aturan sanitasi yang sama diterapkan secara konsisten pada halaman edit profil.
+- [ ] **Tanpa Simbol & Spasi**: Kolom display name dan username menolak semua jenis spasi, simbol, tanda baca, dan emoji secara real-time.
+- [ ] **Batas Minimum & Maksimum**: Display name (3–20 karakter jika diisi, boleh kosong) dan Username (3–20 karakter, wajib).
+- [ ] **Solusi 1 (Reserved Words)**: Mendaftar dengan username sistem (`admin`, `snaps`, `snapan`, `official`, `support`) langsung ditolak dengan pesan yang jelas.
+- [ ] **Solusi 2 (Zero-Width Chars)**: Karakter tersembunyi/unicode transparan tidak dapat disisipkan ke form.
+- [ ] **Solusi 3 (Auto-Lowercase)**: Username otomatis diubah menjadi huruf kecil saat diketik.
+- [ ] **Solusi 4 (Real-time Debounce)**: Terdapat indikator loading dan validasi ketersediaan username ($350\text{ ms}$) sebelum tombol submit ditekan.
+- [ ] **Solusi 5 (Profanity Filter)**: Kata-kata tidak pantas/kasar langsung diblokir dengan pesan peringatan.
+- [ ] **Edit Profil Konsisten**: Aturan sanitasi berlaku identik pada perubahan profil setelah login.
