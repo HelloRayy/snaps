@@ -5,42 +5,47 @@
 
 ---
 
-## 🚀 Sprint Aktif (2026-10-19)
+## 🚀 Sprint Aktif (2026-10-29)
 
-> Folder: [`docs/tickets/2026-10-19/`](./2026-10-19/README.md)  
-> Fokus: **Mention System, Public Mascot Access, Realtime DM Notif, & Zoom Gestures**.
+> Folder: [`docs/tickets/2026-10-29/`](./2026-10-29/README.md)  
+> Fokus: **Social Commerce Feed-to-DM Redesign & Native Lightbox Zoom/Dismiss Fixes**.
 
-| Sequence | Judul Tiket | Domain | Prioritas | Status Plane | File Panduan |
-| :---: | :--- | :--- | :---: | :---: | :--- |
-| **SNAPS-84** | `feat(mention): add tag mention @username in many pages` | `mention / autocomplete / profile / chat / feed` | HIGH | `TICKET` | [`SNAPS-84.md`](./2026-10-19/SNAPS-84.md) |
-| **SNAPS-85** | `feat(mascot-icon): add mascot icon access for public` | `mascot / flair / profile / create_post / permission` | MEDIUM | `TICKET` | [`SNAPS-85.md`](./2026-10-19/SNAPS-85.md) |
-| **SNAPS-86** | `fix(dm-notif): fix direct message notif not realtime` | `chat / direct_messages / realtime / supabase / notification` | HIGH | `TICKET` | [`SNAPS-86.md`](./2026-10-19/SNAPS-86.md) |
-| **SNAPS-87** | `fix(zoom-behaviour): fix zoom finger gesture` | `gestures / zoom / lightbox / pinch_scale / interactive_viewer` | MEDIUM | `TICKET` | [`SNAPS-87.md`](./2026-10-19/SNAPS-87.md) |
-| **SNAPS-88** | `fix(OTA-script): issue OTA not worked at all` | `release / ota / scripts / supabase_storage / in_app_update` | HIGH | `DONE` | [`SNAPS-88.md`](./2026-10-19/SNAPS-88.md) |
+| Topik Tiket | Domain | Prioritas | Status | File Panduan |
+| :--- | :--- | :---: | :---: | :--- |
+| **Social Commerce Feed to DM** | `feed / commerce / direct_messages / ui_redesign` | HIGH | `PLANNED` | [`social-commerce-feed-to-dm.md`](./2026-10-29/social-commerce-feed-to-dm.md) |
+| **Native Zoom Behaviour & Dismiss** | `gestures / zoom / lightbox / gesture_arena` | HIGH | `PLANNED` | [`zoom-behaviour-native-gesture.md`](./2026-10-29/zoom-behaviour-native-gesture.md) |
 
 ---
 
 ## 📦 Arsip Sprint Sebelumnya
 
-### 1. Sprint 2026-10-17 (Critical Feed & Deletion Integrity Bug Fixes)
+### 1. Sprint 2026-10-19 (Mention System, Mascot Access, DM Notif, OTA Script)
+> Folder: [`docs/tickets/2026-10-19/`](./2026-10-19/README.md)
+* **SNAPS-84**: `feat(mention): add tag mention @username in many pages` (Done)
+* **SNAPS-85**: `feat(mascot-icon): add mascot icon access for public` (Ticket)
+* **SNAPS-86**: `fix(dm-notif): fix direct message notif not realtime` (Done)
+* **SNAPS-87**: `fix(zoom-behaviour): fix zoom finger gesture` (Done)
+* **SNAPS-88**: `fix(OTA-script): issue OTA not worked at all` (Done)
+
+### 2. Sprint 2026-10-17 (Critical Feed & Deletion Integrity Bug Fixes)
 > Folder: [`docs/tickets/2026-10-17/`](./2026-10-17/README.md)
 * **SNAPS-87**: `fix(feed): deleted post reappears on refresh due to soft-delete filter leak` (Done)
 * **SNAPS-88**: `fix(ui): unify canvas and container background colors across profile and feed` (Done)
 
-### 2. Sprint 2026-10-15 (Beta Release Operational Readiness)
+### 3. Sprint 2026-10-15 (Beta Release Operational Readiness)
 > Folder: [`docs/tickets/2026-10-15/`](./2026-10-15/README.md)
 * **SNAPS-83**: `feat(feedback): in-app bug and feedback reporter modal with category and screenshot`
 * **SNAPS-84**: `feat(about): release status, app version info and environment sheet in settings/profile`
 * **SNAPS-85**: `feat(empty-state): polish contextual empty states and action recoveries across screens`
 * **SNAPS-86**: `feat(moderation): quick content reporting pipeline and auto-hide threshold for flagged posts`
 
-### 3. Sprint 2026-10-13 (Media Experience & Aspect Ratio)
+### 4. Sprint 2026-10-13 (Media Experience & Aspect Ratio)
 > Folder: [`docs/tickets/2026-10-13/`](./2026-10-13/README.md)
 * **SNAPS-79**: `fix(image-ratio): issue image di feed page ketika di upload tidak sesuai dengna ratio yang ada` (Done)
 * **SNAPS-80**: `fix(image): when image open, ini memiliki ui yang sama semua` (Done)
 * **SNAPS-81**: `feat(image-crop): add fitur additional ke image` (Done)
 
-### 4. Sprint 2026-10-12 (Feed Performance & Clean UI)
+### 5. Sprint 2026-10-12 (Feed Performance & Clean UI)
 > Folder: [`docs/tickets/2026-10-12/`](./2026-10-12/README.md)
 * **SNAPS-75**: `hold(jualan-mode): for sprint beta release, kita hold fitur penjualan` (Done)
 * **SNAPS-78**: `fix(loading): optimalisasi fitur load data / upload data yang berlangsung lama` (Done)
@@ -50,7 +55,7 @@
 * **SNAPS-71**: `feat(notification): add notif ketika ada dm masuk` (Done)
 * **SNAPS-13**: `feat(mascot): add mascot ui dengan "/page-mascot" sebagai sumber assets nya` (Done)
 
-### 5. Sprint 2026-10-10 (Foundation & Security)
+### 6. Sprint 2026-10-10 (Foundation & Security)
 > Folder: [`docs/tickets/2026-10-10/`](./2026-10-10/)
 * **SNAPS-73, SNAPS-72, SNAPS-70, SNAPS-69, SNAPS-68, SNAPS-63, SNAPS-39, SNAPS-33, SNAPS-26, SNAPS-19, SNAPS-35**
 
