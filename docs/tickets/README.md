@@ -14,7 +14,7 @@
 | :--- | :--- | :---: | :---: | :--- |
 | **Social Commerce Feed to DM** | `feed / commerce / direct_messages / ui_redesign` | HIGH | `PLANNED` | [`social-commerce-feed-to-dm.md`](./2026-10-29/social-commerce-feed-to-dm.md) |
 | **Native Zoom Behaviour & Dismiss** | `gestures / zoom / lightbox / gesture_arena` | HIGH | `PLANNED` | [`zoom-behaviour-native-gesture.md`](./2026-10-29/zoom-behaviour-native-gesture.md) |
-
+| **Auth Input Sanitization & Rules** | `auth / input_formatters / sanitization / security` | HIGH | `PLANNED` | [`auth-input-sanitization-rules.md`](./2026-10-29/auth-input-sanitization-rules.md) |
 ---
 
 ## 📦 Arsip Sprint Sebelumnya
