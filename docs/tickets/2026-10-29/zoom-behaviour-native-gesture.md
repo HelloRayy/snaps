@@ -1,73 +1,90 @@
-# Perbaikan Gestur Zoom Native (Zoom Behaviour Fix)
+# Perbaikan Gestur Zoom Native & Dismiss (Zoom Behaviour Fix)
 
 > **Dokumen Spesifikasi Teknis & Pendekatan Arsitektur**
 > - **Tanggal**: 2026-10-29
-> - **Domain**: `gestures / zoom / lightbox / interactive_viewer / physics`
+> - **Domain**: `gestures / zoom / lightbox / interactive_viewer / gesture_arena`
 > - **Status**: In Discussion (Approaching)
 
 ---
 
-## 1. Analisis Masalah: Mengapa Gestur Zoom Terasa Kurang Native?
+## 1. Analisis Teknis (Root Cause Analysis di Codebase)
 
-Dibandingkan aplikasi kompetitor kelas dunia (Instagram, Twitter/X, Telegram, iOS Photos), implementasi zoom di Snaps saat ini (`LightboxImageViewer` dan `MediaLightboxDialog`) memiliki 4 batasan mendasar yang menyebabkan feel interaksi terasa kaku atau tidak alami:
+Setelah penelusuran mendalam pada `lib/features/feed/components/lightbox/media_lightbox_dialog.dart` dan `lightbox_image_viewer.dart`, ditemukan 3 akar masalah teknis utama:
 
-1. **Penguncian Total PageView saat Zoom (Edge-Pan Block)**:
-   - *Masalah*: Saat gambar diperbesar (`_isCurrentZoomed = true`), `PageView` diubah menjadi `NeverScrollableScrollPhysics()`.
-   - *Dampak*: Pengguna tidak bisa menggeser ke foto berikutnya/sebelumnya meskipun sudah menggeser gambar sampai ke batas ujung tepi kiri/kanan. Pada aplikasi native (Twitter/Telegram), saat viewport gambar mencapai ujung tepi horizontal, sisa tarikan jari secara mulus mengalirkan halaman ke foto selanjutnya.
-2. **Ketiadaan Fluid Pinch-Dismiss (Cubitan Mengecil untuk Menutup)**:
-   - *Masalah*: Swipe-to-dismiss hanya aktif saat skala persis `1.0x` dengan satu jari.
-   - *Dampak*: Pada Instagram dan Telegram, pengguna bisa mencubit gambar menjadi lebih kecil ($< 1.0x$) sekaligus menariknya ke bawah dalam satu gerakan kontinu untuk menutup dialog. Di Snaps, cubitan $< 1.0x$ tertahan oleh batas kaku dan langsung memicu animasi spring-back yang membatalkan gesture tutup.
-3. **Rebuild Berat Akibat setState pada Pointer Listener**:
-   - *Masalah*: Setiap kali jari menyentuh atau terangkat dari layar (`onPointerDown`, `onPointerUp`), `MediaLightboxDialog` memanggil `setState()` untuk mengubah `_activePointerCount`.
-   - *Dampak*: Terjadi micro-stutter atau drop frame tepat di awal inisiasi zoom dua jari, membuat respon pinch terasa ada jeda (*latency*).
-4. **Presisi Titik Fokus Double-Tap (Focal Point Alignment)**:
-   - *Masalah*: Perhitungan translasi matriks saat double-tap masih mengasumsikan koordinat lokal sederhana tanpa memperhitungkan pergeseran rasio aspek asli gambar (FitWidth vs FitHeight).
-   - *Dampak*: Gambar terkadang melompat ke titik yang sedikit bergeser dari titik ketukan jari pengguna.
+1. **Perebutan Gesture Arena Antara Outer GestureDetector dan InteractiveViewer (Penyebab Utama Scrolling Tidak Ter-trigger & Kaku)**:
+   - Struktur hirarki saat ini:
+     `Listener -> GestureDetector (vertical drag) -> PageView -> LightboxImageViewer -> GestureDetector (double tap) -> InteractiveViewer (scale/pan)`.
+   - Di Flutter, `InteractiveViewer` menggunakan `ScaleGestureRecognizer` internal untuk menangani *pinch zoom* (2 jari) sekaligus *panning* (1 jari geser gambar saat diperbesar).
+   - Namun, outer `GestureDetector` memiliki `VerticalDragGestureRecognizer`. Ketika pengguna menggeser gambar dengan 1 jari saat zoom, kedua recognizer masuk ke Gesture Arena.
+   - Outer `GestureDetector` memenangkan arena untuk gerakan vertikal, lalu masuk ke `_handleVerticalDragUpdate`. Di dalam method tersebut terdapat guard clause:
+     `if (_isCurrentZoomed || _activePointerCount > 1 || _isInteractingWithViewer) return;`.
+   - **Akibat Fatal**: Outer gesture menangkap sentuhan jari tapi mengabaikannya (return kosong), sementara `InteractiveViewer` sudah terlanjur dibatalkan oleh Flutter. Sentuhan 1 jari pengguna "ditelan mentah-mentah", gambar macet total dan tidak bisa digeser.
 
----
+2. **Keterlambatan Pendaratan 2 Jari (Pinch Initial Latency)**:
+   - Saat manusia mencubit layar, jari pertama dan jari kedua mendarat dengan jeda waktu $10$–$50\text{ ms}$.
+   - Selama rentang milidetik tersebut, jari pertama dianggap sentuhan tunggal oleh outer `GestureDetector`. Saat jari kedua mendarat, gesture recognizer sudah dalam kondisi konflik sehingga respon zoom terasa "kaku / tertahan".
+   - Selain itu, `setState` dipanggil setiap kali pointer bertambah/berkurang, memicu *rebuild* seluruh tree widget tepat saat interaksi dimulai.
 
-## 2. Benchmark Pendekatan Aplikasi Kompetitor
-
-- **Telegram / Twitter/X (Unified Matrix & Boundary Hand-off)**:
-  - Menggunakan satu controller transformasi terpadu.
-  - Saat skala $> 1.0x$, jika pengguna melakukan pan horizontal dan posisi konten mencapai tepi kiri/kanan matriks, threshold gesekan dilepaskan ke transisi halaman berikutnya.
-  - Memungkinkan dismiss fluida dengan gerakan mencubit mengecil ($< 1.0x$) dan tarikan vertikal simultan.
-- **Instagram (Feed Inline Pinch vs Lightbox)**:
-  - Di feed: Cubit dua jari langsung mengangkat gambar ke overlay sementara tanpa membuka lightbox baru, lalu kembali ke posisi semula dengan pegas (*spring physics*) saat jari diangkat.
-  - Di lightbox/viewer: Double-tap memiliki akselerasi animasi kubik cepat (180–200ms) dengan titik bidik presisi.
+3. **Penguncian Geser ke Atas (Swipe Up Dismiss Diblokir Kaku)**:
+   - Pada `media_lightbox_dialog.dart` baris 174–176:
+     `if (_dragOffsetY < 0) { _dragOffsetY = _dragOffsetY.clamp(-30.0, 0.0); }`
+   - Dan pada `_handleVerticalDragEnd` baris 188:
+     `if (_dragOffsetY > 110.0 || velocity > 650.0) { Navigator.of(context).pop(); }`
+   - Logika ini hanya mengizinkan tarikan ke bawah (nilai offset positif). Jika pengguna mengusap ke atas (*swipe up*), gambar membentur tembok limit `-30dp` lalu kembali ke tengah (`_springBackToZero()`), sehingga gestur swipe up tidak pernah menutup dialog.
 
 ---
 
-## 3. Rencana Solusi Teknis & Arsitektur
+## 2. Penjelasan Non-Teknis (Bahasa Manusia / Analogi Sederhana)
 
-### Langkah 1: Transisi Elastis Edge Pan ke PageView
-- Hilangkan `NeverScrollableScrollPhysics()` statis.
-- Pasang deteksi batas translasi matriks horizontal (`matrix.getTranslation().x`).
-- Jika offset horizontal mencapai batas ujung gambar ($dx = 0$ atau $dx = \text{maxScroll}$), izinkan `DragUpdate` diteruskan ke `PageController` dengan resistensi gesekan elastis.
+Bayangkan ada dua orang satpam yang menjaga pintu yang sama:
+- **Satpam Luar (Outer Drag)**: Bertugas mengecek apakah pengguna mau menutup foto dengan geser ke bawah.
+- **Satpam Dalam (InteractiveViewer)**: Bertugas mengizinkan pengguna memperbesar foto dan menggeser foto yang sudah diperbesar.
 
-### Langkah 2: Fluid Pinch-Down Dismiss
-- Izinkan skala menyusut hingga `0.65x` dengan resistensi pegas elastis (*rubber-band effect*).
-- Jika skala $< 0.85x$ dan terdapat pergeseran vertikal $> 60dp$, saat jari diangkat (`onInteractionEnd`), anggap sebagai perintah dismiss dan tutup dialog dengan transisi memudar halus.
+Ketika foto sedang diperbesar dan kamu ingin menggeser foto memakai 1 jari:
+1. **Satpam Luar** langsung menyambar tangan kamu duluan: *"Eh, ada gerakan tangan nih, biar saya yang urus!"*
+2. **Satpam Dalam** akhirnya mengalah dan melepas kendali.
+3. Tapi setelah menyambar tanganmu, **Satpam Luar** sadar: *"Loh, fotonya lagi dizoom, bukan urusan saya ah."* Lalu dia diam saja dan tidak melakukan apa-apa.
+4. **Hasilnya**: Tanganmu bergerak di layar, tapi fotonya sama sekali tidak bergerak karena kedua satpam saling lempar tanggung jawab.
 
-### Langkah 3: Optimasi State Menggunakan ValueNotifier (Zero Rebuild Overhead)
-- Gantikan `setState` pada `onPointerDown`/`onPointerUp` dan `_dragOffsetY` dengan `ValueNotifier<int>` dan `ValueNotifier<double>`.
-- Gunakan `ValueListenableBuilder` atau `AnimatedBuilder` hanya pada bagian transformasi gambar, menjaga tree dialog tetap statis tanpa rebuild menyeluruh.
+Begitu juga saat mencubit dengan 2 jari: kedua jarimu hampir mustahil menyentuh layar di seperseribu detik yang sama persis. Jari pertama sempat ditahan oleh Satpam Luar sebentar sebelum Satpam Dalam sadar bahwa kamu sedang mencubit dengan dua jari. Itu yang membuat zoom terasa kaku dan tersendat.
+
+Untuk swipe-up: aplikasi sengaja diberi ganjalan kaku di bagian atas. Kamu hanya boleh menarik foto ke bawah untuk keluar, sedangkan kalau didorong ke atas layarnya menabrak tembok mentok.
 
 ---
 
-## 4. Cakupan File Target
+## 3. Rencana Solusi Pendekatan Baru (Native-Feel Architecture)
 
-| File Path | Peran & Perubahan |
+### Solusi 1: Nonaktifkan Total Outer Vertical Drag Saat Gambar Zoomed
+- Ubah pengkondisian pada outer `GestureDetector`:
+  Ketika gambar berada dalam status `_isCurrentZoomed` ($> 1.02x$), properti `onVerticalDragStart`, `onVerticalDragUpdate`, dan `onVerticalDragEnd` diisi `null` (atau tidak aktif).
+- Dengan menonaktifkan recognizer vertikal luar saat zoom aktif, `InteractiveViewer` memiliki kendali 100% tanpa lawan di Gesture Arena. Pengguna bisa menggeser foto bebas ke segala arah (atas, bawah, kiri, kanan) dengan 1 jari secara super mulus.
+
+### Solusi 2: Dukungan Penuh Dual-Direction Dismiss (Swipe Down & Swipe Up)
+- Buka limitasi `clamp(-30.0, 0.0)` pada tarikan negatif.
+- Izinkan `_dragOffsetY` bergerak bebas ke atas (negatif) maupun ke bawah (positif) saat skala gambar `1.0x`.
+- Opacity latar belakang dan skala gambar mengecil proporsional terhadap jarak mutlak (`_dragOffsetY.abs()`).
+- Pada `_handleVerticalDragEnd`:
+  Jika `_dragOffsetY.abs() > 110.0` atau kecepatan `velocity.abs() > 650.0`, tutup dialog (`Navigator.pop`).
+
+### Solusi 3: Eliminasi setState pada Tracking Pointer (Zero Latency)
+- Ganti variabel state `_activePointerCount` dan `_dragOffsetY` dengan `ValueNotifier`.
+- Pembacaan pointer tidak lagi memicu rebuild widget menyeluruh, sehingga inisiasi 2 jari seketika diproses tanpa jeda frame.
+
+---
+
+## 4. Target File Scope
+
+| File Path | Perubahan Kunci |
 | :--- | :--- |
-| `lib/features/feed/components/lightbox/lightbox_image_viewer.dart` | Refaktor transformasi matriks, rubber-band boundary, dan integrasi fluid pinch dismiss |
-| `lib/features/feed/components/lightbox/media_lightbox_dialog.dart` | Eliminasi `setState` berlebih, pasang transisi edge-pan horizontal ke `PageView` |
-| `lib/core/components/avatar/avatar_viewer_dialog.dart` | Sinkronisasi perilaku zoom native pada peninjau foto profil |
+| `lib/features/feed/components/lightbox/media_lightbox_dialog.dart` | Nonaktifkan drag vertikal luar saat zoom; buka batasan swipe up dismiss |
+| `lib/features/feed/components/lightbox/lightbox_image_viewer.dart` | Optimasi `panEnabled` dan hilangkan rebuild berlebih di dalam `InteractiveViewer` |
+| `lib/core/components/avatar/avatar_viewer_dialog.dart` | Terapkan perbaikan yang sama pada viewer foto profil pengguna |
 
 ---
 
 ## 5. Kriteria Selesai (Definition of Done)
 
-- [ ] Pinch-to-zoom terasa instan tanpa jeda frame awal berkat eliminasi rebuild menyeluruh.
-- [ ] Gambar dapat dicubit mengecil ($< 1.0x$) dan ditarik ke bawah secara bersamaan untuk menutup layar (*fluid pinch-dismiss*).
-- [ ] Saat gambar diperbesar ($> 1.0x$), menggeser sampai ujung tepi gambar memungkinkan perpindahan halaman foto berikutnya secara alami.
-- [ ] Ketuk dua kali (*double-tap*) memperbesar gambar tepat di titik ketukan dengan animasi pegas yang responsif.
+- [ ] Saat gambar diperbesar (zoom in), pengguna dapat menggeser (pan) gambar ke segala arah menggunakan 1 jari dengan mulus tanpa macet.
+- [ ] Gestur cubit zoom in dan zoom out dengan dua jari merespons seketika tanpa terasa kaku atau tersendat.
+- [ ] Saat skala normal (1.0x), mengusap gambar ke bawah (swipe down) maupun ke atas (swipe up) dapat menutup layar lightbox secara mulus.
+- [ ] Latar belakang merespons tarikan ke atas dan ke bawah dengan memudar secara proporsional sebelum dialog tertutup.
