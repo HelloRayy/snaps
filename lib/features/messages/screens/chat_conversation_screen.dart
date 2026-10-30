@@ -16,6 +16,8 @@ import 'package:snapan_market/features/messages/models/chat_message_model.dart';
 import 'package:snapan_market/features/messages/models/conversation_model.dart';
 import 'package:snapan_market/features/messages/services/direct_messages_service.dart';
 import 'package:snapan_market/features/profile/screens/profile_screen.dart';
+import 'package:snapan_market/core/utils/snaps_toast.dart';
+import 'package:snapan_market/features/feed/screens/post_detail_screen.dart';
 
 /// Layar ruang obrolan 1-on-1 Direct Messaging (1:1 ActiveChatOverlay.tsx)
 class ChatConversationScreen extends StatefulWidget {
@@ -38,6 +40,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
   late List<ChatMessageModel> _messages;
   final ScrollController _scrollController = ScrollController();
   RealtimeChannel? _messagesSubscription;
+  bool _isLoadingProduct = false;
 
   @override
   void initState() {
@@ -313,6 +316,52 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
     );
   }
 
+  Future<void> _handleViewProduct() async {
+    final productId = widget.conversation.productId;
+    if (productId == null || productId.trim().isEmpty) {
+      SnapsToast.show(
+        context,
+        'Produk tidak ditemukan atau telah dihapus',
+        hasBottomNav: false,
+      );
+      return;
+    }
+
+    if (_isLoadingProduct) return;
+    setState(() => _isLoadingProduct = true);
+
+    try {
+      final post = await SupabaseService.instance.fetchPostById(productId);
+      if (!mounted) return;
+
+      if (post != null) {
+        Navigator.of(context).push(
+          AppSlidePageRoute(
+            builder: (_) => PostDetailScreen(post: post),
+          ),
+        );
+      } else {
+        SnapsToast.show(
+          context,
+          'Produk tidak ditemukan atau telah dihapus',
+          hasBottomNav: false,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        SnapsToast.show(
+          context,
+          'Produk tidak ditemukan atau telah dihapus',
+          hasBottomNav: false,
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoadingProduct = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -368,15 +417,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                       child: ChatProductCard(
                         product: widget.conversation.productContext!,
                         location: widget.conversation.productContext?.location ?? "Kantin Belakang SMKN 8 Semarang",
-                        onViewProduct: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text("Membuka katalog \"${widget.conversation.productContext!.title}\""),
-                              behavior: SnackBarBehavior.floating,
-                              duration: const Duration(seconds: 1),
-                            ),
-                          );
-                        },
+                        onViewProduct: _isLoadingProduct ? null : _handleViewProduct,
                         onCheckLocation: () {
                           Navigator.of(context).push(
                             AppSlidePageRoute(

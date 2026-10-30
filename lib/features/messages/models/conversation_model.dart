@@ -1,4 +1,5 @@
 import 'package:snapan_market/core/models/mascot_flair_model.dart';
+import 'package:snapan_market/core/utils/formatters.dart';
 
 /// Model data percakapan untuk halaman Direct Messages (Pesan)
 class ConversationUser {
@@ -129,12 +130,29 @@ class ConversationModel {
       final images = prod['images'];
       String? firstImage;
       if (images is List && images.isNotEmpty) firstImage = images.first.toString();
+
+      final rawPrice = prod['price'];
+      String priceStr;
+      if (rawPrice is num) {
+        priceStr = formatRupiah(rawPrice);
+      } else if (rawPrice != null && num.tryParse(rawPrice.toString()) != null) {
+        priceStr = formatRupiah(num.parse(rawPrice.toString()));
+      } else {
+        priceStr = 'Rp ${rawPrice ?? 0}';
+      }
+
       productCtx = ProductContext(
         title: prod['title'] as String? ?? 'Produk',
-        price: 'Rp ${(prod['price'] ?? 0)}',
+        price: priceStr,
         image: firstImage,
+        location: prod['location_tag'] as String? ?? 'Kantin Belakang SMKN 8 Semarang',
       );
     }
+
+    final sellerId = prod != null
+        ? (prod['seller_id'] as String? ?? prod['user_id'] as String?)
+        : null;
+    final isSeller = sellerId != null && sellerId == currentUserId;
 
     final otherUserId = otherProfile['id'] as String? ??
         (isParticipantOne ? json['participant_two'] as String? : json['participant_one'] as String?);
@@ -171,6 +189,7 @@ class ConversationModel {
       timestamp: timeStr,
       unreadCount: (json['unread_count'] as num?)?.toInt() ?? 0,
       isSender: json['last_message_sender_id'] == currentUserId,
+      isSeller: isSeller,
       isRequest: json['product_id'] != null,
       productContext: productCtx,
     );
