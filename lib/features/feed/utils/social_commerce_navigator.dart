@@ -49,7 +49,9 @@ class SocialCommerceNavigator {
       isRequest: true,
       productContext: ProductContext(
         title: title,
-        price: formatRupiah(post.price ?? 0),
+        price: (post.price != null && post.price! > 0)
+            ? formatRupiah(post.price!)
+            : 'Diskusi via DM',
         image: post.images.isNotEmpty ? post.images.first : null,
         location: post.locationTag ?? 'SMKN 8 Semarang',
       ),

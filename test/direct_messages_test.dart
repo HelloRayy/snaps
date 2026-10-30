@@ -48,7 +48,9 @@ void main() {
       expect(conv.isRequest, true);
       expect(conv.productContext != null, true);
       expect(conv.productContext!.title, 'Modul Praktikum Jaringan');
-      expect(conv.productContext!.price, 'Rp 45000');
+      expect(conv.productContext!.price, 'Rp 45.000');
+      expect(conv.productContext!.location, 'Kantin Belakang SMKN 8 Semarang');
+      expect(conv.isSeller, false);
     });
 
     test('DirectMessagesService handles deduplication of optimistic messages', () {

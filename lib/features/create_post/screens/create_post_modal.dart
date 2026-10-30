@@ -12,7 +12,6 @@ import 'package:snapan_market/features/create_post/components/create_post_header
 import 'package:snapan_market/features/create_post/components/create_post_image_helper.dart';
 import 'package:snapan_market/features/create_post/components/create_post_main_input_block.dart';
 import 'package:snapan_market/features/create_post/components/create_post_media_preview.dart';
-import 'package:snapan_market/features/create_post/components/create_post_product_fields.dart';
 import 'package:snapan_market/features/create_post/components/create_post_sub_threads.dart';
 import 'package:snapan_market/features/create_post/models/create_post_types.dart';
 
@@ -76,17 +75,6 @@ class _CreatePostModalState extends State<CreatePostModal> {
   late PostMode _postMode;
   final ScrollController _scrollController = ScrollController();
   final MentionTextEditingController _captionController = MentionTextEditingController();
-  final TextEditingController _productTitleController = TextEditingController();
-  final TextEditingController _priceController = TextEditingController();
-  final TextEditingController _stockController = TextEditingController();
-  final TextEditingController _descController = TextEditingController();
-
-  final FocusNode _titleFocusNode = FocusNode();
-  final FocusNode _priceFocusNode = FocusNode();
-  final FocusNode _descFocusNode = FocusNode();
-  final GlobalKey _titleKey = GlobalKey();
-  final GlobalKey _priceKey = GlobalKey();
-  final GlobalKey _descKey = GlobalKey();
   final GlobalKey _topicTriggerKey = GlobalKey();
   final GlobalKey _mascotTriggerKey = GlobalKey();
 
@@ -131,9 +119,6 @@ class _CreatePostModalState extends State<CreatePostModal> {
     }
     _captionController.addListener(() => setState(() {}));
 
-    for (final pair in [(_titleFocusNode, _titleKey), (_priceFocusNode, _priceKey), (_descFocusNode, _descKey)]) {
-      pair.$1.addListener(() { if (pair.$1.hasFocus) _scrollToField(pair.$2); });
-    }
   }
 
   void _initMascotFlair() {
@@ -149,20 +134,13 @@ class _CreatePostModalState extends State<CreatePostModal> {
     }
   }
 
-  void _scrollToField(GlobalKey key) {
-    Future.delayed(const Duration(milliseconds: 250), () {
-      if (key.currentContext != null && mounted) {
-        Scrollable.ensureVisible(key.currentContext!, duration: const Duration(milliseconds: 300), curve: Curves.easeOutCubic, alignment: 0.25);
-      }
-    });
-  }
 
   @override
   void dispose() {
     for (final s in _subThreads) {
       s.dispose();
     }
-    for (final c in [_scrollController, _captionController, _productTitleController, _priceController, _stockController, _descController, _titleFocusNode, _priceFocusNode, _descFocusNode, ..._pollOptionControllers]) {
+    for (final c in [_scrollController, _captionController, ..._pollOptionControllers]) {
       c.dispose();
     }
     super.dispose();
@@ -215,12 +193,13 @@ class _CreatePostModalState extends State<CreatePostModal> {
   }
 
   bool get _canSubmit {
+    if (_postMode == PostMode.product) {
+      return _images.isNotEmpty && _captionController.text.trim().isNotEmpty;
+    }
     final hasPoll = _showPoll &&
-        _postMode == PostMode.thread &&
         _pollOptionControllers.where((c) => c.text.trim().isNotEmpty).length >= 2;
     return _captionController.text.trim().isNotEmpty ||
         _images.isNotEmpty ||
-        _productTitleController.text.trim().isNotEmpty ||
         hasPoll;
   }
 
@@ -270,18 +249,24 @@ class _CreatePostModalState extends State<CreatePostModal> {
       }
     }
 
+    final captionText = _captionController.text.trim();
+    final firstLineTitle = captionText.split('\n').first.trim();
     final payload = {
       'postType': isProduct ? 'product' : 'thread',
-      'caption': _captionController.text.trim(),
-      'title': isProduct ? _productTitleController.text.trim() : _captionController.text.trim(),
-      'price': isProduct ? int.tryParse(_priceController.text.replaceAll(RegExp(r'\D'), '')) ?? 0 : null,
-      'stock': isProduct ? int.tryParse(_stockController.text.trim()) ?? 1 : null,
-      'description': isProduct ? _descController.text.trim() : null,
+      'caption': captionText,
+      'title': isProduct
+          ? (firstLineTitle.isNotEmpty ? firstLineTitle : 'Produk Jualan')
+          : captionText,
+      'price': isProduct ? 0 : null,
+      'stock': isProduct ? 1 : null,
+      'description': isProduct ? captionText : null,
       'images': uploadedImages,
       'locationTag': _selectedLocation?.name ?? 'SMKN 8 Semarang',
       'topicTag': _selectedTopic?.name,
-      'subThreads': _subThreads.map((s) => {'caption': s.caption, 'images': s.images}).toList(),
-      'poll': pollData,
+      'subThreads': isProduct
+          ? <Map<String, dynamic>>[]
+          : _subThreads.map((s) => {'caption': s.caption, 'images': s.images}).toList(),
+      'poll': isProduct ? null : pollData,
       'mascotFlair': _selectedMascotFlair?.toJson(),
       'createdAt': DateTime.now().toIso8601String(),
     };
@@ -390,29 +375,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                               }
                             },
                           ),
-                          if (AppConstants.enableCommerceMode && _postMode == PostMode.product) ...[
-                            const SizedBox(height: 8.0),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: CreatePostProductFields(
-                                productTitleController: _productTitleController,
-                                priceController: _priceController,
-                                descController: _descController,
-                                titleKey: _titleKey,
-                                priceKey: _priceKey,
-                                descKey: _descKey,
-                                titleFocusNode: _titleFocusNode,
-                                priceFocusNode: _priceFocusNode,
-                                descFocusNode: _descFocusNode,
-                                selectedLocation: _selectedLocation,
-                                onPickLocation: () => CreatePostBottomSheets.showLocationPickerBottomSheet(
-                                  context: context,
-                                  onLocationSelected: (loc) => setState(() => _selectedLocation = loc),
-                                ),
-                                onLocationSelected: (loc) => setState(() => _selectedLocation = loc),
-                              ),
-                            ),
-                          ] else ...[
+                          if (_postMode == PostMode.thread) ...[
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 16.0),
                               child: CreatePostSubThreads(

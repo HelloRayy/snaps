@@ -28,6 +28,7 @@ class ConversationListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final hasUnread = conversation.unreadCount > 0;
     final secondaryInk = AppColors.adaptiveMuted(context);
     const azurePrimary = Color(0xFF008BFF); // pen.dev Accent #008BFF
@@ -196,29 +197,30 @@ class ConversationListItem extends StatelessWidget {
                                 conversation.productContext!.title,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 11.5,
                                   fontWeight: FontWeight.w500,
-                                  color: Color(0xFF008BFF),
+                                  color: isDark ? const Color(0xFF93C5FD) : const Color(0xFF1D4ED8),
                                   letterSpacing: -0.2,
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 4.0),
-                            Text(
-                              '•',
-                              style: TextStyle(
-                                fontSize: 10.0,
-                                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF60A5FA),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 3.5),
+                              child: Text(
+                                '•',
+                                style: TextStyle(
+                                  fontSize: 10.0,
+                                  color: isDark ? const Color(0xFF64748B) : const Color(0xFF93C5FD),
+                                ),
                               ),
                             ),
-                            const SizedBox(width: 4.0),
                             Text(
                               conversation.productContext!.price,
                               style: TextStyle(
                                 fontSize: 11.5,
                                 fontWeight: FontWeight.w600,
-                                color: isDark ? const Color(0xFFE2E8F0) : const Color(0xFF1E3A8A),
+                                color: isDark ? const Color(0xFF60A5FA) : const Color(0xFF2563EB),
                                 letterSpacing: -0.2,
                               ),
                             ),

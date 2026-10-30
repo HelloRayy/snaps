@@ -159,6 +159,11 @@ class ConversationModel {
       );
     }
 
+    final sellerId = prod != null
+        ? (prod['seller_id'] as String? ?? prod['user_id'] as String?)
+        : null;
+    final isSeller = sellerId != null && sellerId == currentUserId;
+
     final otherUserId = otherProfile['id'] as String? ??
         (isParticipantOne ? json['participant_two'] as String? : json['participant_one'] as String?);
 
