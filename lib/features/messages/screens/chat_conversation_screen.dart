@@ -301,8 +301,9 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F7F9),
+      backgroundColor: isDark ? const Color(0xFF0B0F17) : const Color(0xFFF6F7F9),
       appBar: GlassToolbarTop(
         leadingIcon: CupertinoIcons.chevron_back,
         leadingTooltip: "Kembali",

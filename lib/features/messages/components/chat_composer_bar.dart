@@ -1,22 +1,17 @@
 import 'dart:io';
-import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/services/snaps_asset_picker.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
-/// ChatComposerBar sliced 1:1 from pen.dev Frame 1 (`snaps-design.pen` node `jXVwo`)
+/// ChatComposerBar - Modern Unified Pill (Instagram & Threads style)
 ///
-/// Structure:
-/// - Height: 42.0 (expands dynamically for multiline input)
-/// - Gap: 6.0
-/// - Leading Button: 42x42 circle (frosted glass, shadow blur 35, offset 0, 8) with attachment icon
-/// - Write Bar: Pill capsule (cornerRadius 21, frosted glass, shadow blur 35, offset 0, 8)
-///   - Message TextField: SF Pro / Inter font, hint #999999
-///   - Trailing:
-///     - Empty: Symbol (Sticker/Emoji #727272)
-///     - Active: Circular Send Button (36x36, Azure Blue #008BFF with arrow up)
+/// Architecture:
+/// - Unified pill container (radius 24dp) wrapping integrated media button, text input, and send action
+/// - Brand primary action color (#3D38F5 / AppColors.primary)
+/// - Adaptive dark & light mode support
+/// - Smooth multiline auto-expansion up to 5 lines
 class ChatComposerBar extends StatefulWidget {
   final ValueChanged<String> onSendMessage;
   final void Function(String text, List<String> images)? onSendMessageWithMedia;
@@ -106,20 +101,29 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
     final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final barBgColor = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
+    final barTopBorderColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0);
+    final pillBgColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final pillBorderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+    final textColor = isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A);
+    final hintColor = isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8);
+    final iconColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
+
     return Container(
       padding: EdgeInsets.only(
-        left: 16.0,
-        right: 16.0,
+        left: 12.0,
+        right: 12.0,
         bottom: bottomInset > 0
             ? bottomInset + 8.0
-            : (bottomPadding > 0 ? bottomPadding + 8.0 : 16.0),
-        top: 6.0,
+            : (bottomPadding > 0 ? bottomPadding + 6.0 : 12.0),
+        top: 8.0,
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFFF6F7F9),
+        color: barBgColor,
         border: Border(
           top: BorderSide(
-            color: const Color(0xFFE2E8F0).withValues(alpha: 0.6),
+            color: barTopBorderColor,
             width: 0.8,
           ),
         ),
@@ -128,6 +132,7 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // 1. ATTACHED IMAGES PREVIEW STRIP
           if (_attachedImages.isNotEmpty) ...[
             Container(
               height: 64.0,
@@ -146,16 +151,16 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12.0),
                           border: Border.all(
-                            color: const Color(0xFFCBD5E1),
+                            color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1),
                             width: 1.0,
                           ),
-                          color: const Color(0xFFF1F5F9),
+                          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Icon(
                             CupertinoIcons.plus,
                             size: 20.0,
-                            color: Color(0xFF64748B),
+                            color: iconColor,
                           ),
                         ),
                       ),
@@ -173,7 +178,7 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                           height: 60.0,
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color: const Color(0xFFE2E8F0),
+                              color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
                               width: 0.8,
                             ),
                           ),
@@ -219,233 +224,174 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
               ),
             ),
           ],
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              // ===============================================================
-              // 1. LEADING BUTTON (pen.dev jxdH0: 42x42 circle, frosted liquid glass + shadow)
-              // ===============================================================
-              GestureDetector(
-                onTap: _pickImages,
-                child: Container(
-                  width: 42.0,
-                  height: 42.0,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0x1F000000),
-                        blurRadius: 35.0,
-                        offset: Offset(0, 8),
+
+          // 2. MODERN UNIFIED PILL CAPSULE (Instagram / Threads Aesthetic)
+          Container(
+            constraints: const BoxConstraints(minHeight: 44.0),
+            decoration: BoxDecoration(
+              color: pillBgColor,
+              borderRadius: BorderRadius.circular(24.0),
+              border: Border.all(
+                color: pillBorderColor,
+                width: 1.0,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: isDark ? const Color(0x1F000000) : const Color(0x0A0F172A),
+                  blurRadius: 8.0,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                // A. Integrated Attachment Button inside the pill on the left
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 2.0, left: 2.0),
+                  child: GestureDetector(
+                    onTap: _pickImages,
+                    behavior: HitTestBehavior.opaque,
+                    child: Container(
+                      width: 34.0,
+                      height: 34.0,
+                      decoration: BoxDecoration(
+                        color: _attachedImages.isNotEmpty
+                            ? AppColors.primary.withValues(alpha: 0.12)
+                            : (isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9)),
+                        shape: BoxShape.circle,
                       ),
-                      BoxShadow(
-                        color: Color(0x0A000000),
-                        blurRadius: 10.0,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: ClipOval(
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
-                      child: Container(
-                        width: 42.0,
-                        height: 42.0,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.white.withValues(alpha: 0.72),
-                              Colors.white.withValues(alpha: 0.45),
-                            ],
-                          ),
-                          border: Border.all(
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        alignment: Alignment.center,
+                        children: [
+                          Icon(
+                            CupertinoIcons.photo_on_rectangle,
+                            size: 18.0,
                             color: _attachedImages.isNotEmpty
                                 ? AppColors.primary
-                                : Colors.white.withValues(alpha: 0.90),
-                            width: 1.2,
+                                : iconColor,
                           ),
-                        ),
-                        child: Center(
-                          child: Stack(
-                            clipBehavior: Clip.none,
-                            alignment: Alignment.center,
-                            children: [
-                              Icon(
-                                CupertinoIcons.photo_on_rectangle,
-                                color: _attachedImages.isNotEmpty
-                                    ? AppColors.primary
-                                    : const Color(0xFF1A1A1A),
-                                size: 20.0,
-                              ),
-                              if (_attachedImages.isNotEmpty)
-                                Positioned(
-                                  top: -6.0,
-                                  right: -6.0,
-                                  child: Container(
-                                    width: 16.0,
-                                    height: 16.0,
-                                    decoration: const BoxDecoration(
-                                      color: AppColors.primary,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        '${_attachedImages.length}',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 9.0,
-                                          fontWeight: FontWeight.w700,
-                                          height: 1.0,
-                                        ),
-                                      ),
+                          if (_attachedImages.isNotEmpty)
+                            Positioned(
+                              top: -2.0,
+                              right: -2.0,
+                              child: Container(
+                                width: 15.0,
+                                height: 15.0,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.primary,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    '${_attachedImages.length}',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 8.5,
+                                      fontWeight: FontWeight.w700,
+                                      height: 1.0,
                                     ),
                                   ),
                                 ),
-                            ],
-                          ),
-                        ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                   ),
                 ),
-              ),
+                const SizedBox(width: 8.0),
 
-          const SizedBox(width: 6.0), // pen.dev gap: 6
-
-          // ===============================================================
-          // 2. WRITE BAR (pen.dev cXg3A: cornerRadius 21, height 42, frosted liquid glass + shadow)
-          // ===============================================================
-          Expanded(
-            child: Container(
-              constraints: const BoxConstraints(minHeight: 42.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(21.0),
-                boxShadow: const [
-                  // Diffuse outer shadow from pen.dev Frame 1 (#0000001f, y=8, blur=35)
-                  BoxShadow(
-                    color: Color(0x1F000000),
-                    blurRadius: 35.0,
-                    offset: Offset(0, 8),
-                  ),
-                  BoxShadow(
-                    color: Color(0x0A000000),
-                    blurRadius: 10.0,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(21.0),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
-                  child: Container(
-                    constraints: const BoxConstraints(minHeight: 42.0),
-                    padding: const EdgeInsets.fromLTRB(14.0, 3.0, 3.0, 3.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(21.0),
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.white.withValues(alpha: 0.72),
-                          Colors.white.withValues(alpha: 0.45),
-                        ],
+                // B. Multiline Text Input Field (expands dynamically up to 5 lines)
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2.0),
+                    child: TextField(
+                      controller: _controller,
+                      textInputAction: TextInputAction.newline,
+                      keyboardType: TextInputType.multiline,
+                      minLines: 1,
+                      maxLines: 5,
+                      style: TextStyle(
+                        fontFamily: 'SFPro',
+                        fontSize: 15.0,
+                        color: textColor,
+                        letterSpacing: -0.2,
+                        height: 1.3,
                       ),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.90),
-                        width: 1.2,
+                      decoration: InputDecoration(
+                        hintText: widget.placeholder,
+                        hintStyle: TextStyle(
+                          fontFamily: 'SFPro',
+                          fontSize: 15.0,
+                          color: hintColor,
+                          letterSpacing: -0.2,
+                          height: 1.3,
+                        ),
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(vertical: 7.0),
                       ),
                     ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        // Text Input
-                        Expanded(
-                          child: TextField(
-                            controller: _controller,
-                            textInputAction: TextInputAction.send,
-                            onSubmitted: (_) => _handleSend(),
-                            minLines: 1,
-                            maxLines: 4,
-                            style: const TextStyle(
-                              fontFamily: 'SFPro',
-                              fontSize: 15.5,
-                              color: Color(0xFF000000),
-                              letterSpacing: -0.3,
-                              height: 1.25,
-                            ),
-                            decoration: InputDecoration(
-                              hintText: widget.placeholder,
-                              hintStyle: const TextStyle(
-                                fontFamily: 'SFPro',
-                                fontSize: 15.5,
-                                color: Color(0xFF999999), // pen.dev #999999
-                                letterSpacing: -0.3,
-                                height: 1.25,
+                  ),
+                ),
+                const SizedBox(width: 6.0),
+
+                // C. Trailing Action: Animated Send Button or Emoji Icon
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 2.0, right: 2.0),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 180),
+                    transitionBuilder: (child, anim) => ScaleTransition(scale: anim, child: child),
+                    child: _canSend
+                        ? GestureDetector(
+                            key: const ValueKey('send_button'),
+                            onTapDown: (_) => setState(() => _isSendPressed = true),
+                            onTapUp: (_) => setState(() => _isSendPressed = false),
+                            onTapCancel: () => setState(() => _isSendPressed = false),
+                            onTap: _handleSend,
+                            child: AnimatedScale(
+                              scale: _isSendPressed ? 0.90 : 1.0,
+                              duration: const Duration(milliseconds: 90),
+                              curve: Curves.easeOutCubic,
+                              child: Container(
+                                width: 34.0,
+                                height: 34.0,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.primary,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Center(
+                                  child: Icon(
+                                    CupertinoIcons.arrow_up,
+                                    size: 18.0,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ),
-                              border: InputBorder.none,
-                              isDense: true,
-                              contentPadding: const EdgeInsets.symmetric(vertical: 7.0),
+                            ),
+                          )
+                        : SizedBox(
+                            key: const ValueKey('emoji_button'),
+                            width: 34.0,
+                            height: 34.0,
+                            child: Center(
+                              child: Icon(
+                                CupertinoIcons.smiley,
+                                color: iconColor,
+                                size: 21.0,
+                              ),
                             ),
                           ),
-                        ),
-
-                  const SizedBox(width: 4.0),
-
-                  // Trailing Action: Send Button when text exists, or Sticker/Emoji Symbol when empty
-                  if (_canSend)
-                    GestureDetector(
-                      onTapDown: (_) => setState(() => _isSendPressed = true),
-                      onTapUp: (_) => setState(() => _isSendPressed = false),
-                      onTapCancel: () => setState(() => _isSendPressed = false),
-                      onTap: _handleSend,
-                      child: AnimatedScale(
-                        scale: _isSendPressed ? 0.90 : 1.0,
-                        duration: const Duration(milliseconds: 90),
-                        curve: Curves.easeOutCubic,
-                        child: Container(
-                          width: 36.0,
-                          height: 36.0,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFF008BFF), // pen.dev Azure Blue #008BFF
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Center(
-                            child: Icon(
-                              CupertinoIcons.arrow_up,
-                              size: 19.0,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  else
-                    const SizedBox(
-                      width: 36.0,
-                      height: 36.0,
-                      child: Center(
-                        child: Icon(
-                          CupertinoIcons.smiley,
-                          color: Color(0xFF727272), // pen.dev #727272
-                          size: 21.0,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
+        ],
       ),
-    ),
-  ],
-),
-    ],
-  ),
-);
-}
+    );
+  }
 }

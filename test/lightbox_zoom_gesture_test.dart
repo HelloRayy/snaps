@@ -27,10 +27,10 @@ void main() {
             ),
           ),
         );
+        await tester.pump();
 
         final interactiveViewerFinder = find.byType(InteractiveViewer);
         expect(interactiveViewerFinder, findsOneWidget);
-
         final InteractiveViewer viewer = tester.widget(interactiveViewerFinder);
         expect(viewer.minScale, 0.8);
         expect(viewer.maxScale, 4.5);

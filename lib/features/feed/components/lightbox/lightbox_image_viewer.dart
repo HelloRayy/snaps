@@ -147,28 +147,34 @@ class _LightboxImageViewerState extends State<LightboxImageViewer>
           },
           child: SizedBox(
             width: widget.screenWidth,
-            child: Image.network(
-              widget.imageUrl,
-              width: widget.screenWidth,
-              fit: BoxFit.fitWidth,
-              loadingBuilder: (context, child, progress) {
-                if (progress == null) return child;
-                return Center(
-                  child: CircularProgressIndicator(
-                    value: progress.expectedTotalBytes != null
-                        ? progress.cumulativeBytesLoaded /
-                            progress.expectedTotalBytes!
-                        : null,
-                    strokeWidth: 2.0,
-                    color: const Color(0xFF008BFF),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 200.0),
+              child: ColoredBox(
+                color: Colors.transparent,
+                child: Image.network(
+                  widget.imageUrl,
+                  width: widget.screenWidth,
+                  fit: BoxFit.fitWidth,
+                  loadingBuilder: (context, child, progress) {
+                    if (progress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: progress.expectedTotalBytes != null
+                            ? progress.cumulativeBytesLoaded /
+                                progress.expectedTotalBytes!
+                            : null,
+                        strokeWidth: 2.0,
+                        color: const Color(0xFF008BFF),
+                      ),
+                    );
+                  },
+                  errorBuilder: (_, _, _) => const Center(
+                    child: Icon(
+                      Icons.broken_image_outlined,
+                      size: 48.0,
+                      color: Color(0xFF94A3B8),
+                    ),
                   ),
-                );
-              },
-              errorBuilder: (_, _, _) => const Center(
-                child: Icon(
-                  Icons.broken_image_outlined,
-                  size: 48.0,
-                  color: Color(0xFF94A3B8),
                 ),
               ),
             ),
