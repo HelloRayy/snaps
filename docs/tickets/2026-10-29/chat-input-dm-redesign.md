@@ -3,7 +3,7 @@
 > **Dokumen Spesifikasi Teknis & Pendekatan Arsitektur**
 > - **Tanggal**: 2026-10-29
 > - **Domain**: `messages / chat_composer / ui_redesign / dark_mode / micro_interactions`
-> - **Status**: In Progress (Terpilih: Opsi A - Modern Unified Pill)
+> - **Status**: DONE (Implemented in Modern Unified Pill)
 
 ---
 
@@ -87,8 +87,8 @@ Container(
 
 ## 5. Kriteria Selesai (Definition of Done)
 
-- [ ] Styling composer bar tampil bersih, modern, dan selaras dengan Design System Snaps (warna brand `#3D38F5`).
-- [ ] Tampilan 100% adaptif terhadap Light Mode dan Dark Mode (teks, border, dan permukaan latar).
-- [ ] Tombol kirim responsif dengan micro-interaction haptic feedback saat ditekan.
-- [ ] Input multiline (1–4 baris) mengembang secara mulus tanpa layout overflow atau ikon terpotong.
-- [ ] Lampiran foto thumbnail di atas input bar tetap interaktif (tambah foto & hapus foto lancar).
+- [x] Styling composer bar tampil bersih, modern, dan selaras dengan Design System Snaps (warna brand `#3D38F5`).
+- [x] Tampilan 100% adaptif terhadap Light Mode dan Dark Mode (teks, border, dan permukaan latar).
+- [x] Tombol kirim responsif dengan micro-interaction haptic feedback saat ditekan.
+- [x] Input multiline (1–5 baris) mengembang secara mulus tanpa layout overflow atau ikon terpotong.
+- [x] Lampiran foto thumbnail di atas input bar tetap interaktif (tambah foto & hapus foto lancar).

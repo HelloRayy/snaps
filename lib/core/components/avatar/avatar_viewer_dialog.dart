@@ -290,8 +290,6 @@ class _AvatarViewerDialogState extends State<AvatarViewerDialog>
 
     // Avatar diameter: proportional full circle (~290dp)
     final double avatarSize = (screenWidth * 0.76).clamp(240.0, 320.0);
-
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final Color bgColor = isDark ? const Color(0xFF0B0F17) : Colors.white;
 
     final bool canDismiss = !_isCurrentZoomed && !_isInteracting;
