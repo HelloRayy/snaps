@@ -36,8 +36,20 @@ class LightboxActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const inactiveIconColor = Colors.white;
-    final countTextColor = Colors.white;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final bgColor = isDark
+        ? const Color(0xCC0F172A)
+        : Colors.white.withValues(alpha: 0.95);
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.16)
+        : const Color(0xFFE2E8F0);
+    final shadowColor = isDark
+        ? const Color(0x3D000000)
+        : const Color(0x1F000000);
+
+    final inactiveIconColor = isDark ? Colors.white : const Color(0xFF0F172A);
+    final countTextColor = isDark ? Colors.white : const Color(0xFF0F172A);
     const likeActiveColor = Color(0xFFF43F5E);
     const repostActiveColor = Color(0xFF10B981);
 
@@ -53,17 +65,17 @@ class LightboxActionBar extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 6.0),
               decoration: BoxDecoration(
-                color: const Color(0xB3000000),
+                color: bgColor,
                 borderRadius: BorderRadius.circular(30.0),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.16),
+                  color: borderColor,
                   width: 1.0,
                 ),
-                boxShadow: const [
+                boxShadow: [
                   BoxShadow(
-                    color: Color(0x3D000000),
+                    color: shadowColor,
                     blurRadius: 18.0,
-                    offset: Offset(0, 4),
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
