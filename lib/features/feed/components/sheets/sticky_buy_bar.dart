@@ -176,7 +176,7 @@ class StickyBuyBar extends StatelessWidget {
                                   ),
                                   SizedBox(width: 8.0),
                                   Text(
-                                    'Beli Sekarang',
+                                    'Diskusi',
                                     style: TextStyle(
                                       fontSize: 13.5,
                                       fontWeight: FontWeight.w600,
@@ -189,7 +189,7 @@ class StickyBuyBar extends StatelessWidget {
 
                               // Right Formatted Price
                               Text(
-                                formatRupiah(price),
+                                price > 0 ? formatRupiah(price) : 'Tanya Harga',
                                 style: const TextStyle(
                                   fontSize: 13.5,
                                   fontWeight: FontWeight.w700,

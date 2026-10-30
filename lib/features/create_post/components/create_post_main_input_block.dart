@@ -151,7 +151,7 @@ class CreatePostMainInputBlock extends StatelessWidget {
                       height: 1.35,
                     ),
                     decoration: InputDecoration(
-                      hintText: postMode == PostMode.thread ? 'Apa yang baru?' : 'Ceritakan tentang produk jualanmu...',
+                      hintText: postMode == PostMode.thread ? 'Apa yang baru?' : 'Ceritakan barang apa yang kamu jual...',
                       hintStyle: const TextStyle(
                         fontFamily: 'SFPro',
                         fontSize: 15.0,
@@ -195,7 +195,7 @@ class CreatePostMainInputBlock extends StatelessWidget {
                     const SizedBox(height: 10.0),
                     CreatePostGifPreview(gif: selectedGif!, onRemove: () => onGifSelected(null)),
                   ],
-                  if (showPoll) ...[
+                  if (showPoll && postMode == PostMode.thread) ...[
                     CreatePostPollBuilder(
                       controllers: pollOptionControllers,
                       onAddOption: onAddPollOption,

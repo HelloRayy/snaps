@@ -9,7 +9,6 @@ import 'package:snapan_market/core/constants/app_constants.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/snaps_toast.dart';
 import 'package:snapan_market/core/utils/share_helper.dart';
-import 'package:snapan_market/features/feed/components/sheets/buy_bottom_sheet.dart';
 import 'package:snapan_market/features/feed/components/post_card/market_post_card.dart';
 import 'package:snapan_market/features/feed/components/lightbox/media_lightbox_dialog.dart';
 import 'package:snapan_market/features/feed/components/detail/post_detail_bottom_bar.dart';
@@ -48,9 +47,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   final ScrollController _scrollController = ScrollController();
 
   bool get _isProductMode =>
-      AppConstants.enableCommerceMode &&
-      _controller.post.isProduct &&
-      (_controller.post.price ?? 0) > 0;
+      AppConstants.enableCommerceMode && _controller.post.isProduct;
 
   List<PostCommentModel> get _sortedComments {
     final list = List<PostCommentModel>.from(_controller.comments);
@@ -114,19 +111,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     super.dispose();
   }
 
-  void _handleBuySheet() {
-    BuyBottomSheet.show(
+  void _handleBuyAction() {
+    SocialCommerceNavigator.openDirectMessage(
       context,
-      post: _controller.post,
-      onConfirmOrder: () {
-        SnapsToast.show(
-          context,
-          'Pesanan COD berhasil dibuat untuk ${_controller.post.seller.name}!',
-          hasBottomNav: false,
-          backgroundColor: AppColors.primary,
-          duration: const Duration(seconds: 3),
-        );
-      },
+      _controller.post,
+      hasBottomNav: false,
     );
   }
 
@@ -274,7 +263,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 isCommentingActive: _controller.isCommentingActive,
                 post: post,
                 replyToUser: _controller.replyToUser,
-                onBuyClick: _handleBuySheet,
+                onBuyClick: _handleBuyAction,
                 onCancelReply: () => _controller.cancelReply(_isProductMode),
                 onSubmitComment: (content) => _controller.addComment(context, content, _isProductMode),
                 onSubmitCommentWithMedia: (content, images) =>
