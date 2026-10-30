@@ -45,9 +45,7 @@ class MediaLightboxDialog extends StatefulWidget {
       context: context,
       barrierDismissible: true,
       barrierLabel: 'Media Lightbox',
-      barrierColor: isDark
-          ? Colors.black.withValues(alpha: 0.96)
-          : Colors.white.withValues(alpha: 0.96),
+      barrierColor: Colors.transparent,
       transitionDuration: const Duration(milliseconds: 240),
       pageBuilder: (ctx, anim1, anim2) {
         return MediaLightboxDialog(
@@ -94,6 +92,7 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
   int _activePointerCount = 0;
   late final ValueNotifier<double> _dragOffsetNotifier;
   bool _isCurrentZoomed = false;
+  bool _isDismissing = false;
   bool _isInteractingWithViewer = false;
   late AnimationController _springBackAnimController;
   Animation<double>? _springBackAnim;
@@ -140,8 +139,9 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
   }
 
   void _springBackToZero() {
-    if (_dragOffsetNotifier.value == 0.0) return;
+    if (_dragOffsetNotifier.value == 0.0 || _isDismissing) return;
     _springBackAnimController.stop();
+    _springBackAnimController.duration = const Duration(milliseconds: 240);
     _springBackAnim = Tween<double>(begin: _dragOffsetNotifier.value, end: 0.0).animate(
       CurvedAnimation(
         parent: _springBackAnimController,
@@ -153,7 +153,30 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
     _springBackAnimController.forward(from: 0.0);
   }
 
+  void _dismissWithFlyOff(double targetY) {
+    if (_isDismissing) return;
+    _isDismissing = true;
+    HapticFeedback.lightImpact();
+    _springBackAnimController.stop();
+    final currentOffset = _dragOffsetNotifier.value;
+    _springBackAnim = Tween<double>(begin: currentOffset, end: targetY).animate(
+      CurvedAnimation(
+        parent: _springBackAnimController,
+        curve: Curves.easeOutQuad,
+      ),
+    )..addListener(() {
+        _dragOffsetNotifier.value = _springBackAnim!.value;
+      });
+    _springBackAnimController.duration = const Duration(milliseconds: 170);
+    _springBackAnimController.forward(from: 0.0).then((_) {
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    });
+  }
+
   void _handleVerticalDragStart(DragStartDetails details) {
+    if (_isDismissing) return;
     if (_isCurrentZoomed || _activePointerCount > 1 || _isInteractingWithViewer) {
       if (_dragOffsetNotifier.value != 0.0) {
         _springBackToZero();
@@ -166,6 +189,7 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
   }
 
   void _handleVerticalDragUpdate(DragUpdateDetails details) {
+    if (_isDismissing) return;
     if (_isCurrentZoomed || _activePointerCount > 1 || _isInteractingWithViewer) {
       if (_dragOffsetNotifier.value != 0.0) {
         _springBackToZero();
@@ -173,10 +197,11 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
       return;
     }
     _dragOffsetNotifier.value =
-        (_dragOffsetNotifier.value + details.delta.dy).clamp(-600.0, 600.0);
+        (_dragOffsetNotifier.value + details.delta.dy).clamp(-900.0, 900.0);
   }
 
   void _handleVerticalDragEnd(DragEndDetails details) {
+    if (_isDismissing) return;
     if (_isCurrentZoomed || _activePointerCount > 1 || _isInteractingWithViewer) {
       if (_dragOffsetNotifier.value != 0.0) {
         _springBackToZero();
@@ -185,8 +210,11 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
     }
     final velocity = details.primaryVelocity ?? 0.0;
     if (_dragOffsetNotifier.value.abs() > 110.0 || velocity.abs() > 650.0) {
-      HapticFeedback.lightImpact();
-      Navigator.of(context).pop();
+      final screenHeight = MediaQuery.of(context).size.height;
+      final bool dismissDown = velocity > 200.0 ||
+          (velocity.abs() <= 200.0 && _dragOffsetNotifier.value > 0);
+      final double targetY = dismissDown ? (screenHeight + 100.0) : -(screenHeight + 100.0);
+      _dismissWithFlyOff(targetY);
     } else if (_dragOffsetNotifier.value != 0.0) {
       _springBackToZero();
     }
@@ -277,8 +305,8 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
             valueListenable: _dragOffsetNotifier,
             builder: (context, dragOffsetY, child) {
               final double pullProgress = (dragOffsetY.abs().clamp(0.0, 300.0) / 300.0);
-              final double bgOpacity = (1.0 - pullProgress * 0.7).clamp(0.0, 1.0);
-              final double imageScale = (1.0 - pullProgress * 0.16).clamp(0.7, 1.0);
+              final double bgOpacity = (1.0 - pullProgress * 0.85).clamp(0.0, 1.0);
+              final double imageScale = (1.0 - pullProgress * 0.18).clamp(0.75, 1.0);
               final double controlsAlpha = (1.0 - pullProgress * 2.5).clamp(0.0, 1.0);
 
               return Material(
@@ -291,7 +319,10 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
                         offset: Offset(0.0, dragOffsetY),
                         child: Transform.scale(
                           scale: imageScale,
-                          child: child,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(24.0 * pullProgress),
+                            child: child,
+                          ),
                         ),
                       ),
                     ),
