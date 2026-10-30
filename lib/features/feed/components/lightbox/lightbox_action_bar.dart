@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
 import 'package:snapan_market/features/feed/components/post_card/market_feed_icons.dart';
@@ -35,58 +36,41 @@ class LightboxActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    final inactiveIconColor = isDark
-        ? Colors.white.withValues(alpha: 0.85)
-        : const Color(0xFF334155);
-
-    final countTextColor = isDark
-        ? Colors.white.withValues(alpha: 0.85)
-        : const Color(0xFF475569);
-
-    final likeActiveColor = isDark
-        ? const Color(0xFFF43F5E)
-        : const Color(0xFFE11D48);
-
+    const inactiveIconColor = Colors.white;
+    final countTextColor = Colors.white;
+    const likeActiveColor = Color(0xFFF43F5E);
     const repostActiveColor = Color(0xFF10B981);
 
-    final gradientColors = isDark
-        ? [
-            const Color(0xFF0B0F17).withValues(alpha: 0.95),
-            const Color(0xFF0B0F17).withValues(alpha: 0.70),
-            Colors.transparent,
-          ]
-        : [
-            Colors.white.withValues(alpha: 0.98),
-            Colors.white.withValues(alpha: 0.85),
-            Colors.white.withValues(alpha: 0.0),
-          ];
-
     return Positioned(
-      bottom: 0,
-      left: 0,
-      right: 0,
-      child: Container(
-        padding: EdgeInsets.only(
-          top: 24.0,
-          bottom: bottomPadding > 0 ? bottomPadding + 8.0 : 16.0,
-          left: 20.0,
-          right: 20.0,
-        ),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter,
-            colors: gradientColors,
-            stops: const [0.0, 0.55, 1.0],
-          ),
-        ),
-        child: Center(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
+      bottom: bottomPadding > 0 ? bottomPadding + 14.0 : 20.0,
+      left: 16.0,
+      right: 16.0,
+      child: Center(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(30.0),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 16.0, sigmaY: 16.0),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 6.0),
+              decoration: BoxDecoration(
+                color: const Color(0xB3000000),
+                borderRadius: BorderRadius.circular(30.0),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.16),
+                  width: 1.0,
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x3D000000),
+                    blurRadius: 18.0,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
               // Like Button
               MouseRegion(
                 cursor: SystemMouseCursors.click,
@@ -94,7 +78,7 @@ class LightboxActionBar extends StatelessWidget {
                   behavior: HitTestBehavior.opaque,
                   onTap: onLikeToggle,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -125,7 +109,7 @@ class LightboxActionBar extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(width: 12.0),
+              const SizedBox(width: 6.0),
 
               // Comment Button
               MouseRegion(
@@ -134,7 +118,7 @@ class LightboxActionBar extends StatelessWidget {
                   behavior: HitTestBehavior.opaque,
                   onTap: onCommentClick,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -160,7 +144,7 @@ class LightboxActionBar extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(width: 12.0),
+              const SizedBox(width: 6.0),
 
               // Repost Button
               MouseRegion(
@@ -169,7 +153,7 @@ class LightboxActionBar extends StatelessWidget {
                   behavior: HitTestBehavior.opaque,
                   onTap: onRepostToggle,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -199,7 +183,7 @@ class LightboxActionBar extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(width: 12.0),
+              const SizedBox(width: 6.0),
 
               // Share Button
               MouseRegion(
@@ -208,7 +192,7 @@ class LightboxActionBar extends StatelessWidget {
                   behavior: HitTestBehavior.opaque,
                   onTap: onShareClick,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
                     child: FeedShareIcon(
                       size: 19.0,
                       color: inactiveIconColor,
@@ -217,9 +201,11 @@ class LightboxActionBar extends StatelessWidget {
                 ),
               ),
             ],
+            ),
           ),
         ),
       ),
+    ),
     );
   }
 }
