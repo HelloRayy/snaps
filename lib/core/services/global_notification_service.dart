@@ -44,6 +44,87 @@ Future<void> _notificationTapBackgroundHandler(NotificationResponse details) asy
     debugPrint('Background notification tap error: $e');
   }
 }
+class _NotificationChannelConfig {
+  final String channelId;
+  final String channelName;
+  final String channelDesc;
+  final AndroidNotificationSound? sound;
+
+  const _NotificationChannelConfig({
+    required this.channelId,
+    required this.channelName,
+    required this.channelDesc,
+    this.sound,
+  });
+}
+
+@pragma('vm:entry-point')
+_NotificationChannelConfig _resolveNotificationChannel({
+  String? requestedChannelId,
+  String? soundKey,
+  String? typeKey,
+  bool isDm = false,
+}) {
+  final sound = soundKey?.toLowerCase().trim() ?? '';
+  final type = typeKey?.toLowerCase().trim() ?? '';
+  final reqId = requestedChannelId?.toLowerCase().trim() ?? '';
+
+  if (sound == 'snaps_warning' ||
+      sound == 'warning' ||
+      type == 'warning' ||
+      type == 'alert' ||
+      reqId == 'snaps_warning_v1') {
+    return const _NotificationChannelConfig(
+      channelId: 'snaps_warning_v1',
+      channelName: 'Peringatan & Keamanan',
+      channelDesc: 'Peringatan penting, keamanan akun, dan tata tertib Snaps.',
+      sound: RawResourceAndroidNotificationSound('snaps_warning'),
+    );
+  }
+
+  if (sound == 'snaps_goofy' ||
+      sound == 'goofy' ||
+      type == 'goofy' ||
+      reqId == 'snaps_goofy_v1') {
+    return const _NotificationChannelConfig(
+      channelId: 'snaps_goofy_v1',
+      channelName: 'Event & Interaksi Seru',
+      channelDesc: 'Notifikasi seru, event khusus, dan interaksi komunitas Snaps.',
+      sound: RawResourceAndroidNotificationSound('snaps_goofy'),
+    );
+  }
+
+  if (sound == 'snaps_update' ||
+      sound == 'update' ||
+      type == 'update' ||
+      type == 'broadcast' ||
+      type == 'announcement' ||
+      reqId == 'snaps_announcements_v2') {
+    return const _NotificationChannelConfig(
+      channelId: 'snaps_announcements_v2',
+      channelName: 'Pengumuman & Update Snaps',
+      channelDesc: 'Notifikasi broadcast pengumuman resmi dan update fitur Snaps.',
+      sound: RawResourceAndroidNotificationSound('snaps_update'),
+    );
+  }
+
+  if (sound == 'native' || sound == 'system' || reqId == 'snaps_system_tone') {
+    return const _NotificationChannelConfig(
+      channelId: 'snaps_system_tone',
+      channelName: 'Notifikasi Sistem',
+      channelDesc: 'Notifikasi dengan nada bawaan sistem perangkat.',
+      sound: null,
+    );
+  }
+
+  // Default: DM / Chat
+  return const _NotificationChannelConfig(
+    channelId: 'snaps_direct_messages_v2',
+    channelName: 'Pesan Masuk (DM)',
+    channelDesc: 'Notifikasi pesan langsung dari pembeli dan penjual Snaps.',
+    sound: RawResourceAndroidNotificationSound('snaps_default'),
+  );
+}
 
 /// Top-level background message handler for FCM
 @pragma('vm:entry-point')
@@ -126,20 +207,24 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       ];
     }
 
-    final isDm = message.data['type']?.toString() == 'dm';
-    final channelId = isDm ? 'snaps_direct_messages' : 'snaps_announcements';
-    final channelName = isDm ? 'Pesan Masuk (DM)' : 'Pengumuman & Notifikasi Snaps';
-    final channelDescription = isDm
-        ? 'Notifikasi pesan langsung dari pembeli dan penjual Snaps.'
-        : 'Notifikasi broadcast pengumuman resmi dan aktivitas interaksi Snaps.';
+    final soundKey = message.data['sound']?.toString();
+    final typeKey = message.data['type']?.toString();
+    final isDm = typeKey == 'dm';
+
+    final resolved = _resolveNotificationChannel(
+      soundKey: soundKey,
+      typeKey: typeKey,
+      isDm: isDm,
+    );
 
     final androidDetails = AndroidNotificationDetails(
-      channelId,
-      channelName,
-      channelDescription: channelDescription,
+      resolved.channelId,
+      resolved.channelName,
+      channelDescription: resolved.channelDesc,
       importance: Importance.max,
       priority: Priority.high,
       styleInformation: bigTextStyle,
+      sound: resolved.sound,
       enableVibration: true,
       playSound: true,
       icon: '@mipmap/ic_launcher',
@@ -314,7 +399,7 @@ class GlobalNotificationService {
             title: title,
             message: body,
             payloadJson: jsonEncode(message.data),
-            channelId: 'snaps_direct_messages',
+            channelId: 'snaps_direct_messages_v2',
             avatarUrl: senderAvatar,
           );
 
@@ -576,29 +661,63 @@ class GlobalNotificationService {
         // Request runtime permission for Android 13+ (POST_NOTIFICATIONS)
         await androidPlatformPlugin.requestNotificationsPermission();
 
-        const channel = AndroidNotificationChannel(
-          'snaps_announcements', // id
-          'Pengumuman & Notifikasi Snaps', // name
-          description: 'Notifikasi broadcast pengumuman resmi dan aktivitas interaksi Snaps.',
-          importance: Importance.max,
-          enableVibration: true,
-          playSound: true,
-          showBadge: true,
-        );
+        // Bersihkan channel legacy tanpa suara kustom agar OS membaca channel baru
+        try {
+          await androidPlatformPlugin.deleteNotificationChannel('snaps_announcements');
+          await androidPlatformPlugin.deleteNotificationChannel('snaps_direct_messages');
+        } catch (_) {}
 
-        await androidPlatformPlugin.createNotificationChannel(channel);
-
+        // 1. Channel DM / Pesan Masuk (Suara snaps_default)
         const dmChannel = AndroidNotificationChannel(
-          'snaps_direct_messages',
+          'snaps_direct_messages_v2',
           'Pesan Masuk (DM)',
           description: 'Notifikasi pesan langsung dari pembeli dan penjual Snaps.',
           importance: Importance.max,
-          enableVibration: true,
+          sound: RawResourceAndroidNotificationSound('snaps_default'),
           playSound: true,
+          enableVibration: true,
           showBadge: true,
         );
-
         await androidPlatformPlugin.createNotificationChannel(dmChannel);
+
+        // 2. Channel Pengumuman & Update (Suara snaps_update)
+        const updateChannel = AndroidNotificationChannel(
+          'snaps_announcements_v2',
+          'Pengumuman & Update Snaps',
+          description: 'Notifikasi broadcast pengumuman resmi dan update fitur Snaps.',
+          importance: Importance.max,
+          sound: RawResourceAndroidNotificationSound('snaps_update'),
+          playSound: true,
+          enableVibration: true,
+          showBadge: true,
+        );
+        await androidPlatformPlugin.createNotificationChannel(updateChannel);
+
+        // 3. Channel Peringatan & Keamanan (Suara snaps_warning)
+        const warningChannel = AndroidNotificationChannel(
+          'snaps_warning_v1',
+          'Peringatan & Keamanan',
+          description: 'Peringatan penting, keamanan akun, dan tata tertib Snaps.',
+          importance: Importance.max,
+          sound: RawResourceAndroidNotificationSound('snaps_warning'),
+          playSound: true,
+          enableVibration: true,
+          showBadge: true,
+        );
+        await androidPlatformPlugin.createNotificationChannel(warningChannel);
+
+        // 4. Channel Event & Goofy (Suara snaps_goofy)
+        const goofyChannel = AndroidNotificationChannel(
+          'snaps_goofy_v1',
+          'Event & Interaksi Seru',
+          description: 'Notifikasi seru, event khusus, dan interaksi komunitas Snaps.',
+          importance: Importance.max,
+          sound: RawResourceAndroidNotificationSound('snaps_goofy'),
+          playSound: true,
+          enableVibration: true,
+          showBadge: true,
+        );
+        await androidPlatformPlugin.createNotificationChannel(goofyChannel);
       }
 
       _isLocalNotifsInitialized = true;
@@ -699,12 +818,16 @@ class GlobalNotificationService {
     String? avatarUrl,
   }) async {
     try {
-      bool isDm = channelId == 'snaps_direct_messages';
+      bool isDm = channelId == 'snaps_direct_messages' || channelId == 'snaps_direct_messages_v2';
+      String? soundKey;
+      String? typeKey;
       List<AndroidNotificationAction>? actions;
       if (payloadJson != null && payloadJson.isNotEmpty) {
         try {
           final map = jsonDecode(payloadJson) as Map<String, dynamic>;
-          if (map['type']?.toString() == 'dm') {
+          soundKey = map['sound']?.toString();
+          typeKey = map['type']?.toString();
+          if (typeKey == 'dm') {
             isDm = true;
           }
           final actionType = map['action_type']?.toString();
@@ -755,11 +878,12 @@ class GlobalNotificationService {
         htmlFormatContentTitle: false,
       );
 
-      final effectiveChannelId = channelId ?? (isDm ? 'snaps_direct_messages' : 'snaps_announcements');
-      final effectiveChannelName = isDm ? 'Pesan Masuk (DM)' : 'Pengumuman & Notifikasi Snaps';
-      final effectiveChannelDesc = isDm
-          ? 'Notifikasi pesan langsung dari pembeli dan penjual Snaps.'
-          : 'Notifikasi broadcast pengumuman resmi dan aktivitas interaksi Snaps.';
+      final resolved = _resolveNotificationChannel(
+        requestedChannelId: channelId,
+        soundKey: soundKey,
+        typeKey: typeKey,
+        isDm: isDm,
+      );
 
       ByteArrayAndroidBitmap? largeIconBitmap;
       if (avatarUrl != null && avatarUrl.isNotEmpty && avatarUrl.startsWith('http')) {
@@ -767,12 +891,13 @@ class GlobalNotificationService {
       }
 
       final androidDetails = AndroidNotificationDetails(
-        effectiveChannelId,
-        effectiveChannelName,
-        channelDescription: effectiveChannelDesc,
+        resolved.channelId,
+        resolved.channelName,
+        channelDescription: resolved.channelDesc,
         importance: Importance.max,
         priority: Priority.high,
         styleInformation: bigTextStyle,
+        sound: resolved.sound,
         enableVibration: true,
         playSound: true,
         icon: '@mipmap/ic_launcher',
