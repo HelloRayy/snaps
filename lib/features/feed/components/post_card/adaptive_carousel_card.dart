@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-
+import 'package:snapan_market/core/components/skeleton/snaps_shimmer.dart';
 /// Renders a carousel card with dynamic width based on its natural aspect ratio
 /// and a fixed height, preventing unwanted cropping and achieving WYSIWYG
 /// consistency between create-post preview and the home feed (SNAPS-79).
@@ -40,7 +40,7 @@ class _AdaptiveCarouselCardState extends State<AdaptiveCarouselCard> {
   ImageStream? _imageStream;
   ImageStreamListener? _listener;
   double? _resolvedRatio;
-
+  bool _isImageLoaded = false;
   @override
   void initState() {
     super.initState();
@@ -52,6 +52,7 @@ class _AdaptiveCarouselCardState extends State<AdaptiveCarouselCard> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.imageUrl != widget.imageUrl) {
       _resolvedRatio = AdaptiveCarouselCard.ratioCache[widget.imageUrl];
+      _isImageLoaded = false;
       _resolveRatio();
     }
   }
@@ -117,7 +118,9 @@ class _AdaptiveCarouselCardState extends State<AdaptiveCarouselCard> {
 
     final content = ClipRRect(
       borderRadius: BorderRadius.circular(widget.borderRadius),
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
         width: calculatedWidth,
         height: widget.height,
         decoration: BoxDecoration(
@@ -130,11 +133,43 @@ class _AdaptiveCarouselCardState extends State<AdaptiveCarouselCard> {
         ),
         child: widget.child ??
             (isNetwork
-                ? Image.network(
-                    widget.imageUrl,
-                    cacheWidth: 800,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => _errorPlaceholder(calculatedWidth, isDark),
+                ? Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      if (!_isImageLoaded)
+                        SnapsShimmer(
+                          child: Container(
+                            color: isDark
+                                ? const Color(0xFF242626)
+                                : const Color(0xFFF1F3F5),
+                          ),
+                        ),
+                      Image.network(
+                        widget.imageUrl,
+                        cacheWidth: 800,
+                        fit: BoxFit.cover,
+                        frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+                          if (wasSynchronouslyLoaded) {
+                            return child;
+                          }
+                          final isLoaded = frame != null;
+                          if (isLoaded && !_isImageLoaded) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (mounted && !_isImageLoaded) {
+                                setState(() => _isImageLoaded = true);
+                              }
+                            });
+                          }
+                          return AnimatedOpacity(
+                            opacity: isLoaded ? 1.0 : 0.0,
+                            duration: const Duration(milliseconds: 200),
+                            curve: Curves.easeOutCubic,
+                            child: child,
+                          );
+                        },
+                        errorBuilder: (_, _, _) => _errorPlaceholder(calculatedWidth, isDark),
+                      ),
+                    ],
                   )
                 : Image.file(
                     File(widget.imageUrl),
