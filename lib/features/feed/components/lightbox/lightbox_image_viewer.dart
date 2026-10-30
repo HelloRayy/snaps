@@ -116,7 +116,7 @@ class _LightboxImageViewerState extends State<LightboxImageViewer>
   @override
   Widget build(BuildContext context) {
     final bool isMulti = widget.isMultiTouch || _isLocalMultiTouch;
-    return Center(
+    return SizedBox.expand(
       child: Listener(
         onPointerDown: (_) {
           _localPointerCount++;
@@ -171,7 +171,8 @@ class _LightboxImageViewerState extends State<LightboxImageViewer>
               _animateReset();
             }
           },
-          child: SizedBox(
+          child: Center(
+            child: SizedBox(
             width: widget.screenWidth,
             child: ConstrainedBox(
               constraints: const BoxConstraints(minHeight: 200.0),
@@ -205,6 +206,7 @@ class _LightboxImageViewerState extends State<LightboxImageViewer>
               ),
             ),
           ),
+            ),
         ),
       ),
     ),

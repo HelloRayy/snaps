@@ -283,7 +283,6 @@ void main() {
 
         final InteractiveViewer viewer = tester.widget(find.byType(InteractiveViewer));
         final scale = viewer.transformationController!.value.getMaxScaleOnAxis();
-        print('Pinch scale result: $scale');
         expect(scale, greaterThan(1.1));
 
         await gesture1.up();
