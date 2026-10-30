@@ -1,10 +1,10 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// Floating overlay button "Beli Sekarang" with right icon for product posts in feed.
-/// Styled with signature Snaps Kumo Azure gradient (#269DFF -> #008BFF) matching app design system.
+/// Styled to match the simple, clean white pill button in the Activity Page.
 class PostBuyNowButton extends StatefulWidget {
   final VoidCallback onPressed;
 
@@ -22,9 +22,10 @@ class _PostBuyNowButtonState extends State<PostBuyNowButton> {
 
   @override
   Widget build(BuildContext context) {
-    // Snaps Kumo brand signature gradient colors (matching KumoButton.primary & FloatingPlusSquircleButton)
-    const primaryTop = Color(0xFF269DFF); // Light Azure Specular
-    const primaryBase = Color(0xFF008BFF); // pen.dev Primary Accent Fill
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? AppColors.darkSurface : Colors.white;
+    final borderColor = isDark ? AppColors.darkBorder : const Color(0xFFCBD5E1);
+    final contentColor = isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A);
 
     return GestureDetector(
       onTapDown: (_) {
@@ -40,35 +41,23 @@ class _PostBuyNowButtonState extends State<PostBuyNowButton> {
         duration: const Duration(milliseconds: 90),
         curve: Curves.easeOutCubic,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 13.0, vertical: 7.0),
+          padding: const EdgeInsets.symmetric(horizontal: 13.0, vertical: 6.0),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20.0),
-            gradient: const LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                primaryTop,
-                primaryBase,
-              ],
-            ),
+            color: bgColor,
+            borderRadius: BorderRadius.circular(100.0),
             border: Border.all(
-              color: Colors.white.withValues(alpha: 0.35),
-              width: 0.9,
+              color: borderColor,
+              width: 1.0,
             ),
-            boxShadow: [
+            boxShadow: const [
               BoxShadow(
-                color: primaryBase.withValues(alpha: 0.38),
-                blurRadius: 10.0,
-                offset: const Offset(0, 3),
-              ),
-              const BoxShadow(
                 color: Color(0x1F000000),
-                blurRadius: 4.0,
-                offset: Offset(0, 1),
+                blurRadius: 8.0,
+                offset: Offset(0, 2),
               ),
             ],
           ),
-          child: const Row(
+          child: Row(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -76,18 +65,17 @@ class _PostBuyNowButtonState extends State<PostBuyNowButton> {
                 'Beli Sekarang',
                 style: TextStyle(
                   fontFamily: 'Inter',
-                  fontSize: 12.5,
+                  fontSize: 12.0,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  color: contentColor,
                   letterSpacing: -0.2,
-                  height: 1.2,
                 ),
               ),
-              SizedBox(width: 5.0),
+              const SizedBox(width: 5.5),
               Icon(
                 LucideIcons.arrowRight,
                 size: 13.5,
-                color: Colors.white,
+                color: contentColor,
               ),
             ],
           ),
