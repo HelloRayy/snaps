@@ -102,8 +102,6 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final barBgColor = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
-    final barTopBorderColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0);
     final pillBgColor = isDark ? const Color(0xFF1E293B) : Colors.white;
     final pillBorderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
     final textColor = isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A);
@@ -112,21 +110,12 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
 
     return Container(
       padding: EdgeInsets.only(
-        left: 12.0,
-        right: 12.0,
+        left: 14.0,
+        right: 14.0,
         bottom: bottomInset > 0
             ? bottomInset + 8.0
-            : (bottomPadding > 0 ? bottomPadding + 6.0 : 12.0),
-        top: 8.0,
-      ),
-      decoration: BoxDecoration(
-        color: barBgColor,
-        border: Border(
-          top: BorderSide(
-            color: barTopBorderColor,
-            width: 0.8,
-          ),
-        ),
+            : (bottomPadding > 0 ? bottomPadding + 6.0 : 14.0),
+        top: 6.0,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -225,25 +214,25 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
             ),
           ],
 
-          // 2. MODERN UNIFIED PILL CAPSULE (Instagram / Threads Aesthetic)
+          // 2. MODERN UNIFIED PILL CAPSULE (Enlarged & Floating)
           Container(
-            constraints: const BoxConstraints(minHeight: 44.0),
+            constraints: const BoxConstraints(minHeight: 52.0),
             decoration: BoxDecoration(
               color: pillBgColor,
-              borderRadius: BorderRadius.circular(24.0),
+              borderRadius: BorderRadius.circular(26.0),
               border: Border.all(
                 color: pillBorderColor,
                 width: 1.0,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: isDark ? const Color(0x1F000000) : const Color(0x0A0F172A),
-                  blurRadius: 8.0,
-                  offset: const Offset(0, 2),
+                  color: isDark ? const Color(0x33000000) : const Color(0x0F0F172A),
+                  blurRadius: 10.0,
+                  offset: const Offset(0, 3),
                 ),
               ],
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
+            padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 5.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -254,8 +243,8 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                     onTap: _pickImages,
                     behavior: HitTestBehavior.opaque,
                     child: Container(
-                      width: 34.0,
-                      height: 34.0,
+                      width: 40.0,
+                      height: 40.0,
                       decoration: BoxDecoration(
                         color: _attachedImages.isNotEmpty
                             ? AppColors.primary.withValues(alpha: 0.12)
@@ -268,7 +257,7 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                         children: [
                           Icon(
                             CupertinoIcons.photo_on_rectangle,
-                            size: 18.0,
+                            size: 20.0,
                             color: _attachedImages.isNotEmpty
                                 ? AppColors.primary
                                 : iconColor,
@@ -316,7 +305,7 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                       maxLines: 5,
                       style: TextStyle(
                         fontFamily: 'SFPro',
-                        fontSize: 15.0,
+                        fontSize: 16.0,
                         color: textColor,
                         letterSpacing: -0.2,
                         height: 1.3,
@@ -325,14 +314,14 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                         hintText: widget.placeholder,
                         hintStyle: TextStyle(
                           fontFamily: 'SFPro',
-                          fontSize: 15.0,
+                          fontSize: 16.0,
                           color: hintColor,
                           letterSpacing: -0.2,
                           height: 1.3,
                         ),
                         border: InputBorder.none,
                         isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 7.0),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 9.0),
                       ),
                     ),
                   ),
@@ -357,8 +346,8 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                               duration: const Duration(milliseconds: 90),
                               curve: Curves.easeOutCubic,
                               child: Container(
-                                width: 34.0,
-                                height: 34.0,
+                                width: 40.0,
+                                height: 40.0,
                                 decoration: const BoxDecoration(
                                   color: AppColors.primary,
                                   shape: BoxShape.circle,
@@ -366,22 +355,26 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                                 child: const Center(
                                   child: Icon(
                                     CupertinoIcons.arrow_up,
-                                    size: 18.0,
+                                    size: 20.0,
                                     color: Colors.white,
                                   ),
                                 ),
                               ),
                             ),
                           )
-                        : SizedBox(
+                        : GestureDetector(
                             key: const ValueKey('emoji_button'),
-                            width: 34.0,
-                            height: 34.0,
-                            child: Center(
-                              child: Icon(
-                                CupertinoIcons.smiley,
-                                color: iconColor,
-                                size: 21.0,
+                            onTap: () => HapticFeedback.selectionClick(),
+                            behavior: HitTestBehavior.opaque,
+                            child: SizedBox(
+                              width: 40.0,
+                              height: 40.0,
+                              child: Center(
+                                child: Icon(
+                                  Icons.emoji_emotions_outlined,
+                                  color: iconColor,
+                                  size: 24.0,
+                                ),
                               ),
                             ),
                           ),

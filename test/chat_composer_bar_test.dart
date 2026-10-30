@@ -25,7 +25,7 @@ void main() {
       expect(find.byIcon(CupertinoIcons.photo_on_rectangle), findsOneWidget);
 
       // When empty, emoji smiley icon is displayed
-      expect(find.byIcon(CupertinoIcons.smiley), findsOneWidget);
+      expect(find.byIcon(Icons.emoji_emotions_outlined), findsOneWidget);
       expect(find.byIcon(CupertinoIcons.arrow_up), findsNothing);
     });
 
@@ -49,7 +49,7 @@ void main() {
 
       // Verify send arrow up appears and smiley disappears
       expect(find.byIcon(CupertinoIcons.arrow_up), findsOneWidget);
-      expect(find.byIcon(CupertinoIcons.smiley), findsNothing);
+      expect(find.byIcon(Icons.emoji_emotions_outlined), findsNothing);
 
       // Verify send button background uses AppColors.primary
       final sendButtonContainer = tester.widget<Container>(
@@ -68,7 +68,7 @@ void main() {
       // Verify callback triggered and textfield cleared
       expect(sentMessage, 'Halo bro apa kabar?');
       expect(find.text('Halo bro apa kabar?'), findsNothing);
-      expect(find.byIcon(CupertinoIcons.smiley), findsOneWidget);
+      expect(find.byIcon(Icons.emoji_emotions_outlined), findsOneWidget);
     });
   });
 }
