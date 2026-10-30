@@ -128,29 +128,18 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
     final isKeyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final barBgColor = isDark ? const Color(0xFF0F172A) : Colors.white;
-    final barBorderColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0);
-    final inputBgColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9);
-    final inputBorderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+    final pillBgColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final pillBorderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
     final textColor = isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A);
     final hintColor = isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8);
     final iconColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
 
     return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: barBgColor,
-        border: Border(
-          top: BorderSide(
-            color: barBorderColor,
-            width: 0.8,
-          ),
-        ),
-      ),
+      color: Colors.transparent,
       padding: EdgeInsets.only(
-        left: 12.0,
-        right: 12.0,
-        top: 8.0,
+        left: 14.0,
+        right: 14.0,
+        top: 6.0,
         bottom: isKeyboardOpen
             ? 8.0
             : (bottomPadding > 0 ? bottomPadding + 4.0 : 12.0),
@@ -252,175 +241,173 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
             ),
           ],
 
-          // 2. DOCKED INPUT ROW (3 Elements: Media + Rounded Rect 15px Input + Send/Emoji Action)
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              // A. Attachment Button
-              GestureDetector(
-                onTap: _pickImages,
-                behavior: HitTestBehavior.opaque,
-                child: Container(
-                  width: 38.0,
-                  height: 38.0,
-                  decoration: BoxDecoration(
-                    color: inputBgColor,
-                    borderRadius: BorderRadius.circular(12.0),
-                    border: Border.all(
-                      color: inputBorderColor,
-                      width: 0.8,
-                    ),
-                  ),
-                  child: Center(
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      alignment: Alignment.center,
-                      children: [
-                        Icon(
-                          CupertinoIcons.photo_on_rectangle,
-                          size: 19.0,
-                          color: _attachedImages.isNotEmpty
-                              ? AppColors.primary
-                              : iconColor,
-                        ),
-                        if (_attachedImages.isNotEmpty)
-                          Positioned(
-                            top: -4.0,
-                            right: -4.0,
-                            child: Container(
-                              width: 15.0,
-                              height: 15.0,
-                              decoration: const BoxDecoration(
-                                color: AppColors.primary,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  '${_attachedImages.length}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 9.0,
-                                    fontWeight: FontWeight.w700,
-                                    height: 1.0,
+          // 2. UNIFIED FLOATING COMPOSER BOX (Integrated Media, Input, & Send in ONE card)
+          Container(
+            constraints: const BoxConstraints(
+              minHeight: 52.0,
+              maxHeight: 124.0,
+            ),
+            decoration: BoxDecoration(
+              color: pillBgColor,
+              borderRadius: BorderRadius.circular(24.0),
+              border: Border.all(
+                color: pillBorderColor,
+                width: 1.0,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: isDark ? const Color(0x3D000000) : const Color(0x0F0F172A),
+                  blurRadius: 12.0,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                // A. Direct Attachment Icon (Inside unified pill)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 2.0, left: 2.0),
+                  child: GestureDetector(
+                    onTap: _pickImages,
+                    behavior: HitTestBehavior.opaque,
+                    child: SizedBox(
+                      width: 42.0,
+                      height: 42.0,
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        alignment: Alignment.center,
+                        children: [
+                          Icon(
+                            CupertinoIcons.photo_on_rectangle,
+                            size: 22.0,
+                            color: _attachedImages.isNotEmpty
+                                ? AppColors.primary
+                                : iconColor,
+                          ),
+                          if (_attachedImages.isNotEmpty)
+                            Positioned(
+                              top: 2.0,
+                              right: 2.0,
+                              child: Container(
+                                width: 16.0,
+                                height: 16.0,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.primary,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    '${_attachedImages.length}',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 9.0,
+                                      fontWeight: FontWeight.w700,
+                                      height: 1.0,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8.0),
-
-              // B. Rounded Rectangle Input Box (Radius 15px, Capped 110px max height)
-              Expanded(
-                child: Container(
-                  constraints: const BoxConstraints(
-                    minHeight: 38.0,
-                    maxHeight: 110.0,
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 3.0),
-                  decoration: BoxDecoration(
-                    color: inputBgColor,
-                    borderRadius: BorderRadius.circular(15.0),
-                    border: Border.all(
-                      color: inputBorderColor,
-                      width: 0.8,
-                    ),
-                  ),
-                  child: TextField(
-                    controller: _controller,
-                    focusNode: _focusNode,
-                    onTap: widget.onTap,
-                    textInputAction: TextInputAction.newline,
-                    keyboardType: TextInputType.multiline,
-                    minLines: 1,
-                    maxLines: 4,
-                    style: TextStyle(
-                      fontFamily: 'SFPro',
-                      fontSize: 15.0,
-                      color: textColor,
-                      letterSpacing: -0.2,
-                      height: 1.3,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: widget.placeholder,
-                      hintStyle: TextStyle(
-                        fontFamily: 'SFPro',
-                        fontSize: 15.0,
-                        color: hintColor,
-                        letterSpacing: -0.2,
-                        height: 1.3,
+                        ],
                       ),
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 8.0),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 8.0),
+                const SizedBox(width: 4.0),
 
-              // C. Send Button or Emoji Action
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 180),
-                transitionBuilder: (child, anim) => ScaleTransition(scale: anim, child: child),
-                child: _canSend
-                    ? GestureDetector(
-                        key: const ValueKey('send_button'),
-                        onTapDown: (_) => setState(() => _isSendPressed = true),
-                        onTapUp: (_) => setState(() => _isSendPressed = false),
-                        onTapCancel: () => setState(() => _isSendPressed = false),
-                        onTap: _handleSend,
-                        child: AnimatedScale(
-                          scale: _isSendPressed ? 0.90 : 1.0,
-                          duration: const Duration(milliseconds: 90),
-                          curve: Curves.easeOutCubic,
-                          child: Container(
-                            width: 38.0,
-                            height: 38.0,
-                            decoration: const BoxDecoration(
-                              color: AppColors.primary,
-                              shape: BoxShape.circle,
+                // B. Multiline Text Input Field (auto-expanding up to 4 lines, scrollable when long)
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2.0),
+                    child: TextField(
+                      controller: _controller,
+                      focusNode: _focusNode,
+                      onTap: widget.onTap,
+                      textInputAction: TextInputAction.newline,
+                      keyboardType: TextInputType.multiline,
+                      minLines: 1,
+                      maxLines: 4,
+                      style: TextStyle(
+                        fontFamily: 'SFPro',
+                        fontSize: 15.5,
+                        color: textColor,
+                        letterSpacing: -0.2,
+                        height: 1.28,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: widget.placeholder,
+                        hintStyle: TextStyle(
+                          fontFamily: 'SFPro',
+                          fontSize: 15.5,
+                          color: hintColor,
+                          letterSpacing: -0.2,
+                          height: 1.28,
+                        ),
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(vertical: 9.0),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 4.0),
+
+                // C. Trailing Action: Send Button or Universal Naked Emoji Icon
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 2.0, right: 2.0),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 180),
+                    transitionBuilder: (child, anim) => ScaleTransition(scale: anim, child: child),
+                    child: _canSend
+                        ? GestureDetector(
+                            key: const ValueKey('send_button'),
+                            onTapDown: (_) => setState(() => _isSendPressed = true),
+                            onTapUp: (_) => setState(() => _isSendPressed = false),
+                            onTapCancel: () => setState(() => _isSendPressed = false),
+                            onTap: _handleSend,
+                            child: AnimatedScale(
+                              scale: _isSendPressed ? 0.90 : 1.0,
+                              duration: const Duration(milliseconds: 90),
+                              curve: Curves.easeOutCubic,
+                              child: Container(
+                                width: 40.0,
+                                height: 40.0,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.primary,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Center(
+                                  child: Icon(
+                                    CupertinoIcons.arrow_up,
+                                    size: 20.0,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
                             ),
-                            child: const Center(
-                              child: Icon(
-                                CupertinoIcons.arrow_up,
-                                size: 20.0,
-                                color: Colors.white,
+                          )
+                        : GestureDetector(
+                            key: const ValueKey('emoji_button'),
+                            onTap: () => HapticFeedback.selectionClick(),
+                            behavior: HitTestBehavior.opaque,
+                            child: SizedBox(
+                              width: 42.0,
+                              height: 42.0,
+                              child: Center(
+                                child: Icon(
+                                  Icons.emoji_emotions_outlined,
+                                  color: iconColor,
+                                  size: 25.0,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      )
-                    : GestureDetector(
-                        key: const ValueKey('emoji_button'),
-                        onTap: () => HapticFeedback.selectionClick(),
-                        behavior: HitTestBehavior.opaque,
-                        child: Container(
-                          width: 38.0,
-                          height: 38.0,
-                          decoration: BoxDecoration(
-                            color: inputBgColor,
-                            borderRadius: BorderRadius.circular(12.0),
-                            border: Border.all(
-                              color: inputBorderColor,
-                              width: 0.8,
-                            ),
-                          ),
-                          child: Center(
-                            child: Icon(
-                              Icons.emoji_emotions_outlined,
-                              color: iconColor,
-                              size: 20.0,
-                            ),
-                          ),
-                        ),
-                      ),
-              ),
-            ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
