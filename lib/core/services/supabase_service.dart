@@ -305,10 +305,12 @@ class SupabaseService {
   RealtimeChannel subscribeToGlobalInbox({
     required void Function(Map<String, dynamic> messageRecord) onNewMessage,
     required void Function(Map<String, dynamic> conversationRecord) onConversationUpdated,
+    void Function(Map<String, dynamic> messageRecord)? onMessageUpdated,
   }) =>
       chat.subscribeToGlobalInbox(
         onNewMessage: onNewMessage,
         onConversationUpdated: onConversationUpdated,
+        onMessageUpdated: onMessageUpdated,
       );
 
   // --- SOCIAL & NOTIFICATION DELEGATIONS ---

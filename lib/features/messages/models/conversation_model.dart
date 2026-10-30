@@ -1,5 +1,6 @@
 import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
+import 'package:snapan_market/features/messages/models/chat_message_model.dart';
 
 /// Model data percakapan untuk halaman Direct Messages (Pesan)
 class ConversationUser {
@@ -70,6 +71,7 @@ class ConversationModel {
   final bool isSeller;
   final bool isRequest;
   final ProductContext? productContext;
+  final MessageStatus lastMessageStatus;
 
   const ConversationModel({
     required this.id,
@@ -82,6 +84,7 @@ class ConversationModel {
     this.isSeller = false,
     this.isRequest = false,
     this.productContext,
+    this.lastMessageStatus = MessageStatus.sent,
   });
 
   ConversationModel copyWith({
@@ -95,6 +98,7 @@ class ConversationModel {
     bool? isSeller,
     bool? isRequest,
     ProductContext? productContext,
+    MessageStatus? lastMessageStatus,
   }) {
     return ConversationModel(
       id: id ?? this.id,
@@ -107,6 +111,7 @@ class ConversationModel {
       isSeller: isSeller ?? this.isSeller,
       isRequest: isRequest ?? this.isRequest,
       productContext: productContext ?? this.productContext,
+      lastMessageStatus: lastMessageStatus ?? this.lastMessageStatus,
     );
   }
 
@@ -197,6 +202,9 @@ class ConversationModel {
       isSeller: isSeller,
       isRequest: json['product_id'] != null,
       productContext: productCtx,
+      lastMessageStatus: json['is_last_message_read'] == true
+          ? MessageStatus.read
+          : MessageStatus.sent,
     );
   }
 }

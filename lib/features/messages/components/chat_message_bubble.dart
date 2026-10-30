@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/utils/mention_text_span_helper.dart';
 import 'package:snapan_market/features/feed/components/lightbox/media_lightbox_dialog.dart';
@@ -55,7 +54,7 @@ class ChatMessageBubble extends StatelessWidget {
                           ),
                         );
                       },
-                      errorBuilder: (_, __, ___) => Container(
+                      errorBuilder: (_, _, _) => Container(
                         height: 120.0,
                         color: const Color(0x10000000),
                         child: const Center(
@@ -149,11 +148,7 @@ class ChatMessageBubble extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 4.0),
-                      const Icon(
-                        CupertinoIcons.checkmark_alt,
-                        size: 14.0,
-                        color: Colors.white,
-                      ),
+                      _buildStatusIcon(message.status),
                     ],
                   ),
                 ],
@@ -246,6 +241,31 @@ class ChatMessageBubble extends StatelessWidget {
           ],
         ),
       );
+    }
+  }
+  Widget _buildStatusIcon(MessageStatus status) {
+    switch (status) {
+      case MessageStatus.sending:
+        return Icon(
+          Icons.access_time_rounded,
+          size: 12.0,
+          color: Colors.white.withValues(alpha: 0.65),
+        );
+      case MessageStatus.sent:
+      case MessageStatus.delivered:
+        // Centang 1 (Terkirim, belum dibaca / !read)
+        return Icon(
+          Icons.done_rounded,
+          size: 14.5,
+          color: Colors.white.withValues(alpha: 0.75),
+        );
+      case MessageStatus.read:
+        // Centang 2 (Sudah dibaca / read) - WhatsApp-style blue double check
+        return const Icon(
+          Icons.done_all_rounded,
+          size: 16.0,
+          color: Color(0xFF67E8F9),
+        );
     }
   }
 }

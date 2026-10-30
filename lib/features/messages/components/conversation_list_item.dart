@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 import 'package:snapan_market/features/messages/models/conversation_model.dart';
+import 'package:snapan_market/features/messages/models/chat_message_model.dart';
 import 'package:snapan_market/core/components/mascot_flair_badge.dart';
 
 /// Conversation Row item sliced 1:1 from pen.dev redesigned Row (`snaps-design.pen` node `bzgQS`)
@@ -148,9 +149,15 @@ class ConversationListItem extends StatelessWidget {
                       children: [
                         if (conversation.isSender) ...[
                           Icon(
-                            CupertinoIcons.checkmark_alt,
+                            conversation.lastMessageStatus == MessageStatus.read
+                                ? Icons.done_all_rounded
+                                : (conversation.lastMessageStatus == MessageStatus.sending
+                                    ? Icons.access_time_rounded
+                                    : Icons.done_rounded),
                             size: 15.0,
-                            color: hasUnread ? const Color(0xFF94A3B8) : azurePrimary,
+                            color: conversation.lastMessageStatus == MessageStatus.read
+                                ? azurePrimary
+                                : const Color(0xFF94A3B8),
                           ),
                           const SizedBox(width: 4.0),
                         ],

@@ -57,10 +57,26 @@ class SupabaseChatService {
               }
             }
           }
+          // Check whether user's outgoing messages in these conversations are unread
+          final outgoingUnreadRows = await _client
+              .from('direct_messages')
+              .select('conversation_id')
+              .inFilter('conversation_id', convIds)
+              .eq('sender_id', user.id)
+              .eq('is_read', false);
+
+          final outgoingUnreadSet = <String>{};
+          for (final row in (outgoingUnreadRows as List<dynamic>)) {
+            if (row is Map<String, dynamic>) {
+              final cid = row['conversation_id'] as String?;
+              if (cid != null) outgoingUnreadSet.add(cid);
+            }
+          }
 
           for (final conv in uniqueList) {
             final cid = conv['id'] as String?;
             conv['unread_count'] = cid != null ? (unreadMap[cid] ?? 0) : 0;
+            conv['is_last_message_read'] = cid != null && !outgoingUnreadSet.contains(cid);
           }
         } catch (e) {
           debugPrint('Error fetching unread counts: $e');
@@ -291,13 +307,15 @@ class SupabaseChatService {
   RealtimeChannel subscribeToGlobalInbox({
     required void Function(Map<String, dynamic> messageRecord) onNewMessage,
     required void Function(Map<String, dynamic> conversationRecord) onConversationUpdated,
+    void Function(Map<String, dynamic> messageRecord)? onMessageUpdated,
   }) {
     final user = _currentUser;
     final userId = user?.id ?? 'guest';
     final channelName = 'inbox_global_$userId';
 
-    return _client
-        .channel(channelName)
+    final channel = _client.channel(channelName);
+
+    channel
         .onPostgresChanges(
           event: PostgresChangeEvent.insert,
           schema: 'public',
@@ -317,7 +335,21 @@ class SupabaseChatService {
               onConversationUpdated(payload.newRecord);
             }
           },
-        )
-        .subscribe();
+        );
+
+    if (onMessageUpdated != null) {
+      channel.onPostgresChanges(
+        event: PostgresChangeEvent.update,
+        schema: 'public',
+        table: 'direct_messages',
+        callback: (payload) {
+          if (payload.newRecord.isNotEmpty) {
+            onMessageUpdated(payload.newRecord);
+          }
+        },
+      );
+    }
+
+    return channel.subscribe();
   }
 }

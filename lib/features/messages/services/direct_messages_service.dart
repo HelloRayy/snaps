@@ -52,7 +52,23 @@ class DirectMessagesService extends ChangeNotifier {
     _globalInboxSub = SupabaseService.instance.subscribeToGlobalInbox(
       onNewMessage: _handleIncomingRealtimeMessage,
       onConversationUpdated: _handleConversationUpdated,
+      onMessageUpdated: _handleMessageUpdatedInInbox,
     );
+  }
+
+  void _handleMessageUpdatedInInbox(Map<String, dynamic> record) {
+    final convId = record['conversation_id']?.toString() ?? '';
+    final isRead = record['is_read'] == true;
+    if (convId.isEmpty || !isRead) return;
+
+    final resolvedId = resolveConversationId(convId);
+    final idx = _conversations.indexWhere((c) => c.id == convId || c.id == resolvedId);
+    if (idx != -1 && _conversations[idx].isSender) {
+      _conversations[idx] = _conversations[idx].copyWith(
+        lastMessageStatus: MessageStatus.read,
+      );
+      notifyListeners();
+    }
   }
 
   void _handleIncomingRealtimeMessage(Map<String, dynamic> record) async {
@@ -313,6 +329,7 @@ class DirectMessagesService extends ChangeNotifier {
         lastMessage: msg.text,
         timestamp: msg.timestamp,
         isSender: msg.isMe,
+        lastMessageStatus: msg.status,
       );
     } else if (conversation != null) {
       final cleanUsername = conversation.user.username.replaceAll('@', '').toLowerCase().trim();
@@ -326,12 +343,14 @@ class DirectMessagesService extends ChangeNotifier {
           lastMessage: msg.text,
           timestamp: msg.timestamp,
           isSender: msg.isMe,
+          lastMessageStatus: msg.status,
         );
       } else {
         _conversations.insert(0, conversation.copyWith(
           lastMessage: msg.text,
           timestamp: msg.timestamp,
           isSender: msg.isMe,
+          lastMessageStatus: msg.status,
         ));
       }
     }
@@ -345,6 +364,13 @@ class DirectMessagesService extends ChangeNotifier {
         msgs[idx] = updatedMsg;
         notifyListeners();
       }
+    }
+    final cIdx = _conversations.indexWhere((c) => c.id == conversationId);
+    if (cIdx != -1 && _conversations[cIdx].isSender) {
+      _conversations[cIdx] = _conversations[cIdx].copyWith(
+        lastMessageStatus: updatedMsg.status,
+      );
+      notifyListeners();
     }
   }
 

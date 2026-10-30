@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:snapan_market/features/messages/components/chat_product_card.dart';
 import 'package:snapan_market/features/messages/components/conversation_list_item.dart';
 import 'package:snapan_market/features/messages/models/conversation_model.dart';
+import 'package:snapan_market/features/messages/components/chat_message_bubble.dart';
+import 'package:snapan_market/features/messages/models/chat_message_model.dart';
 
 void main() {
   group('ChatProductCard & ConversationListItem Product Context Tests', () {
@@ -136,6 +138,80 @@ void main() {
       );
 
       expect(find.byIcon(CupertinoIcons.bag_fill), findsNothing);
+    });
+
+    testWidgets('ChatMessageBubble renders single check (sent) and double check (read)', (tester) async {
+      const sentMsg = ChatMessageModel(
+        id: 'msg-1',
+        senderId: 'saya',
+        text: 'Pesan terkirim belum dibaca',
+        timestamp: '10:00',
+        isMe: true,
+        status: MessageStatus.sent,
+      );
+
+      const readMsg = ChatMessageModel(
+        id: 'msg-2',
+        senderId: 'saya',
+        text: 'Pesan sudah dibaca',
+        timestamp: '10:01',
+        isMe: true,
+        status: MessageStatus.read,
+      );
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: Column(
+              children: [
+                ChatMessageBubble(message: sentMsg),
+                ChatMessageBubble(message: readMsg),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      // Verify single check for sent message
+      expect(find.byIcon(Icons.done_rounded), findsOneWidget);
+      // Verify double check for read message
+      expect(find.byIcon(Icons.done_all_rounded), findsOneWidget);
+    });
+
+    testWidgets('ConversationListItem renders single check when sent and double check when read', (tester) async {
+      final unreadConv = ConversationModel(
+        id: 'conv-unread',
+        user: const ConversationUser(name: 'Andi', username: 'andi', avatar: ''),
+        lastMessage: 'Halo bro',
+        timestamp: '12:00',
+        isSender: true,
+        lastMessageStatus: MessageStatus.sent,
+      );
+
+      final readConv = ConversationModel(
+        id: 'conv-read',
+        user: const ConversationUser(name: 'Budi', username: 'budi', avatar: ''),
+        lastMessage: 'Oke siap',
+        timestamp: '12:05',
+        isSender: true,
+        lastMessageStatus: MessageStatus.read,
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Column(
+              children: [
+                ConversationListItem(conversation: unreadConv, onTap: () {}),
+                ConversationListItem(conversation: readConv, onTap: () {}),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byIcon(Icons.done_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.done_all_rounded), findsOneWidget);
     });
   });
 }
