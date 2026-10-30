@@ -4,7 +4,7 @@ import "package:flutter/services.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
 import "package:snapan_market/features/messages/models/conversation_model.dart";
 
-enum ChatProductCardShape { single, firstReceived, lastReceived }
+enum ChatProductCardShape { single, firstReceived, lastReceived, sent }
 
 /// Kartu konteks produk COD 1:1 matching ChatProductCard.tsx
 class ChatProductCard extends StatelessWidget {
@@ -13,13 +13,14 @@ class ChatProductCard extends StatelessWidget {
   final ChatProductCardShape shape;
   final VoidCallback? onViewProduct;
   final VoidCallback? onCheckLocation;
+  final bool isMe;
 
   const ChatProductCard({
     super.key,
     required this.product,
     this.location = "Lab Fisika Lt 2",
     this.shape = ChatProductCardShape.firstReceived,
-    this.onViewProduct,
+    this.isMe = false,
     this.onCheckLocation,
   });
 
@@ -41,6 +42,13 @@ class ChatProductCard extends StatelessWidget {
           bottomRight: Radius.circular(20.0),
           bottomLeft: Radius.circular(4.0),
         );
+      case ChatProductCardShape.sent:
+        return const BorderRadius.only(
+          topLeft: Radius.circular(20.0),
+          topRight: Radius.circular(20.0),
+          bottomLeft: Radius.circular(20.0),
+          bottomRight: Radius.circular(6.0),
+        );
     }
   }
 
@@ -57,7 +65,11 @@ class ChatProductCard extends StatelessWidget {
         color: AppColors.adaptiveSurfaceElevated(context),
         borderRadius: _getBorderRadius(),
         border: Border.all(
-          color: AppColors.adaptiveBorder(context),
+          color: (isMe || shape == ChatProductCardShape.sent)
+              ? (isDark
+                  ? const Color(0xFF1D64EC).withValues(alpha: 0.4)
+                  : const Color(0xFF60A5FA).withValues(alpha: 0.5))
+              : AppColors.adaptiveBorder(context),
           width: 0.8,
         ),
         boxShadow: const [
@@ -74,6 +86,31 @@ class ChatProductCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (isMe || shape == ChatProductCardShape.sent) ...[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 6.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      CupertinoIcons.bag_fill,
+                      size: 11.0,
+                      color: isDark ? const Color(0xFF60A5FA) : const Color(0xFF1D64EC),
+                    ),
+                    const SizedBox(width: 4.0),
+                    Text(
+                      "Produk yang Ditanyakan",
+                      style: TextStyle(
+                        fontSize: 11.0,
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? const Color(0xFF60A5FA) : const Color(0xFF1D64EC),
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             // 1. Top Inset Summary Box
             InkWell(
               onTap: () {

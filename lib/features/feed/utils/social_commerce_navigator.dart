@@ -45,6 +45,7 @@ class SocialCommerceNavigator {
       ),
       lastMessage: "Halo, saya tertarik dengan $title",
       timestamp: "Baru saja",
+      isSender: true,
       isSeller: false,
       isRequest: true,
       productContext: ProductContext(

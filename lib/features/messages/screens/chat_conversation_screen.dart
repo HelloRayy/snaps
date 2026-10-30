@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:snapan_market/core/components/glass_toolbar_top.dart';
-import 'package:snapan_market/core/components/snaps_skeleton.dart';
+import 'package:snapan_market/core/components/avatar/default_profile_avatar.dart';
+import 'package:snapan_market/core/components/mascot_flair_badge.dart';
+import 'package:snapan_market/core/components/skeleton/chat_conversation_skeleton.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/features/map/screens/campus_map_screen.dart';
 import 'package:snapan_market/features/messages/components/chat_app_bar_title.dart';
@@ -35,7 +38,8 @@ class ChatConversationScreen extends StatefulWidget {
   State<ChatConversationScreen> createState() => _ChatConversationScreenState();
 }
 
-class _ChatConversationScreenState extends State<ChatConversationScreen> {
+class _ChatConversationScreenState extends State<ChatConversationScreen>
+    with WidgetsBindingObserver {
   late String _activeConvId;
   late List<ChatMessageModel> _messages;
   final ScrollController _scrollController = ScrollController();
@@ -49,11 +53,13 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
     _activeConvId = widget.conversation.id;
     DirectMessagesService.instance.activeConversationId = _activeConvId;
     DirectMessagesService.instance.addListener(_onServiceChanged);
+    WidgetsBinding.instance.addObserver(this);
 
     final savedMessages = DirectMessagesService.instance.getMessages(_activeConvId);
     if (savedMessages.isNotEmpty) {
       _messages = List.from(savedMessages);
       _isLoadingMessages = false;
+      _scrollToBottom(60, true);
     } else {
       _messages = [];
       _isLoadingMessages = true;
@@ -74,6 +80,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
         _messages = List.from(updated);
         _isLoadingMessages = false;
       });
+      _scrollToBottom(0, false);
       _scrollToBottom();
     }
   }
@@ -142,6 +149,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
           _messages = List.from(live);
         });
         _scrollToBottom();
+        _scrollToBottom(50, true);
       }
     } finally {
       if (mounted) {
@@ -168,6 +176,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
           DirectMessagesService.instance.markAsRead(_activeConvId);
         }
         _scrollToBottom();
+        _scrollToBottom(0, false);
       },
       onMessageUpdated: (updatedRecord) {
         if (!mounted) return;
@@ -187,19 +196,31 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
     DirectMessagesService.instance.removeListener(_onServiceChanged);
     _messagesSubscription?.unsubscribe();
     _scrollController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
 
-  void _scrollToBottom([int delayMs = 0]) {
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    _scrollToBottom(150);
+  }
+
+  void _scrollToBottom([int delayMs = 0, bool immediate = false]) {
     void performScroll() {
       if (!mounted) return;
-      if (_scrollController.hasClients && _scrollController.offset > 0) {
-        _scrollController.animateTo(
-          0.0,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOutCubic,
-        );
+      if (_scrollController.hasClients) {
+        final target = _scrollController.position.maxScrollExtent;
+        if (immediate) {
+          _scrollController.jumpTo(target);
+        } else {
+          _scrollController.animateTo(
+            target,
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOutCubic,
+          );
+        }
       }
     }
 
@@ -356,9 +377,100 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
     }
   }
 
+  Widget _buildChatHeader(bool isDark) {
+    final user = widget.conversation.user;
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          AppAvatar(
+            avatarUrl: user.avatar,
+            size: 64.0,
+            name: user.name,
+          ),
+          const SizedBox(height: 10.0),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: Text(
+                  user.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 17.0,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    letterSpacing: -0.3,
+                  ),
+                ),
+              ),
+              if (user.isVerified) ...[
+                const SizedBox(width: 4.0),
+                const Icon(
+                  CupertinoIcons.checkmark_seal_fill,
+                  size: 15.0,
+                  color: Color(0xFF008BFF),
+                ),
+              ],
+              if (user.mascotFlair != null) ...[
+                const SizedBox(width: 4.0),
+                MascotFlairBadge(
+                  flair: user.mascotFlair!,
+                  size: 26.0,
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 2.0),
+          Text(
+            "@${user.username.replaceAll('@', '')}",
+            style: TextStyle(
+              fontSize: 13.5,
+              color: AppColors.adaptiveMuted(context),
+              letterSpacing: -0.2,
+            ),
+          ),
+          if (user.classGroup != null && user.classGroup!.isNotEmpty) ...[
+            const SizedBox(height: 6.0),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.0),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(6.0),
+              ),
+              child: Text(
+                user.classGroup!,
+                style: TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w500,
+                  color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                ),
+              ),
+            ),
+          ],
+          const SizedBox(height: 10.0),
+          Text(
+            "Ini adalah awal percakapan Anda dengan ${user.name}.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12.0,
+              color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+            ),
+          ),
+          const SizedBox(height: 12.0),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isCardFromMe = widget.conversation.isSender || !widget.conversation.isSeller;
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF0B0F17) : const Color(0xFFF6F7F9),
       appBar: GlassToolbarTop(
@@ -399,16 +511,21 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
           children: [
             Expanded(
               child: _isLoadingMessages && _messages.isEmpty
-                  ? Column(
+                  ? ListView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 14.0),
                       children: [
+                        _buildChatHeader(isDark),
                         if (widget.conversation.productContext != null)
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(14.0, 14.0, 14.0, 0.0),
+                            padding: const EdgeInsets.only(bottom: 12.0),
                             child: Align(
-                              alignment: Alignment.centerLeft,
+                              alignment: isCardFromMe ? Alignment.centerRight : Alignment.centerLeft,
                               child: ChatProductCard(
                                 product: widget.conversation.productContext!,
                                 location: widget.conversation.productContext?.location ?? "Kantin Belakang SMKN 8 Semarang",
+                                shape: isCardFromMe ? ChatProductCardShape.sent : ChatProductCardShape.firstReceived,
+                                isMe: isCardFromMe,
                                 onViewProduct: _isLoadingProduct ? null : _handleViewProduct,
                                 onCheckLocation: () {
                                   Navigator.of(context).push(
@@ -422,25 +539,28 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
                               ),
                             ),
                           ),
-                        const Expanded(child: ChatConversationSkeleton()),
+                        const SizedBox(
+                          height: 220.0,
+                          child: ChatConversationSkeleton(),
+                        ),
                       ],
                     )
-                  : ListView.builder(
+                  : ListView(
                       controller: _scrollController,
-                      reverse: true,
                       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                       padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 14.0),
-                      itemCount: _messages.length + (widget.conversation.productContext != null ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        final hasProduct = widget.conversation.productContext != null;
-                        if (hasProduct && index == _messages.length) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
+                      children: [
+                        _buildChatHeader(isDark),
+                        if (widget.conversation.productContext != null)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 12.0),
                             child: Align(
-                              alignment: Alignment.centerLeft,
+                              alignment: isCardFromMe ? Alignment.centerRight : Alignment.centerLeft,
                               child: ChatProductCard(
                                 product: widget.conversation.productContext!,
                                 location: widget.conversation.productContext?.location ?? "Kantin Belakang SMKN 8 Semarang",
+                                shape: isCardFromMe ? ChatProductCardShape.sent : ChatProductCardShape.firstReceived,
+                                isMe: isCardFromMe,
                                 onViewProduct: _isLoadingProduct ? null : _handleViewProduct,
                                 onCheckLocation: () {
                                   Navigator.of(context).push(
@@ -453,19 +573,20 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
                                 },
                               ),
                             ),
-                          );
-                        }
-                        final msgIndex = _messages.length - 1 - index;
-                        final msg = _messages[msgIndex];
-                        return ChatMessageBubble(message: msg);
-                      },
+                          ),
+                        ..._messages.map((msg) => ChatMessageBubble(message: msg)),
+                      ],
                     ),
             ),
             ChatComposerBar(
-            initialText: _messages.isEmpty ? widget.initialDraft : null,
-            onSendMessage: _handleSendMessage,
-            onSendMessageWithMedia: _handleSendMessageWithMedia,
-          ),
+              initialText: _messages.isEmpty ? widget.initialDraft : null,
+              onSendMessage: _handleSendMessage,
+              onSendMessageWithMedia: _handleSendMessageWithMedia,
+              onTap: () {
+                _scrollToBottom(50);
+                _scrollToBottom(250);
+              },
+            ),
         ],
       ),
     ),
