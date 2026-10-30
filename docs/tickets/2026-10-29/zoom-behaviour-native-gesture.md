@@ -3,7 +3,7 @@
 > **Dokumen Spesifikasi Teknis & Pendekatan Arsitektur**
 > - **Tanggal**: 2026-10-29
 > - **Domain**: `gestures / zoom / lightbox / interactive_viewer / gesture_arena`
-> - **Status**: In Discussion (Approaching)
+> - **Status**: DONE (Implemented & Verified)
 
 ---
 
@@ -84,7 +84,7 @@ Untuk swipe-up: aplikasi sengaja diberi ganjalan kaku di bagian atas. Kamu hanya
 
 ## 5. Kriteria Selesai (Definition of Done)
 
-- [ ] Saat gambar diperbesar (zoom in), pengguna dapat menggeser (pan) gambar ke segala arah menggunakan 1 jari dengan mulus tanpa macet.
-- [ ] Gestur cubit zoom in dan zoom out dengan dua jari merespons seketika tanpa terasa kaku atau tersendat.
-- [ ] Saat skala normal (1.0x), mengusap gambar ke bawah (swipe down) maupun ke atas (swipe up) dapat menutup layar lightbox secara mulus.
-- [ ] Latar belakang merespons tarikan ke atas dan ke bawah dengan memudar secara proporsional sebelum dialog tertutup.
+- [x] Saat gambar diperbesar (zoom in), pengguna dapat menggeser (pan) gambar ke segala arah menggunakan 1 jari dengan mulus tanpa macet.
+- [x] Gestur cubit zoom in dan zoom out dengan dua jari merespons seketika tanpa terasa kaku atau tersendat.
+- [x] Saat skala normal (1.0x), mengusap gambar ke bawah (swipe down) maupun ke atas (swipe up) dapat menutup layar lightbox secara mulus.
+- [x] Latar belakang merespons tarikan ke atas dan ke bawah dengan memudar secara proporsional sebelum dialog tertutup.

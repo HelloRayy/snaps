@@ -197,5 +197,48 @@ void main() {
         expect(find.byType(MediaLightboxDialog), findsNothing);
       },
     );
+
+    testWidgets(
+      'Vertical drag up (swipe up) dismisses modal when not zoomed',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Builder(
+              builder: (context) {
+                return Scaffold(
+                  body: ElevatedButton(
+                    onPressed: () {
+                      MediaLightboxDialog.show(
+                        context: context,
+                        images: const ['https://example.com/test.jpg'],
+                        initialIndex: 0,
+                      );
+                    },
+                    child: const Text('Buka Lightbox'),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+
+        // Open lightbox
+        await tester.tap(find.text('Buka Lightbox'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(MediaLightboxDialog), findsOneWidget);
+
+        // Fling upward (negative Y offset and velocity)
+        await tester.fling(
+          find.byType(MediaLightboxDialog),
+          const Offset(0.0, -500.0),
+          1000.0,
+        );
+        await tester.pumpAndSettle();
+
+        // Dialog is now dismissed via swipe up
+        expect(find.byType(MediaLightboxDialog), findsNothing);
+      },
+    );
   });
 }

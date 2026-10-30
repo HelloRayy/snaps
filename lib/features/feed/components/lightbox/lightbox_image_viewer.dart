@@ -28,6 +28,7 @@ class _LightboxImageViewerState extends State<LightboxImageViewer>
   TapDownDetails? _doubleTapDetails;
 
   bool _isZoomed = false;
+  bool _isInteracting = false;
 
   @override
   void initState() {
@@ -118,10 +119,11 @@ class _LightboxImageViewerState extends State<LightboxImageViewer>
           transformationController: _controller,
           minScale: 0.8,
           maxScale: 4.5,
-          panEnabled: _isZoomed,
+          panEnabled: _isZoomed || _isInteracting,
           boundaryMargin: EdgeInsets.zero,
           clipBehavior: Clip.none,
           onInteractionStart: (_) {
+            _isInteracting = true;
             widget.onInteractionChanged?.call(true);
             if (_animController.isAnimating) {
               _animController.stop();
@@ -136,6 +138,7 @@ class _LightboxImageViewerState extends State<LightboxImageViewer>
             }
           },
           onInteractionEnd: (_) {
+            _isInteracting = false;
             widget.onInteractionChanged?.call(false);
             final scale = _controller.value.getMaxScaleOnAxis();
             if (scale <= 1.02) {

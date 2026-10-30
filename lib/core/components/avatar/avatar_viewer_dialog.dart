@@ -80,15 +80,16 @@ class _AvatarViewerDialogState extends State<AvatarViewerDialog>
   TapDownDetails? _doubleTapDetails;
 
   int _activePointerCount = 0;
-  double _dragOffsetY = 0.0;
+  late final ValueNotifier<double> _dragOffsetNotifier;
   bool _isCurrentZoomed = false;
-
+  bool _isInteracting = false;
   @override
   void initState() {
     super.initState();
     _transformController = TransformationController();
     _transformController.addListener(_handleTransform);
 
+    _dragOffsetNotifier = ValueNotifier<double>(0.0);
     _springBackAnimController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 240),
@@ -110,46 +111,82 @@ class _AvatarViewerDialogState extends State<AvatarViewerDialog>
     _transformController.dispose();
     _springBackAnimController.dispose();
     _doubleTapAnimController.dispose();
+    _dragOffsetNotifier.dispose();
     super.dispose();
   }
 
   void _handleTransform() {
     final scale = _transformController.value.getMaxScaleOnAxis();
-    final zoomed = scale > 1.05;
+    final zoomed = scale > 1.02;
     if (zoomed != _isCurrentZoomed) {
       setState(() => _isCurrentZoomed = zoomed);
     }
   }
 
-  void _handleVerticalDragUpdate(DragUpdateDetails details) {
-    if (_isCurrentZoomed || _activePointerCount > 1) return;
-    setState(() {
-      _dragOffsetY += details.delta.dy;
-      if (_dragOffsetY < 0) {
-        _dragOffsetY = _dragOffsetY.clamp(-25.0, 0.0);
+  void _springBackToZero() {
+    if (_dragOffsetNotifier.value == 0.0) return;
+    _springBackAnimController.stop();
+    _springBackAnim = Tween<double>(begin: _dragOffsetNotifier.value, end: 0.0).animate(
+      CurvedAnimation(
+        parent: _springBackAnimController,
+        curve: Curves.easeOutCubic,
+      ),
+    )..addListener(() {
+        _dragOffsetNotifier.value = _springBackAnim!.value;
+      });
+    _springBackAnimController.forward(from: 0.0);
+  }
+
+  void _handleVerticalDragStart(DragStartDetails details) {
+    if (_isCurrentZoomed || _activePointerCount > 1 || _isInteracting) {
+      if (_dragOffsetNotifier.value != 0.0) {
+        _springBackToZero();
       }
-    });
+      return;
+    }
+    if (_springBackAnimController.isAnimating) {
+      _springBackAnimController.stop();
+    }
+  }
+
+  void _handleVerticalDragUpdate(DragUpdateDetails details) {
+    if (_isCurrentZoomed || _activePointerCount > 1 || _isInteracting) {
+      if (_dragOffsetNotifier.value != 0.0) {
+        _springBackToZero();
+      }
+      return;
+    }
+    _dragOffsetNotifier.value =
+        (_dragOffsetNotifier.value + details.delta.dy).clamp(-600.0, 600.0);
   }
 
   void _handleVerticalDragEnd(DragEndDetails details) {
-    if (_isCurrentZoomed || _activePointerCount > 1) return;
+    if (_isCurrentZoomed || _activePointerCount > 1 || _isInteracting) {
+      if (_dragOffsetNotifier.value != 0.0) {
+        _springBackToZero();
+      }
+      return;
+    }
     final velocity = details.primaryVelocity ?? 0.0;
-    if (_dragOffsetY > 110.0 || velocity > 650.0) {
+    if (_dragOffsetNotifier.value.abs() > 110.0 || velocity.abs() > 650.0) {
       HapticFeedback.lightImpact();
       Navigator.of(context).pop();
-    } else if (_dragOffsetY != 0.0) {
-      _springBackAnim = Tween<double>(begin: _dragOffsetY, end: 0.0).animate(
-        CurvedAnimation(
-          parent: _springBackAnimController,
-          curve: Curves.easeOutCubic,
-        ),
-      )..addListener(() {
-          setState(() {
-            _dragOffsetY = _springBackAnim!.value;
-          });
-        });
-      _springBackAnimController.forward(from: 0.0);
+    } else if (_dragOffsetNotifier.value != 0.0) {
+      _springBackToZero();
     }
+  }
+
+  void _animateReset() {
+    if (_transformController.value == Matrix4.identity()) return;
+    _doubleTapAnimController.stop();
+    _doubleTapAnimation = Matrix4Tween(
+      begin: _transformController.value,
+      end: Matrix4.identity(),
+    ).animate(CurvedAnimation(
+      parent: _doubleTapAnimController,
+      curve: Curves.easeOutCubic,
+    ));
+    _doubleTapAnimController.forward(from: 0.0);
   }
 
   Widget _buildAvatarImage(double size, bool isDark) {
@@ -254,202 +291,198 @@ class _AvatarViewerDialogState extends State<AvatarViewerDialog>
     // Avatar diameter: proportional full circle (~290dp)
     final double avatarSize = (screenWidth * 0.76).clamp(240.0, 320.0);
 
-    final double pullProgress = (_dragOffsetY.clamp(0.0, 300.0) / 300.0);
-    final double bgOpacity = (1.0 - pullProgress * 0.7).clamp(0.0, 1.0);
-    final double scale = (1.0 - pullProgress * 0.15).clamp(0.7, 1.0);
-    final double controlsAlpha = (1.0 - pullProgress * 2.5).clamp(0.0, 1.0);
-
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final Color bgColor = isDark ? const Color(0xFF0B0F17) : Colors.white;
+
+    final bool canDismiss = !_isCurrentZoomed && !_isInteracting;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
-      child: Material(
-        color: bgColor.withValues(alpha: bgOpacity),
-        child: Listener(
-          onPointerDown: (_) {
-            setState(() {
-              _activePointerCount++;
-              if (_activePointerCount > 1 && _dragOffsetY != 0.0) {
-                _dragOffsetY = 0.0;
-              }
-            });
+      child: Listener(
+        onPointerDown: (_) {
+          _activePointerCount++;
+          if (_activePointerCount > 1 && _dragOffsetNotifier.value != 0.0) {
+            _springBackToZero();
+          }
+        },
+        onPointerUp: (_) {
+          _activePointerCount = (_activePointerCount - 1).clamp(0, 10);
+        },
+        onPointerCancel: (_) {
+          _activePointerCount = (_activePointerCount - 1).clamp(0, 10);
+        },
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () {
+            // Tap outside avatar image dismisses dialog
+            Navigator.of(context).pop();
           },
-          onPointerUp: (_) {
-            setState(() {
-              _activePointerCount = (_activePointerCount - 1).clamp(0, 10);
-            });
-          },
-          onPointerCancel: (_) {
-            setState(() {
-              _activePointerCount = (_activePointerCount - 1).clamp(0, 10);
-            });
-          },
-          child: GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: () {
-              // Tap outside avatar image dismisses dialog
-              Navigator.of(context).pop();
-            },
-            onVerticalDragUpdate: _handleVerticalDragUpdate,
-            onVerticalDragEnd: _handleVerticalDragEnd,
-            child: Stack(
-              children: [
-                // 1. Centered Full-Circle Avatar with Zoom and Drag
-                Center(
-                  child: Transform.translate(
-                    offset: Offset(0.0, _dragOffsetY),
-                    child: Transform.scale(
-                      scale: scale,
-                      child: GestureDetector(
-                        // Prevent tap on avatar from closing modal, support double tap to zoom
-                        onTap: () {},
-                        onDoubleTapDown: (details) => _doubleTapDetails = details,
-                        onDoubleTap: () => _handleDoubleTap(avatarSize),
-                        child: InteractiveViewer(
-                          transformationController: _transformController,
-                          minScale: 1.0,
-                          maxScale: 3.5,
-                          panEnabled: true,
-                          boundaryMargin: const EdgeInsets.all(40.0),
-                          clipBehavior: Clip.none,
-                          onInteractionEnd: (_) {
-                            final scale =
-                                _transformController.value.getMaxScaleOnAxis();
-                            if (scale <= 1.02 &&
-                                !_doubleTapAnimController.isAnimating) {
-                              if (_transformController.value !=
-                                  Matrix4.identity()) {
-                                _transformController.value = Matrix4.identity();
-                              }
-                            }
-                          },
-                          child: _buildAvatarImage(avatarSize, isDark),
+          onVerticalDragStart: canDismiss ? _handleVerticalDragStart : null,
+          onVerticalDragUpdate: canDismiss ? _handleVerticalDragUpdate : null,
+          onVerticalDragEnd: canDismiss ? _handleVerticalDragEnd : null,
+          child: ValueListenableBuilder<double>(
+            valueListenable: _dragOffsetNotifier,
+            builder: (context, dragOffsetY, child) {
+              final double pullProgress = (dragOffsetY.abs().clamp(0.0, 300.0) / 300.0);
+              final double bgOpacity = (1.0 - pullProgress * 0.7).clamp(0.0, 1.0);
+              final double scale = (1.0 - pullProgress * 0.15).clamp(0.7, 1.0);
+              final double controlsAlpha = (1.0 - pullProgress * 2.5).clamp(0.0, 1.0);
+
+              return Material(
+                color: bgColor.withValues(alpha: bgOpacity),
+                child: Stack(
+                  children: [
+                    // 1. Centered Full-Circle Avatar with Zoom and Drag
+                    Center(
+                      child: Transform.translate(
+                        offset: Offset(0.0, dragOffsetY),
+                        child: Transform.scale(
+                          scale: scale,
+                          child: child,
                         ),
                       ),
                     ),
-                  ),
-                ),
 
-              // 2. Contextual Top Header (User info + Close button)
-              Positioned(
-                top: topPadding + 14.0,
-                left: 16.0,
-                right: 16.0,
-                child: IgnorePointer(
-                  ignoring: controlsAlpha < 0.05,
-                  child: Opacity(
-                    opacity: controlsAlpha,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        // Circular close button (theme adaptive)
-                        MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          child: GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: () => Navigator.of(context).pop(),
-                            child: isDark
-                                ? ClipRRect(
-                                    borderRadius: BorderRadius.circular(20.0),
-                                    child: BackdropFilter(
-                                      filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                                      child: Container(
-                                        width: 40.0,
-                                        height: 40.0,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white.withValues(alpha: 0.12),
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: Colors.white.withValues(alpha: 0.16),
-                                            width: 1.0,
+                    // 2. Contextual Top Header (User info + Close button)
+                    Positioned(
+                      top: topPadding + 14.0,
+                      left: 16.0,
+                      right: 16.0,
+                      child: IgnorePointer(
+                        ignoring: controlsAlpha < 0.05,
+                        child: Opacity(
+                          opacity: controlsAlpha,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              // Circular close button (theme adaptive)
+                              MouseRegion(
+                                cursor: SystemMouseCursors.click,
+                                child: GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: () => Navigator.of(context).pop(),
+                                  child: isDark
+                                      ? ClipRRect(
+                                          borderRadius: BorderRadius.circular(20.0),
+                                          child: BackdropFilter(
+                                            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                                            child: Container(
+                                              width: 40.0,
+                                              height: 40.0,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white.withValues(alpha: 0.12),
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.white.withValues(alpha: 0.16),
+                                                  width: 1.0,
+                                                ),
+                                              ),
+                                              child: const Center(
+                                                child: Icon(
+                                                  Icons.close_rounded,
+                                                  size: 20.0,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      : Container(
+                                          width: 40.0,
+                                          height: 40.0,
+                                          decoration: BoxDecoration(
+                                            color: Colors.black.withValues(alpha: 0.05),
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: Colors.black.withValues(alpha: 0.08),
+                                              width: 1.0,
+                                            ),
+                                          ),
+                                          child: const Center(
+                                            child: Icon(
+                                              Icons.close_rounded,
+                                              size: 20.0,
+                                              color: Color(0xFF1E293B),
+                                            ),
                                           ),
                                         ),
-                                        child: const Icon(
-                                          Icons.close_rounded,
-                                          size: 20.0,
-                                          color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(width: 14.0),
+                              // User details (Name + Username)
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (widget.title != null && widget.title!.isNotEmpty)
+                                      Text(
+                                        widget.title!,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: 16.0,
+                                          fontWeight: FontWeight.w700,
+                                          letterSpacing: -0.2,
+                                          color: isDark ? Colors.white : const Color(0xFF0F172A),
                                         ),
                                       ),
-                                    ),
-                                  )
-                                : Container(
-                                    width: 40.0,
-                                    height: 40.0,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: const Color(0xFFE2E8F0),
-                                        width: 1.0,
-                                      ),
-                                      boxShadow: const [
-                                        BoxShadow(
-                                          color: Color(0x10000000),
-                                          blurRadius: 6.0,
-                                          offset: Offset(0, 2),
+                                    if (widget.subtitle != null && widget.subtitle!.isNotEmpty)
+                                      Text(
+                                        widget.subtitle!,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: 13.0,
+                                          fontWeight: FontWeight.w500,
+                                          color: isDark
+                                              ? const Color(0xFF94A3B8)
+                                              : const Color(0xFF64748B),
                                         ),
-                                      ],
-                                    ),
-                                    child: const Icon(
-                                      Icons.close_rounded,
-                                      size: 20.0,
-                                      color: Color(0xFF0F172A),
-                                    ),
-                                  ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-
-                        const SizedBox(width: 14.0),
-
-                        // User displayName & @username
-                        if (widget.title != null || widget.subtitle != null)
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (widget.title != null && widget.title!.isNotEmpty)
-                                  Text(
-                                    widget.title!,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.w700,
-                                      color: isDark
-                                          ? Colors.white
-                                          : const Color(0xFF0F172A),
-                                      letterSpacing: -0.3,
-                                    ),
-                                  ),
-                                if (widget.subtitle != null && widget.subtitle!.isNotEmpty)
-                                  Text(
-                                    widget.subtitle!,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: 13.0,
-                                      fontWeight: FontWeight.w400,
-                                      color: isDark
-                                          ? Colors.white.withValues(alpha: 0.68)
-                                          : const Color(0xFF64748B),
-                                      letterSpacing: -0.1,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
+              );
+            },
+            child: GestureDetector(
+              onTap: () {},
+              onDoubleTapDown: (details) => _doubleTapDetails = details,
+              onDoubleTap: () => _handleDoubleTap(avatarSize),
+              child: InteractiveViewer(
+                transformationController: _transformController,
+                minScale: 0.8,
+                maxScale: 3.5,
+                panEnabled: _isCurrentZoomed || _isInteracting,
+                boundaryMargin: const EdgeInsets.all(40.0),
+                clipBehavior: Clip.none,
+                onInteractionStart: (_) {
+                  _isInteracting = true;
+                  if (_doubleTapAnimController.isAnimating) {
+                    _doubleTapAnimController.stop();
+                  }
+                },
+                onInteractionEnd: (_) {
+                  _isInteracting = false;
+                  final scale = _transformController.value.getMaxScaleOnAxis();
+                  if (scale <= 1.02) {
+                    _animateReset();
+                  }
+                },
+                child: _buildAvatarImage(avatarSize, isDark),
               ),
-            ],
+            ),
           ),
         ),
       ),
-    ),
-  );
+    );
   }
 
   void _handleDoubleTap(double avatarSize) {
@@ -458,12 +491,12 @@ class _AvatarViewerDialogState extends State<AvatarViewerDialog>
     final currentScale = currentMatrix.getMaxScaleOnAxis();
 
     Matrix4 targetMatrix;
-    if (currentScale > 1.05) {
+    if (currentScale > 1.02) {
       targetMatrix = Matrix4.identity();
     } else {
       final tapPos = _doubleTapDetails?.localPosition ??
           Offset(avatarSize / 2, avatarSize / 2);
-      const targetScale = 2.2;
+      const targetScale = 2.4;
       final dx = -tapPos.dx * (targetScale - 1);
       final dy = -tapPos.dy * (targetScale - 1);
       targetMatrix = Matrix4.identity()
@@ -471,6 +504,7 @@ class _AvatarViewerDialogState extends State<AvatarViewerDialog>
         ..scale(targetScale);
     }
 
+    _doubleTapAnimController.stop();
     _doubleTapAnimation = Matrix4Tween(
       begin: currentMatrix,
       end: targetMatrix,
@@ -481,4 +515,5 @@ class _AvatarViewerDialogState extends State<AvatarViewerDialog>
 
     _doubleTapAnimController.forward(from: 0.0);
   }
+
 }

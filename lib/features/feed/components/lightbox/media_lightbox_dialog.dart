@@ -90,9 +90,9 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
   late AnimationController _likeAnimController;
   late Animation<double> _likeScaleAnim;
 
-  // Swipe-down to dismiss state
+  // Swipe-to-dismiss state
   int _activePointerCount = 0;
-  double _dragOffsetY = 0.0;
+  late final ValueNotifier<double> _dragOffsetNotifier;
   bool _isCurrentZoomed = false;
   bool _isInteractingWithViewer = false;
   late AnimationController _springBackAnimController;
@@ -103,6 +103,7 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
     _currentIndex = widget.initialIndex;
     _pageController = PageController(initialPage: widget.initialIndex);
 
+    _dragOffsetNotifier = ValueNotifier<double>(0.0);
     if (widget.post != null) {
       _isLiked = widget.post!.isLiked;
       _likesCount = widget.post!.likesCount;
@@ -134,61 +135,59 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
     _pageController.dispose();
     _likeAnimController.dispose();
     _springBackAnimController.dispose();
+    _dragOffsetNotifier.dispose();
     super.dispose();
   }
 
   void _springBackToZero() {
-    if (_dragOffsetY == 0.0) return;
+    if (_dragOffsetNotifier.value == 0.0) return;
     _springBackAnimController.stop();
-    _springBackAnim = Tween<double>(begin: _dragOffsetY, end: 0.0).animate(
+    _springBackAnim = Tween<double>(begin: _dragOffsetNotifier.value, end: 0.0).animate(
       CurvedAnimation(
         parent: _springBackAnimController,
         curve: Curves.easeOutCubic,
       ),
     )..addListener(() {
-        setState(() {
-          _dragOffsetY = _springBackAnim!.value;
-        });
+        _dragOffsetNotifier.value = _springBackAnim!.value;
       });
     _springBackAnimController.forward(from: 0.0);
   }
 
   void _handleVerticalDragStart(DragStartDetails details) {
     if (_isCurrentZoomed || _activePointerCount > 1 || _isInteractingWithViewer) {
-      if (_dragOffsetY != 0.0) {
+      if (_dragOffsetNotifier.value != 0.0) {
         _springBackToZero();
       }
       return;
+    }
+    if (_springBackAnimController.isAnimating) {
+      _springBackAnimController.stop();
     }
   }
 
   void _handleVerticalDragUpdate(DragUpdateDetails details) {
     if (_isCurrentZoomed || _activePointerCount > 1 || _isInteractingWithViewer) {
-      if (_dragOffsetY != 0.0) {
+      if (_dragOffsetNotifier.value != 0.0) {
         _springBackToZero();
       }
       return;
     }
-    setState(() {
-      _dragOffsetY += details.delta.dy;
-      if (_dragOffsetY < 0) {
-        _dragOffsetY = _dragOffsetY.clamp(-30.0, 0.0);
-      }
-    });
+    _dragOffsetNotifier.value =
+        (_dragOffsetNotifier.value + details.delta.dy).clamp(-600.0, 600.0);
   }
 
   void _handleVerticalDragEnd(DragEndDetails details) {
     if (_isCurrentZoomed || _activePointerCount > 1 || _isInteractingWithViewer) {
-      if (_dragOffsetY != 0.0) {
+      if (_dragOffsetNotifier.value != 0.0) {
         _springBackToZero();
       }
       return;
     }
     final velocity = details.primaryVelocity ?? 0.0;
-    if (_dragOffsetY > 110.0 || velocity > 650.0) {
+    if (_dragOffsetNotifier.value.abs() > 110.0 || velocity.abs() > 650.0) {
       HapticFeedback.lightImpact();
       Navigator.of(context).pop();
-    } else if (_dragOffsetY != 0.0) {
+    } else if (_dragOffsetNotifier.value != 0.0) {
       _springBackToZero();
     }
   }
@@ -249,140 +248,144 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
     final topPadding = mediaQuery.padding.top;
     final bottomPadding = mediaQuery.padding.bottom;
 
-    final double pullProgress = (_dragOffsetY.clamp(0.0, 300.0) / 300.0);
-    final double bgOpacity = (1.0 - pullProgress * 0.7).clamp(0.0, 1.0);
-    final double imageScale = (1.0 - pullProgress * 0.16).clamp(0.7, 1.0);
-    final double controlsAlpha = (1.0 - pullProgress * 2.5).clamp(0.0, 1.0);
-
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final Color bgColor = isDark ? const Color(0xFF0B0F17) : Colors.white;
 
+    final bool canDismiss = !_isCurrentZoomed && !_isInteractingWithViewer;
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
-      child: Material(
-        color: bgColor.withValues(alpha: bgOpacity),
-        child: Listener(
-          onPointerDown: (_) {
-            setState(() {
-              _activePointerCount++;
-              if (_activePointerCount > 1 && _dragOffsetY != 0.0) {
-                _springBackToZero();
-              }
-            });
-          },
-          onPointerUp: (_) {
-            setState(() {
-              _activePointerCount = (_activePointerCount - 1).clamp(0, 10);
-            });
-          },
-          onPointerCancel: (_) {
-            setState(() {
-              _activePointerCount = (_activePointerCount - 1).clamp(0, 10);
-            });
-          },
-          child: GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onVerticalDragStart: _handleVerticalDragStart,
-            onVerticalDragUpdate: _handleVerticalDragUpdate,
-            onVerticalDragEnd: _handleVerticalDragEnd,
-            child: Stack(
-              children: [
-                // 1. Edge-to-edge PageView with pinch-to-zoom and swipe-down translation
-                Positioned.fill(
-                  child: Transform.translate(
-                    offset: Offset(0.0, _dragOffsetY),
-                    child: Transform.scale(
-                      scale: imageScale,
-                      child: PageView.builder(
-                        controller: _pageController,
-                        physics: (_isCurrentZoomed ||
-                                _activePointerCount > 1 ||
-                                _isInteractingWithViewer)
-                            ? const NeverScrollableScrollPhysics()
-                            : const BouncingScrollPhysics(),
-                        itemCount: widget.images.length,
-                        onPageChanged: (idx) => setState(() {
-                          _currentIndex = idx;
-                          _isCurrentZoomed = false;
-                          _isInteractingWithViewer = false;
-                        }),
-                        itemBuilder: (context, index) {
-                          return LightboxImageViewer(
-                            imageUrl: widget.images[index],
-                            screenWidth: mediaQuery.size.width,
-                            onZoomChanged: (zoomed) {
-                              setState(() {
-                                _isCurrentZoomed = zoomed;
-                              });
-                            },
-                            onInteractionChanged: (interacting) {
-                              setState(() {
-                                _isInteractingWithViewer = interacting;
-                                if (interacting && _dragOffsetY != 0.0) {
-                                  _springBackToZero();
-                                }
-                              });
-                            },
-                          );
-                        },
+      child: Listener(
+        onPointerDown: (_) {
+          _activePointerCount++;
+          if (_activePointerCount > 1 && _dragOffsetNotifier.value != 0.0) {
+            _springBackToZero();
+          }
+        },
+        onPointerUp: (_) {
+          _activePointerCount = (_activePointerCount - 1).clamp(0, 10);
+        },
+        onPointerCancel: (_) {
+          _activePointerCount = (_activePointerCount - 1).clamp(0, 10);
+        },
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onVerticalDragStart: canDismiss ? _handleVerticalDragStart : null,
+          onVerticalDragUpdate: canDismiss ? _handleVerticalDragUpdate : null,
+          onVerticalDragEnd: canDismiss ? _handleVerticalDragEnd : null,
+          child: ValueListenableBuilder<double>(
+            valueListenable: _dragOffsetNotifier,
+            builder: (context, dragOffsetY, child) {
+              final double pullProgress = (dragOffsetY.abs().clamp(0.0, 300.0) / 300.0);
+              final double bgOpacity = (1.0 - pullProgress * 0.7).clamp(0.0, 1.0);
+              final double imageScale = (1.0 - pullProgress * 0.16).clamp(0.7, 1.0);
+              final double controlsAlpha = (1.0 - pullProgress * 2.5).clamp(0.0, 1.0);
+
+              return Material(
+                color: bgColor.withValues(alpha: bgOpacity),
+                child: Stack(
+                  children: [
+                    // 1. Edge-to-edge PageView with pinch-to-zoom and swipe translation
+                    Positioned.fill(
+                      child: Transform.translate(
+                        offset: Offset(0.0, dragOffsetY),
+                        child: Transform.scale(
+                          scale: imageScale,
+                          child: child,
+                        ),
                       ),
                     ),
-                  ),
-                ),
 
-            // 2. Overlays (Chevrons, Header, Action Bar) smoothly fading on swipe-down
-            Positioned.fill(
-              child: IgnorePointer(
-                ignoring: controlsAlpha < 0.05,
-                child: Opacity(
-                  opacity: controlsAlpha,
-                  child: Stack(
-                    children: [
-                      LightboxNavArrows(
-                        currentIndex: _currentIndex,
-                        totalImages: widget.images.length,
-                        onPrevious: () => _pageController.previousPage(
-                          duration: const Duration(milliseconds: 250),
-                          curve: Curves.easeInOut,
-                        ),
-                        onNext: () => _pageController.nextPage(
-                          duration: const Duration(milliseconds: 250),
-                          curve: Curves.easeInOut,
+                    // 2. Overlays (Chevrons, Header, Action Bar) smoothly fading on swipe
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        ignoring: controlsAlpha < 0.05,
+                        child: Opacity(
+                          opacity: controlsAlpha,
+                          child: Stack(
+                            children: [
+                              LightboxNavArrows(
+                                currentIndex: _currentIndex,
+                                totalImages: widget.images.length,
+                                onPrevious: () => _pageController.previousPage(
+                                  duration: const Duration(milliseconds: 250),
+                                  curve: Curves.easeInOut,
+                                ),
+                                onNext: () => _pageController.nextPage(
+                                  duration: const Duration(milliseconds: 250),
+                                  curve: Curves.easeInOut,
+                                ),
+                              ),
+                              LightboxTopHeader(
+                                topPadding: topPadding,
+                                currentIndex: _currentIndex,
+                                totalImages: widget.images.length,
+                                onClose: () => Navigator.of(context).pop(),
+                              ),
+                              if (widget.post != null)
+                                LightboxActionBar(
+                                  post: widget.post!,
+                                  bottomPadding: bottomPadding,
+                                  isLiked: _isLiked,
+                                  likesCount: _likesCount,
+                                  isReposted: _isReposted,
+                                  repostsCount: _repostsCount,
+                                  likeScaleAnim: _likeScaleAnim,
+                                  onLikeToggle: _handleLikeToggle,
+                                  onCommentClick: () {
+                                    Navigator.of(context).pop();
+                                    widget.onPostClick?.call(widget.post!);
+                                  },
+                                  onRepostToggle: _handleRepostToggle,
+                                  onShareClick: _handleShare,
+                                ),
+                            ],
+                          ),
                         ),
                       ),
-                      LightboxTopHeader(
-                        topPadding: topPadding,
-                        currentIndex: _currentIndex,
-                        totalImages: widget.images.length,
-                        onClose: () => Navigator.of(context).pop(),
-                      ),
-                      if (widget.post != null)
-                        LightboxActionBar(
-                          post: widget.post!,
-                          bottomPadding: bottomPadding,
-                          isLiked: _isLiked,
-                          likesCount: _likesCount,
-                          isReposted: _isReposted,
-                          repostsCount: _repostsCount,
-                          likeScaleAnim: _likeScaleAnim,
-                          onLikeToggle: _handleLikeToggle,
-                          onCommentClick: () {
-                            Navigator.of(context).pop();
-                            widget.onPostClick?.call(widget.post!);
-                          },
-                          onRepostToggle: _handleRepostToggle,
-                          onShareClick: _handleShare,
-                        ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ),
+              );
+            },
+            child: PageView.builder(
+              controller: _pageController,
+              physics: (_isCurrentZoomed || _isInteractingWithViewer)
+                  ? const NeverScrollableScrollPhysics()
+                  : const BouncingScrollPhysics(),
+              itemCount: widget.images.length,
+              onPageChanged: (idx) => setState(() {
+                _currentIndex = idx;
+                _isCurrentZoomed = false;
+                _isInteractingWithViewer = false;
+              }),
+              itemBuilder: (context, index) {
+                return LightboxImageViewer(
+                  imageUrl: widget.images[index],
+                  screenWidth: mediaQuery.size.width,
+                  onZoomChanged: (zoomed) {
+                    if (zoomed != _isCurrentZoomed) {
+                      setState(() {
+                        _isCurrentZoomed = zoomed;
+                      });
+                    }
+                  },
+                  onInteractionChanged: (interacting) {
+                    if (interacting != _isInteractingWithViewer) {
+                      setState(() {
+                        _isInteractingWithViewer = interacting;
+                        if (interacting && _dragOffsetNotifier.value != 0.0) {
+                          _springBackToZero();
+                        }
+                      });
+                    }
+                  },
+                );
+              },
             ),
-          ],
+          ),
         ),
       ),
-    ),
-  ),
-);
+    );
 }
 }
