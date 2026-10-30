@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:snapan_market/core/components/skeleton/snaps_shimmer.dart';
 /// Renders a feed image with dynamic aspect ratio bounded between
 /// [minAspectRatio] (default 0.8 for 4:5 vertical limit) and
 /// [maxAspectRatio] (default 1.91 for 16:9 landscape limit).
@@ -32,7 +32,7 @@ class _DynamicFeedImageState extends State<DynamicFeedImage> {
   ImageStream? _imageStream;
   ImageStreamListener? _listener;
   double? _resolvedRatio;
-
+  bool _isImageLoaded = false;
   @override
   void initState() {
     super.initState();
@@ -44,6 +44,7 @@ class _DynamicFeedImageState extends State<DynamicFeedImage> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.imageUrl != widget.imageUrl) {
       _resolvedRatio = _ratioCache[widget.imageUrl];
+      _isImageLoaded = false;
       _resolveRatio();
     }
   }
@@ -92,7 +93,7 @@ class _DynamicFeedImageState extends State<DynamicFeedImage> {
 
   @override
   Widget build(BuildContext context) {
-    final ratio = _resolvedRatio ?? (16 / 9);
+    final ratio = _resolvedRatio ?? (4 / 3);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final placeholderColor = isDark ? const Color(0xFF1E2021) : const Color(0xFFF1F5F9);
 
@@ -110,40 +111,58 @@ class _DynamicFeedImageState extends State<DynamicFeedImage> {
               width: 0.6,
             ),
           ),
-          child: AspectRatio(
-            aspectRatio: ratio,
-            child: Image.network(
-              widget.imageUrl,
-              cacheWidth: 800,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                color: placeholderColor,
-                child: Center(
-                  child: Icon(
-                    Icons.image_outlined,
-                    color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
-                    size: 40.0,
-                  ),
-                ),
-              ),
-              loadingBuilder: (context, child, progress) {
-                if (progress == null) return child;
-                return Container(
-                  color: placeholderColor,
-                  child: Center(
-                    child: SizedBox(
-                      width: 24.0,
-                      height: 24.0,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.0,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          isDark ? const Color(0xFF424445) : const Color(0xFFCBD5E1),
+          child: AnimatedSize(
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOutCubic,
+            child: AspectRatio(
+              aspectRatio: ratio,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  if (!_isImageLoaded)
+                    SnapsShimmer(
+                      child: Container(
+                        color: isDark
+                            ? const Color(0xFF242626)
+                            : const Color(0xFFF1F3F5),
+                      ),
+                    ),
+                  Image.network(
+                    widget.imageUrl,
+                    cacheWidth: 800,
+                    fit: BoxFit.cover,
+                    frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+                      if (wasSynchronouslyLoaded) {
+                        return child;
+                      }
+                      final isLoaded = frame != null;
+                      if (isLoaded && !_isImageLoaded) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (mounted && !_isImageLoaded) {
+                            setState(() => _isImageLoaded = true);
+                          }
+                        });
+                      }
+                      return AnimatedOpacity(
+                        opacity: isLoaded ? 1.0 : 0.0,
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeOutCubic,
+                        child: child,
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      color: placeholderColor,
+                      child: Center(
+                        child: Icon(
+                          Icons.image_outlined,
+                          color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+                          size: 40.0,
                         ),
                       ),
                     ),
                   ),
-                );
-              },
+                ],
+              ),
             ),
           ),
         ),
