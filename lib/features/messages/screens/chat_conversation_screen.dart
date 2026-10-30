@@ -460,7 +460,8 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
                         return ChatMessageBubble(message: msg);
                       },
                     ),
-          ChatComposerBar(
+            ),
+            ChatComposerBar(
             initialText: _messages.isEmpty ? widget.initialDraft : null,
             onSendMessage: _handleSendMessage,
             onSendMessageWithMedia: _handleSendMessageWithMedia,

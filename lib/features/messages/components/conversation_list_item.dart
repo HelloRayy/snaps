@@ -33,7 +33,6 @@ class ConversationListItem extends StatelessWidget {
     final secondaryInk = AppColors.adaptiveMuted(context);
     const azurePrimary = Color(0xFF008BFF); // pen.dev Accent #008BFF
     final titleColor = AppColors.adaptiveText(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Material(
       color: AppColors.adaptiveCanvas(context),
