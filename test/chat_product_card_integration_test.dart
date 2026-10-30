@@ -50,6 +50,29 @@ void main() {
       expect(locationTapped, isTrue);
     });
 
+    testWidgets('ChatProductCard renders inquiry badge when isMe is true', (tester) async {
+      const product = ProductContext(
+        title: 'Buku Pemrograman Flutter',
+        price: 'Rp 85.000',
+        location: 'Perpustakaan Lt 1',
+      );
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: ChatProductCard(
+              product: product,
+              location: 'Perpustakaan Lt 1',
+              isMe: true,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Produk yang Ditanyakan'), findsOneWidget);
+      expect(find.text('Buku Pemrograman Flutter'), findsOneWidget);
+    });
+
     testWidgets('ConversationListItem renders product chip badge when productContext is present', (tester) async {
       final conv = ConversationModel(
         id: 'conv-test-1',
