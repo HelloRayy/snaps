@@ -21,6 +21,7 @@ class ChatProductCard extends StatelessWidget {
     this.location = "Lab Fisika Lt 2",
     this.shape = ChatProductCardShape.firstReceived,
     this.isMe = false,
+    this.onViewProduct,
     this.onCheckLocation,
   });
 
