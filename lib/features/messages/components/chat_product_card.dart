@@ -56,10 +56,6 @@ class ChatProductCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.adaptiveSurfaceElevated(context),
         borderRadius: _getBorderRadius(),
-        border: Border.all(
-          color: AppColors.adaptiveBorder(context),
-          width: 0.8,
-        ),
         boxShadow: const [
           BoxShadow(
             color: Color(0x06000000),
