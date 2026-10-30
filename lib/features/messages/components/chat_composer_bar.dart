@@ -19,6 +19,7 @@ class ChatComposerBar extends StatefulWidget {
   final String placeholder;
   final VoidCallback? onTap;
   final FocusNode? focusNode;
+  final String? initialText;
 
   const ChatComposerBar({
     super.key,
@@ -28,6 +29,7 @@ class ChatComposerBar extends StatefulWidget {
     this.placeholder = 'Message',
     this.onTap,
     this.focusNode,
+    this.initialText,
   });
 
   @override
@@ -45,7 +47,8 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController();
+    _controller = TextEditingController(text: widget.initialText ?? '');
+    _canSend = _controller.text.trim().isNotEmpty;
     _controller.addListener(_handleTextChanged);
     if (widget.focusNode != null) {
       _focusNode = widget.focusNode!;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:snapan_market/features/feed/components/post_card/adaptive_carousel_card.dart';
 import 'package:snapan_market/features/feed/components/post_card/double_tap_like_overlay.dart';
 import 'package:snapan_market/features/feed/components/post_card/dynamic_feed_image.dart';
+import 'package:snapan_market/features/feed/components/post_card/post_buy_now_button.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 /// Media display for single image or multi-image horizontal carousel
@@ -11,6 +12,7 @@ class PostMediaSection extends StatefulWidget {
   final bool isDetail;
   final void Function(MarketPostModel item, int imageIndex)? onImageClick;
   final VoidCallback? onDoubleTapLike;
+  final ValueChanged<MarketPostModel>? onBuyNowClick;
 
   const PostMediaSection({
     super.key,
@@ -18,6 +20,7 @@ class PostMediaSection extends StatefulWidget {
     this.isDetail = false,
     this.onImageClick,
     this.onDoubleTapLike,
+    this.onBuyNowClick,
   });
 
   @override
@@ -25,6 +28,25 @@ class PostMediaSection extends StatefulWidget {
 }
 
 class _PostMediaSectionState extends State<PostMediaSection> {
+  Widget _wrapWithBuyNowOverlay(Widget content) {
+    if (!widget.item.isProduct || widget.onBuyNowClick == null) {
+      return content;
+    }
+
+    return Stack(
+      children: [
+        content,
+        Positioned(
+          left: 12.0,
+          bottom: 12.0,
+          child: PostBuyNowButton(
+            onPressed: () => widget.onBuyNowClick?.call(widget.item),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.item.images.isEmpty) return const SizedBox.shrink();
@@ -36,15 +58,18 @@ class _PostMediaSectionState extends State<PostMediaSection> {
         onTap: widget.onDoubleTapLike != null ? null : () => widget.onImageClick?.call(widget.item, 0),
       );
 
+      final Widget imageContent;
       if (widget.onDoubleTapLike != null) {
-        return DoubleTapLikeOverlay(
+        imageContent = DoubleTapLikeOverlay(
           onSingleTap: () => widget.onImageClick?.call(widget.item, 0),
           onDoubleTapLike: widget.onDoubleTapLike!,
           child: childImage,
         );
+      } else {
+        imageContent = childImage;
       }
 
-      return childImage;
+      return _wrapWithBuyNowOverlay(imageContent);
     }
 
     // 2. Multi-Image Layout (2+ photos) - Threads Dual Strategy: 50-50 Split or Peeking Carousel (SNAPS-79)
@@ -76,7 +101,7 @@ class _PostMediaSectionState extends State<PostMediaSection> {
       if (isBothPortraitOrSquare) {
         final halfWidth = (availableWidth - gridGap) / 2;
 
-        return SizedBox(
+        final splitContent = SizedBox(
           height: carouselHeight,
           child: Row(
             children: [
@@ -102,11 +127,12 @@ class _PostMediaSectionState extends State<PostMediaSection> {
             ],
           ),
         );
+        return _wrapWithBuyNowOverlay(splitContent);
       }
     }
 
     // POLA B THREADS: 3+ foto, kombinasi lanskap-potret, atau saat rasio gambar baru sedang di-resolve
-    return SizedBox(
+    final carouselContent = SizedBox(
       height: carouselHeight,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -134,6 +160,7 @@ class _PostMediaSectionState extends State<PostMediaSection> {
         ),
       ),
     );
+    return _wrapWithBuyNowOverlay(carouselContent);
   }
 
   Widget _buildInteractiveCard(

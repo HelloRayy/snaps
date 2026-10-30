@@ -20,10 +20,12 @@ import 'package:snapan_market/features/profile/screens/profile_screen.dart';
 /// Layar ruang obrolan 1-on-1 Direct Messaging (1:1 ActiveChatOverlay.tsx)
 class ChatConversationScreen extends StatefulWidget {
   final ConversationModel conversation;
+  final String? initialDraft;
 
   const ChatConversationScreen({
     super.key,
     required this.conversation,
+    this.initialDraft,
   });
 
   @override
@@ -365,7 +367,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                       alignment: Alignment.centerLeft,
                       child: ChatProductCard(
                         product: widget.conversation.productContext!,
-                        location: "Kantin Belakang SMKN 8 Semarang",
+                        location: widget.conversation.productContext?.location ?? "Kantin Belakang SMKN 8 Semarang",
                         onViewProduct: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -392,6 +394,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
             ),
           ),
           ChatComposerBar(
+            initialText: _messages.isEmpty ? widget.initialDraft : null,
             onSendMessage: _handleSendMessage,
             onSendMessageWithMedia: _handleSendMessageWithMedia,
             onTap: () {

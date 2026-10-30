@@ -28,6 +28,7 @@ class PostCardContentColumn extends StatelessWidget {
   final VoidCallback onLikeToggle;
   final VoidCallback onRepostToggle;
   final ValueChanged<MarketPostModel>? onShareClick;
+  final ValueChanged<MarketPostModel>? onBuyNowClick;
 
   const PostCardContentColumn({
     super.key,
@@ -51,6 +52,7 @@ class PostCardContentColumn extends StatelessWidget {
     required this.onLikeToggle,
     required this.onRepostToggle,
     this.onShareClick,
+    this.onBuyNowClick,
   });
 
   @override
@@ -107,6 +109,7 @@ class PostCardContentColumn extends StatelessWidget {
             isDetail: isDetail,
             onImageClick: onImageClick,
             onDoubleTapLike: isLiked ? null : onLikeToggle,
+            onBuyNowClick: onBuyNowClick,
           ),
         ],
         if (item.locationTag != null && item.locationTag!.isNotEmpty && item.poll == null) ...[

@@ -48,11 +48,13 @@ class ProductContext {
   final String title;
   final String price;
   final String? image;
+  final String? location;
 
   const ProductContext({
     required this.title,
     required this.price,
     this.image,
+    this.location,
   });
 }
 

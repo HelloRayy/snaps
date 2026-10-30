@@ -33,6 +33,7 @@ class HomeFeedScrollableList extends StatefulWidget {
   final void Function(MarketPostModel, int) onImageClick;
   final ValueChanged<MarketPostModel> onDeletePost;
   final void Function(MarketPostModel, List<String>)? onVotePoll;
+  final ValueChanged<MarketPostModel>? onBuyNowClick;
   final VoidCallback? onLogout;
 
   const HomeFeedScrollableList({
@@ -58,6 +59,7 @@ class HomeFeedScrollableList extends StatefulWidget {
     required this.onImageClick,
     required this.onDeletePost,
     this.onVotePoll,
+    this.onBuyNowClick,
     this.onLogout,
   });
 
@@ -226,6 +228,7 @@ class HomeFeedScrollableListState extends State<HomeFeedScrollableList> {
                     onImageClick: widget.onImageClick,
                     onDeletePost: widget.onDeletePost,
                     onVotePoll: widget.onVotePoll,
+                    onBuyNowClick: widget.onBuyNowClick,
                   );
                 },
               ),

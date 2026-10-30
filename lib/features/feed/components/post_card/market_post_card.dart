@@ -20,6 +20,7 @@ class MarketPostCard extends StatefulWidget {
   final void Function(MarketPostModel item, int imageIndex)? onImageClick;
   final void Function(MarketPostModel item, List<String> optionIds)? onVotePoll;
   final ValueChanged<MarketPostModel>? onDeletePost;
+  final ValueChanged<MarketPostModel>? onBuyNowClick;
   final VoidCallback? onMoreOptionsClick;
   final String variant; // 'feed' | 'detail'
 
@@ -37,6 +38,7 @@ class MarketPostCard extends StatefulWidget {
     this.onVotePoll,
     this.onMoreOptionsClick,
     this.onDeletePost,
+    this.onBuyNowClick,
     this.variant = 'feed',
   });
 
@@ -197,6 +199,7 @@ class _MarketPostCardState extends State<MarketPostCard>
           onLikeToggle: _handleLikeToggle,
           onRepostToggle: _handleRepostToggle,
           onShareClick: widget.onShareClick,
+          onBuyNowClick: widget.onBuyNowClick,
         ),
       );
     }
@@ -295,6 +298,7 @@ class _MarketPostCardState extends State<MarketPostCard>
               onLikeToggle: _handleLikeToggle,
               onRepostToggle: _handleRepostToggle,
               onShareClick: widget.onShareClick,
+              onBuyNowClick: widget.onBuyNowClick,
             ),
           ),
         ],

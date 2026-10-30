@@ -17,6 +17,7 @@ import 'package:snapan_market/features/feed/components/detail/post_detail_commen
 import 'package:snapan_market/features/feed/components/detail/post_detail_comments_list.dart';
 import 'package:snapan_market/features/feed/controllers/post_detail_controller.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
+import 'package:snapan_market/features/feed/utils/social_commerce_navigator.dart';
 import 'package:snapan_market/features/profile/screens/profile_screen.dart';
 import 'package:snapan_market/features/search/screens/search_screen.dart';
 
@@ -232,6 +233,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     },
                     onImageClick: (item, idx) => _handleImageClick(item.images, idx),
                     onVotePoll: (item, optionIds) => _controller.votePoll(optionIds),
+                    onBuyNowClick: (item) => SocialCommerceNavigator.openDirectMessage(context, item, hasBottomNav: false),
                     onTopicClick: (tag) => Navigator.push(
                       context,
                       AppSlidePageRoute(

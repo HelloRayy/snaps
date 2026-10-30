@@ -27,6 +27,7 @@ import 'package:snapan_market/features/feed/components/lightbox/media_lightbox_d
 import 'package:snapan_market/features/feed/controllers/home_feed_controller.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/feed/screens/post_detail_screen.dart';
+import 'package:snapan_market/features/feed/utils/social_commerce_navigator.dart';
 import 'package:snapan_market/features/messages/screens/direct_messages_screen.dart';
 import 'package:snapan_market/features/messages/services/direct_messages_service.dart';
 import 'package:snapan_market/features/profile/screens/profile_screen.dart';
@@ -207,6 +208,10 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     }
   }
 
+  void _handleBuyNow(MarketPostModel post) {
+    SocialCommerceNavigator.openDirectMessage(context, post, hasBottomNav: true);
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_fabAnimationController == null || _fabAnimation == null) _initAnimations();
@@ -297,6 +302,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
               onImageClick: (item, idx) => MediaLightboxDialog.show(context: context, images: item.images, initialIndex: idx, post: item, onLikeToggle: _feedController.toggleLike, onRepostToggle: _feedController.toggleRepost, onPostClick: _handlePostClick),
               onDeletePost: _feedController.deletePost,
               onVotePoll: (post, optionIds) => _feedController.votePoll(post.id, optionIds),
+              onBuyNowClick: _handleBuyNow,
               onLogout: widget.onLogout,
             ),
             messagesTab: const DirectMessagesScreen(showBackButton: false, showAppBar: false),

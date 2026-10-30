@@ -3,7 +3,7 @@
 > **Dokumen Spesifikasi Teknis & Pendekatan Arsitektur**
 > - **Tanggal**: 2026-10-29
 > - **Domain**: `feed / commerce / direct_messages / post_card / ui_redesign`
-> - **Status**: Planned (Approaching)
+> - **Status**: DONE
 
 ---
 
@@ -81,10 +81,10 @@ flowchart TD
 
 ## 5. Kriteria Selesai (Definition of Done)
 
-- [ ] Pada postingan jualan/produk di feed, muncul tombol overlay bertuliskan `Beli Sekarang` dengan ikon panah kanan di pojok kiri bawah container gambar.
-- [ ] Tombol `Beli Sekarang` memiliki kontras visual yang jelas dan nyaman dibaca di atas gambar apa pun.
-- [ ] Menekan tombol `Beli Sekarang` langsung membuka layar obrolan Direct Message dengan penjual.
-- [ ] Di dalam ruang chat, tersemat kartu konteks produk (`ChatProductCard`) yang memuat foto, judul, harga, dan lokasi COD.
-- [ ] Menekan area gambar di luar tombol `Beli Sekarang` tetap membuka Media Lightbox untuk zoom/preview gambar.
-- [ ] Obrolan yang terbentuk otomatis tersaring ke dalam tab filter "Pembeli" pada inbox Direct Messages penjual.
-- [ ] Feed linimasa tetap bersih tanpa perubahan tata letak tab atau filter chip yang tidak diperlukan.
+- [x] Pada postingan jualan/produk di feed, muncul tombol overlay bertuliskan `Beli Sekarang` dengan ikon panah kanan di pojok kiri bawah container gambar.
+- [x] Tombol `Beli Sekarang` memiliki kontras visual yang jelas dan nyaman dibaca di atas gambar apa pun.
+- [x] Menekan tombol `Beli Sekarang` langsung membuka layar obrolan Direct Message dengan penjual.
+- [x] Di dalam ruang chat, tersemat kartu konteks produk (`ChatProductCard`) yang memuat foto, judul, harga, dan lokasi COD.
+- [x] Menekan area gambar di luar tombol `Beli Sekarang` tetap membuka Media Lightbox untuk zoom/preview gambar.
+- [x] Obrolan yang terbentuk otomatis tersaring ke dalam tab filter "Pembeli" pada inbox Direct Messages penjual.
+- [x] Feed linimasa tetap bersih tanpa perubahan tata letak tab atau filter chip yang tidak diperlukan.
