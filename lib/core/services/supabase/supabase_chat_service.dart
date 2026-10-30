@@ -23,8 +23,22 @@ class SupabaseChatService {
       final list = (response as List<dynamic>).whereType<Map<String, dynamic>>().map((e) => Map<String, dynamic>.from(e)).toList();
       if (list.isEmpty) return [];
 
+      // Deduplicate conversations by other participant's ID (keep latest active room)
+      final seenOtherUserIds = <String>{};
+      final uniqueList = <Map<String, dynamic>>[];
+      for (final conv in list) {
+        final pOne = conv['participant_one'] as String? ?? '';
+        final otherId = pOne == user.id ? conv['participant_two'] as String? : pOne;
+        if (otherId != null && otherId.isNotEmpty) {
+          if (!seenOtherUserIds.add(otherId)) {
+            continue;
+          }
+        }
+        uniqueList.add(conv);
+      }
+
       // Calculate unread message counts per conversation
-      final convIds = list.map((c) => c['id'] as String?).whereType<String>().toList();
+      final convIds = uniqueList.map((c) => c['id'] as String?).whereType<String>().toList();
       if (convIds.isNotEmpty) {
         try {
           final unreadRows = await _client
@@ -44,7 +58,7 @@ class SupabaseChatService {
             }
           }
 
-          for (final conv in list) {
+          for (final conv in uniqueList) {
             final cid = conv['id'] as String?;
             conv['unread_count'] = cid != null ? (unreadMap[cid] ?? 0) : 0;
           }
@@ -53,7 +67,7 @@ class SupabaseChatService {
         }
       }
 
-      return list;
+      return uniqueList;
     } catch (e) {
       debugPrint('Error fetchConversations: $e');
       return [];
@@ -92,29 +106,40 @@ class SupabaseChatService {
     try {
       final response = await _client
           .from('conversations')
-          .select('id, product_id')
-          .or('and(participant_one.eq.${user.id},participant_two.eq.$otherUserId),and(participant_one.eq.$otherUserId,participant_two.eq.${user.id})');
+          .select('id, product_id, last_message_at')
+          .or('and(participant_one.eq.${user.id},participant_two.eq.$otherUserId),and(participant_one.eq.$otherUserId,participant_two.eq.${user.id})')
+          .order('last_message_at', ascending: false);
 
       final list = (response as List<dynamic>).whereType<Map<String, dynamic>>().toList();
 
       if (list.isNotEmpty) {
-        if (productId != null) {
-          final withProduct = list.firstWhere(
-            (c) => c['product_id'] == productId,
-            orElse: () => <String, dynamic>{},
-          );
-          if (withProduct.isNotEmpty && withProduct['id'] != null) {
-            return withProduct['id'] as String;
-          }
-        } else {
-          final casual = list.firstWhere(
-            (c) => c['product_id'] == null,
-            orElse: () => list.first,
-          );
-          if (casual['id'] != null) {
-            return casual['id'] as String;
+        // Conversation between these two users already exists!
+        // Reuse it to maintain 1-on-1 thread continuity and avoid duplicate rooms.
+        final withProduct = productId != null
+            ? list.firstWhere(
+                (c) => c['product_id'] == productId,
+                orElse: () => <String, dynamic>{},
+              )
+            : <String, dynamic>{};
+
+        final targetConv = (withProduct.isNotEmpty && withProduct['id'] != null)
+            ? withProduct
+            : list.first;
+
+        final targetId = targetConv['id'] as String;
+
+        // If a new productId is provided and differs from targetConv, update product_id
+        if (productId != null && targetConv['product_id'] != productId) {
+          try {
+            await _client.from('conversations').update({
+              'product_id': productId,
+            }).eq('id', targetId);
+          } catch (e) {
+            debugPrint('Note: unable to update conversation product_id: $e');
           }
         }
+
+        return targetId;
       }
 
       final inserted = await _client.from('conversations').insert({

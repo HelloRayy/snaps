@@ -251,15 +251,43 @@ class DirectMessagesService extends ChangeNotifier {
       }
       _conversationMessages[newId] = existingNewMsgs;
     }
-    final idx = _conversations.indexWhere((c) => c.id == oldId);
-    if (idx != -1) _conversations[idx] = _conversations[idx].copyWith(id: newId);
+    final existingRealIdx = _conversations.indexWhere((c) => c.id == newId);
+    final oldIdx = _conversations.indexWhere((c) => c.id == oldId);
+
+    if (existingRealIdx != -1 && oldIdx != -1 && existingRealIdx != oldIdx) {
+      final oldConv = _conversations[oldIdx];
+      _conversations[existingRealIdx] = _conversations[existingRealIdx].copyWith(
+        productId: oldConv.productId ?? _conversations[existingRealIdx].productId,
+        productContext: oldConv.productContext ?? _conversations[existingRealIdx].productContext,
+        isRequest: true,
+      );
+      _conversations.removeAt(oldIdx);
+    } else if (oldIdx != -1) {
+      _conversations[oldIdx] = _conversations[oldIdx].copyWith(id: newId);
+    }
     notifyListeners();
   }
 
   void addOrUpdateConversation(ConversationModel conv) {
-    final idx = _conversations.indexWhere((c) => c.id == conv.id || c.user.username == conv.user.username);
+    final cleanUsername = conv.user.username.replaceAll('@', '').toLowerCase().trim();
+    final idx = _conversations.indexWhere((c) {
+      if (c.id == conv.id) return true;
+      if (c.user.id != null && conv.user.id != null && c.user.id == conv.user.id) return true;
+      final cUser = c.user.username.replaceAll('@', '').toLowerCase().trim();
+      return cUser.isNotEmpty && cUser == cleanUsername;
+    });
+
     if (idx != -1) {
-      _conversations[idx] = conv;
+      final existing = _conversations[idx];
+      _conversations[idx] = existing.copyWith(
+        id: conv.id.startsWith('product-') ? existing.id : conv.id,
+        productId: conv.productId ?? existing.productId,
+        productContext: conv.productContext ?? existing.productContext,
+        isRequest: conv.isRequest || existing.isRequest,
+        lastMessage: conv.lastMessage.isNotEmpty ? conv.lastMessage : existing.lastMessage,
+        timestamp: conv.timestamp,
+        isSender: conv.isSender,
+      );
     } else {
       _conversations.insert(0, conv);
     }
@@ -287,13 +315,26 @@ class DirectMessagesService extends ChangeNotifier {
         isSender: msg.isMe,
       );
     } else if (conversation != null) {
-      _conversations.insert(0, conversation.copyWith(
-        lastMessage: msg.text,
-        timestamp: msg.timestamp,
-        isSender: msg.isMe,
-      ));
+      final cleanUsername = conversation.user.username.replaceAll('@', '').toLowerCase().trim();
+      final existingUserIdx = _conversations.indexWhere((c) {
+        if (c.user.id != null && conversation.user.id != null && c.user.id == conversation.user.id) return true;
+        final cUser = c.user.username.replaceAll('@', '').toLowerCase().trim();
+        return cUser.isNotEmpty && cUser == cleanUsername;
+      });
+      if (existingUserIdx != -1) {
+        _conversations[existingUserIdx] = _conversations[existingUserIdx].copyWith(
+          lastMessage: msg.text,
+          timestamp: msg.timestamp,
+          isSender: msg.isMe,
+        );
+      } else {
+        _conversations.insert(0, conversation.copyWith(
+          lastMessage: msg.text,
+          timestamp: msg.timestamp,
+          isSender: msg.isMe,
+        ));
+      }
     }
-    notifyListeners();
   }
 
   void updateMessage(String conversationId, ChatMessageModel updatedMsg) {

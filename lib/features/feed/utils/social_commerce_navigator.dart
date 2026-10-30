@@ -31,32 +31,56 @@ class SocialCommerceNavigator {
     final targetUserId = post.seller.id;
     final title = post.title ??
         (post.caption.isNotEmpty ? post.caption.split('\n').first : 'Produk');
-    final conv = ConversationModel(
-      id: "product-${post.id}",
-      productId: post.id,
-      user: ConversationUser(
-        id: targetUserId.isNotEmpty ? targetUserId : null,
-        name: post.seller.displayName ?? post.seller.name,
-        username: post.seller.username ?? 'penjual',
-        avatar: post.seller.avatar,
-        classGroup: post.seller.classGroup,
-        isVerified: post.seller.isVerified,
-        mascotFlair: post.seller.mascotFlair,
-      ),
-      lastMessage: "Halo, saya tertarik dengan $title",
-      timestamp: "Baru saja",
-      isSender: true,
-      isSeller: false,
-      isRequest: true,
-      productContext: ProductContext(
-        title: title,
-        price: (post.price != null && post.price! > 0)
-            ? formatRupiah(post.price!)
-            : 'Diskusi via DM',
-        image: post.images.isNotEmpty ? post.images.first : null,
-        location: post.locationTag ?? 'SMKN 8 Semarang',
-      ),
+    final cleanSellerUsername = post.seller.username?.replaceAll('@', '').toLowerCase().trim();
+
+    final existingIdx = DirectMessagesService.instance.conversations.indexWhere((c) {
+      if (targetUserId.isNotEmpty && c.user.id != null && c.user.id == targetUserId) return true;
+      if (cleanSellerUsername != null && cleanSellerUsername.isNotEmpty) {
+        return c.user.username.replaceAll('@', '').toLowerCase().trim() == cleanSellerUsername;
+      }
+      return false;
+    });
+
+    final productCtx = ProductContext(
+      title: title,
+      price: (post.price != null && post.price! > 0)
+          ? formatRupiah(post.price!)
+          : 'Diskusi via DM',
+      image: post.images.isNotEmpty ? post.images.first : null,
+      location: post.locationTag ?? 'SMKN 8 Semarang',
     );
+
+    ConversationModel conv;
+    if (existingIdx != -1) {
+      final existing = DirectMessagesService.instance.conversations[existingIdx];
+      conv = existing.copyWith(
+        productId: post.id,
+        isSender: true,
+        isSeller: false,
+        isRequest: true,
+        productContext: productCtx,
+      );
+    } else {
+      conv = ConversationModel(
+        id: "product-${post.id}",
+        productId: post.id,
+        user: ConversationUser(
+          id: targetUserId.isNotEmpty ? targetUserId : null,
+          name: post.seller.displayName ?? post.seller.name,
+          username: post.seller.username ?? 'penjual',
+          avatar: post.seller.avatar,
+          classGroup: post.seller.classGroup,
+          isVerified: post.seller.isVerified,
+          mascotFlair: post.seller.mascotFlair,
+        ),
+        lastMessage: "Halo, saya tertarik dengan $title",
+        timestamp: "Baru saja",
+        isSender: true,
+        isSeller: false,
+        isRequest: true,
+        productContext: productCtx,
+      );
+    }
 
     DirectMessagesService.instance.addOrUpdateConversation(conv);
     Navigator.of(context).push(
