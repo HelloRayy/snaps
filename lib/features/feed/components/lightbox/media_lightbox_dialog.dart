@@ -94,6 +94,7 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
   bool _isCurrentZoomed = false;
   bool _isDismissing = false;
   bool _isInteractingWithViewer = false;
+  bool _isMultiTouch = false;
   late AnimationController _springBackAnimController;
   Animation<double>? _springBackAnim;
   @override
@@ -279,22 +280,33 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final Color bgColor = isDark ? const Color(0xFF0B0F17) : Colors.white;
 
-    final bool canDismiss = !_isCurrentZoomed && !_isInteractingWithViewer;
+    final bool canDismiss = !_isCurrentZoomed && !_isInteractingWithViewer && !_isMultiTouch;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
       child: Listener(
         onPointerDown: (_) {
           _activePointerCount++;
-          if (_activePointerCount > 1 && _dragOffsetNotifier.value != 0.0) {
-            _springBackToZero();
+          if (_activePointerCount > 1) {
+            if (_dragOffsetNotifier.value != 0.0) {
+              _springBackToZero();
+            }
+            if (!_isMultiTouch) {
+              setState(() => _isMultiTouch = true);
+            }
           }
         },
         onPointerUp: (_) {
           _activePointerCount = (_activePointerCount - 1).clamp(0, 10);
+          if (_activePointerCount < 2 && _isMultiTouch) {
+            setState(() => _isMultiTouch = false);
+          }
         },
         onPointerCancel: (_) {
           _activePointerCount = (_activePointerCount - 1).clamp(0, 10);
+          if (_activePointerCount < 2 && _isMultiTouch) {
+            setState(() => _isMultiTouch = false);
+          }
         },
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
@@ -381,7 +393,7 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
             },
             child: PageView.builder(
               controller: _pageController,
-              physics: (_isCurrentZoomed || _isInteractingWithViewer)
+              physics: (_isCurrentZoomed || _isInteractingWithViewer || _isMultiTouch)
                   ? const NeverScrollableScrollPhysics()
                   : const BouncingScrollPhysics(),
               itemCount: widget.images.length,
@@ -394,6 +406,7 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
                 return LightboxImageViewer(
                   imageUrl: widget.images[index],
                   screenWidth: mediaQuery.size.width,
+                  isMultiTouch: _isMultiTouch,
                   onZoomChanged: (zoomed) {
                     if (zoomed != _isCurrentZoomed) {
                       setState(() {

@@ -240,5 +240,56 @@ void main() {
         expect(find.byType(MediaLightboxDialog), findsNothing);
       },
     );
+
+    testWidgets(
+      'Two finger pinch zoom scales image in MediaLightboxDialog',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Builder(
+              builder: (context) {
+                return Scaffold(
+                  body: ElevatedButton(
+                    onPressed: () {
+                      MediaLightboxDialog.show(
+                        context: context,
+                        images: const ['https://example.com/test.jpg'],
+                        initialIndex: 0,
+                      );
+                    },
+                    child: const Text('Buka Lightbox'),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+
+        await tester.tap(find.text('Buka Lightbox'));
+        await tester.pumpAndSettle();
+
+        final center = tester.getCenter(find.byType(InteractiveViewer));
+        final gesture1 = await tester.createGesture();
+        final gesture2 = await tester.createGesture();
+
+        await gesture1.down(center - const Offset(20, 0));
+        await gesture2.down(center + const Offset(20, 0));
+        await tester.pump();
+
+        // Move apart to pinch zoom
+        await gesture1.moveTo(center - const Offset(80, 0));
+        await gesture2.moveTo(center + const Offset(80, 0));
+        await tester.pump();
+
+        final InteractiveViewer viewer = tester.widget(find.byType(InteractiveViewer));
+        final scale = viewer.transformationController!.value.getMaxScaleOnAxis();
+        print('Pinch scale result: $scale');
+        expect(scale, greaterThan(1.1));
+
+        await gesture1.up();
+        await gesture2.up();
+        await tester.pumpAndSettle();
+      },
+    );
   });
 }

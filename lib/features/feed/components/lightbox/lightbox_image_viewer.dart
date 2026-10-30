@@ -8,6 +8,7 @@ class LightboxImageViewer extends StatefulWidget {
   final double screenWidth;
   final ValueChanged<bool>? onZoomChanged;
   final ValueChanged<bool>? onInteractionChanged;
+  final bool isMultiTouch;
 
   const LightboxImageViewer({
     super.key,
@@ -15,7 +16,9 @@ class LightboxImageViewer extends StatefulWidget {
     required this.screenWidth,
     this.onZoomChanged,
     this.onInteractionChanged,
+    this.isMultiTouch = false,
   });
+
   @override
   State<LightboxImageViewer> createState() => _LightboxImageViewerState();
 }
@@ -29,6 +32,8 @@ class _LightboxImageViewerState extends State<LightboxImageViewer>
 
   bool _isZoomed = false;
   bool _isInteracting = false;
+  int _localPointerCount = 0;
+  bool _isLocalMultiTouch = false;
 
   @override
   void initState() {
@@ -110,18 +115,39 @@ class _LightboxImageViewerState extends State<LightboxImageViewer>
 
   @override
   Widget build(BuildContext context) {
+    final bool isMulti = widget.isMultiTouch || _isLocalMultiTouch;
     return Center(
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onDoubleTapDown: (details) => _doubleTapDetails = details,
-        onDoubleTap: _handleDoubleTap,
-        child: InteractiveViewer(
-          transformationController: _controller,
-          minScale: 0.8,
-          maxScale: 4.5,
-          panEnabled: _isZoomed || _isInteracting,
-          boundaryMargin: EdgeInsets.zero,
-          clipBehavior: Clip.none,
+      child: Listener(
+        onPointerDown: (_) {
+          _localPointerCount++;
+          if (_localPointerCount > 1 && !_isLocalMultiTouch) {
+            setState(() => _isLocalMultiTouch = true);
+          }
+        },
+        onPointerUp: (_) {
+          _localPointerCount = (_localPointerCount - 1).clamp(0, 10);
+          if (_localPointerCount < 2 && _isLocalMultiTouch) {
+            setState(() => _isLocalMultiTouch = false);
+          }
+        },
+        onPointerCancel: (_) {
+          _localPointerCount = (_localPointerCount - 1).clamp(0, 10);
+          if (_localPointerCount < 2 && _isLocalMultiTouch) {
+            setState(() => _isLocalMultiTouch = false);
+          }
+        },
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onDoubleTapDown: (details) => _doubleTapDetails = details,
+          onDoubleTap: _handleDoubleTap,
+          child: InteractiveViewer(
+            transformationController: _controller,
+            minScale: 0.8,
+            maxScale: 4.5,
+            panEnabled: _isZoomed || isMulti || _isInteracting,
+            scaleEnabled: true,
+            boundaryMargin: EdgeInsets.zero,
+            clipBehavior: Clip.none,
           onInteractionStart: (_) {
             _isInteracting = true;
             widget.onInteractionChanged?.call(true);
@@ -181,6 +207,7 @@ class _LightboxImageViewerState extends State<LightboxImageViewer>
           ),
         ),
       ),
-    );
+    ),
+  );
   }
 }

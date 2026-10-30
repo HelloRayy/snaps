@@ -214,61 +214,55 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
             ),
           ],
 
-          // 2. MODERN UNIFIED PILL CAPSULE (Enlarged & Floating)
+          // 2. LARGE FULLY ROUNDED FLOATING PILL (Gemini / Modern Chat Style)
           Container(
-            constraints: const BoxConstraints(minHeight: 52.0),
+            constraints: const BoxConstraints(minHeight: 56.0),
             decoration: BoxDecoration(
               color: pillBgColor,
-              borderRadius: BorderRadius.circular(26.0),
+              borderRadius: BorderRadius.circular(100.0),
               border: Border.all(
                 color: pillBorderColor,
                 width: 1.0,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: isDark ? const Color(0x33000000) : const Color(0x0F0F172A),
-                  blurRadius: 10.0,
+                  color: isDark ? const Color(0x3D000000) : const Color(0x0F0F172A),
+                  blurRadius: 12.0,
                   offset: const Offset(0, 3),
                 ),
               ],
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 5.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                // A. Integrated Attachment Button inside the pill on the left
+                // A. Direct Attachment Icon (No container background, clean naked icon)
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 2.0, left: 2.0),
+                  padding: const EdgeInsets.only(bottom: 1.0, left: 2.0),
                   child: GestureDetector(
                     onTap: _pickImages,
                     behavior: HitTestBehavior.opaque,
-                    child: Container(
-                      width: 40.0,
-                      height: 40.0,
-                      decoration: BoxDecoration(
-                        color: _attachedImages.isNotEmpty
-                            ? AppColors.primary.withValues(alpha: 0.12)
-                            : (isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9)),
-                        shape: BoxShape.circle,
-                      ),
+                    child: SizedBox(
+                      width: 44.0,
+                      height: 44.0,
                       child: Stack(
                         clipBehavior: Clip.none,
                         alignment: Alignment.center,
                         children: [
                           Icon(
                             CupertinoIcons.photo_on_rectangle,
-                            size: 20.0,
+                            size: 22.0,
                             color: _attachedImages.isNotEmpty
                                 ? AppColors.primary
                                 : iconColor,
                           ),
                           if (_attachedImages.isNotEmpty)
                             Positioned(
-                              top: -2.0,
-                              right: -2.0,
+                              top: 2.0,
+                              right: 2.0,
                               child: Container(
-                                width: 15.0,
-                                height: 15.0,
+                                width: 16.0,
+                                height: 16.0,
                                 decoration: const BoxDecoration(
                                   color: AppColors.primary,
                                   shape: BoxShape.circle,
@@ -278,7 +272,7 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                                     '${_attachedImages.length}',
                                     style: const TextStyle(
                                       color: Colors.white,
-                                      fontSize: 8.5,
+                                      fontSize: 9.0,
                                       fontWeight: FontWeight.w700,
                                       height: 1.0,
                                     ),
@@ -291,9 +285,9 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 8.0),
+                const SizedBox(width: 4.0),
 
-                // B. Multiline Text Input Field (expands dynamically up to 5 lines)
+                // B. Multiline Text Input Field (16sp, auto-expanding up to 5 lines)
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 2.0),
@@ -321,16 +315,16 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                         ),
                         border: InputBorder.none,
                         isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 9.0),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 11.0),
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 6.0),
+                const SizedBox(width: 4.0),
 
-                // C. Trailing Action: Animated Send Button or Emoji Icon
+                // C. Trailing Action: Send Button or Universal Naked Emoji Icon
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 2.0, right: 2.0),
+                  padding: const EdgeInsets.only(bottom: 1.0, right: 2.0),
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 180),
                     transitionBuilder: (child, anim) => ScaleTransition(scale: anim, child: child),
@@ -346,8 +340,8 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                               duration: const Duration(milliseconds: 90),
                               curve: Curves.easeOutCubic,
                               child: Container(
-                                width: 40.0,
-                                height: 40.0,
+                                width: 42.0,
+                                height: 42.0,
                                 decoration: const BoxDecoration(
                                   color: AppColors.primary,
                                   shape: BoxShape.circle,
@@ -355,7 +349,7 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                                 child: const Center(
                                   child: Icon(
                                     CupertinoIcons.arrow_up,
-                                    size: 20.0,
+                                    size: 21.0,
                                     color: Colors.white,
                                   ),
                                 ),
@@ -367,13 +361,13 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                             onTap: () => HapticFeedback.selectionClick(),
                             behavior: HitTestBehavior.opaque,
                             child: SizedBox(
-                              width: 40.0,
-                              height: 40.0,
+                              width: 44.0,
+                              height: 44.0,
                               child: Center(
                                 child: Icon(
                                   Icons.emoji_emotions_outlined,
                                   color: iconColor,
-                                  size: 24.0,
+                                  size: 26.0,
                                 ),
                               ),
                             ),

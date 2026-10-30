@@ -81,6 +81,7 @@ class _AvatarViewerDialogState extends State<AvatarViewerDialog>
   late final ValueNotifier<double> _dragOffsetNotifier;
   bool _isCurrentZoomed = false;
   bool _isDismissing = false;
+  bool _isMultiTouch = false;
   bool _isInteracting = false;
   @override
   void initState() {
@@ -320,22 +321,33 @@ class _AvatarViewerDialogState extends State<AvatarViewerDialog>
     final double avatarSize = (screenWidth * 0.76).clamp(240.0, 320.0);
     final Color bgColor = isDark ? const Color(0xFF0B0F17) : Colors.white;
 
-    final bool canDismiss = !_isCurrentZoomed && !_isInteracting;
+    final bool canDismiss = !_isCurrentZoomed && !_isInteracting && !_isMultiTouch;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
       child: Listener(
         onPointerDown: (_) {
           _activePointerCount++;
-          if (_activePointerCount > 1 && _dragOffsetNotifier.value != 0.0) {
-            _springBackToZero();
+          if (_activePointerCount > 1) {
+            if (_dragOffsetNotifier.value != 0.0) {
+              _springBackToZero();
+            }
+            if (!_isMultiTouch) {
+              setState(() => _isMultiTouch = true);
+            }
           }
         },
         onPointerUp: (_) {
           _activePointerCount = (_activePointerCount - 1).clamp(0, 10);
+          if (_activePointerCount < 2 && _isMultiTouch) {
+            setState(() => _isMultiTouch = false);
+          }
         },
         onPointerCancel: (_) {
           _activePointerCount = (_activePointerCount - 1).clamp(0, 10);
+          if (_activePointerCount < 2 && _isMultiTouch) {
+            setState(() => _isMultiTouch = false);
+          }
         },
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
@@ -486,8 +498,8 @@ class _AvatarViewerDialogState extends State<AvatarViewerDialog>
                 transformationController: _transformController,
                 minScale: 0.8,
                 maxScale: 3.5,
-                panEnabled: _isCurrentZoomed || _isInteracting,
-                boundaryMargin: const EdgeInsets.all(40.0),
+                panEnabled: _isCurrentZoomed || _isMultiTouch || _isInteracting,
+                scaleEnabled: true,
                 clipBehavior: Clip.none,
                 onInteractionStart: (_) {
                   _isInteracting = true;
