@@ -69,27 +69,22 @@ class HomeFeedScrollableList extends StatefulWidget {
 
 class HomeFeedScrollableListState extends State<HomeFeedScrollableList> {
   late final ScrollController _forYouScrollController;
-  late final ScrollController _marketScrollController;
 
   @override
   void initState() {
     super.initState();
     _forYouScrollController = ScrollController();
-    _marketScrollController = ScrollController();
   }
 
   @override
   void dispose() {
     _forYouScrollController.dispose();
-    _marketScrollController.dispose();
     super.dispose();
   }
 
   /// Public imperative method to scroll the currently visible tab to top
   void scrollToTop() {
-    final activeController = widget.activeTab == FeedTab.forYou
-        ? _forYouScrollController
-        : _marketScrollController;
+    final activeController = _forYouScrollController;
     if (activeController.hasClients) {
       activeController.animateTo(
         0,
@@ -101,52 +96,11 @@ class HomeFeedScrollableListState extends State<HomeFeedScrollableList> {
 
   @override
   Widget build(BuildContext context) {
-    final forYouPosts = widget.allPosts;
-
-    if (!AppConstants.enableCommerceMode) {
-      return _buildTimelinePage(
-        key: const PageStorageKey('timeline_for_you'),
-        scrollController: _forYouScrollController,
-        posts: forYouPosts,
-        isMarket: false,
-      );
-    }
-
-    final marketPosts = widget.allPosts
-        .where((p) => p.postType == 'product' || (p.price != null && p.price! > 0))
-        .toList();
-
-    return Column(
-      children: [
-        // Pinned Header Tab Switch with Polished Spring Indicator
-        RepaintBoundary(
-          child: HomeFeedTabSwitch(
-            activeTab: widget.activeTab,
-            onTabChanged: widget.onTabChanged,
-          ),
-        ),
-
-        // Pure Vertical Timeline Container with Zero Horizontal Gesture Conflicts
-        Expanded(
-          child: IndexedStack(
-            index: widget.activeTab == FeedTab.forYou ? 0 : 1,
-            children: [
-              _buildTimelinePage(
-                key: const PageStorageKey('timeline_for_you'),
-                scrollController: _forYouScrollController,
-                posts: forYouPosts,
-                isMarket: false,
-              ),
-              _buildTimelinePage(
-                key: const PageStorageKey('timeline_market'),
-                scrollController: _marketScrollController,
-                posts: marketPosts,
-                isMarket: true,
-              ),
-            ],
-          ),
-        ),
-      ],
+    return _buildTimelinePage(
+      key: const PageStorageKey('timeline_for_you'),
+      scrollController: _forYouScrollController,
+      posts: widget.allPosts,
+      isMarket: false,
     );
   }
 

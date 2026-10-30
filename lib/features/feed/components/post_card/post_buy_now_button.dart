@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-/// Floating overlay button "Beli Sekarang" with right icon for product posts in feed.
+/// Floating overlay button "Diskusi" with right icon for product posts in feed.
 /// High contrast dark surface with blur to guarantee legibility on any image.
 class PostBuyNowButton extends StatelessWidget {
   final VoidCallback onPressed;
@@ -49,7 +49,7 @@ class PostBuyNowButton extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    'Beli Sekarang',
+                    'Diskusi',
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 12.5,
