@@ -16,6 +16,8 @@ import 'package:snapan_market/features/messages/models/chat_message_model.dart';
 import 'package:snapan_market/features/messages/models/conversation_model.dart';
 import 'package:snapan_market/features/messages/services/direct_messages_service.dart';
 import 'package:snapan_market/features/profile/screens/profile_screen.dart';
+import 'package:snapan_market/core/utils/snaps_toast.dart';
+import 'package:snapan_market/features/feed/screens/post_detail_screen.dart';
 
 /// Layar ruang obrolan 1-on-1 Direct Messaging (1:1 ActiveChatOverlay.tsx)
 class ChatConversationScreen extends StatefulWidget {
@@ -32,12 +34,12 @@ class ChatConversationScreen extends StatefulWidget {
   State<ChatConversationScreen> createState() => _ChatConversationScreenState();
 }
 
-class _ChatConversationScreenState extends State<ChatConversationScreen>
-    with WidgetsBindingObserver {
+class _ChatConversationScreenState extends State<ChatConversationScreen> {
   late String _activeConvId;
   late List<ChatMessageModel> _messages;
   final ScrollController _scrollController = ScrollController();
   RealtimeChannel? _messagesSubscription;
+  bool _isLoadingProduct = false;
 
   @override
   void initState() {
@@ -45,7 +47,6 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
     _activeConvId = widget.conversation.id;
     DirectMessagesService.instance.activeConversationId = _activeConvId;
     DirectMessagesService.instance.addListener(_onServiceChanged);
-    WidgetsBinding.instance.addObserver(this);
 
     final savedMessages = DirectMessagesService.instance.getMessages(_activeConvId);
     if (savedMessages.isNotEmpty) {
@@ -69,7 +70,6 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
     }
 
     _initRealtimeChat();
-    _scrollToBottom(150);
   }
 
   void _onServiceChanged() {
@@ -188,29 +188,28 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
     }
     DirectMessagesService.instance.removeListener(_onServiceChanged);
     _messagesSubscription?.unsubscribe();
-    WidgetsBinding.instance.removeObserver(this);
     _scrollController.dispose();
     super.dispose();
   }
-  @override
-  void didChangeMetrics() {
-    super.didChangeMetrics();
-    _scrollToBottom(60);
-    _scrollToBottom(250);
-  }
 
 
-  void _scrollToBottom([int delayMs = 60]) {
-    Future.delayed(Duration(milliseconds: delayMs), () {
+  void _scrollToBottom([int delayMs = 0]) {
+    void performScroll() {
       if (!mounted) return;
-      if (_scrollController.hasClients) {
+      if (_scrollController.hasClients && _scrollController.offset > 0) {
         _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 250),
+          0.0,
+          duration: const Duration(milliseconds: 200),
           curve: Curves.easeOutCubic,
         );
       }
-    });
+    }
+
+    if (delayMs > 0) {
+      Future.delayed(Duration(milliseconds: delayMs), performScroll);
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) => performScroll());
+    }
   }
 
   void _handleSendMessage(String text) {
@@ -313,6 +312,52 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
     );
   }
 
+  Future<void> _handleViewProduct() async {
+    final productId = widget.conversation.productId;
+    if (productId == null || productId.trim().isEmpty) {
+      SnapsToast.show(
+        context,
+        'Produk tidak ditemukan atau telah dihapus',
+        hasBottomNav: false,
+      );
+      return;
+    }
+
+    if (_isLoadingProduct) return;
+    setState(() => _isLoadingProduct = true);
+
+    try {
+      final post = await SupabaseService.instance.fetchPostById(productId);
+      if (!mounted) return;
+
+      if (post != null) {
+        Navigator.of(context).push(
+          AppSlidePageRoute(
+            builder: (_) => PostDetailScreen(post: post),
+          ),
+        );
+      } else {
+        SnapsToast.show(
+          context,
+          'Produk tidak ditemukan atau telah dihapus',
+          hasBottomNav: false,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        SnapsToast.show(
+          context,
+          'Produk tidak ditemukan atau telah dihapus',
+          hasBottomNav: false,
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoadingProduct = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -355,52 +400,46 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
         child: Column(
           children: [
             Expanded(
-              child: ListView(
+              child: ListView.builder(
                 controller: _scrollController,
+                reverse: true,
                 keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                 padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 14.0),
-              children: [
-                if (widget.conversation.productContext != null)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 2.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: ChatProductCard(
-                        product: widget.conversation.productContext!,
-                        location: widget.conversation.productContext?.location ?? "Kantin Belakang SMKN 8 Semarang",
-                        onViewProduct: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text("Membuka katalog \"${widget.conversation.productContext!.title}\""),
-                              behavior: SnackBarBehavior.floating,
-                              duration: const Duration(seconds: 1),
-                            ),
-                          );
-                        },
-                        onCheckLocation: () {
-                          Navigator.of(context).push(
-                            AppSlidePageRoute(
-                              builder: (_) => CampusMapScreen(
-                                onBack: () => Navigator.pop(context),
+                itemCount: _messages.length + (widget.conversation.productContext != null ? 1 : 0),
+                itemBuilder: (context, index) {
+                  final hasProduct = widget.conversation.productContext != null;
+                  if (hasProduct && index == _messages.length) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: ChatProductCard(
+                          product: widget.conversation.productContext!,
+                          location: widget.conversation.productContext?.location ?? "Kantin Belakang SMKN 8 Semarang",
+                          onViewProduct: _isLoadingProduct ? null : _handleViewProduct,
+                          onCheckLocation: () {
+                            Navigator.of(context).push(
+                              AppSlidePageRoute(
+                                builder: (_) => CampusMapScreen(
+                                  onBack: () => Navigator.pop(context),
+                                ),
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                  ),
-                ..._messages.map((msg) => ChatMessageBubble(message: msg)),
-              ],
-            ),
+                    );
+                  }
+                  final msgIndex = _messages.length - 1 - index;
+                  final msg = _messages[msgIndex];
+                  return ChatMessageBubble(message: msg);
+                },
+              ),
           ),
           ChatComposerBar(
             initialText: _messages.isEmpty ? widget.initialDraft : null,
             onSendMessage: _handleSendMessage,
             onSendMessageWithMedia: _handleSendMessageWithMedia,
-            onTap: () {
-              _scrollToBottom(50);
-              _scrollToBottom(250);
-            },
           ),
         ],
       ),

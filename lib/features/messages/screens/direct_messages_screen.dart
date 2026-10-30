@@ -81,7 +81,7 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
       } else if (_activeFilter == 'unread') {
         return conv.unreadCount > 0;
       }
-      return !conv.isRequest;
+      return true;
     }).toList();
   }
 

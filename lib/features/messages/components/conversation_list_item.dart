@@ -32,6 +32,7 @@ class ConversationListItem extends StatelessWidget {
     final secondaryInk = AppColors.adaptiveMuted(context);
     const azurePrimary = Color(0xFF008BFF); // pen.dev Accent #008BFF
     final titleColor = AppColors.adaptiveText(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Material(
       color: AppColors.adaptiveCanvas(context),
@@ -43,8 +44,8 @@ class ConversationListItem extends StatelessWidget {
         highlightColor: AppColors.adaptiveSurfaceElevated(context),
         splashColor: AppColors.adaptiveSurfaceElevated(context),
         child: Container(
-          height: 74.0, // pen.dev chaat-1 row height
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          constraints: const BoxConstraints(minHeight: 74.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -169,6 +170,62 @@ class ConversationListItem extends StatelessWidget {
                         ),
                       ],
                     ),
+                    if (conversation.productContext != null) ...[
+                      const SizedBox(height: 5.0),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 2.5),
+                        decoration: BoxDecoration(
+                          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFEFF6FF),
+                          borderRadius: BorderRadius.circular(6.0),
+                          border: Border.all(
+                            color: isDark ? const Color(0xFF334155) : const Color(0xFFBFDBFE),
+                            width: 0.6,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              CupertinoIcons.bag_fill,
+                              size: 11.0,
+                              color: Color(0xFF008BFF),
+                            ),
+                            const SizedBox(width: 4.0),
+                            Flexible(
+                              child: Text(
+                                conversation.productContext!.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xFF008BFF),
+                                  letterSpacing: -0.2,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 4.0),
+                            Text(
+                              '•',
+                              style: TextStyle(
+                                fontSize: 10.0,
+                                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF60A5FA),
+                              ),
+                            ),
+                            const SizedBox(width: 4.0),
+                            Text(
+                              conversation.productContext!.price,
+                              style: TextStyle(
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w600,
+                                color: isDark ? const Color(0xFFE2E8F0) : const Color(0xFF1E3A8A),
+                                letterSpacing: -0.2,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
