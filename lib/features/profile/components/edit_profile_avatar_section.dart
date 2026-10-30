@@ -181,7 +181,12 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                     const SizedBox(height: 2.0),
                     TextField(
                       controller: widget.nameController,
-                      maxLength: 50,
+                      maxLength: 20,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(20),
+                        FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                        FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
+                      ],
                       style: TextStyle(
                         fontFamily: 'SFPro',
                         fontSize: 15.5,
@@ -189,7 +194,7 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                         color: primaryTextColor,
                       ),
                       decoration: InputDecoration(
-                        hintText: 'Nama tampilan kamu',
+                        hintText: 'Nama panggilan (3-20 karakter)',
                         hintStyle: TextStyle(
                           fontFamily: 'SFPro',
                           fontSize: 15.5,

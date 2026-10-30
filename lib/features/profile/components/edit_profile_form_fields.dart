@@ -90,10 +90,11 @@ class EditProfileFormFields extends StatelessWidget {
                   Expanded(
                     child: TextField(
                       controller: usernameController,
-                      maxLength: 30,
+                      maxLength: 20,
                       inputFormatters: [
+                        LengthLimitingTextInputFormatter(20),
                         FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                        FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9._]')),
+                        FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
                         TextInputFormatter.withFunction((oldValue, newValue) => newValue.copyWith(text: newValue.text.toLowerCase())),
                       ],
                       style: TextStyle(fontFamily: 'SFPro', fontSize: 15.5, fontWeight: FontWeight.w700, color: primaryTextColor),

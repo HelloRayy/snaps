@@ -6,6 +6,7 @@ import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/auth/components/auth_footer_switcher.dart';
 import 'package:snapan_market/features/auth/components/auth_text_field.dart';
 import 'package:snapan_market/features/auth/components/student_nis_combobox.dart';
+import 'package:snapan_market/features/auth/models/auth_constants.dart';
 
 class AuthRegisterTab extends StatelessWidget {
   final TextEditingController nisController;
@@ -25,6 +26,8 @@ class AuthRegisterTab extends StatelessWidget {
   final VoidCallback onToggleAgreedTerms;
   final bool isSubmitting;
   final bool isGeneratingUsername;
+  final bool isCheckingUsername;
+  final bool isUsernameAvailable;
   final VoidCallback onSubmit;
   final VoidCallback onSwitchToLogin;
 
@@ -46,6 +49,8 @@ class AuthRegisterTab extends StatelessWidget {
     required this.onToggleAgreedTerms,
     required this.isSubmitting,
     this.isGeneratingUsername = false,
+    this.isCheckingUsername = false,
+    this.isUsernameAvailable = false,
     required this.onSubmit,
     required this.onSwitchToLogin,
   });
@@ -67,7 +72,7 @@ class AuthRegisterTab extends StatelessWidget {
         // 2. DISPLAY NAME (OPSIONAL, MAX 20 KARAKTER)
         AuthInputField(
           label: 'Display Name (Opsional)',
-          hint: 'Masukkan nama tampilan kamu',
+          hint: 'Nama panggilan (3-20 karakter)',
           prefixIcon: LucideIcons.user,
           controller: displayNameController,
           errorText: displayNameError,
@@ -75,6 +80,8 @@ class AuthRegisterTab extends StatelessWidget {
           textInputAction: TextInputAction.next,
           inputFormatters: [
             LengthLimitingTextInputFormatter(20),
+            FilteringTextInputFormatter.deny(RegExp(r'\s')),
+            FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
           ],
         ),
         const SizedBox(height: 16.0),
@@ -82,11 +89,11 @@ class AuthRegisterTab extends StatelessWidget {
         // 3. USERNAME @ (AUTO SUGGEST DARI NAMA DEPAN + TENGAH DENGAN LOADING SPINNER)
         AuthInputField(
           label: isGeneratingUsername ? 'Memilih username...' : 'Username',
-          hint: isGeneratingUsername ? 'Menyiapkan rekomendasi...' : '@username',
+          hint: isGeneratingUsername ? 'Menyiapkan rekomendasi...' : '@username (3-20 karakter)',
           prefixIcon: LucideIcons.atSign,
           controller: usernameController,
           errorText: usernameError,
-          customSuffixIcon: isGeneratingUsername
+          customSuffixIcon: (isGeneratingUsername || isCheckingUsername)
               ? const Padding(
                   padding: EdgeInsets.only(right: 14.0),
                   child: SizedBox(
@@ -98,11 +105,24 @@ class AuthRegisterTab extends StatelessWidget {
                     ),
                   ),
                 )
-              : null,
+              : (isUsernameAvailable &&
+                      usernameError == null &&
+                      usernameController.text.trim().length >= 3)
+                  ? const Padding(
+                      padding: EdgeInsets.only(right: 14.0),
+                      child: Icon(
+                        Icons.check_circle_rounded,
+                        size: 18.0,
+                        color: Color(0xFF10B981),
+                      ),
+                    )
+                  : null,
+          maxLength: 20,
           textInputAction: TextInputAction.next,
           inputFormatters: [
+            LengthLimitingTextInputFormatter(20),
             FilteringTextInputFormatter.deny(RegExp(r'\s')),
-            FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9._]')),
+            FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
             TextInputFormatter.withFunction((oldValue, newValue) {
               return newValue.copyWith(text: newValue.text.toLowerCase());
             }),
@@ -140,14 +160,22 @@ class AuthRegisterTab extends StatelessWidget {
           builder: (context, _) {
             final rawDisplayName = displayNameController.text.trim();
             final bool isDisplayNameValid = rawDisplayName.isEmpty ||
-                (rawDisplayName.length >= 6 && rawDisplayName.length <= 20);
+                (rawDisplayName.length >= 3 &&
+                    rawDisplayName.length <= 20 &&
+                    !AuthConstants.isProfane(rawDisplayName));
+            final cleanUsername = usernameController.text.trim().toLowerCase().replaceAll('@', '');
+            final bool isUsernameValid = cleanUsername.length >= 3 &&
+                cleanUsername.length <= 20 &&
+                !AuthConstants.isReservedUsername(cleanUsername) &&
+                !AuthConstants.isProfane(cleanUsername) &&
+                usernameError == null;
             final bool isFormValid = verifiedStudent != null &&
                 nisController.text.trim().isNotEmpty &&
-                usernameController.text.trim().isNotEmpty &&
+                isUsernameValid &&
                 passwordController.text.length >= 6 &&
                 agreedTerms &&
-                isDisplayNameValid;
-
+                isDisplayNameValid &&
+                displayNameError == null;
             return PrimaryAuthButton(
               text: 'Aktifkan Akun & Masuk',
               isLoading: isSubmitting,

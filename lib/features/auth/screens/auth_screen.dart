@@ -12,6 +12,7 @@ import 'package:snapan_market/features/auth/components/auth_footer_switcher.dart
 import 'package:snapan_market/features/auth/components/auth_text_field.dart';
 import 'package:snapan_market/features/auth/controllers/auth_controller.dart';
 import 'package:snapan_market/features/auth/components/student_confirmation_dialog.dart';
+import 'package:snapan_market/features/auth/models/auth_constants.dart';
 
 import 'package:snapan_market/core/services/student_registry_service.dart';
 
@@ -57,7 +58,9 @@ class _AuthScreenState extends State<AuthScreen> {
   bool _showRegPassword = false;
   bool _agreedTerms = false;
   bool _isGeneratingUsername = false;
-
+  bool _isCheckingUsername = false;
+  bool _isUsernameAvailable = false;
+  Timer? _usernameDebounceTimer;
   // Error States
   String? _loginUsernameError;
   String? _loginPasswordError;
@@ -77,13 +80,21 @@ class _AuthScreenState extends State<AuthScreen> {
     if (_showAccountDeletedNotice) {
       _authMode = AuthMode.register;
     }
-    for (final c in [_loginUsernameController, _loginPasswordController, _nisController, _fullNameController, _regDisplayNameController, _regUsernameController, _regPasswordController]) {
+    for (final c in [_loginUsernameController, _loginPasswordController, _nisController, _fullNameController, _regPasswordController]) {
       c.addListener(() {
-        if (mounted && (_loginUsernameError != null || _loginPasswordError != null || _nisError != null || _fullNameError != null || _regDisplayNameError != null || _regUsernameError != null || _regPasswordError != null)) {
-          setState(_clearAllErrors);
+        if (mounted && (_loginUsernameError != null || _loginPasswordError != null || _nisError != null || _fullNameError != null || _regPasswordError != null)) {
+          setState(() {
+            if (c == _loginUsernameController) _loginUsernameError = null;
+            if (c == _loginPasswordController) _loginPasswordError = null;
+            if (c == _nisController) _nisError = null;
+            if (c == _fullNameController) _fullNameError = null;
+            if (c == _regPasswordController) _regPasswordError = null;
+          });
         }
       });
     }
+    _regDisplayNameController.addListener(_onDisplayNameChanged);
+    _regUsernameController.addListener(_onUsernameChanged);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkForAppUpdate();
@@ -112,6 +123,110 @@ class _AuthScreenState extends State<AuthScreen> {
     _regDisplayNameError = null;
     _regUsernameError = null;
     _regPasswordError = null;
+    _isCheckingUsername = false;
+    _isUsernameAvailable = false;
+  }
+
+  void _onDisplayNameChanged() {
+    final raw = _regDisplayNameController.text.trim();
+    String? err;
+    if (raw.isNotEmpty && raw.length < 3) {
+      err = 'Nama tampilan minimal 3 karakter (atau kosongkan)';
+    } else if (raw.isNotEmpty && raw.length > 20) {
+      err = 'Nama tampilan maksimal 20 karakter';
+    } else if (raw.isNotEmpty && AuthConstants.isProfane(raw)) {
+      err = 'Nama mengandung kata yang tidak diperbolehkan';
+    }
+    if (_regDisplayNameError != err && mounted) {
+      setState(() => _regDisplayNameError = err);
+    }
+  }
+
+  void _onUsernameChanged() {
+    _usernameDebounceTimer?.cancel();
+    final clean = _regUsernameController.text.trim().toLowerCase().replaceAll('@', '');
+    if (clean.isEmpty) {
+      if (mounted) {
+        setState(() {
+          _regUsernameError = null;
+          _isCheckingUsername = false;
+          _isUsernameAvailable = false;
+        });
+      }
+      return;
+    }
+    if (clean.length < 3) {
+      if (mounted) {
+        setState(() {
+          _regUsernameError = 'Username minimal 3 karakter';
+          _isCheckingUsername = false;
+          _isUsernameAvailable = false;
+        });
+      }
+      return;
+    }
+    if (clean.length > 20) {
+      if (mounted) {
+        setState(() {
+          _regUsernameError = 'Username maksimal 20 karakter';
+          _isCheckingUsername = false;
+          _isUsernameAvailable = false;
+        });
+      }
+      return;
+    }
+    if (AuthConstants.isReservedUsername(clean)) {
+      if (mounted) {
+        setState(() {
+          _regUsernameError = 'Username ini dilindungi dan tidak dapat digunakan';
+          _isCheckingUsername = false;
+          _isUsernameAvailable = false;
+        });
+      }
+      return;
+    }
+    if (AuthConstants.isProfane(clean)) {
+      if (mounted) {
+        setState(() {
+          _regUsernameError = 'Nama mengandung kata yang tidak diperbolehkan';
+          _isCheckingUsername = false;
+          _isUsernameAvailable = false;
+        });
+      }
+      return;
+    }
+
+    if (mounted) {
+      setState(() {
+        _regUsernameError = null;
+        _isCheckingUsername = true;
+        _isUsernameAvailable = false;
+      });
+    }
+
+    _usernameDebounceTimer = Timer(const Duration(milliseconds: 350), () async {
+      try {
+        final isTaken = await SupabaseService.instance.isUsernameTaken(clean);
+        if (!mounted) return;
+        final currentClean = _regUsernameController.text.trim().toLowerCase().replaceAll('@', '');
+        if (currentClean != clean) return;
+
+        setState(() {
+          _isCheckingUsername = false;
+          if (isTaken) {
+            _regUsernameError = 'Username @$clean sudah terpakai';
+            _isUsernameAvailable = false;
+          } else {
+            _regUsernameError = null;
+            _isUsernameAvailable = true;
+          }
+        });
+      } catch (_) {
+        if (mounted) {
+          setState(() => _isCheckingUsername = false);
+        }
+      }
+    });
   }
 
   Future<void> _handleStudentSelected(RegisteredStudent? student) async {
@@ -164,7 +279,7 @@ class _AuthScreenState extends State<AuthScreen> {
       final isTaken = await SupabaseService.instance.isUsernameTaken(targetUsername);
       if (isTaken) {
         final rand = (DateTime.now().millisecondsSinceEpoch % 899) + 100;
-        targetUsername = '${baseUsername}_$rand';
+        targetUsername = '$baseUsername$rand';
       }
     } catch (_) {
       // Offline fallback
@@ -174,12 +289,17 @@ class _AuthScreenState extends State<AuthScreen> {
       setState(() {
         _regUsernameController.text = targetUsername;
         _isGeneratingUsername = false;
+        _isUsernameAvailable = true;
+        _regUsernameError = null;
       });
     }
   }
 
   @override
   void dispose() {
+    _usernameDebounceTimer?.cancel();
+    _regDisplayNameController.removeListener(_onDisplayNameChanged);
+    _regUsernameController.removeListener(_onUsernameChanged);
     _loginUsernameController.dispose();
     _loginPasswordController.dispose();
     _nisController.dispose();
@@ -281,18 +401,33 @@ class _AuthScreenState extends State<AuthScreen> {
     final classGroup = _verifiedStudent!.classGroup;
 
     final rawDisplayName = _regDisplayNameController.text.trim();
-    if (rawDisplayName.isNotEmpty && rawDisplayName.length < 6) {
-      setState(() => _regDisplayNameError = 'Nama tampilan minimal 6 karakter');
+    if (rawDisplayName.isNotEmpty && rawDisplayName.length < 3) {
+      setState(() => _regDisplayNameError = 'Nama tampilan minimal 3 karakter (atau kosongkan)');
       return;
     }
     if (rawDisplayName.isNotEmpty && rawDisplayName.length > 20) {
       setState(() => _regDisplayNameError = 'Nama tampilan maksimal 20 karakter');
       return;
     }
+    if (rawDisplayName.isNotEmpty && AuthConstants.isProfane(rawDisplayName)) {
+      setState(() => _regDisplayNameError = 'Nama mengandung kata yang tidak diperbolehkan');
+      return;
+    }
 
     final rawUsername = _regUsernameController.text.trim().toLowerCase().replaceAll('@', '');
     if (rawUsername.length < 3 || rawUsername.length > 20) {
       setState(() => _regUsernameError = 'Username harus 3-20 karakter');
+      return;
+    }
+    if (AuthConstants.isReservedUsername(rawUsername)) {
+      setState(() => _regUsernameError = 'Username ini dilindungi dan tidak dapat digunakan');
+      return;
+    }
+    if (AuthConstants.isProfane(rawUsername)) {
+      setState(() => _regUsernameError = 'Nama mengandung kata yang tidak diperbolehkan');
+      return;
+    }
+    if (_regDisplayNameError != null || _regUsernameError != null) {
       return;
     }
 
@@ -574,6 +709,8 @@ class _AuthScreenState extends State<AuthScreen> {
                             onToggleAgreedTerms: () => setState(() => _agreedTerms = !_agreedTerms),
                             isSubmitting: _isSubmitting,
                             isGeneratingUsername: _isGeneratingUsername,
+                            isCheckingUsername: _isCheckingUsername,
+                            isUsernameAvailable: _isUsernameAvailable,
                             onSubmit: _submitRegister,
                             onSwitchToLogin: () => setState(() {
                               _authMode = AuthMode.login;

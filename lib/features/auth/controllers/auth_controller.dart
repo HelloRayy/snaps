@@ -201,6 +201,12 @@ class AuthController {
       }
 
       final cleanUsername = rawUsername.trim().toLowerCase().replaceAll('@', '');
+      if (AuthConstants.isReservedUsername(cleanUsername)) {
+        return 'Username ini dilindungi dan tidak dapat digunakan.';
+      }
+      if (AuthConstants.isProfane(cleanUsername)) {
+        return 'Nama mengandung kata yang tidak diperbolehkan.';
+      }
       final isTaken = await SupabaseService.instance.isUsernameTaken(cleanUsername);
       if (isTaken) {
         return 'Username @$cleanUsername sudah terdaftar. Gunakan username lain.';
@@ -235,6 +241,9 @@ class AuthController {
 
       final cleanDisplayName = displayName?.trim();
       final hasDisplayName = cleanDisplayName != null && cleanDisplayName.isNotEmpty;
+      if (hasDisplayName && AuthConstants.isProfane(cleanDisplayName)) {
+        return 'Nama mengandung kata yang tidak diperbolehkan.';
+      }
 
       if (cleanNis != null && cleanNis.isNotEmpty) {
         final alreadyClaimed = await SupabaseService.instance.isNisClaimed(cleanNis);

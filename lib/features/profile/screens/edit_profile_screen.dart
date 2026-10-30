@@ -139,10 +139,68 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       return;
     }
 
-    final cleanName = _nameController.text.trim().isEmpty ? widget.initialUser.name : _nameController.text.trim();
-    final cleanUsername = _usernameController.text.trim().isEmpty
-        ? widget.initialUser.username
-        : _usernameController.text.trim().toLowerCase().replaceAll(RegExp(r'[^a-z0-9._]'), '');
+    final rawName = _nameController.text.trim();
+    if (rawName.isNotEmpty && rawName.length < 3) {
+      HapticFeedback.heavyImpact();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Nama tampilan minimal 3 karakter (atau kosongkan)'),
+          backgroundColor: Color(0xFFEF4444),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+    if (rawName.isNotEmpty && AuthConstants.isProfane(rawName)) {
+      HapticFeedback.heavyImpact();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Nama mengandung kata yang tidak diperbolehkan'),
+          backgroundColor: Color(0xFFEF4444),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    final cleanName = rawName.isEmpty ? widget.initialUser.name : rawName;
+    final rawUsername = _usernameController.text.trim().toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+    final cleanUsername = rawUsername.isEmpty ? widget.initialUser.username.replaceAll('@', '').toLowerCase() : rawUsername;
+
+    if (cleanUsername.length < 3 || cleanUsername.length > 20) {
+      HapticFeedback.heavyImpact();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Username harus berupa 3-20 karakter alfanumerik'),
+          backgroundColor: Color(0xFFEF4444),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+    if (AuthConstants.isReservedUsername(cleanUsername)) {
+      HapticFeedback.heavyImpact();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Username ini dilindungi dan tidak dapat digunakan'),
+          backgroundColor: Color(0xFFEF4444),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+    if (AuthConstants.isProfane(cleanUsername)) {
+      HapticFeedback.heavyImpact();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Nama mengandung kata yang tidak diperbolehkan'),
+          backgroundColor: Color(0xFFEF4444),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
     final isClassLocked = widget.initialUser.nis != null && widget.initialUser.nis!.trim().isNotEmpty;
     final cleanClass = isClassLocked ? widget.initialUser.classGroup : (_currentClassGroup.isEmpty ? widget.initialUser.classGroup : _currentClassGroup);
     final cleanInitialUsername = widget.initialUser.username.replaceAll('@', '').toLowerCase();
