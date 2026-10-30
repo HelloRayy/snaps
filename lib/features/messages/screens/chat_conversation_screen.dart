@@ -80,7 +80,6 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
         _messages = List.from(updated);
         _isLoadingMessages = false;
       });
-      _scrollToBottom(0, false);
       _scrollToBottom();
     }
   }
@@ -148,7 +147,6 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
         setState(() {
           _messages = List.from(live);
         });
-        _scrollToBottom();
         _scrollToBottom(50, true);
       }
     } finally {
@@ -176,7 +174,6 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
           DirectMessagesService.instance.markAsRead(_activeConvId);
         }
         _scrollToBottom();
-        _scrollToBottom(0, false);
       },
       onMessageUpdated: (updatedRecord) {
         if (!mounted) return;
