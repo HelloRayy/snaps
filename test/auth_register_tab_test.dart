@@ -40,6 +40,15 @@ void main() {
         matching: find.byType(AuthInputField),
       ),
     );
-    expect(displayNameField.hint, 'Masukkan nama tampilan kamu');
+    expect(displayNameField.hint, 'Nama panggilan (3-20 karakter)');
+
+    expect(find.text('Username'), findsOneWidget);
+    final usernameField = tester.widget<AuthInputField>(
+      find.ancestor(
+        of: find.text('Username'),
+        matching: find.byType(AuthInputField),
+      ),
+    );
+    expect(usernameField.hint, '@username (3-20 karakter)');
   });
 }

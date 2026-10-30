@@ -51,11 +51,11 @@ void main() {
       expect(updated.displayName, 'CoolNickname');
     });
 
-    test('Display Name validation rules: minimum 6 characters and maximum 20 characters', () {
+    test('Display Name validation rules: minimum 3 characters and maximum 20 characters (SNAPS-94)', () {
       String? validateDisplayName(String input) {
         final trimmed = input.trim();
-        if (trimmed.isNotEmpty && trimmed.length < 6) {
-          return 'Nama tampilan minimal 6 karakter';
+        if (trimmed.isNotEmpty && trimmed.length < 3) {
+          return 'Nama tampilan minimal 3 karakter (atau kosongkan)';
         }
         if (trimmed.isNotEmpty && trimmed.length > 20) {
           return 'Nama tampilan maksimal 20 karakter';
@@ -63,15 +63,17 @@ void main() {
         return null;
       }
 
-      // Valid cases
+      // Valid cases (SNAPS-94 allows 3-5 chars for short names)
       expect(validateDisplayName(''), isNull, reason: 'Empty display name is optional');
+      expect(validateDisplayName('Ali'), isNull, reason: '3 characters is valid (e.g. Ali)');
+      expect(validateDisplayName('Eko'), isNull, reason: '3 characters is valid (e.g. Eko)');
+      expect(validateDisplayName('Dina'), isNull, reason: '4 characters is valid (e.g. Dina)');
       expect(validateDisplayName('Rayhan'), isNull, reason: '6 characters is valid');
       expect(validateDisplayName('12345678901234567890'), isNull, reason: '20 characters is valid');
 
-      // Invalid cases (< 6 chars)
-      expect(validateDisplayName('a'), 'Nama tampilan minimal 6 karakter');
-      expect(validateDisplayName('ab'), 'Nama tampilan minimal 6 karakter');
-      expect(validateDisplayName('abcde'), 'Nama tampilan minimal 6 karakter');
+      // Invalid cases (< 3 chars)
+      expect(validateDisplayName('a'), 'Nama tampilan minimal 3 karakter (atau kosongkan)');
+      expect(validateDisplayName('ab'), 'Nama tampilan minimal 3 karakter (atau kosongkan)');
 
       // Invalid cases (> 20 chars)
       expect(validateDisplayName('123456789012345678901'), 'Nama tampilan maksimal 20 karakter');
