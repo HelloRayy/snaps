@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dokumentasi Arsitektur Sistem & Flowchart sNaps - SMKN 8 Semarang</title>
+  <title>BAB III: Perancangan Arsitektur Sistem sNaps - SMKN 8 Semarang</title>
   
   <!-- Fonts & CDN -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -237,7 +237,7 @@
 
     /* Sidebar Navigation */
     aside.sidebar {
-      width: 300px;
+      width: 310px;
       flex-shrink: 0;
       border-right: 1px solid var(--border);
       background: var(--surface);
@@ -270,7 +270,7 @@
     .sidebar-section {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 5px;
     }
 
     .sidebar-title {
@@ -310,12 +310,13 @@
     }
 
     .sidebar-count {
-      font-size: 0.7rem;
+      font-size: 0.675rem;
       font-weight: 600;
       background: var(--surface-code);
       padding: 2px 6px;
       border-radius: 999px;
       color: var(--text-dim);
+      white-space: nowrap;
     }
 
     /* Main Content Area */
@@ -389,16 +390,27 @@
       flex-direction: column;
       gap: 16px;
     }
+    .hero-badge-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
     .hero-title {
       font-size: 1.35rem;
       font-weight: 800;
       color: var(--text);
       letter-spacing: -0.02em;
     }
+    .hero-meta {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
     .hero-desc {
       font-size: 0.9rem;
       color: var(--text-muted);
-      max-width: 900px;
+      max-width: 950px;
     }
     .hero-stats {
       display: grid;
@@ -471,6 +483,8 @@
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
+    .badge-bab { background: var(--primary-light); color: var(--primary); }
+    [data-theme="dark"] .badge-bab { color: #A5B4FC; }
     .badge-flowchart { background: var(--primary-light); color: var(--primary); }
     [data-theme="dark"] .badge-flowchart { color: #A5B4FC; }
     .badge-dfd { background: var(--accent-light); color: var(--accent); }
@@ -812,15 +826,15 @@
         <button id="btn-toggle-sidebar" class="header-btn" style="padding: 6px 8px; display: inline-flex;" title="Buka Menu Navigasi">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
         </button>
-        <span class="brand-badge">sNaps</span>
-        <span class="brand-title">Dokumentasi Arsitektur & Flowchart</span>
+        <span class="brand-badge">BAB III</span>
+        <span class="brand-title">Perancangan Arsitektur Sistem sNaps</span>
         <span class="brand-subtitle">SMKN 8 Semarang</span>
       </div>
 
       <div class="header-actions">
         <div class="search-box">
           <span class="search-icon">🔍</span>
-          <input type="text" id="doc-search" class="search-input" placeholder="Cari diagram / topik..." autocomplete="off">
+          <input type="text" id="doc-search" class="search-input" placeholder="Cari bagian Bab III..." autocomplete="off">
         </div>
         <button id="btn-theme-toggle" class="header-btn" title="Ganti Tema Gelap/Terang">
           <span id="theme-icon">☀️</span>
@@ -836,123 +850,119 @@
   <!-- App Layout Container -->
   <div class="app-layout">
     
-    <!-- Sidebar Left Navigation -->
+    <!-- Sidebar Left Navigation (Sesuai Struktur Bab III) -->
     <aside class="sidebar" id="app-sidebar">
       
-      <!-- Group 1: Flowchart & Alur Proses -->
+      <!-- Bab 3.1 -->
       <div class="sidebar-section">
-        <div class="sidebar-title">Flowchart & Alur Proses</div>
-        <a href="#diagram-flowchart-digital" class="sidebar-link active">
-          <span>Flowchart Sistem sNaps</span>
-          <span class="sidebar-count">Feed-to-DM</span>
+        <div class="sidebar-title">3.1 Hasil Riset & Analisis</div>
+        <a href="#section-3-1" class="sidebar-link active">
+          <span>3.1 Pelaksanaan & Riset</span>
+          <span class="sidebar-count">Analisis</span>
         </a>
-        <a href="#diagram-flowchart-manual" class="sidebar-link">
-          <span>Flowchart Alur Manual</span>
+      </div>
+
+      <!-- Bab 3.2 -->
+      <div class="sidebar-section">
+        <div class="sidebar-title">3.2 Flowchart Sistem</div>
+        <a href="#diagram-3-2-1" class="sidebar-link">
+          <span>3.2.1 Flowchart Manual</span>
           <span class="sidebar-count">Konvensional</span>
         </a>
-        <a href="#diagram-flowchart-atomic" class="sidebar-link">
-          <span>Flowchart Feed ke DM</span>
-          <span class="sidebar-count">Social Commerce</span>
-        </a>
-        <a href="#diagram-flowchart-auth" class="sidebar-link">
-          <span>Flowchart Auth NIS</span>
-          <span class="sidebar-count">2-Tier</span>
+        <a href="#diagram-3-2-2" class="sidebar-link">
+          <span>3.2.2 Flowchart Digital</span>
+          <span class="sidebar-count">sNaps</span>
         </a>
       </div>
 
-      <!-- Group 2: Perancangan Bab III (UML & DFD) -->
+      <!-- Bab 3.3 -->
       <div class="sidebar-section">
-        <div class="sidebar-title">Perancangan Sistem (Bab III)</div>
-        <a href="#diagram-konteks" class="sidebar-link">
-          <span>Diagram Konteks</span>
+        <div class="sidebar-title">3.3 Diagram Konteks</div>
+        <a href="#diagram-3-3" class="sidebar-link">
+          <span>3.3 Diagram Konteks</span>
           <span class="sidebar-count">Level 0</span>
         </a>
-        <a href="#diagram-dfd-0" class="sidebar-link">
-          <span>DFD Level 0</span>
+      </div>
+
+      <!-- Bab 3.4 -->
+      <div class="sidebar-section">
+        <div class="sidebar-title">3.4 Data Flow Diagram</div>
+        <a href="#diagram-3-4-1" class="sidebar-link">
+          <span>3.4.1 DFD Level 0</span>
           <span class="sidebar-count">5 Proses</span>
         </a>
-        <a href="#diagram-dfd-1" class="sidebar-link">
-          <span>DFD Level 1 (Feed to DM)</span>
+        <a href="#diagram-3-4-2" class="sidebar-link">
+          <span>3.4.2 DFD Level 1</span>
           <span class="sidebar-count">Proses 4.0</span>
         </a>
-        <a href="#diagram-usecase" class="sidebar-link">
-          <span>Use Case Diagram</span>
-          <span class="sidebar-count">10 Kasus</span>
+      </div>
+
+      <!-- Bab 3.5 & 3.6 -->
+      <div class="sidebar-section">
+        <div class="sidebar-title">3.5 & 3.6 Use Case & Activity</div>
+        <a href="#diagram-3-5" class="sidebar-link">
+          <span>3.5 Use Case Diagram</span>
+          <span class="sidebar-count">Boundary</span>
         </a>
-        <a href="#diagram-activity" class="sidebar-link">
-          <span>Activity Diagram (DM Flow)</span>
+        <a href="#diagram-3-6" class="sidebar-link">
+          <span>3.6 Activity Diagram</span>
           <span class="sidebar-count">Swimlane</span>
         </a>
-        <a href="#diagram-class" class="sidebar-link">
-          <span>Class Diagram</span>
-          <span class="sidebar-count">Arsitektur</span>
-        </a>
-        <a href="#diagram-seq-reg" class="sidebar-link">
-          <span>Sequence: Registrasi NIS</span>
-          <span class="sidebar-count">Seq 1</span>
-        </a>
-        <a href="#diagram-seq-login" class="sidebar-link">
-          <span>Sequence: Login Siswa</span>
-          <span class="sidebar-count">Seq 2</span>
-        </a>
-        <a href="#diagram-seq-checkout" class="sidebar-link">
-          <span>Sequence: Beli by DM</span>
-          <span class="sidebar-count">Seq 3</span>
-        </a>
       </div>
 
-      <!-- Group 3: Basis Data (Database Design) -->
+      <!-- Bab 3.7 -->
       <div class="sidebar-section">
-        <div class="sidebar-title">Pemodelan Basis Data</div>
-        <a href="#diagram-erd" class="sidebar-link">
-          <span>ERD Relasional</span>
+        <div class="sidebar-title">3.7 Basis Data (CDM, PDM, ERD)</div>
+        <a href="#diagram-3-7-1" class="sidebar-link">
+          <span>3.7.1 CDM & ERD</span>
           <span class="sidebar-count">Relasi</span>
         </a>
-        <a href="#diagram-cdm" class="sidebar-link">
-          <span>Conceptual Model (CDM)</span>
-          <span class="sidebar-count">Konsep</span>
-        </a>
-        <a href="#diagram-pdm" class="sidebar-link">
-          <span>Physical Model (PDM)</span>
-          <span class="sidebar-count">Postgres</span>
+        <a href="#diagram-3-7-2" class="sidebar-link">
+          <span>3.7.2 PDM PostgreSQL</span>
+          <span class="sidebar-count">Fisik</span>
         </a>
         <a href="#doc-data-dictionary" class="sidebar-link">
-          <span>Kamus Data & Tabel</span>
-          <span class="sidebar-count">Spesifikasi</span>
-        </a>
-      </div>
-
-      <!-- Group 4: SSOT & Spesifikasi Teknis -->
-      <div class="sidebar-section">
-        <div class="sidebar-title">SSOT & Dokumen Teknis</div>
-        <a href="#doc-ssot" class="sidebar-link">
-          <span>SSOT Ruang Lingkup</span>
-          <span class="sidebar-count">Master</span>
-        </a>
-        <a href="#doc-student-registry" class="sidebar-link">
-          <span>Standar Registry Siswa</span>
-          <span class="sidebar-count">Baku</span>
-        </a>
-        <a href="#doc-fe-be-contract" class="sidebar-link">
-          <span>Kontrak Data FE & BE</span>
-          <span class="sidebar-count">API Spec</span>
-        </a>
-        <a href="#doc-backend-spec" class="sidebar-link">
-          <span>Keamanan & RLS Backend</span>
+          <span>Kamus Data Tabel</span>
           <span class="sidebar-count">Supabase</span>
         </a>
       </div>
 
-      <!-- Group 5: Overview & PWA -->
+      <!-- Bab 3.8 -->
       <div class="sidebar-section">
-        <div class="sidebar-title">Overview Aplikasi & PWA</div>
-        <a href="#doc-overview-interaction" class="sidebar-link">
-          <span>Overview & Interaksi User</span>
-          <span class="sidebar-count">UX</span>
+        <div class="sidebar-title">3.8 Class Diagram</div>
+        <a href="#diagram-3-8" class="sidebar-link">
+          <span>3.8 Class Diagram</span>
+          <span class="sidebar-count">Arsitektur</span>
         </a>
-        <a href="#doc-pwa-presentation" class="sidebar-link">
-          <span>Panduan Presentasi PWA</span>
-          <span class="sidebar-count">Ujian</span>
+      </div>
+
+      <!-- Bab 3.9 -->
+      <div class="sidebar-section">
+        <div class="sidebar-title">3.9 Sequence Diagram</div>
+        <a href="#diagram-3-9-1" class="sidebar-link">
+          <span>3.9.1 Seq: Auth & Binding</span>
+          <span class="sidebar-count">Login</span>
+        </a>
+        <a href="#diagram-3-9-2" class="sidebar-link">
+          <span>3.9.2 Seq: Checkout COD</span>
+          <span class="sidebar-count">Transaksi</span>
+        </a>
+        <a href="#diagram-3-9-3" class="sidebar-link">
+          <span>3.9.3 Seq: Registrasi NIS</span>
+          <span class="sidebar-count">Akun Baru</span>
+        </a>
+      </div>
+
+      <!-- Acuan SSOT -->
+      <div class="sidebar-section">
+        <div class="sidebar-title">Lampiran & Dokumen Baku</div>
+        <a href="#doc-ssot" class="sidebar-link">
+          <span>00. SSOT Spesifikasi</span>
+          <span class="sidebar-count">Master</span>
+        </a>
+        <a href="#doc-student-registry" class="sidebar-link">
+          <span>Standar Registry Siswa</span>
+          <span class="sidebar-count">Baku Romawi</span>
         </a>
       </div>
 
@@ -963,13 +973,14 @@
       
       <!-- Filter Bar -->
       <div class="filter-bar">
-        <button class="filter-chip active" data-filter="all">Semua Dokumen</button>
-        <button class="filter-chip" data-filter="flowchart">Flowchart</button>
-        <button class="filter-chip" data-filter="dfd">DFD & Konteks</button>
-        <button class="filter-chip" data-filter="usecase">Use Case & Activity</button>
-        <button class="filter-chip" data-filter="database">Basis Data</button>
-        <button class="filter-chip" data-filter="uml">UML & Sequence</button>
-        <button class="filter-chip" data-filter="spec">Spesifikasi & SSOT</button>
+        <button class="filter-chip active" data-filter="all">Semua Bab III</button>
+        <button class="filter-chip" data-filter="riset">3.1 Riset</button>
+        <button class="filter-chip" data-filter="flowchart">3.2 Flowchart</button>
+        <button class="filter-chip" data-filter="dfd">3.3 & 3.4 DFD</button>
+        <button class="filter-chip" data-filter="usecase">3.5 & 3.6 Use Case</button>
+        <button class="filter-chip" data-filter="database">3.7 Basis Data</button>
+        <button class="filter-chip" data-filter="uml">3.8 & 3.9 UML</button>
+        <button class="filter-chip" data-filter="ssot">SSOT Acuan</button>
       </div>
 
       <!-- Search Alert Count -->
@@ -978,1571 +989,1642 @@
         <button class="action-btn" id="btn-clear-search" style="padding: 2px 8px;">Reset Filter</button>
       </div>
 
-      <!-- Hero Header Summary -->
+      <!-- Hero Header Summary (Sesuai Bab III) -->
       <div class="hero-card" id="overview-hero">
-        <div>
-          <h1 class="hero-title">Pusat Dokumentasi Arsitektur Sistem sNaps</h1>
-          <p class="hero-desc">Platform Komunitas & Marketplace Vokasi Berbasis Siswa SMKN 8 Semarang. Mengadopsi model Social Commerce Feed-to-DM (Pola Instagram & TikTok Shop) dengan verifikasi identitas resmi NIS, smart buyer filter, dan transaksi COD fleksibel di lingkungan sekolah.</p>
+        <div class="hero-badge-row">
+          <span class="doc-badge badge-bab">Laporan Perancangan Resmi</span>
+          <span class="doc-badge badge-spec">PPLG - SMKN 8 SEMARANG</span>
         </div>
+        <div>
+          <h1 class="hero-title">BAB III: PERANCANGAN ARSITEKTUR SISTEM</h1>
+          <p class="hero-meta"><strong>Judul Proyek</strong>: Pengembangan Aplikasi Snapan Market Mobile (sNaps) Berbasis Android Sebagai Platform Komunitas dan Marketplace Vokasi di Lingkungan SMKN 8 Semarang</p>
+        </div>
+        <p class="hero-desc">Dokumen perancangan komprehensif yang memuat hasil riset lapangan, pemodelan flowchart manual dan digital, Context Diagram, Data Flow Diagram (DFD Level 0 & 1), Use Case Diagram, Activity Diagram, Perancangan Basis Data (ERD, CDM, PDM), Class Diagram, hingga Sequence Diagram interaksi sistem.</p>
         <div class="hero-stats">
           <div class="stat-box">
-            <div class="stat-label">Total Diagram</div>
-            <div class="stat-value">16 Diagram</div>
+            <div class="stat-label">Sub-Bab Utama</div>
+            <div class="stat-value">3.1 s/d 3.9</div>
           </div>
           <div class="stat-box">
-            <div class="stat-label">Model Commerce</div>
-            <div class="stat-value">Feed-to-DM</div>
+            <div class="stat-label">Diagram Lengkap</div>
+            <div class="stat-value">13 Diagram</div>
           </div>
           <div class="stat-box">
-            <div class="stat-label">Smart Filter</div>
-            <div class="stat-value">Tab Pembeli (DM)</div>
+            <div class="stat-label">Entitas Basis Data</div>
+            <div class="stat-value">8 Tabel Inti</div>
           </div>
           <div class="stat-box">
-            <div class="stat-label">Model Transaksi</div>
-            <div class="stat-value">COD Langsung Siswa</div>
+            <div class="stat-label">Standar Validasi</div>
+            <div class="stat-value">NIS SMKN 8</div>
           </div>
         </div>
       </div>
 
       <!-- ========================================== -->
-      <!-- 1. FLOWCHART SISTEM DIGITAL (sNaps) -->
+      <!-- 3.1 PELAKSANAAN DAN HASIL RISET -->
       <!-- ========================================== -->
-      <section class="doc-card" data-category="flowchart" id="diagram-flowchart-digital">
+      <section class="doc-card" data-category="riset" id="section-3-1">
         <div class="doc-card-header">
           <div class="doc-title-group">
             <div class="doc-title-row">
-              <span class="doc-badge badge-flowchart">Flowchart</span>
-              <h2 class="doc-title">3.2.2 Diagram Flowchart Alur Sistem Digital (Social Commerce Feed-to-DM)</h2>
+              <span class="doc-badge badge-bab">Bab 3.1</span>
+              <h2 class="doc-title">3.1 Pelaksanaan dan Hasil Riset</h2>
             </div>
-            <p class="doc-subtitle">Pemetaan logika terotomatisasi transaksi C2C dan interaksi komunitas menggunakan pola Social Commerce Feed-to-DM pada sNaps.</p>
-          </div>
-          <div class="card-toolbar">
-            <div class="tab-group">
-              <button class="tab-btn active" onclick="switchCardTab('diagram-flowchart-digital', 'diagram')">Diagram</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-flowchart-digital', 'text')">Analisis</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-flowchart-digital', 'code')">Kode</button>
-            </div>
-            <button class="action-btn" onclick="openDiagramModal('mer-flowchart-digital', '3.2.2 Flowchart Sistem Digital (Feed-to-DM)')">Perbesar</button>
-            <button class="action-btn" onclick="copyMermaid('src-flowchart-digital', this)">Salin</button>
+            <p class="doc-subtitle">Pelaksanaan riset lapangan di lingkungan kampus SMKN 8 Semarang dan kesimpulan analisis kebutuhan pengguna.</p>
           </div>
         </div>
 
-        <div class="diagram-panel tab-content-diagram">
-          <pre class="mermaid" id="mer-flowchart-digital">
-flowchart TD
-    Start([Mulai: Siswa Membuka Aplikasi sNaps]) --> CheckAuth{Apakah Token Sesi Login Aktif?}
-    CheckAuth -- Tidak --> InputNIS[Input NIS & Password Siswa]
-    InputNIS --> ValidateRegistry[(Validasi ke Tabel student_registry)]
-    ValidateRegistry --> CheckNISValid{Apakah NIS Terdaftar & Aktif?}
-    CheckNISValid -- Tidak --> ShowAlertAuth[Tampilkan Peringatan: 'NIS Tidak Terdaftar di SMKN 8'] --> InputNIS
-    CheckNISValid -- Ya --> CreateSession[Terbitkan Sesi JWT & Muat Profil Siswa]
-    
-    CheckAuth -- Ya --> LoadHome[Buka Layar Beranda: Feed Komunitas & Marketplace]
-    CreateSession --> LoadHome
+        <div class="text-panel active" style="display: block;">
+          <p><strong>3.1.1 Pelaksanaan Riset Lapangan:</strong></p>
+          <p>Riset perancangan sistem dilaksanakan di lingkungan kampus SMKN 8 Semarang dengan melibatkan siswa dari berbagai program keahlian (PPLG, DKV, Kuliner, dan Otomotif) melalui metode wawancara mendalam (<em>in-depth interview</em>) serta observasi langsung terhadap dinamika komunikasi siswa di grup chat WhatsApp sekolah.</p>
 
-    LoadHome --> UserNavChoice{Pilih Aktivitas Siswa}
-
-    %% JALUR PENJUAL
-    UserNavChoice -- Jual Produk / Unjuk Karya --> OpenCreatePost[Buka Formulir Pembuatan Listing Produk]
-    OpenCreatePost --> FillProductData[Input Judul, Deskripsi, Foto Barang, Harga IDR, Patokan Kelas, Stok]
-    FillProductData --> ValidateInput{Validasi Input Lengkap?}
-    ValidateInput -- Tidak --> ShowErrorForm[Tampilkan Pesan Error Validasi Form] --> FillProductData
-    ValidateInput -- Ya --> InsertProductDB[(Simpan Record Baru ke Tabel market_posts)]
-    InsertProductDB --> PostBroadcast[Produk Tayang di Feed dengan Tombol Overlay 'Beli Sekarang'] --> EndSellerWait([Selesai: Menunggu Pembeli])
-
-    %% JALUR PEMBELI (SOCIAL COMMERCE FEED-TO-DM)
-    UserNavChoice -- Beli Produk Vokasi --> BrowseMarket[Jelajah Feed & Temukan Postingan Produk]
-    BrowseMarket --> TapBuyBtn[Pembeli Menekan Tombol Overlay 'Beli Sekarang' di Foto Produk]
-    
-    TapBuyBtn --> ExtractContext[Sistem Mengekstrak ProductContext: ID, Judul, Harga, Foto, Lokasi Kelas]
-    ExtractContext --> InitDMChat[Panggil DirectMessagesService: Cari atau Buat Percakapan dengan Penjual]
-    InitDMChat --> OpenChatRoom[Buka Layar ChatConversationScreen]
-    
-    OpenChatRoom --> PinProductCard[Sistem Menyematkan ChatProductCard di Bagian Atas Room Chat]
-    PinProductCard --> PreFillMessage[Sistem Menyiapkan Template Pesan Teks Pembuka Otomatis]
-    
-    PreFillMessage --> AutoFilterBuyer[Percakapan Otomatis Masuk ke Tab Filter 'Pembeli' di Inbox Penjual]
-    AutoFilterBuyer --> ChatNegotiation[Siswa Bernegosiasi & Janjian Jam Istirahat Serta Spot COD via Obrolan Teks]
-    
-    ChatNegotiation --> CheckDeal{Tercapai Kesepakatan Pertemuan COD?}
-    CheckDeal -- Batal / Tidak Sepakat --> EndCancelOrder([Selesai: Percakapan Selesai Tanpa Transaksi])
-    CheckDeal -- Sepakat --> MeetSchoolCOD[Kedua Siswa Bertemu Secara Fisik di Sekolah Saat Jam Istirahat]
-    
-    MeetSchoolCOD --> InspectAndPay[Pembeli Memeriksa Fisik Barang & Membayar Uang Tunai]
-    InspectAndPay --> MarkSoldAction[Penjual Memperbarui Status Produk Menjadi 'Terjual' di Aplikasi]
-    MarkSoldAction --> EndSuccess([Selesai: Transaksi Berhasil])
-          </pre>
-        </div>
-
-        <div class="text-panel tab-content-text">
-          <p><strong>Penjelasan Tahapan Krusial Sistem (Social Commerce Feed-to-DM):</strong></p>
+          <p><strong>3.1.2 Hasil dan Analisis Kebutuhan:</strong></p>
           <ol>
-            <li><strong>Tombol Aksi Terisolasi di Foto Produk</strong>: Tombol overlay bertuliskan <em>Beli Sekarang</em> berada di pojok kiri bawah container gambar tanpa mengganggu preview foto (tap di luar tombol tetap membuka zoom lightbox).</li>
-            <li><strong>Ekstraksi Konteks Produk Instan</strong>: Sistem mengambil metadata produk secara instan dan menyematkan kartu <code>ChatProductCard</code> di ruang obrolan.</li>
-            <li><strong>Smart Buyer Filtering di Inbox Penjual</strong>: Percakapan yang dimulai dari tombol beli otomatis ditandai sebagai <code>is_request = true</code> dan dikelompokkan ke tab <strong>Pembeli</strong>, memisahkan calon pembeli serius dari obrolan pertemanan biasa.</li>
-            <li><strong>Fleksibilitas Koordinasi COD Sekolah</strong>: Koordinasi lokasi dan jam pertemuan dilakukan langsung lewat obrolan teks yang fleksibel sesuai kondisi jam istirahat SMKN 8 Semarang, tanpa paksaan form checkout kaku.</li>
+            <li><strong>Kejenuhan dan Banjir Informasi pada Grup WhatsApp</strong>: Siswa merasa promosi karya dan penawaran barang preloved di grup kelas atau grup angkatan sangat cepat tenggelam oleh tumpukan chat lainnya sehingga tidak efisien.</li>
+            <li><strong>Kebutuhan Wadah Unjuk Karya Jurusan</strong>: Siswa PPLG membutuhkan media untuk mendistribusikan aplikasi/game, siswa DKV membutuhkan tempat memasarkan merchandise dan portofolio, dan siswa Kuliner memerlukan media pemesanan makanan ringan siap antar saat jam istirahat sekolah.</li>
+            <li><strong>Pentingnya Keamanan Ekosistem Berbasis NIS</strong>: Siswa menginginkan aplikasi yang tertutup khusus warga sekolah, di mana login diwajibkan menggunakan Nomor Induk Siswa (NIS) untuk mencegah akun palsu atau penipuan dari luar sekolah.</li>
+            <li><strong>Preferensi Metode Pembayaran COD di Spot Sekolah</strong>: Siswa menghendaki transaksi tanpa biaya admin transfer bank dengan metode pembayaran tunai saat bertemu langsung (<em>Cash on Delivery</em>) di titik-titik kumpul resmi sekolah.</li>
           </ol>
-        </div>
-
-        <div class="code-panel tab-content-code">
-          <pre id="src-flowchart-digital"><code>flowchart TD
-    Start([Mulai: Siswa Membuka Aplikasi sNaps]) --> CheckAuth{Apakah Token Sesi Login Aktif?}
-    CheckAuth -- Tidak --> InputNIS[Input NIS & Password Siswa]
-    InputNIS --> ValidateRegistry[(Validasi ke Tabel student_registry)]
-    ValidateRegistry --> CheckNISValid{Apakah NIS Terdaftar & Aktif?}
-    CheckNISValid -- Tidak --> ShowAlertAuth[Tampilkan Peringatan: 'NIS Tidak Terdaftar di SMKN 8'] --> InputNIS
-    CheckNISValid -- Ya --> CreateSession[Terbitkan Sesi JWT & Muat Profil Siswa]
-    
-    CheckAuth -- Ya --> LoadHome[Buka Layar Beranda: Feed Komunitas & Marketplace]
-    CreateSession --> LoadHome
-
-    LoadHome --> UserNavChoice{Pilih Aktivitas Siswa}
-
-    %% JALUR PENJUAL
-    UserNavChoice -- Jual Produk / Unjuk Karya --> OpenCreatePost[Buka Formulir Pembuatan Listing Produk]
-    OpenCreatePost --> FillProductData[Input Judul, Deskripsi, Foto Barang, Harga IDR, Patokan Kelas, Stok]
-    FillProductData --> ValidateInput{Validasi Input Lengkap?}
-    ValidateInput -- Tidak --> ShowErrorForm[Tampilkan Pesan Error Validasi Form] --> FillProductData
-    ValidateInput -- Ya --> InsertProductDB[(Simpan Record Baru ke Tabel market_posts)]
-    InsertProductDB --> PostBroadcast[Produk Tayang di Feed dengan Tombol Overlay 'Beli Sekarang'] --> EndSellerWait([Selesai: Menunggu Pembeli])
-
-    %% JALUR PEMBELI (SOCIAL COMMERCE FEED-TO-DM)
-    UserNavChoice -- Beli Produk Vokasi --> BrowseMarket[Jelajah Feed & Temukan Postingan Produk]
-    BrowseMarket --> TapBuyBtn[Pembeli Menekan Tombol Overlay 'Beli Sekarang' di Foto Produk]
-    
-    TapBuyBtn --> ExtractContext[Sistem Mengekstrak ProductContext: ID, Judul, Harga, Foto, Lokasi Kelas]
-    ExtractContext --> InitDMChat[Panggil DirectMessagesService: Cari atau Buat Percakapan dengan Penjual]
-    InitDMChat --> OpenChatRoom[Buka Layar ChatConversationScreen]
-    
-    OpenChatRoom --> PinProductCard[Sistem Menyematkan ChatProductCard di Bagian Atas Room Chat]
-    PinProductCard --> PreFillMessage[Sistem Menyiapkan Template Pesan Teks Pembuka Otomatis]
-    
-    PreFillMessage --> AutoFilterBuyer[Percakapan Otomatis Masuk ke Tab Filter 'Pembeli' di Inbox Penjual]
-    AutoFilterBuyer --> ChatNegotiation[Siswa Bernegosiasi & Janjian Jam Istirahat Serta Spot COD via Obrolan Teks]
-    
-    ChatNegotiation --> CheckDeal{Tercapai Kesepakatan Pertemuan COD?}
-    CheckDeal -- Batal / Tidak Sepakat --> EndCancelOrder([Selesai: Percakapan Selesai Tanpa Transaksi])
-    CheckDeal -- Sepakat --> MeetSchoolCOD[Kedua Siswa Bertemu Secara Fisik di Sekolah Saat Jam Istirahat]
-    
-    MeetSchoolCOD --> InspectAndPay[Pembeli Memeriksa Fisik Barang & Membayar Uang Tunai]
-    InspectAndPay --> MarkSoldAction[Penjual Memperbarui Status Produk Menjadi 'Terjual' di Aplikasi]
-    MarkSoldAction --> EndSuccess([Selesai: Transaksi Berhasil])</code></pre>
         </div>
       </section>
 
       <!-- ========================================== -->
-      <!-- 2. FLOWCHART ALUR MANUAL KONVENSIONAL -->
+      <!-- 3.2.1 FLOWCHART ALUR MANUAL -->
       <!-- ========================================== -->
-      <section class="doc-card" data-category="flowchart" id="diagram-flowchart-manual">
+      <section class="doc-card" data-category="flowchart" id="diagram-3-2-1">
         <div class="doc-card-header">
           <div class="doc-title-group">
             <div class="doc-title-row">
-              <span class="doc-badge badge-flowchart">Flowchart</span>
+              <span class="doc-badge badge-flowchart">Bab 3.2.1</span>
               <h2 class="doc-title">3.2.1 Diagram Flowchart Alur Manual (Konvensional)</h2>
             </div>
-            <p class="doc-subtitle">Pemetaan alur transaksi konvensional siswa sebelum menggunakan sistem aplikasi sNaps.</p>
+            <p class="doc-subtitle">Diagram menggambarkan alur jual-beli antar siswa sebelum adanya sistem aplikasi sNaps.</p>
           </div>
           <div class="card-toolbar">
             <div class="tab-group">
-              <button class="tab-btn active" onclick="switchCardTab('diagram-flowchart-manual', 'diagram')">Diagram</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-flowchart-manual', 'text')">Analisis</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-flowchart-manual', 'code')">Kode</button>
+              <button class="tab-btn active" onclick="switchCardTab('diagram-3-2-1', 'diagram')">Diagram</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-2-1', 'text')">Analisis</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-2-1', 'code')">Kode</button>
             </div>
-            <button class="action-btn" onclick="openDiagramModal('mer-flowchart-manual', '3.2.1 Flowchart Alur Manual (Konvensional)')">Perbesar</button>
-            <button class="action-btn" onclick="copyMermaid('src-flowchart-manual', this)">Salin</button>
+            <button class="action-btn" onclick="openDiagramModal('mer-3-2-1', '3.2.1 Flowchart Alur Manual (Konvensional)')">Perbesar</button>
+            <button class="action-btn" onclick="copyMermaid('src-3-2-1', this)">Salin</button>
           </div>
         </div>
 
         <div class="diagram-panel tab-content-diagram">
-          <pre class="mermaid" id="mer-flowchart-manual">
+          <pre class="mermaid" id="mer-3-2-1">
 flowchart TD
-    NodeStart([Mulai: Siswa Ingin Menjual Produk/Karya]) --> NodeUpload[Siswa Mengambil Foto & Membuat Teks Promosi Manual]
-    NodeUpload --> NodeBroadcast[Unggah ke Status WhatsApp & Grup Angkatan]
-    NodeBroadcast --> NodeWait[Menunggu Respon Chat Calon Pembeli]
-    
-    NodeWait --> NodeConditionResponse{Apakah Ada Siswa yang Membalas Chat?}
-    NodeConditionResponse -- Tidak (Tenggelam) --> NodeExpired[Postingan Hilang dalam 24 Jam / Tanpa Hasil Penjualan]
-    NodeExpired --> NodeEndCancel([Selesai / Transaksi Batal])
-    
-    NodeConditionResponse -- Ya --> NodeNegotiate[Tanya Jawab Manual via DM: Tanya Ketersediaan Stok & Nego Harga]
-    NodeNegotiate --> NodeConditionDeal{Apakah Tercapai Kesepakatan Harga?}
-    NodeConditionDeal -- Tidak Sepakat --> NodeEndCancel
-    
-    NodeConditionDeal -- Sepakat --> NodeAppointment[Menentukan Waktu & Janji Temu Lokasi via Chat Teks]
-    NodeAppointment --> NodeRisk[Rawan Miskomunikasi: Siswa Salah Lokasi Lantai / Jam Bentrok / Ghosting]
-    
-    NodeRisk --> NodeMeet[Kedua Siswa Bertemu Secara Fisik di Area Sekolah]
-    NodeMeet --> NodeInspect[Pembeli Memeriksa Fisik Barang Secara Langsung]
-    NodeInspect --> NodePay[Pembeli Menyerahkan Uang Tunai / Cash]
-    NodePay --> NodeReceipt[Penjual Menghitung Kembalian & Menyerahkan Barang Fisik]
-    NodeReceipt --> NodeManualRecord[Penjual Mencatat Penjualan di Buku Catatan Kertas / Catatan HP Pribadi]
-    NodeManualRecord --> NodeEndSuccess([Selesai: Transaksi Manual Berhasil])
+    Start([Mulai: Siswa Ingin Menjual Barang/Karya]) --> PostWA[Unggah Foto & Deskripsi ke Status WhatsApp/Instagram]
+    PostWA --> WaitChat[Menunggu Chat Masuk dari Siswa Lain]
+    WaitChat --> ChatCheck{Apakah Ada Siswa yang Membalas?}
+    ChatCheck -- Tidak (Chat Tenggelam) --> Expired[Postingan Hilang 24 Jam Tanpa Penjualan] --> EndCancel([Selesai / Gagal])
+    ChatCheck -- Ya --> ChatTawar[Tanya Jawab Manual via DM: Stok & Harga]
+    ChatTawar --> DealCheck{Sepakat Membeli?}
+    DealCheck -- Batal --> EndCancel
+    DealCheck -- Sepakat --> JanjiManual[Menentukan Tempat & Waktu Janji Temu]
+    JanjiManual --> RiskMiscommunication[Rawan Miskomunikasi Lokasi & Waktu / Ghosting]
+    RiskMiscommunication --> MeetManual[Bertemu Fisik di Area Sekolah]
+    MeetManual --> CashHandover[Pemberian Uang Tunai & Serah Terima Barang]
+    CashHandover --> ManualCalc[Pencatatan Keuangan Manual di Buku Pribadi]
+    ManualCalc --> EndSuccess([Selesai: Transaksi Berhasil])
           </pre>
         </div>
 
         <div class="text-panel tab-content-text">
-          <p><strong>Analisis Titik Kritis Alur Manual:</strong></p>
+          <p><strong>Penjelasan Alur Konvensional:</strong></p>
           <ul>
-            <li><strong>Chat Tenggelam (Message Ephemerality)</strong>: Postingan status WhatsApp hilang dalam 24 jam dan sering terkubur ratusan chat obrolan kelas lainnya.</li>
-            <li><strong>Ketidakpastian Ketersediaan Barang (No Live Stock)</strong>: Calon pembeli harus menanyakan stok berulang kali via DM pribadi.</li>
-            <li><strong>Resiko Janji Temu Mengambang (Meeting Friction)</strong>: Koordinasi tempat bertemu sering memicu salah lokasi atau salah waktu karena instruksi teks bebas yang ambigu.</li>
-            <li><strong>Nir-Pencatatan Finansial Baku</strong>: Tidak ada rekapitulasi penjualan otomatis yang aman untuk siswa wirausaha muda.</li>
+            <li>Siswa mengunggah promosi ke status WhatsApp yang rentan tenggelam dan hilang dalam 24 jam.</li>
+            <li>Tanya jawab ketersediaan stok berlangsung manual via pesan langsung tanpa jaminan stok masih ada.</li>
+            <li>Penentuan waktu dan tempat janji temu rawan miskomunikasi antar gedung/lantai di SMKN 8 Semarang.</li>
+            <li>Pencatatan keuangan masih bersifat manual pada buku catatan pribadi penjual.</li>
           </ul>
         </div>
 
         <div class="code-panel tab-content-code">
-          <pre id="src-flowchart-manual"><code>flowchart TD
-    NodeStart([Mulai: Siswa Ingin Menjual Produk/Karya]) --> NodeUpload[Siswa Mengambil Foto & Membuat Teks Promosi Manual]
-    NodeUpload --> NodeBroadcast[Unggah ke Status WhatsApp & Grup Angkatan]
-    NodeBroadcast --> NodeWait[Menunggu Respon Chat Calon Pembeli]
-    
-    NodeWait --> NodeConditionResponse{Apakah Ada Siswa yang Membalas Chat?}
-    NodeConditionResponse -- Tidak (Tenggelam) --> NodeExpired[Postingan Hilang dalam 24 Jam / Tanpa Hasil Penjualan]
-    NodeExpired --> NodeEndCancel([Selesai / Transaksi Batal])
-    
-    NodeConditionResponse -- Ya --> NodeNegotiate[Tanya Jawab Manual via DM: Tanya Ketersediaan Stok & Nego Harga]
-    NodeNegotiate --> NodeConditionDeal{Apakah Tercapai Kesepakatan Harga?}
-    NodeConditionDeal -- Tidak Sepakat --> NodeEndCancel
-    
-    NodeConditionDeal -- Sepakat --> NodeAppointment[Menentukan Waktu & Janji Temu Lokasi via Chat Teks]
-    NodeAppointment --> NodeRisk[Rawan Miskomunikasi: Siswa Salah Lokasi Lantai / Jam Bentrok / Ghosting]
-    
-    NodeRisk --> NodeMeet[Kedua Siswa Bertemu Secara Fisik di Area Sekolah]
-    NodeMeet --> NodeInspect[Pembeli Memeriksa Fisik Barang Secara Langsung]
-    NodeInspect --> NodePay[Pembeli Menyerahkan Uang Tunai / Cash]
-    NodePay --> NodeReceipt[Penjual Menghitung Kembalian & Menyerahkan Barang Fisik]
-    NodeReceipt --> NodeManualRecord[Penjual Mencatat Penjualan di Buku Catatan Kertas / Catatan HP Pribadi]
-    NodeManualRecord --> NodeEndSuccess([Selesai: Transaksi Manual Berhasil])</code></pre>
+          <pre id="src-3-2-1"><code>flowchart TD
+    Start([Mulai: Siswa Ingin Menjual Barang/Karya]) --> PostWA[Unggah Foto & Deskripsi ke Status WhatsApp/Instagram]
+    PostWA --> WaitChat[Menunggu Chat Masuk dari Siswa Lain]
+    WaitChat --> ChatCheck{Apakah Ada Siswa yang Membalas?}
+    ChatCheck -- Tidak (Chat Tenggelam) --> Expired[Postingan Hilang 24 Jam Tanpa Penjualan] --> EndCancel([Selesai / Gagal])
+    ChatCheck -- Ya --> ChatTawar[Tanya Jawab Manual via DM: Stok & Harga]
+    ChatTawar --> DealCheck{Sepakat Membeli?}
+    DealCheck -- Batal --> EndCancel
+    DealCheck -- Sepakat --> JanjiManual[Menentukan Tempat & Waktu Janji Temu]
+    JanjiManual --> RiskMiscommunication[Rawan Miskomunikasi Lokasi & Waktu / Ghosting]
+    RiskMiscommunication --> MeetManual[Bertemu Fisik di Area Sekolah]
+    MeetManual --> CashHandover[Pemberian Uang Tunai & Serah Terima Barang]
+    CashHandover --> ManualCalc[Pencatatan Keuangan Manual di Buku Pribadi]
+    ManualCalc --> EndSuccess([Selesai: Transaksi Berhasil])</code></pre>
         </div>
       </section>
 
       <!-- ========================================== -->
-      <!-- 3. FLOWCHART TRANSAKSI FEED KE DM -->
+      <!-- 3.2.2 FLOWCHART SISTEM DIGITAL (sNaps) -->
       <!-- ========================================== -->
-      <section class="doc-card" data-category="flowchart" id="diagram-flowchart-atomic">
+      <section class="doc-card" data-category="flowchart" id="diagram-3-2-2">
         <div class="doc-card-header">
           <div class="doc-title-group">
             <div class="doc-title-row">
-              <span class="doc-badge badge-flowchart">Flowchart</span>
-              <h2 class="doc-title">Flowchart Inisiasi Transaksi Social Commerce Feed ke Direct Message</h2>
+              <span class="doc-badge badge-flowchart">Bab 3.2.2</span>
+              <h2 class="doc-title">3.2.2 Diagram Flowchart Alur Sistem Digital (sNaps)</h2>
             </div>
-            <p class="doc-subtitle">Alur detail penanganan aksi klik tombol Beli Sekarang, penambatan kartu konteks produk, dan filter inbox pembeli.</p>
+            <p class="doc-subtitle">Diagram menggambarkan alur terotomatisasi transaksi C2C dan interaksi komunitas pada aplikasi sNaps.</p>
           </div>
           <div class="card-toolbar">
             <div class="tab-group">
-              <button class="tab-btn active" onclick="switchCardTab('diagram-flowchart-atomic', 'diagram')">Diagram</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-flowchart-atomic', 'text')">Analisis</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-flowchart-atomic', 'code')">Kode</button>
+              <button class="tab-btn active" onclick="switchCardTab('diagram-3-2-2', 'diagram')">Diagram</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-2-2', 'text')">Analisis</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-2-2', 'code')">Kode</button>
             </div>
-            <button class="action-btn" onclick="openDiagramModal('mer-flowchart-atomic', 'Flowchart Social Commerce Feed ke Direct Message')">Perbesar</button>
-            <button class="action-btn" onclick="copyMermaid('src-flowchart-atomic', this)">Salin</button>
+            <button class="action-btn" onclick="openDiagramModal('mer-3-2-2', '3.2.2 Flowchart Alur Sistem Digital (sNaps)')">Perbesar</button>
+            <button class="action-btn" onclick="copyMermaid('src-3-2-2', this)">Salin</button>
           </div>
         </div>
 
         <div class="diagram-panel tab-content-diagram">
-          <pre class="mermaid" id="mer-flowchart-atomic">
+          <pre class="mermaid" id="mer-3-2-2">
 flowchart TD
-    NodePost[Postingan Produk Tampil di Feed] --> NodeOverlay[Render Overlay Button 'Beli Sekarang' di Kiri Bawah Foto]
-    NodeOverlay --> NodeClick{User Mengetuk Tombol 'Beli Sekarang'?}
+    Start([Mulai: Siswa Membuka Aplikasi sNaps]) --> AuthCheck{Sudah Login NIS?}
+    AuthCheck -- Belum --> LoginNIS[Input NIS & Password -> Validasi student_registry]
+    LoginNIS --> FeedScreen[Tampil Beranda: Feed Karya & Marketplace Vokasi]
+    AuthCheck -- Sudah --> FeedScreen
     
-    NodeClick -- Ketuk Area Foto Lainnya --> OpenLightbox[Buka MediaLightboxDialog untuk Zoom Foto]
-    NodeClick -- Ketuk Tombol Beli --> StopPropagation[Hentikan Propagasi Gesture & Picu Haptic Feedback]
+    FeedScreen --> ActionChoice{Pilihan Aktivitas Siswa}
     
-    StopPropagation --> ExtractData[Ekstraksi ProductContext: ID, Judul, Harga, Foto, Lokasi Kelas]
-    ExtractData --> CallDMService[Panggil DirectMessagesService.openOrCreateConversation]
+    %% Alur Penjual
+    ActionChoice -- Buat Listing Produk --> FormProduct[Input Judul, Foto, Kategori Jurusan, Harga, Stok]
+    FormProduct --> SaveDB[(Simpan ke Database PostgreSQL)]
+    SaveDB --> PostPublished[Produk Tayang di Feed & Marketplace] --> EndWait([Selesai])
     
-    CallDMService --> QueryConv[(Cek Tabel conversations: buyer_id + seller_id + post_id)]
-    QueryConv --> CheckExist{Percakapan Sudah Ada?}
-    CheckExist -- Belum Ada --> InsertConv[(Insert Record Baru di conversations: is_request = true)]
-    CheckExist -- Sudah Ada --> ReturnConv[Ambil ID Percakapan yang Telah Ada]
+    %% Alur Pembeli
+    ActionChoice -- Beli Produk --> ViewDetail[Buka Halaman Detail Produk & Profil Penjual]
+    ViewDetail --> CheckStock{Stok Produk Tersedia > 0?}
+    CheckStock -- Habis --> AlertEmpty[Tampilkan Notifikasi 'Stok Habis'] --> EndWait
+    CheckStock -- Tersedia --> TapCheckout[Tekan Tombol 'Beli Sekarang']
     
-    InsertConv --> PushScreen[Navigasi Membuka ChatConversationScreen]
-    ReturnConv --> PushScreen
+    TapCheckout --> SelectMeetingPoint[Pilih Titik Temu COD Resmi Sekolah: Gazebo / Kantin / Lab]
+    SelectMeetingPoint --> InputNotes[Tulis Catatan Pertemuan COD]
+    InputNotes --> ConfirmOrder[Konfirmasi Pesanan COD]
     
-    PushScreen --> MountProductCard[Sematkan Komponen ChatProductCard di Header Ruang Obrolan]
-    MountProductCard --> AutoDraft[Isi Kolom ChatComposerBar dengan Template Pesan Inquiry Otomatis]
+    ConfirmOrder --> SystemProcess[(Sistem Mengunci Stok & Menerbitkan Record Pesanan)]
+    SystemProcess --> SendPushNotif[Kirim Push Notification ke Siswa Penjual]
+    SendPushNotif --> OrderSuccessModal[Tampilkan Bukti Pesanan & ID Transaksi]
     
-    AutoDraft --> SendMessage[Pembeli Menekan Kirim Pesan]
-    SendMessage --> InsertMsg[(Simpan Pesan ke Tabel direct_messages)]
-    InsertMsg --> DeliverToSeller[Pesan Muncul di Tab 'Pembeli' pada Inbox Penjual]
-    DeliverToSeller --> DoneInit([Selesai: Percakapan Siap untuk Koordinasi COD])
+    OrderSuccessModal --> MeetCOD[Kedua Siswa Bertemu di Spot COD Sesuai Jadwal]
+    MeetCOD --> InspectItem[Pembeli Memeriksa Fisik Barang & Membayar Tunai]
+    InspectItem --> ConfirmCompletion[Siswa Mengonfirmasi 'Pesanan Diterima']
+    ConfirmCompletion --> AutoDeductStock[(Sistem Memperbarui Status Pesanan: COMPLETED)]
+    AutoDeductStock --> Finish([Selesai: Transaksi Sukses])
           </pre>
         </div>
 
         <div class="text-panel tab-content-text">
-          <p><strong>Spesifikasi Rekayasa Feed-to-DM:</strong></p>
-          <ul>
-            <li><strong>Isolasi Gesture Pointer</strong>: Tombol <em>Beli Sekarang</em> menggunakan <code>HitTestBehavior.opaque</code> sehingga sentuhan pada tombol tidak memicu lightbox gambar.</li>
-            <li><strong>Smart Tab Routing</strong>: Parameter <code>is_request = true</code> pada tabel <code>conversations</code> secara otomatis memetakan percakapan ke tab filter <em>Pembeli</em> di HP penjual.</li>
-            <li><strong>Konteks Produk Tak Pernah Hilang</strong>: Melalui <code>ChatProductCard</code>, kedua belah pihak selalu melihat foto barang, harga, dan lokasi kelas patokan tanpa harus membuka postingan feed kembali.</li>
-          </ul>
-        </div>
-
-        <div class="code-panel tab-content-code">
-          <pre id="src-flowchart-atomic"><code>flowchart TD
-    NodePost[Postingan Produk Tampil di Feed] --> NodeOverlay[Render Overlay Button 'Beli Sekarang' di Kiri Bawah Foto]
-    NodeOverlay --> NodeClick{User Mengetuk Tombol 'Beli Sekarang'?}
-    
-    NodeClick -- Ketuk Area Foto Lainnya --> OpenLightbox[Buka MediaLightboxDialog untuk Zoom Foto]
-    NodeClick -- Ketuk Tombol Beli --> StopPropagation[Hentikan Propagasi Gesture & Picu Haptic Feedback]
-    
-    StopPropagation --> ExtractData[Ekstraksi ProductContext: ID, Judul, Harga, Foto, Lokasi Kelas]
-    ExtractData --> CallDMService[Panggil DirectMessagesService.openOrCreateConversation]
-    
-    CallDMService --> QueryConv[(Cek Tabel conversations: buyer_id + seller_id + post_id)]
-    QueryConv --> CheckExist{Percakapan Sudah Ada?}
-    CheckExist -- Belum Ada --> InsertConv[(Insert Record Baru di conversations: is_request = true)]
-    CheckExist -- Sudah Ada --> ReturnConv[Ambil ID Percakapan yang Telah Ada]
-    
-    InsertConv --> PushScreen[Navigasi Membuka ChatConversationScreen]
-    ReturnConv --> PushScreen
-    
-    PushScreen --> MountProductCard[Sematkan Komponen ChatProductCard di Header Ruang Obrolan]
-    MountProductCard --> AutoDraft[Isi Kolom ChatComposerBar dengan Template Pesan Inquiry Otomatis]
-    
-    AutoDraft --> SendMessage[Pembeli Menekan Kirim Pesan]
-    SendMessage --> InsertMsg[(Simpan Pesan ke Tabel direct_messages)]
-    InsertMsg --> DeliverToSeller[Pesan Muncul di Tab 'Pembeli' pada Inbox Penjual]
-    DeliverToSeller --> DoneInit([Selesai: Percakapan Siap untuk Koordinasi COD])</code></pre>
-        </div>
-      </section>
-
-      <!-- ========================================== -->
-      <!-- 4. FLOWCHART AUTENTIKASI NIS DUA LAPIS -->
-      <!-- ========================================== -->
-      <section class="doc-card" data-category="flowchart" id="diagram-flowchart-auth">
-        <div class="doc-card-header">
-          <div class="doc-title-group">
-            <div class="doc-title-row">
-              <span class="doc-badge badge-flowchart">Flowchart</span>
-              <h2 class="doc-title">Flowchart Validasi Akun NIS Dua Lapis (Two-Tier Auth)</h2>
-            </div>
-            <p class="doc-subtitle">Alur verifikasi identitas resmi siswa terhadap buku induk sekolah dan proteksi login ganda.</p>
-          </div>
-          <div class="card-toolbar">
-            <div class="tab-group">
-              <button class="tab-btn active" onclick="switchCardTab('diagram-flowchart-auth', 'diagram')">Diagram</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-flowchart-auth', 'text')">Analisis</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-flowchart-auth', 'code')">Kode</button>
-            </div>
-            <button class="action-btn" onclick="openDiagramModal('mer-flowchart-auth', 'Flowchart Validasi Akun NIS Dua Lapis')">Perbesar</button>
-            <button class="action-btn" onclick="copyMermaid('src-flowchart-auth', this)">Salin</button>
-          </div>
-        </div>
-
-        <div class="diagram-panel tab-content-diagram">
-          <pre class="mermaid" id="mer-flowchart-auth">
-flowchart TD
-    Start([Mulai: Registrasi / Login Siswa]) --> InputNIS[Input Nomor Induk Siswa & Password]
-    InputNIS --> CheckFormat{Format NIS Angka 4-5 Digit?}
-    CheckFormat -- Tidak --> ErrorFormat[Tampilkan Pesan: 'Format NIS Tidak Sesuai'] --> InputNIS
-    CheckFormat -- Ya --> QueryRegistry[(Query ke Tabel student_registry)]
-    QueryRegistry --> CheckNISExist{NIS Ada di Buku Induk SMKN 8?}
-    CheckNISExist -- Tidak Ada --> RejectRegistry[Tolak: 'Bukan Siswa SMKN 8 Semarang'] --> InputNIS
-    CheckNISExist -- Ada --> CheckIsActive{Status Siswa Aktif? is_active = true}
-    CheckIsActive -- Tidak (Alumni/Pindah) --> RejectInactive[Tolak: 'Status Siswa Tidak Aktif'] --> InputNIS
-    CheckIsActive -- Ya --> CheckUserAccount{Sudah Terdaftar di Tabel profiles?}
-    
-    CheckUserAccount -- Sudah (Alur Login) --> VerifyPass[Validasi Hash Password Supabase Auth]
-    VerifyPass --> CheckPassValid{Password Cocok?}
-    CheckPassValid -- Salah --> ErrorPass[Tampilkan: 'Password Salah'] --> InputNIS
-    CheckPassValid -- Benar --> IssueToken[Terbitkan JWT Session & Bind Device] --> OpenApp([Buka Layar Utama Beranda])
-    
-    CheckUserAccount -- Belum (Alur Registrasi) --> CreateAuthUser[(Buat Akun Supabase Auth auth.users)]
-    CreateAuthUser --> InsertProfile[(Insert Record ke Tabel profiles Terkait NIS)]
-    InsertProfile --> IssueToken
-          </pre>
-        </div>
-
-        <div class="text-panel tab-content-text">
-          <p><strong>Manfaat Arsitektur Two-Tier Auth:</strong></p>
-          <ul>
-            <li><strong>Zero Fake Accounts</strong>: Mencegah pihak luar mendaftar karena setiap akun wajib terikat dengan 1 nomor induk siswa resmi di SMKN 8 Semarang.</li>
-            <li><strong>Automated Profile Normalization</strong>: Nama lengkap, rombel kelas, dan jurusan diambil langsung dari buku induk, mengeliminasi kesalahan ejaan nama siswa.</li>
-          </ul>
-        </div>
-
-        <div class="code-panel tab-content-code">
-          <pre id="src-flowchart-auth"><code>flowchart TD
-    Start([Mulai: Registrasi / Login Siswa]) --> InputNIS[Input Nomor Induk Siswa & Password]
-    InputNIS --> CheckFormat{Format NIS Angka 4-5 Digit?}
-    CheckFormat -- Tidak --> ErrorFormat[Tampilkan Pesan: 'Format NIS Tidak Sesuai'] --> InputNIS
-    CheckFormat -- Ya --> QueryRegistry[(Query ke Tabel student_registry)]
-    QueryRegistry --> CheckNISExist{NIS Ada di Buku Induk SMKN 8?}
-    CheckNISExist -- Tidak Ada --> RejectRegistry[Tolak: 'Bukan Siswa SMKN 8 Semarang'] --> InputNIS
-    CheckNISExist -- Ada --> CheckIsActive{Status Siswa Aktif? is_active = true}
-    CheckIsActive -- Tidak (Alumni/Pindah) --> RejectInactive[Tolak: 'Status Siswa Tidak Aktif'] --> InputNIS
-    CheckIsActive -- Ya --> CheckUserAccount{Sudah Terdaftar di Tabel profiles?}
-    
-    CheckUserAccount -- Sudah (Alur Login) --> VerifyPass[Validasi Hash Password Supabase Auth]
-    VerifyPass --> CheckPassValid{Password Cocok?}
-    CheckPassValid -- Salah --> ErrorPass[Tampilkan: 'Password Salah'] --> InputNIS
-    CheckPassValid -- Benar --> IssueToken[Terbitkan JWT Session & Bind Device] --> OpenApp([Buka Layar Utama Beranda])
-    
-    CheckUserAccount -- Belum (Alur Registrasi) --> CreateAuthUser[(Buat Akun Supabase Auth auth.users)]
-    CreateAuthUser --> InsertProfile[(Insert Record ke Tabel profiles Terkait NIS)]
-    InsertProfile --> IssueToken</code></pre>
-        </div>
-      </section>
-
-      <!-- ========================================== -->
-      <!-- 5. DIAGRAM KONTEKS (CONTEXT DIAGRAM) -->
-      <!-- ========================================== -->
-      <section class="doc-card" data-category="dfd" id="diagram-konteks">
-        <div class="doc-card-header">
-          <div class="doc-title-group">
-            <div class="doc-title-row">
-              <span class="doc-badge badge-dfd">DFD</span>
-              <h2 class="doc-title">3.3 Diagram Konteks (Context Diagram - Proses 0.0)</h2>
-            </div>
-            <p class="doc-subtitle">Pemodelan batas sistem sNaps pada Level 0 dengan dua entitas eksternal: Siswa dan Admin Sekolah.</p>
-          </div>
-          <div class="card-toolbar">
-            <div class="tab-group">
-              <button class="tab-btn active" onclick="switchCardTab('diagram-konteks', 'diagram')">Diagram</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-konteks', 'text')">Analisis</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-konteks', 'code')">Kode</button>
-            </div>
-            <button class="action-btn" onclick="openDiagramModal('mer-konteks', '3.3 Diagram Konteks (Proses 0.0)')">Perbesar</button>
-            <button class="action-btn" onclick="copyMermaid('src-konteks', this)">Salin</button>
-          </div>
-        </div>
-
-        <div class="diagram-panel tab-content-diagram">
-          <pre class="mermaid" id="mer-konteks">
-flowchart LR
-    subgraph ExternalEntity1["Entitas Eksternal 1"]
-        Siswa["SISWA (Warga SMKN 8 Semarang)<br/>- Pembeli & Penjual C2C -"]
-    end
-
-    subgraph CoreSystem["Sistem Utama"]
-        App(("0.0<br/>SISTEM INFORMASI APLIKASI<br/>SNAPAN MARKET MOBILE<br/>(sNaps)"))
-    end
-
-    subgraph ExternalEntity2["Entitas Eksternal 2"]
-        Admin["ADMIN SEKOLAH<br/>- Tata Usaha & Kesiswaan -"]
-    end
-
-    %% Arus Siswa ke Sistem
-    Siswa -->|1. Data Autentikasi NIS & Registrasi Perangkat| App
-    Siswa -->|2. Data Listing Produk & Karya Vokasi| App
-    Siswa -->|3. Data Thread Komunitas & Polling| App
-    Siswa -->|4. Inisiasi Beli Sekarang & Konteks Produk| App
-    Siswa -->|5. Pesan Chat Langsung & Tab Pembeli| App
-    Siswa -->|6. Laporan Konten Melanggar| App
-
-    %% Arus Sistem ke Siswa
-    App -->|a. Status Sesi Login & Profil Terverifikasi| Siswa
-    App -->|b. Katalog Produk Vokasi & Feed Komunitas| Siswa
-    App -->|c. Kartu Produk ChatProductCard di DM| Siswa
-    App -->|d. Transmisi Obrolan Chat Realtime & Filter Inbox| Siswa
-
-    %% Arus Admin ke Sistem & Sebaliknya
-    Admin -->|A. Master Data Registry Siswa NIS & Kelas| App
-    Admin -->|B. Konfigurasi Sistem & Panduan Sekolah| App
-    Admin -->|C. Tindakan Moderasi Pemblokiran Konten| App
-
-    App -->|X. Rekapitulasi Data Transaksi Komunitas Sekolah| Admin
-    App -->|Y. Log Keamanan Perangkat & Laporan Siswa| Admin
-          </pre>
-        </div>
-
-        <div class="text-panel tab-content-text">
-          <p><strong>Batasan Entitas Luar:</strong></p>
-          <ul>
-            <li><strong>Siswa</strong>: Berperan ganda C2C (pembeli, penjual, penulis thread, pengirim chat). Mengirim input berupa kredensial NIS, listing karya di feed, aksi Beli Sekarang, dan komunikasi langsung via DM.</li>
-            <li><strong>Admin Sekolah</strong>: Menyediakan master data buku induk siswa (NIS dan rombel kelas) serta menerima log pengawasan keamanan sekolah.</li>
-          </ul>
-        </div>
-
-        <div class="code-panel tab-content-code">
-          <pre id="src-konteks"><code>flowchart LR
-    subgraph ExternalEntity1["Entitas Eksternal 1"]
-        Siswa["SISWA (Warga SMKN 8 Semarang)<br/>- Pembeli & Penjual C2C -"]
-    end
-
-    subgraph CoreSystem["Sistem Utama"]
-        App(("0.0<br/>SISTEM INFORMASI APLIKASI<br/>SNAPAN MARKET MOBILE<br/>(sNaps)"))
-    end
-
-    subgraph ExternalEntity2["Entitas Eksternal 2"]
-        Admin["ADMIN SEKOLAH<br/>- Tata Usaha & Kesiswaan -"]
-    end
-
-    Siswa -->|1. Data Autentikasi NIS & Registrasi Perangkat| App
-    Siswa -->|2. Data Listing Produk & Karya Vokasi| App
-    Siswa -->|3. Data Thread Komunitas & Polling| App
-    Siswa -->|4. Inisiasi Beli Sekarang & Konteks Produk| App
-    Siswa -->|5. Pesan Chat Langsung & Tab Pembeli| App
-    Siswa -->|6. Laporan Konten Melanggar| App
-
-    App -->|a. Status Sesi Login & Profil Terverifikasi| Siswa
-    App -->|b. Katalog Produk Vokasi & Feed Komunitas| Siswa
-    App -->|c. Kartu Produk ChatProductCard di DM| Siswa
-    App -->|d. Transmisi Obrolan Chat Realtime & Filter Inbox| Siswa
-
-    Admin -->|A. Master Data Registry Siswa NIS & Kelas| App
-    Admin -->|B. Konfigurasi Sistem & Panduan Sekolah| App
-    Admin -->|C. Tindakan Moderasi Pemblokiran Konten| App
-
-    App -->|X. Rekapitulasi Data Transaksi Komunitas Sekolah| Admin
-    App -->|Y. Log Keamanan Perangkat & Laporan Siswa| Admin</code></pre>
-        </div>
-      </section>
-
-      <!-- ========================================== -->
-      <!-- 6. DFD LEVEL 0 (DATA FLOW DIAGRAM) -->
-      <!-- ========================================== -->
-      <section class="doc-card" data-category="dfd" id="diagram-dfd-0">
-        <div class="doc-card-header">
-          <div class="doc-title-group">
-            <div class="doc-title-row">
-              <span class="doc-badge badge-dfd">DFD</span>
-              <h2 class="doc-title">3.4.1 Data Flow Diagram (DFD Level 0)</h2>
-            </div>
-            <p class="doc-subtitle">Dekomposisi fungsional sistem sNaps ke dalam 5 sub-proses utama dengan tabel data store.</p>
-          </div>
-          <div class="card-toolbar">
-            <div class="tab-group">
-              <button class="tab-btn active" onclick="switchCardTab('diagram-dfd-0', 'diagram')">Diagram</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-dfd-0', 'text')">Analisis</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-dfd-0', 'code')">Kode</button>
-            </div>
-            <button class="action-btn" onclick="openDiagramModal('mer-dfd-0', '3.4.1 DFD Level 0')">Perbesar</button>
-            <button class="action-btn" onclick="copyMermaid('src-dfd-0', this)">Salin</button>
-          </div>
-        </div>
-
-        <div class="diagram-panel tab-content-diagram">
-          <pre class="mermaid" id="mer-dfd-0">
-flowchart TD
-    %% Entitas
-    Siswa["SISWA"]
-    Admin["ADMIN SEKOLAH"]
-
-    %% Data Stores
-    D1[("D1: student_registry")]
-    D2[("D2: profiles")]
-    D3[("D3: market_posts")]
-    D4[("D4: conversations")]
-    D5[("D5: direct_messages")]
-    D6[("D6: content_reports")]
-
-    %% Sub-Proses
-    P1(("1.0<br/>Manajemen Autentikasi<br/>& Identitas Siswa"))
-    P2(("2.0<br/>Pengelolaan Listing<br/>Karya & Produk Vokasi"))
-    P3(("3.0<br/>Pengelolaan Feed<br/>& Diskusi Komunitas"))
-    P4(("4.0<br/>Transaksi Social Commerce<br/>Feed ke Direct Message"))
-    P5(("5.0<br/>Administrasi &<br/>Keamanan Sistem"))
-
-    %% Alur Proses 1.0
-    Siswa -->|Input NIS & Kredensial| P1
-    Admin -->|Impor Master Data Siswa| P1
-    P1 <-->|Validasi Buku Induk| D1
-    P1 <-->|Simpan & Muat Profil| D2
-    P1 -->|Status Akun & Token Sesi| Siswa
-
-    %% Alur Proses 2.0
-    Siswa -->|Form Listing Produk Vokasi| P2
-    P2 <-->|Simpan & Perbarui Status Produk| D3
-    P2 -->|Katalog Produk di Linimasa| Siswa
-
-    %% Alur Proses 3.0
-    Siswa -->|Thread Diskusi, Polling, Komentar| P3
-    P3 <-->|Simpan Utas & Komentar| D3
-    P3 -->|Feed Komunitas Realtime| Siswa
-
-    %% Alur Proses 4.0 (Social Commerce Feed-to-DM)
-    Siswa -->|Klik 'Beli Sekarang' di Feed| P4
-    P4 <-->|Ambil Metadata Produk| D3
-    P4 <-->|Buat Room & Tandai is_request| D4
-    P4 <-->|Kirim & Muat Pesan Chat COD| D5
-    P4 -->|Render ChatProductCard & Inbox Pembeli| Siswa
-
-    %% Alur Proses 5.0
-    Admin -->|Tindakan Moderasi & Penertiban| P5
-    Siswa -->|Kirim Laporan Konten| P5
-    P5 <-->|Kelola Laporan Konten| D6
-    P5 -->|Laporan Transaksi & Keamanan| Admin
-          </pre>
-        </div>
-
-        <div class="text-panel tab-content-text">
-          <p><strong>Rincian 5 Sub-Proses DFD Level 0:</strong></p>
+          <p><strong>Penjelasan Alur Sistem Digital:</strong></p>
           <ol>
-            <li><strong>1.0 Autentikasi & Identitas</strong>: Menjembatani NIS siswa dengan tabel <code>student_registry</code> dan <code>profiles</code>.</li>
-            <li><strong>2.0 Listing Produk</strong>: Menangani penayangan karya kejuruan dengan tombol overlay beli di <code>market_posts</code>.</li>
-            <li><strong>3.0 Feed Komunitas</strong>: Mengatur thread sosial, komentar bersarang, dan interaksi likes.</li>
-            <li><strong>4.0 Transaksi Social Commerce Feed-to-DM</strong>: Mengelola inisiasi beli langsung dari feed ke obrolan privat pada <code>conversations</code> dan <code>direct_messages</code>.</li>
-            <li><strong>5.0 Administrasi</strong>: Moderasi laporan konten dan pengawasan lingkungan sekolah.</li>
+            <li><strong>Autentikasi Buku Induk</strong>: Siswa divalidasi ke <code>student_registry</code> sebelum dapat mengakses beranda.</li>
+            <li><strong>Jalur Penjual</strong>: Pembuatan listing produk kejuruan tersimpan otomatis ke database PostgreSQL Supabase.</li>
+            <li><strong>Jalur Pembeli</strong>: Pengecekan stok aktif, pemilihan titik temu resmi sekolah (Gazebo/Kantin/Lab), serta penguncian stok atomik saat pesanan diterbitkan.</li>
+            <li><strong>Penyelesaian Pesanan</strong>: Serah terima fisik saat jam istirahat dan konfirmasi pesanan selesai di aplikasi.</li>
           </ol>
         </div>
 
         <div class="code-panel tab-content-code">
-          <pre id="src-dfd-0"><code>flowchart TD
-    Siswa["SISWA"]
-    Admin["ADMIN SEKOLAH"]
-
-    D1[("D1: student_registry")]
-    D2[("D2: profiles")]
-    D3[("D3: market_posts")]
-    D4[("D4: conversations")]
-    D5[("D5: direct_messages")]
-    D6[("D6: content_reports")]
-
-    P1(("1.0<br/>Manajemen Autentikasi<br/>& Identitas Siswa"))
-    P2(("2.0<br/>Pengelolaan Listing<br/>Karya & Produk Vokasi"))
-    P3(("3.0<br/>Pengelolaan Feed<br/>& Diskusi Komunitas"))
-    P4(("4.0<br/>Transaksi Social Commerce<br/>Feed ke Direct Message"))
-    P5(("5.0<br/>Administrasi &<br/>Keamanan Sistem"))
-
-    Siswa -->|Input NIS & Kredensial| P1
-    Admin -->|Impor Master Data Siswa| P1
-    P1 <-->|Validasi Buku Induk| D1
-    P1 <-->|Simpan & Muat Profil| D2
-    P1 -->|Status Akun & Token Sesi| Siswa
-
-    Siswa -->|Form Listing Produk Vokasi| P2
-    P2 <-->|Simpan & Perbarui Status Produk| D3
-    P2 -->|Katalog Produk di Linimasa| Siswa
-
-    Siswa -->|Thread Diskusi, Polling, Komentar| P3
-    P3 <-->|Simpan Utas & Komentar| D3
-    P3 -->|Feed Komunitas Realtime| Siswa
-
-    Siswa -->|Klik 'Beli Sekarang' di Feed| P4
-    P4 <-->|Ambil Metadata Produk| D3
-    P4 <-->|Buat Room & Tandai is_request| D4
-    P4 <-->|Kirim & Muat Pesan Chat COD| D5
-    P4 -->|Render ChatProductCard & Inbox Pembeli| Siswa
-
-    Admin -->|Tindakan Moderasi & Penertiban| P5
-    Siswa -->|Kirim Laporan Konten| P5
-    P5 <-->|Kelola Laporan Konten| D6
-    P5 -->|Laporan Transaksi & Keamanan| Admin</code></pre>
+          <pre id="src-3-2-2"><code>flowchart TD
+    Start([Mulai: Siswa Membuka Aplikasi sNaps]) --> AuthCheck{Sudah Login NIS?}
+    AuthCheck -- Belum --> LoginNIS[Input NIS & Password -> Validasi student_registry]
+    LoginNIS --> FeedScreen[Tampil Beranda: Feed Karya & Marketplace Vokasi]
+    AuthCheck -- Sudah --> FeedScreen
+    
+    FeedScreen --> ActionChoice{Pilihan Aktivitas Siswa}
+    
+    %% Alur Penjual
+    ActionChoice -- Buat Listing Produk --> FormProduct[Input Judul, Foto, Kategori Jurusan, Harga, Stok]
+    FormProduct --> SaveDB[(Simpan ke Database PostgreSQL)]
+    SaveDB --> PostPublished[Produk Tayang di Feed & Marketplace] --> EndWait([Selesai])
+    
+    %% Alur Pembeli
+    ActionChoice -- Beli Produk --> ViewDetail[Buka Halaman Detail Produk & Profil Penjual]
+    ViewDetail --> CheckStock{Stok Produk Tersedia > 0?}
+    CheckStock -- Habis --> AlertEmpty[Tampilkan Notifikasi 'Stok Habis'] --> EndWait
+    CheckStock -- Tersedia --> TapCheckout[Tekan Tombol 'Beli Sekarang']
+    
+    TapCheckout --> SelectMeetingPoint[Pilih Titik Temu COD Resmi Sekolah: Gazebo / Kantin / Lab]
+    SelectMeetingPoint --> InputNotes[Tulis Catatan Pertemuan COD]
+    InputNotes --> ConfirmOrder[Konfirmasi Pesanan COD]
+    
+    ConfirmOrder --> SystemProcess[(Sistem Mengunci Stok & Menerbitkan Record Pesanan)]
+    SystemProcess --> SendPushNotif[Kirim Push Notification ke Siswa Penjual]
+    SendPushNotif --> OrderSuccessModal[Tampilkan Bukti Pesanan & ID Transaksi]
+    
+    OrderSuccessModal --> MeetCOD[Kedua Siswa Bertemu di Spot COD Sesuai Jadwal]
+    MeetCOD --> InspectItem[Pembeli Memeriksa Fisik Barang & Membayar Tunai]
+    InspectItem --> ConfirmCompletion[Siswa Mengonfirmasi 'Pesanan Diterima']
+    ConfirmCompletion --> AutoDeductStock[(Sistem Memperbarui Status Pesanan: COMPLETED)]
+    AutoDeductStock --> Finish([Selesai: Transaksi Sukses])</code></pre>
         </div>
       </section>
 
       <!-- ========================================== -->
-      <!-- 7. DFD LEVEL 1 (PROSES 4.0 TRANSAKSI FEED TO DM) -->
+      <!-- 3.3 DIAGRAM KONTEKS -->
       <!-- ========================================== -->
-      <section class="doc-card" data-category="dfd" id="diagram-dfd-1">
+      <section class="doc-card" data-category="dfd" id="diagram-3-3">
         <div class="doc-card-header">
           <div class="doc-title-group">
             <div class="doc-title-row">
-              <span class="doc-badge badge-dfd">DFD</span>
-              <h2 class="doc-title">3.4.2 Data Flow Diagram (DFD Level 1 - Transaksi Social Commerce Feed-to-DM)</h2>
+              <span class="doc-badge badge-dfd">Bab 3.3</span>
+              <h2 class="doc-title">3.3 Diagram Konteks (Context Diagram)</h2>
             </div>
-            <p class="doc-subtitle">Dekomposisi mendalam sub-proses 4.0 dari klik Beli Sekarang di feed hingga serah terima fisik di sekolah.</p>
+            <p class="doc-subtitle">Diagram Konteks memposisikan sistem sNaps pada Level 0 Global dengan batasan entitas luar Siswa dan Admin Sekolah.</p>
           </div>
           <div class="card-toolbar">
             <div class="tab-group">
-              <button class="tab-btn active" onclick="switchCardTab('diagram-dfd-1', 'diagram')">Diagram</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-dfd-1', 'text')">Analisis</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-dfd-1', 'code')">Kode</button>
+              <button class="tab-btn active" onclick="switchCardTab('diagram-3-3', 'diagram')">Diagram</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-3', 'text')">Analisis</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-3', 'code')">Kode</button>
             </div>
-            <button class="action-btn" onclick="openDiagramModal('mer-dfd-1', '3.4.2 DFD Level 1 (Feed-to-DM)')">Perbesar</button>
-            <button class="action-btn" onclick="copyMermaid('src-dfd-1', this)">Salin</button>
+            <button class="action-btn" onclick="openDiagramModal('mer-3-3', '3.3 Diagram Konteks (Context Diagram)')">Perbesar</button>
+            <button class="action-btn" onclick="copyMermaid('src-3-3', this)">Salin</button>
           </div>
         </div>
 
         <div class="diagram-panel tab-content-diagram">
-          <pre class="mermaid" id="mer-dfd-1">
-flowchart TD
-    Pembeli["Siswa Pembeli"]
-    Penjual["Siswa Penjual"]
+          <pre class="mermaid" id="mer-3-3">
+flowchart LR
+    subgraph SiswaEntity["Entitas Luar: Siswa"]
+        Siswa["👤 SISWA (Warga SMKN 8)"]
+    end
 
-    D3[("D3: market_posts")]
-    D4[("D4: conversations")]
-    D5[("D5: direct_messages")]
+    subgraph CoreSystem["Sistem Utama"]
+        App(("0.0<br/>SISTEM APLIKASI<br/>SNAPAN MARKET MOBILE<br/>(sNAPS)"))
+    end
 
-    P41(("4.1<br/>Inisiasi Beli &<br/>Ekstraksi Konteks Produk"))
-    P42(("4.2<br/>Pembuatan Percakapan &<br/>Sematkan ChatProductCard"))
-    P43(("4.3<br/>Koordinasi Janji Temu COD<br/>via Direct Chat"))
-    P44(("4.4<br/>Serah Terima Fisik Barang<br/>& Update Status Terjual"))
+    subgraph AdminEntity["Entitas Luar: Admin"]
+        Admin["🛡️ ADMIN SEKOLAH"]
+    end
 
-    Pembeli -->|Klik Tombol Overlay 'Beli Sekarang'| P41
-    D3 -->|Metadata Produk: Judul, Foto, Harga, Kelas| P41
-    P41 -->|Objek ProductContext| P42
+    %% Siswa -> Sistem
+    Siswa -->|1. Kredensial Login NIS & Registrasi Perangkat| App
+    Siswa -->|2. Data Postingan Thread & Produk Vokasi| App
+    Siswa -->|3. Data Pesanan COD & Pilihan Titik Temu| App
+    Siswa -->|4. Pesan Chat Realtime| App
+    Siswa -->|5. Laporan Pelanggaran Konten| App
 
-    P42 <-->|Simpan / Muat Room (is_request = true)| D4
-    P42 -->|Pesan Masuk Tab Filter 'Pembeli'| Penjual
-    P42 -->|Render ChatProductCard & Template Pesan| Pembeli
+    %% Sistem -> Siswa
+    App -->|a. Akses Beranda & Profil Siswa| Siswa
+    App -->|b. Tampilan Feed & Katalog Produk Vokasi| Siswa
+    App -->|c. Notifikasi Status Pesanan & Lokasi COD| Siswa
+    App -->|d. Pesan Chat Masuk Realtime| Siswa
 
-    Pembeli <-->|Saling Balas Pesan Janji Jam & Spot Sekolah| P43
-    Penjual <-->|Saling Balas Pesan Janji Jam & Spot Sekolah| P43
-    P43 <-->|Simpan Riwayat Chat Teks| D5
+    %% Admin -> Sistem
+    Admin -->|"1. Master Data Registry Siswa (NIS & Kelas)"| App
+    Admin -->|2. Master Titik Temu COD Sekolah| App
+    Admin -->|"3. Tindakan Moderasi (Banned Akun/Take Down Post)"| App
 
-    Pembeli -->|Bertemu Saat Istirahat & Bayar Tunai| P44
-    Penjual -->|Serahkan Barang & Update Produk 'Terjual'| P44
-    P44 -->|Update Status Postingan di Database| D3
+    %% Sistem -> Admin
+    App -->|a. Notifikasi Laporan Konten Siswa| Admin
+    App -->|b. Log Keamanan & Registrasi Hardware| Admin
+    App -->|c. Rekapitulasi Data Siswa & Transaksi Sekolah| Admin
           </pre>
         </div>
 
         <div class="text-panel tab-content-text">
-          <p><strong>Sub-proses Transaksi 4.0:</strong></p>
+          <p><strong>Batasan Entitas Eksternal:</strong></p>
           <ul>
-            <li><strong>4.1 Inisiasi Beli</strong>: Mengekstrak metadata produk dari <code>market_posts</code> saat pembeli menekan tombol overlay.</li>
-            <li><strong>4.2 Pembuatan Percakapan</strong>: Menghubungkan pembeli ke penjual di <code>conversations</code> dengan flag <code>is_request = true</code> dan menyematkan <code>ChatProductCard</code>.</li>
-            <li><strong>4.3 Koordinasi Janji Temu</strong>: Siswa bernegosiasi waktu istirahat dan spot temu di lingkungan sekolah melalui <code>direct_messages</code>.</li>
-            <li><strong>4.4 Serah Terima Fisik & Update</strong>: Penyelesaian transaksi secara tunai di sekolah dan pembaruan status barang menjadi terjual.</li>
+            <li><strong>Siswa</strong>: Mengirimkan kredensial NIS, listing postingan karya, pemesanan COD, chat, dan laporan konten. Menerima akses profil, feed beranda, dan nota pesanan digital.</li>
+            <li><strong>Admin Sekolah</strong>: Menyediakan master buku induk (NIS & Rombel Kelas), master titik temu sekolah, dan tindakan moderasi akun. Menerima log keamanan dan rekapitulasi data.</li>
           </ul>
         </div>
 
         <div class="code-panel tab-content-code">
-          <pre id="src-dfd-1"><code>flowchart TD
-    Pembeli["Siswa Pembeli"]
-    Penjual["Siswa Penjual"]
+          <pre id="src-3-3"><code>flowchart LR
+    subgraph SiswaEntity["Entitas Luar: Siswa"]
+        Siswa["👤 SISWA (Warga SMKN 8)"]
+    end
 
-    D3[("D3: market_posts")]
-    D4[("D4: conversations")]
-    D5[("D5: direct_messages")]
+    subgraph CoreSystem["Sistem Utama"]
+        App(("0.0<br/>SISTEM APLIKASI<br/>SNAPAN MARKET MOBILE<br/>(sNAPS)"))
+    end
 
-    P41(("4.1<br/>Inisiasi Beli &<br/>Ekstraksi Konteks Produk"))
-    P42(("4.2<br/>Pembuatan Percakapan &<br/>Sematkan ChatProductCard"))
-    P43(("4.3<br/>Koordinasi Janji Temu COD<br/>via Direct Chat"))
-    P44(("4.4<br/>Serah Terima Fisik Barang<br/>& Update Status Terjual"))
+    subgraph AdminEntity["Entitas Luar: Admin"]
+        Admin["🛡️ ADMIN SEKOLAH"]
+    end
 
-    Pembeli -->|Klik Tombol Overlay 'Beli Sekarang'| P41
-    D3 -->|Metadata Produk: Judul, Foto, Harga, Kelas| P41
-    P41 -->|Objek ProductContext| P42
+    %% Siswa -> Sistem
+    Siswa -->|1. Kredensial Login NIS & Registrasi Perangkat| App
+    Siswa -->|2. Data Postingan Thread & Produk Vokasi| App
+    Siswa -->|3. Data Pesanan COD & Pilihan Titik Temu| App
+    Siswa -->|4. Pesan Chat Realtime| App
+    Siswa -->|5. Laporan Pelanggaran Konten| App
 
-    P42 <-->|Simpan / Muat Room (is_request = true)| D4
-    P42 -->|Pesan Masuk Tab Filter 'Pembeli'| Penjual
-    P42 -->|Render ChatProductCard & Template Pesan| Pembeli
+    %% Sistem -> Siswa
+    App -->|a. Akses Beranda & Profil Siswa| Siswa
+    App -->|b. Tampilan Feed & Katalog Produk Vokasi| Siswa
+    App -->|c. Notifikasi Status Pesanan & Lokasi COD| Siswa
+    App -->|d. Pesan Chat Masuk Realtime| Siswa
 
-    Pembeli <-->|Saling Balas Pesan Janji Jam & Spot Sekolah| P43
-    Penjual <-->|Saling Balas Pesan Janji Jam & Spot Sekolah| P43
-    P43 <-->|Simpan Riwayat Chat Teks| D5
+    %% Admin -> Sistem
+    Admin -->|"1. Master Data Registry Siswa (NIS & Kelas)"| App
+    Admin -->|2. Master Titik Temu COD Sekolah| App
+    Admin -->|"3. Tindakan Moderasi (Banned Akun/Take Down Post)"| App
 
-    Pembeli -->|Bertemu Saat Istirahat & Bayar Tunai| P44
-    Penjual -->|Serahkan Barang & Update Produk 'Terjual'| P44
-    P44 -->|Update Status Postingan di Database| D3</code></pre>
+    %% Sistem -> Admin
+    App -->|a. Notifikasi Laporan Konten Siswa| Admin
+    App -->|b. Log Keamanan & Registrasi Hardware| Admin
+    App -->|c. Rekapitulasi Data Siswa & Transaksi Sekolah| Admin</code></pre>
         </div>
       </section>
 
       <!-- ========================================== -->
-      <!-- 8. USE CASE DIAGRAM -->
+      <!-- 3.4.1 DFD LEVEL 0 -->
       <!-- ========================================== -->
-      <section class="doc-card" data-category="usecase" id="diagram-usecase">
+      <section class="doc-card" data-category="dfd" id="diagram-3-4-1">
         <div class="doc-card-header">
           <div class="doc-title-group">
             <div class="doc-title-row">
-              <span class="doc-badge badge-usecase">Use Case</span>
-              <h2 class="doc-title">3.5 Use Case Diagram</h2>
+              <span class="doc-badge badge-dfd">Bab 3.4.1</span>
+              <h2 class="doc-title">3.4.1 Data Flow Diagram (DFD Level 0)</h2>
             </div>
-            <p class="doc-subtitle">Pemetaan fungsionalitas sistem dari sudut pandang interaksi aktor Siswa dan Admin Sekolah.</p>
+            <p class="doc-subtitle">Menguraikan sistem utama menjadi lima sub-proses fungsional terintegrasi dengan tabel penyimpanan.</p>
           </div>
           <div class="card-toolbar">
             <div class="tab-group">
-              <button class="tab-btn active" onclick="switchCardTab('diagram-usecase', 'diagram')">Diagram</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-usecase', 'text')">Analisis</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-usecase', 'code')">Kode</button>
+              <button class="tab-btn active" onclick="switchCardTab('diagram-3-4-1', 'diagram')">Diagram</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-4-1', 'text')">Analisis</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-4-1', 'code')">Kode</button>
             </div>
-            <button class="action-btn" onclick="openDiagramModal('mer-usecase', '3.5 Use Case Diagram')">Perbesar</button>
-            <button class="action-btn" onclick="copyMermaid('src-usecase', this)">Salin</button>
+            <button class="action-btn" onclick="openDiagramModal('mer-3-4-1', '3.4.1 DFD Level 0')">Perbesar</button>
+            <button class="action-btn" onclick="copyMermaid('src-3-4-1', this)">Salin</button>
           </div>
         </div>
 
         <div class="diagram-panel tab-content-diagram">
-          <pre class="mermaid" id="mer-usecase">
-flowchart LR
-    %% Aktor
-    Siswa["SISWA (Warga SMKN 8)"]
-    Admin["ADMIN SEKOLAH"]
+          <pre class="mermaid" id="mer-3-4-1">
+flowchart TD
+    Siswa["👤 Siswa"]
+    Admin["🛡️ Admin Sekolah"]
 
-    subgraph SystemBoundary["Batas Sistem: Snapan Market Mobile (sNaps)"]
-        UC01(["UC-01: Registrasi Akun Berbasis NIS"])
-        UC02(["UC-02: Login & Binding Perangkat Siswa"])
-        UC03(["UC-03: Menjelajah Feed & Postingan Produk"])
-        UC04(["UC-04: Mengunggah Thread & Polling Komunitas"])
-        UC05(["UC-05: Berinteraksi Komentar Bersarang"])
-        UC06(["UC-06: Membuat Listing Produk Karya Siswa"])
-        UC07(["UC-07: Inisiasi Beli via Direct Message (Social Commerce)"])
-        UC08(["UC-08: Mengirim Pesan Chat & Akses Tab Pembeli"])
-        UC09(["UC-09: Mengelola Master Buku Induk (NIS)"])
-        UC10(["UC-10: Moderasi & Penanganan Laporan Konten"])
-        UC11(["UC-11: Menandai Produk Terjual (Mark as Sold)"])
-    end
+    P1(("1.0<br/>Autentikasi &<br/>Profil Siswa"))
+    P2(("2.0<br/>Feed Komunitas &<br/>Diskusi Vokasi"))
+    P3(("3.0<br/>Manajemen Produk &<br/>Katalog Karya"))
+    P4(("4.0<br/>Transaksi COD &<br/>Titik Temu"))
+    P5(("5.0<br/>Moderasi Konten &<br/>Master Registry"))
 
-    %% Relasi Siswa
-    Siswa --> UC01
-    Siswa --> UC02
-    Siswa --> UC03
-    Siswa --> UC04
-    Siswa --> UC05
-    Siswa --> UC06
-    Siswa --> UC07
-    Siswa --> UC08
-    Siswa --> UC11
+    D1[("D1: student_registry")]
+    D2[("D2: profiles")]
+    D3[("D3: market_posts")]
+    D4[("D4: school_meeting_points")]
+    D5[("D5: orders")]
+    D6[("D6: content_reports")]
 
-    %% Relasi Admin
-    Admin --> UC09
-    Admin --> UC10
+    Siswa -->|NIS & Password| P1
+    D1 -->|Verifikasi Validitas NIS| P1
+    P1 -->|Simpan Profil| D2
+    P1 -->|Session Aktif| Siswa
+
+    Siswa -->|Unggah Thread / Like / Komen| P2
+    P2 -->|Simpan Interaksi| D3
+    D3 -->|Ambil Data Feed| P2
+    P2 -->|Timeline Beranda| Siswa
+
+    Siswa -->|Unggah Produk Vokasi| P3
+    P3 -->|Simpan Produk & Stok| D3
+    D3 -->|Katalog Produk| P3
+    P3 -->|Tampilkan Produk Jurusan| Siswa
+
+    Siswa -->|Pilih Barang & Titik Temu| P4
+    D4 -->|Data Titik Temu Sekolah| P4
+    P4 -->|Validasi Stok & Buat Order| D5
+    P4 -->|Update Stok Terkunci| D3
+    D5 -->|Status Pesanan| P4
+    P4 -->|Notifikasi Pesanan & Bukti COD| Siswa
+
+    Siswa -->|Laporkan Konten| P5
+    P5 -->|Simpan Laporan| D6
+    Admin -->|"Master Siswa (NIS/Kelas)"| P5
+    P5 -->|Update Registry| D1
+    Admin -->|Kelola Spot COD| P5
+    P5 -->|Update Titik Temu| D4
+    D6 -->|Daftar Laporan| P5
+    P5 -->|Hasil Moderasi| Admin
           </pre>
         </div>
 
         <div class="text-panel tab-content-text">
-          <p><strong>Spesifikasi Skenario Utama (UC-07: Inisiasi Beli via Direct Message):</strong></p>
+          <p><strong>Sub-Proses Fungsional DFD Level 0:</strong></p>
+          <ol>
+            <li><strong>1.0 Autentikasi & Profil Siswa</strong>: Validasi nomor induk ke <code>student_registry</code> dan pembentukan sesi di <code>profiles</code>.</li>
+            <li><strong>2.0 Feed Komunitas & Diskusi Vokasi</strong>: Penyimpanan dan penayangan utas komunitas di <code>market_posts</code>.</li>
+            <li><strong>3.0 Manajemen Produk & Katalog Karya</strong>: Pengelolaan katalog produk, foto galeri, dan kuantitas stok.</li>
+            <li><strong>4.0 Transaksi COD & Titik Temu</strong>: Pengecekan stok, pemilihan lokasi dari <code>school_meeting_points</code>, dan pencatatan pesanan di <code>orders</code>.</li>
+            <li><strong>5.0 Moderasi Konten & Master Registry</strong>: Penertiban pelanggaran di <code>content_reports</code> dan pengelolaan buku induk sekolah.</li>
+          </ol>
+        </div>
+
+        <div class="code-panel tab-content-code">
+          <pre id="src-3-4-1"><code>flowchart TD
+    Siswa["👤 Siswa"]
+    Admin["🛡️ Admin Sekolah"]
+
+    P1(("1.0<br/>Autentikasi &<br/>Profil Siswa"))
+    P2(("2.0<br/>Feed Komunitas &<br/>Diskusi Vokasi"))
+    P3(("3.0<br/>Manajemen Produk &<br/>Katalog Karya"))
+    P4(("4.0<br/>Transaksi COD &<br/>Titik Temu"))
+    P5(("5.0<br/>Moderasi Konten &<br/>Master Registry"))
+
+    D1[("D1: student_registry")]
+    D2[("D2: profiles")]
+    D3[("D3: market_posts")]
+    D4[("D4: school_meeting_points")]
+    D5[("D5: orders")]
+    D6[("D6: content_reports")]
+
+    Siswa -->|NIS & Password| P1
+    D1 -->|Verifikasi Validitas NIS| P1
+    P1 -->|Simpan Profil| D2
+    P1 -->|Session Aktif| Siswa
+
+    Siswa -->|Unggah Thread / Like / Komen| P2
+    P2 -->|Simpan Interaksi| D3
+    D3 -->|Ambil Data Feed| P2
+    P2 -->|Timeline Beranda| Siswa
+
+    Siswa -->|Unggah Produk Vokasi| P3
+    P3 -->|Simpan Produk & Stok| D3
+    D3 -->|Katalog Produk| P3
+    P3 -->|Tampilkan Produk Jurusan| Siswa
+
+    Siswa -->|Pilih Barang & Titik Temu| P4
+    D4 -->|Data Titik Temu Sekolah| P4
+    P4 -->|Validasi Stok & Buat Order| D5
+    P4 -->|Update Stok Terkunci| D3
+    D5 -->|Status Pesanan| P4
+    P4 -->|Notifikasi Pesanan & Bukti COD| Siswa
+
+    Siswa -->|Laporkan Konten| P5
+    P5 -->|Simpan Laporan| D6
+    Admin -->|"Master Siswa (NIS/Kelas)"| P5
+    P5 -->|Update Registry| D1
+    Admin -->|Kelola Spot COD| P5
+    P5 -->|Update Titik Temu| D4
+    D6 -->|Daftar Laporan| P5
+    P5 -->|Hasil Moderasi| Admin</code></pre>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- 3.4.2 DFD LEVEL 1 (PROSES 4.0 TRANSAKSI COD) -->
+      <!-- ========================================== -->
+      <section class="doc-card" data-category="dfd" id="diagram-3-4-2">
+        <div class="doc-card-header">
+          <div class="doc-title-group">
+            <div class="doc-title-row">
+              <span class="doc-badge badge-dfd">Bab 3.4.2</span>
+              <h2 class="doc-title">3.4.2 DFD Level 1 (Fokus: Proses 4.0 Transaksi COD)</h2>
+            </div>
+            <p class="doc-subtitle">Menguraikan rincian sub-proses transaksi pemesanan barang hingga serah terima di sekolah.</p>
+          </div>
+          <div class="card-toolbar">
+            <div class="tab-group">
+              <button class="tab-btn active" onclick="switchCardTab('diagram-3-4-2', 'diagram')">Diagram</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-4-2', 'text')">Analisis</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-4-2', 'code')">Kode</button>
+            </div>
+            <button class="action-btn" onclick="openDiagramModal('mer-3-4-2', '3.4.2 DFD Level 1 (Fokus: Proses 4.0 Transaksi COD)')">Perbesar</button>
+            <button class="action-btn" onclick="copyMermaid('src-3-4-2', this)">Salin</button>
+          </div>
+        </div>
+
+        <div class="diagram-panel tab-content-diagram">
+          <pre class="mermaid" id="mer-3-4-2">
+flowchart TD
+    Pembeli["👤 Siswa Pembeli"]
+    Penjual["👤 Siswa Penjual"]
+
+    P41(("4.1<br/>Validasi Kuantitas &<br/>Ketersediaan Stok"))
+    P42(("4.2<br/>Pemilihan Titik Temu<br/>Resmi Sekolah"))
+    P43(("4.3<br/>Penerbitan Pesanan &<br/>Notifikasi Realtime"))
+    P44(("4.4<br/>Verifikasi Fisik COD &<br/>Penyelesaian Pesanan"))
+
+    D3[("D3: market_posts")]
+    D4[("D4: school_meeting_points")]
+    D5[("D5: orders")]
+
+    Pembeli -->|Pilih Item & Kuantitas| P41
+    D3 -->|Cek Kuantitas Stok| P41
+    P41 -->|Stok Valid| P42
+
+    D4 -->|Daftar Titik Temu Aktif| P42
+    Pembeli -->|Pilih Titik Kumpul & Catatan Jam| P42
+    P42 -->|Data Lengkap Checkout| P43
+
+    P43 -->|"Simpan Pesanan (Status: PENDING)"| D5
+    P43 -->|Kurangi Kuantitas Stok| D3
+    P43 -->|Push Notifikasi Pesanan Baru| Penjual
+    P43 -->|Ringkasan Pesanan Digital| Pembeli
+
+    Pembeli -->|Konfirmasi Terima Barang| P44
+    Penjual -->|Konfirmasi Penyerahan Fisik & Uang| P44
+    P44 -->|"Update Status (COMPLETED)"| D5
+          </pre>
+        </div>
+
+        <div class="text-panel tab-content-text">
+          <p><strong>Sub-Proses 4.0:</strong></p>
+          <ul>
+            <li><strong>4.1 Validasi Stok</strong>: Memastikan kuantitas yang dipesan tidak melebihi stok yang tersisa di <code>market_posts</code>.</li>
+            <li><strong>4.2 Pemilihan Titik Temu</strong>: Mengambil daftar master spot aktif dari <code>school_meeting_points</code>.</li>
+            <li><strong>4.3 Penerbitan Pesanan</strong>: Menyimpan record berstatus <code>pending</code> di <code>orders</code>, mengurangi stok, dan mengirim push notification ke penjual.</li>
+            <li><strong>4.4 Verifikasi Fisik COD</strong>: Mengubah status pesanan menjadi <code>completed</code> setelah kedua siswa bertatap muka dan menyelesaikan pembayaran tunai.</li>
+          </ul>
+        </div>
+
+        <div class="code-panel tab-content-code">
+          <pre id="src-3-4-2"><code>flowchart TD
+    Pembeli["👤 Siswa Pembeli"]
+    Penjual["👤 Siswa Penjual"]
+
+    P41(("4.1<br/>Validasi Kuantitas &<br/>Ketersediaan Stok"))
+    P42(("4.2<br/>Pemilihan Titik Temu<br/>Resmi Sekolah"))
+    P43(("4.3<br/>Penerbitan Pesanan &<br/>Notifikasi Realtime"))
+    P44(("4.4<br/>Verifikasi Fisik COD &<br/>Penyelesaian Pesanan"))
+
+    D3[("D3: market_posts")]
+    D4[("D4: school_meeting_points")]
+    D5[("D5: orders")]
+
+    Pembeli -->|Pilih Item & Kuantitas| P41
+    D3 -->|Cek Kuantitas Stok| P41
+    P41 -->|Stok Valid| P42
+
+    D4 -->|Daftar Titik Temu Aktif| P42
+    Pembeli -->|Pilih Titik Kumpul & Catatan Jam| P42
+    P42 -->|Data Lengkap Checkout| P43
+
+    P43 -->|"Simpan Pesanan (Status: PENDING)"| D5
+    P43 -->|Kurangi Kuantitas Stok| D3
+    P43 -->|Push Notifikasi Pesanan Baru| Penjual
+    P43 -->|Ringkasan Pesanan Digital| Pembeli
+
+    Pembeli -->|Konfirmasi Terima Barang| P44
+    Penjual -->|Konfirmasi Penyerahan Fisik & Uang| P44
+    P44 -->|"Update Status (COMPLETED)"| D5</code></pre>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- 3.5 USE CASE DIAGRAM -->
+      <!-- ========================================== -->
+      <section class="doc-card" data-category="usecase" id="diagram-3-5">
+        <div class="doc-card-header">
+          <div class="doc-title-group">
+            <div class="doc-title-row">
+              <span class="doc-badge badge-usecase">Bab 3.5</span>
+              <h2 class="doc-title">3.5 Use Case Diagram</h2>
+            </div>
+            <p class="doc-subtitle">Pemetaan batasan sistem sNaps, 13 use case fungsional, relasi include/extend, serta skenario use case utama UC-07.</p>
+          </div>
+          <div class="card-toolbar">
+            <div class="tab-group">
+              <button class="tab-btn active" onclick="switchCardTab('diagram-3-5', 'diagram')">Diagram</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-5', 'text')">Skenario UC-07</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-5', 'code')">Kode</button>
+            </div>
+            <button class="action-btn" onclick="openDiagramModal('mer-3-5', '3.5 Use Case Diagram')">Perbesar</button>
+            <button class="action-btn" onclick="copyMermaid('src-3-5', this)">Salin</button>
+          </div>
+        </div>
+
+        <div class="diagram-panel tab-content-diagram">
+          <pre class="mermaid" id="mer-3-5">
+flowchart LR
+    Siswa["👤 Siswa (Warga SMKN 8)"]
+    Admin["🛡️ Admin Sekolah"]
+
+    subgraph sNapsBoundary["Boundary Sistem sNaps"]
+        UC1(["Registrasi & Login NIS"])
+        UC1_INC(["Validasi Master Registry Sekolah"])
+        UC2(["Kelola Profil Siswa"])
+        UC3(["Publikasi Thread Komunitas"])
+        UC3_EXT(["Tambahkan Polling Interaktif"])
+        UC4(["Interaksi Feed (Like & Komentar)"])
+        UC5(["Publikasi Produk Vokasi & Karya"])
+        UC6(["Jelajah Katalog & Filter Jurusan"])
+        UC7(["Checkout Pesanan COD"])
+        UC7_INC1(["Validasi Kuantitas Stok"])
+        UC7_INC2(["Pilih Titik Temu Resmi Sekolah"])
+        UC8(["Direct Chat Realtime (DM)"])
+        UC9(["Laporkan Konten Melanggar"])
+
+        UC10(["Kelola Master Registry Siswa"])
+        UC11(["Kelola Master Titik Temu COD"])
+        UC12(["Tinjau & Moderasi Konten"])
+        UC13(["Monitor Log Keamanan & Perangkat"])
+    end
+
+    Siswa --> UC1
+    Siswa --> UC2
+    Siswa --> UC3
+    Siswa --> UC4
+    Siswa --> UC5
+    Siswa --> UC6
+    Siswa --> UC7
+    Siswa --> UC8
+    Siswa --> UC9
+
+    UC1 -.->|"<<include>>"| UC1_INC
+    UC3_EXT -.->|"<<extend>>"| UC3
+    UC7 -.->|"<<include>>"| UC7_INC1
+    UC7 -.->|"<<include>>"| UC7_INC2
+
+    Admin --> UC10
+    Admin --> UC11
+    Admin --> UC12
+    Admin --> UC13
+          </pre>
+        </div>
+
+        <div class="text-panel tab-content-text">
+          <p><strong>Skenario Use Case Utama (UC-07: Checkout Pesanan COD Titik Temu):</strong></p>
           <div class="doc-table-wrapper">
             <table class="doc-table">
-              <tr><th>Atribut</th><th>Deskripsi Skenario</th></tr>
+              <tr><th>Atribut Skenario</th><th>Keterangan Rinci</th></tr>
               <tr><td><strong>Aktor Utama</strong></td><td>Siswa Pembeli</td></tr>
-              <tr><td><strong>Aktor Pendukung</strong></td><td>Siswa Penjual</td></tr>
-              <tr><td><strong>Kondisi Awal (Pre-condition)</strong></td><td>Pembeli terautentikasi NIS valid dan produk berstatus aktif di feed.</td></tr>
-              <tr><td><strong>Alur Utama (Main Flow)</strong></td><td>1. Pembeli melihat produk di feed.<br>2. Menekan tombol overlay 'Beli Sekarang' pada foto produk.<br>3. Sistem mengekstrak metadata produk dan membuka room chat DM ke penjual.<br>4. Sistem menyematkan kartu <code>ChatProductCard</code> dan mengisi pesan template otomatis.<br>5. Obrolan masuk ke tab filter 'Pembeli' pada inbox penjual.<br>6. Kedua siswa menyepakati jam istirahat dan spot COD via chat.</td></tr>
-              <tr><td><strong>Kondisi Akhir (Post-condition)</strong></td><td>Percakapan tercatat di database dengan relasi <code>post_id</code>, dan kedua siswa siap bertemu saat jam istirahat sekolah.</td></tr>
+              <tr><td><strong>Aktor Sekunder</strong></td><td>Siswa Penjual, Database Server Supabase</td></tr>
+              <tr><td><strong>Kondisi Awal (Pre-condition)</strong></td><td>Pembeli terautentikasi NIS valid dan stok produk pada <code>market_posts</code> &gt; 0.</td></tr>
+              <tr><td><strong>Kondisi Akhir (Post-condition)</strong></td><td>Record <code>orders</code> tercipta dengan status <code>pending</code>, stok terpotong, dan notifikasi terkirim ke penjual.</td></tr>
+              <tr><td><strong>Alur Normal (Main Flow)</strong></td><td>Pembeli memilih barang &rarr; Memilih titik temu resmi sekolah &rarr; Mengisi catatan waktu COD &rarr; Menekan konfirmasi pesanan &rarr; Sistem mengunci stok dan menerbitkan pesanan &rarr; Penjual menerima notifikasi realtime.</td></tr>
+              <tr><td><strong>Alur Alternatif</strong></td><td>Jika stok habis saat divalidasi, sistem membatalkan proses dan memunculkan dialog stok telah habis.</td></tr>
             </table>
           </div>
         </div>
 
         <div class="code-panel tab-content-code">
-          <pre id="src-usecase"><code>flowchart LR
-    Siswa["SISWA (Warga SMKN 8)"]
-    Admin["ADMIN SEKOLAH"]
+          <pre id="src-3-5"><code>flowchart LR
+    Siswa["👤 Siswa (Warga SMKN 8)"]
+    Admin["🛡️ Admin Sekolah"]
 
-    subgraph SystemBoundary["Batas Sistem: Snapan Market Mobile (sNaps)"]
-        UC01(["UC-01: Registrasi Akun Berbasis NIS"])
-        UC02(["UC-02: Login & Binding Perangkat Siswa"])
-        UC03(["UC-03: Menjelajah Feed & Postingan Produk"])
-        UC04(["UC-04: Mengunggah Thread & Polling Komunitas"])
-        UC05(["UC-05: Berinteraksi Komentar Bersarang"])
-        UC06(["UC-06: Membuat Listing Produk Karya Siswa"])
-        UC07(["UC-07: Inisiasi Beli via Direct Message (Social Commerce)"])
-        UC08(["UC-08: Mengirim Pesan Chat & Akses Tab Pembeli"])
-        UC09(["UC-09: Mengelola Master Buku Induk (NIS)"])
-        UC10(["UC-10: Moderasi & Penanganan Laporan Konten"])
-        UC11(["UC-11: Menandai Produk Terjual (Mark as Sold)"])
+    subgraph sNapsBoundary["Boundary Sistem sNaps"]
+        UC1(["Registrasi & Login NIS"])
+        UC1_INC(["Validasi Master Registry Sekolah"])
+        UC2(["Kelola Profil Siswa"])
+        UC3(["Publikasi Thread Komunitas"])
+        UC3_EXT(["Tambahkan Polling Interaktif"])
+        UC4(["Interaksi Feed (Like & Komentar)"])
+        UC5(["Publikasi Produk Vokasi & Karya"])
+        UC6(["Jelajah Katalog & Filter Jurusan"])
+        UC7(["Checkout Pesanan COD"])
+        UC7_INC1(["Validasi Kuantitas Stok"])
+        UC7_INC2(["Pilih Titik Temu Resmi Sekolah"])
+        UC8(["Direct Chat Realtime (DM)"])
+        UC9(["Laporkan Konten Melanggar"])
+
+        UC10(["Kelola Master Registry Siswa"])
+        UC11(["Kelola Master Titik Temu COD"])
+        UC12(["Tinjau & Moderasi Konten"])
+        UC13(["Monitor Log Keamanan & Perangkat"])
     end
 
-    Siswa --> UC01
-    Siswa --> UC02
-    Siswa --> UC03
-    Siswa --> UC04
-    Siswa --> UC05
-    Siswa --> UC06
-    Siswa --> UC07
-    Siswa --> UC08
-    Siswa --> UC11
+    Siswa --> UC1
+    Siswa --> UC2
+    Siswa --> UC3
+    Siswa --> UC4
+    Siswa --> UC5
+    Siswa --> UC6
+    Siswa --> UC7
+    Siswa --> UC8
+    Siswa --> UC9
 
-    Admin --> UC09
-    Admin --> UC10</code></pre>
+    UC1 -.->|"<<include>>"| UC1_INC
+    UC3_EXT -.->|"<<extend>>"| UC3
+    UC7 -.->|"<<include>>"| UC7_INC1
+    UC7 -.->|"<<include>>"| UC7_INC2
+
+    Admin --> UC10
+    Admin --> UC11
+    Admin --> UC12
+    Admin --> UC13</code></pre>
         </div>
       </section>
 
       <!-- ========================================== -->
-      <!-- 9. ACTIVITY DIAGRAM (FEED TO DM) -->
+      <!-- 3.6 ACTIVITY DIAGRAM -->
       <!-- ========================================== -->
-      <section class="doc-card" data-category="usecase" id="diagram-activity">
+      <section class="doc-card" data-category="usecase" id="diagram-3-6">
         <div class="doc-card-header">
           <div class="doc-title-group">
             <div class="doc-title-row">
-              <span class="doc-badge badge-usecase">Activity</span>
-              <h2 class="doc-title">3.6 Activity Diagram (Inisiasi Pembelian Social Commerce Feed-to-DM)</h2>
+              <span class="doc-badge badge-usecase">Bab 3.6</span>
+              <h2 class="doc-title">3.6 Activity Diagram (Checkout COD Titik Temu)</h2>
             </div>
-            <p class="doc-subtitle">Pemodelan alur kerja paralel lintas swimlane: Siswa Pembeli, Sistem sNaps, Database/Layanan DM, dan Siswa Penjual.</p>
+            <p class="doc-subtitle">Pemodelan aktivitas paralel transaksi COD lintas swimlane: Siswa Pembeli, Sistem sNaps, dan Siswa Penjual.</p>
           </div>
           <div class="card-toolbar">
             <div class="tab-group">
-              <button class="tab-btn active" onclick="switchCardTab('diagram-activity', 'diagram')">Diagram</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-activity', 'text')">Analisis</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-activity', 'code')">Kode</button>
+              <button class="tab-btn active" onclick="switchCardTab('diagram-3-6', 'diagram')">Diagram</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-6', 'text')">Analisis</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-6', 'code')">Kode</button>
             </div>
-            <button class="action-btn" onclick="openDiagramModal('mer-activity', '3.6 Activity Diagram (Feed-to-DM)')">Perbesar</button>
-            <button class="action-btn" onclick="copyMermaid('src-activity', this)">Salin</button>
+            <button class="action-btn" onclick="openDiagramModal('mer-3-6', '3.6 Activity Diagram (Checkout COD Titik Temu)')">Perbesar</button>
+            <button class="action-btn" onclick="copyMermaid('src-3-6', this)">Salin</button>
           </div>
         </div>
 
         <div class="diagram-panel tab-content-diagram">
-          <pre class="mermaid" id="mer-activity">
+          <pre class="mermaid" id="mer-3-6">
 flowchart TD
-    %% SWIMLANE PEMBELI
-    subgraph SwimlaneBuyer["SISWA PEMBELI"]
-        ActStart([Mulai: Scroll Feed Beranda]) --> ActTapBuy[Tekan Tombol Overlay 'Beli Sekarang']
-        ActReviewCard[Periksa ChatProductCard Tersemat di Chat]
-        ActSendMsg[Kirim Pesan Usulan Jam Istirahat & Lokasi COD]
-        ActMeet[Bertemu Fisik di Sekolah Saat Istirahat]
-        ActPay[Cek Kondisi Barang & Bayar Tunai]
+    subgraph Pembeli["Siswa Pembeli"]
+        A1([Mulai: Buka Detail Produk]) --> A2[Tekan 'Beli Sekarang']
+        A2 --> A3[Pilih Titik Temu Resmi Sekolah]
+        A3 --> A4[Tulis Catatan Waktu Pertemuan COD]
+        A4 --> A5[Tekan 'Konfirmasi Pesanan']
+        A8[Terima Konfirmasi & Modal Sukses] --> A9[Temui Penjual di Spot COD Sesuai Jadwal]
+        A9 --> A10[Periksa Fisik Barang & Serahkan Uang Tunai]
+        A10 --> A11[Tekan 'Konfirmasi Pesanan Selesai' di Aplikasi]
     end
 
-    %% SWIMLANE SISTEM
-    subgraph SwimlaneSystem["APLIKASI sNAPS (SISTEM)"]
-        ActExtract[Ekstraksi ProductContext & Hentikan Propagasi]
-        ActOpenRoom[Buka Room Obrolan ChatConversationScreen]
-        ActMountUI[Render ChatProductCard & Auto-draft Pesan]
+    subgraph Sistem["Sistem sNaps"]
+        A5 --> S1{Cek Ketersediaan Stok}
+        S1 -- Habis <= 0 --> S2[Tampilkan Notifikasi 'Stok Habis' & Batalkan]
+        S2 --> S_End([Batal / Selesai])
+        S1 -- Tersedia > 0 --> S3[Simpan Pesanan ke Tabel orders: Status PENDING]
+        S3 --> S4[Kunci Stok & Kurangi Kuantitas Produk]
+        S4 --> S5[Kirim Push Notifikasi Realtime ke Penjual]
+        S5 --> A8
+        A11 --> S6[Update Status Pesanan: COMPLETED]
+        S6 --> S7[Catat Riwayat Transaksi Berhasil]
+        S7 --> S_Final([Selesai: Transaksi Berhasil])
     end
 
-    %% SWIMLANE LAYANAN DM & DATABASE
-    subgraph SwimlaneDB["LAYANAN DM & DATABASE"]
-        ActQueryConv[(Cari / Buat Percakapan dengan Flag is_request)]
-        ActSaveMsg[(Simpan Pesan ke Tabel direct_messages)]
-        ActUpdateSold[(Update Status Produk: Terjual di market_posts)]
+    subgraph Penjual["Siswa Penjual"]
+        S5 -.-> P1[Terima Notifikasi Pesanan Masuk]
+        P1 --> P2[Tinjau Titik Temu & Catatan Pembeli]
+        P2 --> P3[Bawa Produk ke Titik Temu yang Dipilih]
+        P3 --> A9
+        A10 --> P4[Terima Uang Tunai & Serahkan Barang]
     end
-
-    %% SWIMLANE PENJUAL
-    subgraph SwimlaneSeller["SISWA PENJUAL"]
-        ActReceiveChat[Terima Pesan Masuk di Tab Inbox 'Pembeli']
-        ActReplyChat[Balas Pesan & Sepakati Janji COD]
-        ActHandover[Serahkan Barang Fisik ke Pembeli]
-        ActMarkSold[Tandai Produk Sebagai Terjual di Aplikasi]
-        ActEnd([Selesai: Transaksi Berhasil])
-    end
-
-    %% KONEKSI LINTAS SWIMLANE
-    ActTapBuy --> ActExtract
-    ActExtract --> ActQueryConv
-    ActQueryConv --> ActOpenRoom
-    ActOpenRoom --> ActMountUI
-    ActMountUI --> ActReviewCard
-
-    ActReviewCard --> ActSendMsg
-    ActSendMsg --> ActSaveMsg
-    ActSaveMsg --> ActReceiveChat
-
-    ActReceiveChat --> ActReplyChat
-    ActReplyChat --> ActMeet
-    ActSendMsg --> ActMeet
-
-    ActMeet --> ActHandover
-    ActHandover --> ActPay
-    ActPay --> ActMarkSold
-    ActMarkSold --> ActUpdateSold
-    ActUpdateSold --> ActEnd
           </pre>
         </div>
 
         <div class="text-panel tab-content-text">
-          <p><strong>Swimlane Logic Breakdown:</strong></p>
+          <p><strong>Aktivitas Lintas Swimlane:</strong></p>
           <ul>
-            <li><strong>Siswa Pembeli</strong>: Menginisiasi pembelian dari tombol overlay foto dan mengirim pesan janjian pertemuan.</li>
-            <li><strong>Aplikasi sNaps</strong>: Menangani ekstraksi konteks produk secara otomatis tanpa membuka form checkout tambahan.</li>
-            <li><strong>Layanan DM & Database</strong>: Menjamin percakapan terasosiasi dengan <code>post_id</code> produk dan tersaring ke tab Pembeli.</li>
-            <li><strong>Siswa Penjual</strong>: Menanggapi calon pembeli yang tersaring, bertemu di sekolah, dan menandai barang sebagai terjual.</li>
+            <li><strong>Pembeli</strong>: Menginisiasi pesanan dari layar produk, memilih titik kumpul resmi, membawa uang pas, dan menekan konfirmasi pesanan selesai.</li>
+            <li><strong>Sistem sNaps</strong>: Menjembatani validasi ketersediaan stok, mengunci baris database, mengirim sinyal notifikasi masuk ke penjual, dan memperbarui status pesanan menjadi <code>COMPLETED</code>.</li>
+            <li><strong>Penjual</strong>: Meninjau catatan pesanan, membawa produk ke lokasi spot sekolah yang disepakati, dan menerima pembayaran tunai.</li>
           </ul>
         </div>
 
         <div class="code-panel tab-content-code">
-          <pre id="src-activity"><code>flowchart TD
-    subgraph SwimlaneBuyer["SISWA PEMBELI"]
-        ActStart([Mulai: Scroll Feed Beranda]) --> ActTapBuy[Tekan Tombol Overlay 'Beli Sekarang']
-        ActReviewCard[Periksa ChatProductCard Tersemat di Chat]
-        ActSendMsg[Kirim Pesan Usulan Jam Istirahat & Lokasi COD]
-        ActMeet[Bertemu Fisik di Sekolah Saat Istirahat]
-        ActPay[Cek Kondisi Barang & Bayar Tunai]
+          <pre id="src-3-6"><code>flowchart TD
+    subgraph Pembeli["Siswa Pembeli"]
+        A1([Mulai: Buka Detail Produk]) --> A2[Tekan 'Beli Sekarang']
+        A2 --> A3[Pilih Titik Temu Resmi Sekolah]
+        A3 --> A4[Tulis Catatan Waktu Pertemuan COD]
+        A4 --> A5[Tekan 'Konfirmasi Pesanan']
+        A8[Terima Konfirmasi & Modal Sukses] --> A9[Temui Penjual di Spot COD Sesuai Jadwal]
+        A9 --> A10[Periksa Fisik Barang & Serahkan Uang Tunai]
+        A10 --> A11[Tekan 'Konfirmasi Pesanan Selesai' di Aplikasi]
     end
 
-    subgraph SwimlaneSystem["APLIKASI sNAPS (SISTEM)"]
-        ActExtract[Ekstraksi ProductContext & Hentikan Propagasi]
-        ActOpenRoom[Buka Room Obrolan ChatConversationScreen]
-        ActMountUI[Render ChatProductCard & Auto-draft Pesan]
+    subgraph Sistem["Sistem sNaps"]
+        A5 --> S1{Cek Ketersediaan Stok}
+        S1 -- Habis <= 0 --> S2[Tampilkan Notifikasi 'Stok Habis' & Batalkan]
+        S2 --> S_End([Batal / Selesai])
+        S1 -- Tersedia > 0 --> S3[Simpan Pesanan ke Tabel orders: Status PENDING]
+        S3 --> S4[Kunci Stok & Kurangi Kuantitas Produk]
+        S4 --> S5[Kirim Push Notifikasi Realtime ke Penjual]
+        S5 --> A8
+        A11 --> S6[Update Status Pesanan: COMPLETED]
+        S6 --> S7[Catat Riwayat Transaksi Berhasil]
+        S7 --> S_Final([Selesai: Transaksi Berhasil])
     end
 
-    subgraph SwimlaneDB["LAYANAN DM & DATABASE"]
-        ActQueryConv[(Cari / Buat Percakapan dengan Flag is_request)]
-        ActSaveMsg[(Simpan Pesan ke Tabel direct_messages)]
-        ActUpdateSold[(Update Status Produk: Terjual di market_posts)]
-    end
-
-    subgraph SwimlaneSeller["SISWA PENJUAL"]
-        ActReceiveChat[Terima Pesan Masuk di Tab Inbox 'Pembeli']
-        ActReplyChat[Balas Pesan & Sepakati Janji COD]
-        ActHandover[Serahkan Barang Fisik ke Pembeli]
-        ActMarkSold[Tandai Produk Sebagai Terjual di Aplikasi]
-        ActEnd([Selesai: Transaksi Berhasil])
-    end
-
-    ActTapBuy --> ActExtract
-    ActExtract --> ActQueryConv
-    ActQueryConv --> ActOpenRoom
-    ActOpenRoom --> ActMountUI
-    ActMountUI --> ActReviewCard
-
-    ActReviewCard --> ActSendMsg
-    ActSendMsg --> ActSaveMsg
-    ActSaveMsg --> ActReceiveChat
-
-    ActReceiveChat --> ActReplyChat
-    ActReplyChat --> ActMeet
-    ActSendMsg --> ActMeet
-
-    ActMeet --> ActHandover
-    ActHandover --> ActPay
-    ActPay --> ActMarkSold
-    ActMarkSold --> ActUpdateSold
-    ActUpdateSold --> ActEnd</code></pre>
+    subgraph Penjual["Siswa Penjual"]
+        S5 -.-> P1[Terima Notifikasi Pesanan Masuk]
+        P1 --> P2[Tinjau Titik Temu & Catatan Pembeli]
+        P2 --> P3[Bawa Produk ke Titik Temu yang Dipilih]
+        P3 --> A9
+        A10 --> P4[Terima Uang Tunai & Serahkan Barang]
+    end</code></pre>
         </div>
       </section>
 
       <!-- ========================================== -->
-      <!-- 10. ENTITY RELATIONSHIP DIAGRAM (ERD) -->
+      <!-- 3.7.1 CONCEPTUAL DATA MODEL (CDM) -->
       <!-- ========================================== -->
-      <section class="doc-card" data-category="database" id="diagram-erd">
+      <section class="doc-card" data-category="database" id="diagram-3-7-1">
         <div class="doc-card-header">
           <div class="doc-title-group">
             <div class="doc-title-row">
-              <span class="doc-badge badge-database">Basis Data</span>
-              <h2 class="doc-title">3.7.1 Entity Relationship Diagram (ERD Relasional)</h2>
+              <span class="doc-badge badge-database">Bab 3.7.1</span>
+              <h2 class="doc-title">3.7.1 Conceptual Data Model (CDM)</h2>
             </div>
-            <p class="doc-subtitle">Relasi antar entitas bisnis utama dalam ekosistem sNaps SMKN 8 Semarang.</p>
+            <p class="doc-subtitle">Struktur konseptual data logis mendefinisikan hubungan bisnis antara entitas utama sistem sNaps.</p>
           </div>
           <div class="card-toolbar">
             <div class="tab-group">
-              <button class="tab-btn active" onclick="switchCardTab('diagram-erd', 'diagram')">Diagram</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-erd', 'text')">Analisis</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-erd', 'code')">Kode</button>
+              <button class="tab-btn active" onclick="switchCardTab('diagram-3-7-1', 'diagram')">Diagram ERD</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-7-1', 'text')">Deskripsi Entitas</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-7-1', 'code')">Kode</button>
             </div>
-            <button class="action-btn" onclick="openDiagramModal('mer-erd', '3.7.1 ERD Relasional sNaps')">Perbesar</button>
-            <button class="action-btn" onclick="copyMermaid('src-erd', this)">Salin</button>
+            <button class="action-btn" onclick="openDiagramModal('mer-3-7-1', '3.7.1 ERD Relasional sNaps')">Perbesar</button>
+            <button class="action-btn" onclick="copyMermaid('src-3-7-1', this)">Salin</button>
           </div>
         </div>
 
         <div class="diagram-panel tab-content-diagram">
-          <pre class="mermaid" id="mer-erd">
+          <pre class="mermaid" id="mer-3-7-1">
 erDiagram
-    STUDENT_REGISTRY ||--o| PROFILES : "didaftarkan sebagai (1:0..1)"
-    PROFILES ||--o{ MARKET_POSTS : "membuat postingan/produk (1:N)"
-    PROFILES ||--o{ DEVICE_REGISTRATIONS : "mengikat perangkat (1:N)"
-    
-    PROFILES ||--o{ CONVERSATIONS : "berpartisipasi obrolan (1:N)"
-    MARKET_POSTS ||--o{ CONVERSATIONS : "menjadi konteks produk obrolan (1:N)"
-    
-    CONVERSATIONS ||--o{ DIRECT_MESSAGES : "memiliki pesan obrolan (1:N)"
-    PROFILES ||--o{ DIRECT_MESSAGES : "mengirim pesan teks (1:N)"
-    
-    PROFILES ||--o{ CONTENT_REPORTS : "melaporkan konten (1:N)"
-    MARKET_POSTS ||--o{ CONTENT_REPORTS : "dilaporkan siswa (1:N)"
+    student_registry ||--o| profiles : "nis"
+    profiles ||--o{ market_posts : "seller_id"
+    profiles ||--o{ orders : "buyer_id"
+    profiles ||--o{ orders : "seller_id"
+    market_posts ||--o{ orders : "post_id"
+    school_meeting_points ||--o{ orders : "meeting_point_id"
+    profiles ||--o{ conversations : "buyer_id"
+    profiles ||--o{ conversations : "seller_id"
+    conversations ||--o{ direct_messages : "conversation_id"
+    profiles ||--o{ content_reports : "reporter_id"
+    market_posts ||--o{ content_reports : "target_post_id"
           </pre>
         </div>
 
         <div class="text-panel tab-content-text">
-          <p><strong>Kardinalitas & Integritas Relasi:</strong></p>
+          <p><strong>Daftar Entitas Utama CDM:</strong></p>
           <ul>
-            <li><code>student_registry</code> $\rightarrow$ <code>profiles</code> (1:0..1): Satu siswa di buku induk maksimal hanya boleh memiliki 1 akun aktif.</li>
-            <li><code>market_posts</code> $\rightarrow$ <code>conversations</code> (1:N): Satu produk dapat ditanyakan oleh banyak calon pembeli melalui ruang DM terpisah.</li>
-            <li><code>conversations</code> memiliki flag <code>is_request</code> untuk menyaring obrolan produk ke tab <em>Pembeli</em> di inbox penjual.</li>
+            <li><code>student_registry</code>: Master buku induk sekolah (NIS, Nama, Kelas, Jurusan).</li>
+            <li><code>profiles</code>: Akun aktif pengguna aplikasi sNaps yang terikat ke NIS buku induk.</li>
+            <li><code>market_posts</code>: Listing produk wirausaha dan thread forum diskusi.</li>
+            <li><code>school_meeting_points</code>: Daftar lokasi titik temu fisik di sekolah (Gazebo, Kantin, Lab).</li>
+            <li><code>orders</code>: Data pesanan COD antar siswa lengkap dengan lokasi spot dan status pesanan.</li>
+            <li><code>conversations</code> &amp; <code>direct_messages</code>: Data obrolan privat antar pengguna.</li>
+            <li><code>content_reports</code>: Data pelaporan konten melanggar etika sekolah.</li>
           </ul>
         </div>
 
         <div class="code-panel tab-content-code">
-          <pre id="src-erd"><code>erDiagram
-    STUDENT_REGISTRY ||--o| PROFILES : "didaftarkan sebagai (1:0..1)"
-    PROFILES ||--o{ MARKET_POSTS : "membuat postingan/produk (1:N)"
-    PROFILES ||--o{ DEVICE_REGISTRATIONS : "mengikat perangkat (1:N)"
-    
-    PROFILES ||--o{ CONVERSATIONS : "berpartisipasi obrolan (1:N)"
-    MARKET_POSTS ||--o{ CONVERSATIONS : "menjadi konteks produk obrolan (1:N)"
-    
-    CONVERSATIONS ||--o{ DIRECT_MESSAGES : "memiliki pesan obrolan (1:N)"
-    PROFILES ||--o{ DIRECT_MESSAGES : "mengirim pesan teks (1:N)"
-    
-    PROFILES ||--o{ CONTENT_REPORTS : "melaporkan konten (1:N)"
-    MARKET_POSTS ||--o{ CONTENT_REPORTS : "dilaporkan siswa (1:N)"</code></pre>
+          <pre id="src-3-7-1"><code>erDiagram
+    student_registry ||--o| profiles : "nis"
+    profiles ||--o{ market_posts : "seller_id"
+    profiles ||--o{ orders : "buyer_id"
+    profiles ||--o{ orders : "seller_id"
+    market_posts ||--o{ orders : "post_id"
+    school_meeting_points ||--o{ orders : "meeting_point_id"
+    profiles ||--o{ conversations : "buyer_id"
+    profiles ||--o{ conversations : "seller_id"
+    conversations ||--o{ direct_messages : "conversation_id"
+    profiles ||--o{ content_reports : "reporter_id"
+    market_posts ||--o{ content_reports : "target_post_id"</code></pre>
         </div>
       </section>
 
       <!-- ========================================== -->
-      <!-- 11. CONCEPTUAL DATA MODEL (CDM) -->
+      <!-- 3.7.2 PHYSICAL DATA MODEL (PDM) -->
       <!-- ========================================== -->
-      <section class="doc-card" data-category="database" id="diagram-cdm">
+      <section class="doc-card" data-category="database" id="diagram-3-7-2">
         <div class="doc-card-header">
           <div class="doc-title-group">
             <div class="doc-title-row">
-              <span class="doc-badge badge-database">Basis Data</span>
-              <h2 class="doc-title">3.7.2 Conceptual Data Model (CDM)</h2>
+              <span class="doc-badge badge-database">Bab 3.7.2</span>
+              <h2 class="doc-title">3.7.2 Physical Data Model (PDM PostgreSQL Supabase)</h2>
             </div>
-            <p class="doc-subtitle">Struktur konseptual data logis yang mendefinisikan atribut bisnis tanpa terikat sintaks SQL.</p>
+            <p class="doc-subtitle">Struktur fisik tabel diimplementasikan pada database PostgreSQL (Supabase) lengkap dengan tipe data dan kunci relasi.</p>
           </div>
           <div class="card-toolbar">
             <div class="tab-group">
-              <button class="tab-btn active" onclick="switchCardTab('diagram-cdm', 'diagram')">Diagram</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-cdm', 'text')">Analisis</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-cdm', 'code')">Kode</button>
+              <button class="tab-btn active" onclick="switchCardTab('diagram-3-7-2', 'diagram')">Diagram PDM</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-7-2', 'text')">Analisis Tipe</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-7-2', 'code')">Kode</button>
             </div>
-            <button class="action-btn" onclick="openDiagramModal('mer-cdm', '3.7.2 Conceptual Data Model (CDM)')">Perbesar</button>
-            <button class="action-btn" onclick="copyMermaid('src-cdm', this)">Salin</button>
+            <button class="action-btn" onclick="openDiagramModal('mer-3-7-2', '3.7.2 Physical Data Model (PDM)')">Perbesar</button>
+            <button class="action-btn" onclick="copyMermaid('src-3-7-2', this)">Salin</button>
           </div>
         </div>
 
         <div class="diagram-panel tab-content-diagram">
-          <pre class="mermaid" id="mer-cdm">
-classDiagram
-    class SISWA_REGISTRY {
-        Identitas_NIS
-        Nama_Lengkap_Siswa
-        Rombel_Kelas
-        Program_Keahlian_Jurusan
-        Tahun_Angkatan
-        Status_Keaktifan_Sekolah
-    }
-
-    class AKUN_PENGGUNA {
-        Identitas_User_ID
-        Nomor_Induk_NIS
-        Username_Akun
-        Nama_Tampilan
-        Foto_Profil_Avatar
-        Biografi_Singkat
-        Peran_Pengguna
-        Waktu_Pendaftaran
-    }
-
-    class POSTINGAN_MARKETPLACE {
-        Identitas_Post_ID
-        ID_Siswa_Pembuat
-        Judul_Karya_Produk
-        Deskripsi_Lengkap
-        Kategori_Kejuruan
-        Harga_IDR
-        Jumlah_Stok_Barang
-        Patokan_Kelas_COD
-        Daftar_Foto_Galeri
-        Tipe_Postingan
-        Waktu_Tayang
-    }
-
-    class PERCAKAPAN_OBROLAN {
-        Identitas_Percakapan_ID
-        ID_Siswa_Pembeli
-        ID_Siswa_Penjual
-        ID_Produk_Konteks
-        Status_Tab_Pembeli
-        Waktu_Pesan_Terakhir
-    }
-
-    class PESAN_LANGSUNG {
-        Identitas_Pesan_ID
-        ID_Percakapan
-        ID_Siswa_Pengirim
-        Isi_Teks_Obrolan
-        Waktu_Pengiriman
-    }
-
-    SISWA_REGISTRY "1" -- "0..1" AKUN_PENGGUNA : Memvalidasi
-    AKUN_PENGGUNA "1" -- "0..*" POSTINGAN_MARKETPLACE : Mengunggah
-    AKUN_PENGGUNA "1" -- "0..*" PERCAKAPAN_OBROLAN : Berpartisipasi
-    POSTINGAN_MARKETPLACE "1" -- "0..*" PERCAKAPAN_OBROLAN : Menjadi_Konteks
-    PERCAKAPAN_OBROLAN "1" -- "0..*" PESAN_LANGSUNG : Memiliki
-          </pre>
-        </div>
-
-        <div class="text-panel tab-content-text">
-          <p><strong>Konsep Desain CDM:</strong></p>
-          <p>CDM memodelkan struktur data murni bisnis sekolah. Tipe data fisik (UUID, timestamptz, jsonb) diabstraksikan menjadi atribut konseptual seperti <code>Identitas_User_ID</code>, <code>Status_Tab_Pembeli</code>, dan <code>Patokan_Kelas_COD</code>.</p>
-        </div>
-
-        <div class="code-panel tab-content-code">
-          <pre id="src-cdm"><code>classDiagram
-    class SISWA_REGISTRY {
-        Identitas_NIS
-        Nama_Lengkap_Siswa
-        Rombel_Kelas
-        Program_Keahlian_Jurusan
-        Tahun_Angkatan
-        Status_Keaktifan_Sekolah
-    }
-
-    class AKUN_PENGGUNA {
-        Identitas_User_ID
-        Nomor_Induk_NIS
-        Username_Akun
-        Nama_Tampilan
-        Foto_Profil_Avatar
-        Biografi_Singkat
-        Peran_Pengguna
-        Waktu_Pendaftaran
-    }
-
-    class POSTINGAN_MARKETPLACE {
-        Identitas_Post_ID
-        ID_Siswa_Pembuat
-        Judul_Karya_Produk
-        Deskripsi_Lengkap
-        Kategori_Kejuruan
-        Harga_IDR
-        Jumlah_Stok_Barang
-        Patokan_Kelas_COD
-        Daftar_Foto_Galeri
-        Tipe_Postingan
-        Waktu_Tayang
-    }
-
-    class PERCAKAPAN_OBROLAN {
-        Identitas_Percakapan_ID
-        ID_Siswa_Pembeli
-        ID_Siswa_Penjual
-        ID_Produk_Konteks
-        Status_Tab_Pembeli
-        Waktu_Pesan_Terakhir
-    }
-
-    class PESAN_LANGSUNG {
-        Identitas_Pesan_ID
-        ID_Percakapan
-        ID_Siswa_Pengirim
-        Isi_Teks_Obrolan
-        Waktu_Pengiriman
-    }
-
-    SISWA_REGISTRY "1" -- "0..1" AKUN_PENGGUNA : Memvalidasi
-    AKUN_PENGGUNA "1" -- "0..*" POSTINGAN_MARKETPLACE : Mengunggah
-    AKUN_PENGGUNA "1" -- "0..*" PERCAKAPAN_OBROLAN : Berpartisipasi
-    POSTINGAN_MARKETPLACE "1" -- "0..*" PERCAKAPAN_OBROLAN : Menjadi_Konteks
-    PERCAKAPAN_OBROLAN "1" -- "0..*" PESAN_LANGSUNG : Memiliki</code></pre>
-        </div>
-      </section>
-
-      <!-- ========================================== -->
-      <!-- 12. PHYSICAL DATA MODEL (PDM) -->
-      <!-- ========================================== -->
-      <section class="doc-card" data-category="database" id="diagram-pdm">
-        <div class="doc-card-header">
-          <div class="doc-title-group">
-            <div class="doc-title-row">
-              <span class="doc-badge badge-database">Basis Data</span>
-              <h2 class="doc-title">3.7.3 Physical Data Model (PDM PostgreSQL Supabase)</h2>
-            </div>
-            <p class="doc-subtitle">Struktur fisik tabel database relasional di PostgreSQL lengkap dengan tipe data dan batasan integritas kunci.</p>
-          </div>
-          <div class="card-toolbar">
-            <div class="tab-group">
-              <button class="tab-btn active" onclick="switchCardTab('diagram-pdm', 'diagram')">Diagram</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-pdm', 'text')">Analisis</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-pdm', 'code')">Kode</button>
-            </div>
-            <button class="action-btn" onclick="openDiagramModal('mer-pdm', '3.7.3 Physical Data Model (PDM)')">Perbesar</button>
-            <button class="action-btn" onclick="copyMermaid('src-pdm', this)">Salin</button>
-          </div>
-        </div>
-
-        <div class="diagram-panel tab-content-diagram">
-          <pre class="mermaid" id="mer-pdm">
+          <pre class="mermaid" id="mer-3-7-2">
 erDiagram
     student_registry {
-        TEXT nis PK "Primary Key (Nomor Induk Siswa)"
-        TEXT full_name "NOT NULL - Nama Siswa"
-        TEXT class_group "NOT NULL - Format: XI PPLG 1"
-        TEXT major "NOT NULL - PPLG/DKV/Kuliner"
-        BOOLEAN is_active "NOT NULL DEFAULT true"
-        TIMESTAMPTZ created_at "DEFAULT NOW()"
+        TEXT nis PK
+        TEXT full_name
+        TEXT class_group
+        TEXT major
+        BOOLEAN is_active
     }
 
     profiles {
-        UUID id PK "FK references auth.users(id)"
-        TEXT nis FK "NOT NULL UNIQUE references student_registry(nis)"
-        TEXT username "NOT NULL UNIQUE"
-        TEXT full_name "NOT NULL"
-        TEXT avatar_url "Nullable"
-        TEXT bio "Nullable"
-        TEXT role "NOT NULL DEFAULT 'user' CHECK(role IN ('user','admin'))"
-        TIMESTAMPTZ created_at "DEFAULT NOW()"
+        UUID id PK
+        TEXT nis FK
+        TEXT username
+        TEXT full_name
+        TEXT avatar_url
+        TEXT role
+        TEXT class_group
+        TEXT bio
+        TIMESTAMPTZ created_at
     }
 
     market_posts {
-        UUID id PK "DEFAULT gen_random_uuid()"
-        UUID seller_id FK "NOT NULL references profiles(id)"
-        TEXT title "NOT NULL"
-        TEXT description "NOT NULL"
-        TEXT category "NOT NULL CHECK(category IN ('PPLG','DKV','Kuliner','Otomotif','Umum'))"
-        NUMERIC price "NOT NULL CHECK(price >= 0)"
-        INTEGER stock "NOT NULL DEFAULT 1 CHECK(stock >= 0)"
-        TEXT location_tag "Nullable (e.g. Depan XI PPLG 2)"
-        JSONB images "NOT NULL DEFAULT '[]'::jsonb"
-        TEXT post_type "NOT NULL DEFAULT 'product' CHECK(post_type IN ('product','thread'))"
-        TIMESTAMPTZ created_at "DEFAULT NOW()"
+        UUID id PK
+        UUID seller_id FK
+        TEXT title
+        TEXT description
+        INT price
+        INT stock
+        TEXT type
+        TEXT category
+        JSONB image_urls
+        INT view_count
+        TIMESTAMPTZ created_at
+    }
+
+    school_meeting_points {
+        UUID id PK
+        TEXT name
+        TEXT code
+        TEXT area_zone
+        TEXT description
+        TEXT photo_url
+        BOOLEAN is_active
+    }
+
+    orders {
+        UUID id PK
+        UUID buyer_id FK
+        UUID seller_id FK
+        UUID post_id FK
+        UUID meeting_point_id FK
+        INT total_price
+        TEXT buyer_note
+        TEXT status
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ completed_at
     }
 
     conversations {
-        UUID id PK "DEFAULT gen_random_uuid()"
-        UUID buyer_id FK "NOT NULL references profiles(id)"
-        UUID seller_id FK "NOT NULL references profiles(id)"
-        UUID post_id FK "Nullable references market_posts(id)"
-        BOOLEAN is_request "NOT NULL DEFAULT false"
-        TIMESTAMPTZ updated_at "DEFAULT NOW()"
+        UUID id PK
+        UUID buyer_id FK
+        UUID seller_id FK
+        UUID post_id FK
+        TIMESTAMPTZ created_at
     }
 
     direct_messages {
-        UUID id PK "DEFAULT gen_random_uuid()"
-        UUID conversation_id FK "NOT NULL references conversations(id)"
-        UUID sender_id FK "NOT NULL references profiles(id)"
-        TEXT message_text "NOT NULL"
-        TIMESTAMPTZ created_at "DEFAULT NOW()"
+        UUID id PK
+        UUID conversation_id FK
+        UUID sender_id FK
+        TEXT content
+        BOOLEAN is_read
+        TIMESTAMPTZ created_at
     }
 
-    student_registry ||--o| profiles : "nis -> profiles.nis"
-    profiles ||--o{ market_posts : "id -> market_posts.seller_id"
-    profiles ||--o{ conversations : "id -> conversations.buyer_id"
-    market_posts ||--o{ conversations : "id -> conversations.post_id"
-    conversations ||--o{ direct_messages : "id -> direct_messages.conversation_id"
+    content_reports {
+        UUID id PK
+        UUID reporter_id FK
+        UUID target_post_id FK
+        TEXT reason
+        TEXT status
+        TIMESTAMPTZ created_at
+    }
+
+    student_registry ||--o| profiles : "nis"
+    profiles ||--o{ market_posts : "seller_id"
+    profiles ||--o{ orders : "buyer_id"
+    profiles ||--o{ orders : "seller_id"
+    market_posts ||--o{ orders : "post_id"
+    school_meeting_points ||--o{ orders : "meeting_point_id"
+    profiles ||--o{ conversations : "buyer_id"
+    profiles ||--o{ conversations : "seller_id"
+    conversations ||--o{ direct_messages : "conversation_id"
+    profiles ||--o{ content_reports : "reporter_id"
+    market_posts ||--o{ content_reports : "target_post_id"
           </pre>
         </div>
 
         <div class="text-panel tab-content-text">
-          <p><strong>Spesifikasi PostgreSQL & Constraint:</strong></p>
+          <p><strong>Spesifikasi Fisik PostgreSQL:</strong></p>
           <ul>
-            <li><code>conversations.post_id</code>: Menautkan percakapan dengan produk yang ditanyakan calon pembeli.</li>
-            <li><code>conversations.is_request</code>: Boolean yang menandakan percakapan berasal dari tombol <em>Beli Sekarang</em> untuk disaring ke tab <strong>Pembeli</strong>.</li>
-            <li><code>market_posts.location_tag</code>: Menyimpan patokan lokasi kelas penjual (misal: "X PPLG 1" atau "Kantin") sebagai referensi visual di <code>ChatProductCard</code>.</li>
+            <li>Tipe <code>UUID</code> digunakan sebagai Primary Key unik di seluruh tabel transaksi dan akun untuk menjamin skalabilitas terdistribusi.</li>
+            <li>Relasi <code>profiles.nis</code> dihubungkan secara ketat ke <code>student_registry(nis)</code> untuk menjamin data akun selalu valid sebagai siswa aktif SMKN 8 Semarang.</li>
+            <li>Tabel <code>orders</code> mengunci 4 Foreign Key sekaligus: <code>buyer_id</code>, <code>seller_id</code>, <code>post_id</code>, dan <code>meeting_point_id</code>.</li>
           </ul>
         </div>
 
         <div class="code-panel tab-content-code">
-          <pre id="src-pdm"><code>erDiagram
+          <pre id="src-3-7-2"><code>erDiagram
     student_registry {
-        TEXT nis PK "Primary Key (Nomor Induk Siswa)"
-        TEXT full_name "NOT NULL - Nama Siswa"
-        TEXT class_group "NOT NULL - Format: XI PPLG 1"
-        TEXT major "NOT NULL - PPLG/DKV/Kuliner"
-        BOOLEAN is_active "NOT NULL DEFAULT true"
-        TIMESTAMPTZ created_at "DEFAULT NOW()"
+        TEXT nis PK
+        TEXT full_name
+        TEXT class_group
+        TEXT major
+        BOOLEAN is_active
     }
 
     profiles {
-        UUID id PK "FK references auth.users(id)"
-        TEXT nis FK "NOT NULL UNIQUE references student_registry(nis)"
-        TEXT username "NOT NULL UNIQUE"
-        TEXT full_name "NOT NULL"
-        TEXT avatar_url "Nullable"
-        TEXT bio "Nullable"
-        TEXT role "NOT NULL DEFAULT 'user' CHECK(role IN ('user','admin'))"
-        TIMESTAMPTZ created_at "DEFAULT NOW()"
+        UUID id PK
+        TEXT nis FK
+        TEXT username
+        TEXT full_name
+        TEXT avatar_url
+        TEXT role
+        TEXT class_group
+        TEXT bio
+        TIMESTAMPTZ created_at
     }
 
     market_posts {
-        UUID id PK "DEFAULT gen_random_uuid()"
-        UUID seller_id FK "NOT NULL references profiles(id)"
-        TEXT title "NOT NULL"
-        TEXT description "NOT NULL"
-        TEXT category "NOT NULL CHECK(category IN ('PPLG','DKV','Kuliner','Otomotif','Umum'))"
-        NUMERIC price "NOT NULL CHECK(price >= 0)"
-        INTEGER stock "NOT NULL DEFAULT 1 CHECK(stock >= 0)"
-        TEXT location_tag "Nullable (e.g. Depan XI PPLG 2)"
-        JSONB images "NOT NULL DEFAULT '[]'::jsonb"
-        TEXT post_type "NOT NULL DEFAULT 'product' CHECK(post_type IN ('product','thread'))"
-        TIMESTAMPTZ created_at "DEFAULT NOW()"
+        UUID id PK
+        UUID seller_id FK
+        TEXT title
+        TEXT description
+        INT price
+        INT stock
+        TEXT type
+        TEXT category
+        JSONB image_urls
+        INT view_count
+        TIMESTAMPTZ created_at
+    }
+
+    school_meeting_points {
+        UUID id PK
+        TEXT name
+        TEXT code
+        TEXT area_zone
+        TEXT description
+        TEXT photo_url
+        BOOLEAN is_active
+    }
+
+    orders {
+        UUID id PK
+        UUID buyer_id FK
+        UUID seller_id FK
+        UUID post_id FK
+        UUID meeting_point_id FK
+        INT total_price
+        TEXT buyer_note
+        TEXT status
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ completed_at
     }
 
     conversations {
-        UUID id PK "DEFAULT gen_random_uuid()"
-        UUID buyer_id FK "NOT NULL references profiles(id)"
-        UUID seller_id FK "NOT NULL references profiles(id)"
-        UUID post_id FK "Nullable references market_posts(id)"
-        BOOLEAN is_request "NOT NULL DEFAULT false"
-        TIMESTAMPTZ updated_at "DEFAULT NOW()"
+        UUID id PK
+        UUID buyer_id FK
+        UUID seller_id FK
+        UUID post_id FK
+        TIMESTAMPTZ created_at
     }
 
     direct_messages {
-        UUID id PK "DEFAULT gen_random_uuid()"
-        UUID conversation_id FK "NOT NULL references conversations(id)"
-        UUID sender_id FK "NOT NULL references profiles(id)"
-        TEXT message_text "NOT NULL"
-        TIMESTAMPTZ created_at "DEFAULT NOW()"
+        UUID id PK
+        UUID conversation_id FK
+        UUID sender_id FK
+        TEXT content
+        BOOLEAN is_read
+        TIMESTAMPTZ created_at
     }
 
-    student_registry ||--o| profiles : "nis -> profiles.nis"
-    profiles ||--o{ market_posts : "id -> market_posts.seller_id"
-    profiles ||--o{ conversations : "id -> conversations.buyer_id"
-    market_posts ||--o{ conversations : "id -> conversations.post_id"
-    conversations ||--o{ direct_messages : "id -> direct_messages.conversation_id"</code></pre>
+    content_reports {
+        UUID id PK
+        UUID reporter_id FK
+        UUID target_post_id FK
+        TEXT reason
+        TEXT status
+        TIMESTAMPTZ created_at
+    }
+
+    student_registry ||--o| profiles : "nis"
+    profiles ||--o{ market_posts : "seller_id"
+    profiles ||--o{ orders : "buyer_id"
+    profiles ||--o{ orders : "seller_id"
+    market_posts ||--o{ orders : "post_id"
+    school_meeting_points ||--o{ orders : "meeting_point_id"
+    profiles ||--o{ conversations : "buyer_id"
+    profiles ||--o{ conversations : "seller_id"
+    conversations ||--o{ direct_messages : "conversation_id"
+    profiles ||--o{ content_reports : "reporter_id"
+    market_posts ||--o{ content_reports : "target_post_id"</code></pre>
         </div>
       </section>
 
       <!-- ========================================== -->
-      <!-- 13. CLASS DIAGRAM -->
+      <!-- 3.8 CLASS DIAGRAM -->
       <!-- ========================================== -->
-      <section class="doc-card" data-category="uml" id="diagram-class">
+      <section class="doc-card" data-category="uml" id="diagram-3-8">
         <div class="doc-card-header">
           <div class="doc-title-group">
             <div class="doc-title-row">
-              <span class="doc-badge badge-uml">UML</span>
+              <span class="doc-badge badge-uml">Bab 3.8</span>
               <h2 class="doc-title">3.8 Class Diagram Arsitektur Aplikasi</h2>
             </div>
-            <p class="doc-subtitle">Struktur perancangan perangkat lunak berbasis pola Clean Architecture (Presentation, Controller, Domain, Service, Repository).</p>
+            <p class="doc-subtitle">Struktur perancangan perangkat lunak berbasis pola Clean Architecture (Models, Services, Controllers, dan Relasi Antar Objek).</p>
           </div>
           <div class="card-toolbar">
             <div class="tab-group">
-              <button class="tab-btn active" onclick="switchCardTab('diagram-class', 'diagram')">Diagram</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-class', 'text')">Analisis</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-class', 'code')">Kode</button>
+              <button class="tab-btn active" onclick="switchCardTab('diagram-3-8', 'diagram')">Diagram</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-8', 'text')">Analisis</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-8', 'code')">Kode</button>
             </div>
-            <button class="action-btn" onclick="openDiagramModal('mer-class', '3.8 Class Diagram Arsitektur sNaps')">Perbesar</button>
-            <button class="action-btn" onclick="copyMermaid('src-class', this)">Salin</button>
+            <button class="action-btn" onclick="openDiagramModal('mer-3-8', '3.8 Class Diagram Arsitektur sNaps')">Perbesar</button>
+            <button class="action-btn" onclick="copyMermaid('src-3-8', this)">Salin</button>
           </div>
         </div>
 
         <div class="diagram-panel tab-content-diagram">
-          <pre class="mermaid" id="mer-class">
+          <pre class="mermaid" id="mer-3-8">
 classDiagram
-    %% PRESENTATION LAYER
-    class MarketPostCard {
-        +MarketPost post
-        +VoidCallback onBuyNowClick
-        +renderOverlayBuyButton() Widget
+    %% Models
+    class UserProfile {
+        +String id
+        +String nis
+        +String username
+        +String fullName
+        +String? avatarUrl
+        +String role
+        +String classGroup
+        +String? bio
+        +fromJson(Map data) UserProfile
+        +toJson() Map
     }
 
-    class ChatConversationScreen {
-        +Conversation conversation
-        +ProductContext? productContext
-        +renderChatProductCard() Widget
-        +renderComposerBar() Widget
-    }
-
-    class ChatProductCard {
-        +ProductContext product
-        +String location
-        +ChatProductCardShape shape
-        +build(BuildContext context) Widget
-    }
-
-    %% CONTROLLER & SERVICE LAYER
-    class DirectMessagesController {
-        -DirectMessagesService dmService
-        +isLoading boolean
-        +activeConversation Conversation?
-        +openOrCreateBuyConversation(ProductContext product) Future~void~
-        +sendMessage(String text) Future~void~
-    }
-
-    class DirectMessagesService {
-        -SupabaseClient client
-        +fetchConversations(String tabFilter) Future~List~Conversation~~
-        +startProductInquiry(String sellerId, String postId) Future~Conversation~
-        +sendDirectMessage(String convId, String text) Future~Message~
-    }
-
-    %% ENTITY / MODEL LAYER
-    class ProductContext {
-        +String productId
+    class MarketPost {
+        +String id
+        +String sellerId
         +String title
-        +double price
-        +String imageUrl
-        +String locationTag
+        +String description
+        +int price
+        +int stock
+        +String type
+        +String category
+        +List~String~ imageUrls
+        +DateTime createdAt
+        +bool get isOutOfStock
     }
 
-    class Conversation {
+    class SchoolMeetingPoint {
+        +String id
+        +String name
+        +String code
+        +String areaZone
+        +String description
+        +String? photoUrl
+        +bool isActive
+    }
+
+    class OrderTransaction {
         +String id
         +String buyerId
         +String sellerId
-        +String? postId
-        +boolean isRequest
-        +ProductContext? productContext
+        +String postId
+        +String meetingPointId
+        +int totalPrice
+        +String buyerNote
+        +String status
+        +DateTime createdAt
     }
 
-    %% RELASI ARSITEKTUR
-    MarketPostCard --> DirectMessagesController : Memicu onBuyNowClick
-    DirectMessagesController --> DirectMessagesService : Memanggil Service
-    DirectMessagesController --> ChatConversationScreen : Mengarahkan Navigasi
-    ChatConversationScreen --> ChatProductCard : Menyematkan Kartu
-    ChatProductCard --> ProductContext : Membaca Data
-    DirectMessagesService ..> Conversation : Mengembalikan Entity
+    %% Services
+    class SupabaseAuthService {
+        -_client SupabaseClient
+        +loginWithNis(String nis, String password) Future~AuthResponse~
+        +registerWithNis(String nis, String username, String password) Future~void~
+        +bindDevice(String userId, String deviceId) Future~void~
+        +getCurrentUser() UserProfile?
+    }
+
+    class SupabaseFeedService {
+        -_client SupabaseClient
+        +fetchFeedPosts(int page, String? category) Future~List~MarketPost~~
+        +createPost(MarketPost post) Future~MarketPost~
+        +likePost(String postId) Future~void~
+        +addComment(String postId, String comment) Future~void~
+    }
+
+    class SupabaseOrderService {
+        -_client SupabaseClient
+        +createCodOrder(OrderTransaction order) Future~OrderTransaction~
+        +fetchMeetingPoints() Future~List~SchoolMeetingPoint~~
+        +updateOrderStatus(String orderId, String newStatus) Future~void~
+    }
+
+    %% Controllers
+    class AuthController {
+        -SupabaseAuthService _authService
+        +UserProfile? currentUser
+        +bool isLoading
+        +login(String nis, String password) Future~bool~
+        +logout() Future~void~
+    }
+
+    class CheckoutController {
+        -SupabaseOrderService _orderService
+        +List~SchoolMeetingPoint~ meetingPoints
+        +SchoolMeetingPoint? selectedPoint
+        +bool isSubmitting
+        +loadMeetingPoints() Future~void~
+        +submitCodOrder(String postId, String buyerNote) Future~bool~
+    }
+
+    %% Relationships
+    AuthController --> SupabaseAuthService : "uses"
+    CheckoutController --> SupabaseOrderService : "uses"
+    SupabaseAuthService ..> UserProfile : "returns"
+    SupabaseFeedService ..> MarketPost : "manages"
+    SupabaseOrderService ..> SchoolMeetingPoint : "fetches"
+    SupabaseOrderService ..> OrderTransaction : "processes"
+    OrderTransaction --> MarketPost : "contains post"
+    OrderTransaction --> SchoolMeetingPoint : "meets at"
           </pre>
         </div>
 
         <div class="text-panel tab-content-text">
           <p><strong>Separation of Concerns:</strong></p>
           <ul>
-            <li><strong>Presentation Layer</strong> (<code>MarketPostCard</code>, <code>ChatProductCard</code>): Menangani interaksi tombol overlay beli dan rendering kartu produk di header chat.</li>
-            <li><strong>Controller Layer</strong> (<code>DirectMessagesController</code>): Mengelola state navigasi dari feed langsung membuka room chat bersangkutan.</li>
-            <li><strong>Service Layer</strong> (<code>DirectMessagesService</code>): Menangani query Supabase untuk membuat atau menemukan relasi obrolan berbasis <code>post_id</code>.</li>
+            <li><strong>Entities / Models</strong>: <code>UserProfile</code>, <code>MarketPost</code>, <code>SchoolMeetingPoint</code>, dan <code>OrderTransaction</code> merepresentasikan model data domain murni.</li>
+            <li><strong>Services</strong>: Mengisolasi komunikasi Supabase API dan manipulasi data jarak jauh.</li>
+            <li><strong>Controllers</strong>: Menangani reaktifitas state management (loading state, error handling, dan data bindings ke UI).</li>
           </ul>
         </div>
 
         <div class="code-panel tab-content-code">
-          <pre id="src-class"><code>classDiagram
-    class MarketPostCard {
-        +MarketPost post
-        +VoidCallback onBuyNowClick
-        +renderOverlayBuyButton() Widget
+          <pre id="src-3-8"><code>classDiagram
+    %% Models
+    class UserProfile {
+        +String id
+        +String nis
+        +String username
+        +String fullName
+        +String? avatarUrl
+        +String role
+        +String classGroup
+        +String? bio
+        +fromJson(Map data) UserProfile
+        +toJson() Map
     }
 
-    class ChatConversationScreen {
-        +Conversation conversation
-        +ProductContext? productContext
-        +renderChatProductCard() Widget
-        +renderComposerBar() Widget
-    }
-
-    class ChatProductCard {
-        +ProductContext product
-        +String location
-        +ChatProductCardShape shape
-        +build(BuildContext context) Widget
-    }
-
-    class DirectMessagesController {
-        -DirectMessagesService dmService
-        +isLoading boolean
-        +activeConversation Conversation?
-        +openOrCreateBuyConversation(ProductContext product) Future~void~
-        +sendMessage(String text) Future~void~
-    }
-
-    class DirectMessagesService {
-        -SupabaseClient client
-        +fetchConversations(String tabFilter) Future~List~Conversation~~
-        +startProductInquiry(String sellerId, String postId) Future~Conversation~
-        +sendDirectMessage(String convId, String text) Future~Message~
-    }
-
-    class ProductContext {
-        +String productId
+    class MarketPost {
+        +String id
+        +String sellerId
         +String title
-        +double price
-        +String imageUrl
-        +String locationTag
+        +String description
+        +int price
+        +int stock
+        +String type
+        +String category
+        +List~String~ imageUrls
+        +DateTime createdAt
+        +bool get isOutOfStock
     }
 
-    class Conversation {
+    class SchoolMeetingPoint {
+        +String id
+        +String name
+        +String code
+        +String areaZone
+        +String description
+        +String? photoUrl
+        +bool isActive
+    }
+
+    class OrderTransaction {
         +String id
         +String buyerId
         +String sellerId
-        +String? postId
-        +boolean isRequest
-        +ProductContext? productContext
+        +String postId
+        +String meetingPointId
+        +int totalPrice
+        +String buyerNote
+        +String status
+        +DateTime createdAt
     }
 
-    MarketPostCard --> DirectMessagesController : Memicu onBuyNowClick
-    DirectMessagesController --> DirectMessagesService : Memanggil Service
-    DirectMessagesController --> ChatConversationScreen : Mengarahkan Navigasi
-    ChatConversationScreen --> ChatProductCard : Menyematkan Kartu
-    ChatProductCard --> ProductContext : Membaca Data
-    DirectMessagesService ..> Conversation : Mengembalikan Entity</code></pre>
+    %% Services
+    class SupabaseAuthService {
+        -_client SupabaseClient
+        +loginWithNis(String nis, String password) Future~AuthResponse~
+        +registerWithNis(String nis, String username, String password) Future~void~
+        +bindDevice(String userId, String deviceId) Future~void~
+        +getCurrentUser() UserProfile?
+    }
+
+    class SupabaseFeedService {
+        -_client SupabaseClient
+        +fetchFeedPosts(int page, String? category) Future~List~MarketPost~~
+        +createPost(MarketPost post) Future~MarketPost~
+        +likePost(String postId) Future~void~
+        +addComment(String postId, String comment) Future~void~
+    }
+
+    class SupabaseOrderService {
+        -_client SupabaseClient
+        +createCodOrder(OrderTransaction order) Future~OrderTransaction~
+        +fetchMeetingPoints() Future~List~SchoolMeetingPoint~~
+        +updateOrderStatus(String orderId, String newStatus) Future~void~
+    }
+
+    %% Controllers
+    class AuthController {
+        -SupabaseAuthService _authService
+        +UserProfile? currentUser
+        +bool isLoading
+        +login(String nis, String password) Future~bool~
+        +logout() Future~void~
+    }
+
+    class CheckoutController {
+        -SupabaseOrderService _orderService
+        +List~SchoolMeetingPoint~ meetingPoints
+        +SchoolMeetingPoint? selectedPoint
+        +bool isSubmitting
+        +loadMeetingPoints() Future~void~
+        +submitCodOrder(String postId, String buyerNote) Future~bool~
+    }
+
+    %% Relationships
+    AuthController --> SupabaseAuthService : "uses"
+    CheckoutController --> SupabaseOrderService : "uses"
+    SupabaseAuthService ..> UserProfile : "returns"
+    SupabaseFeedService ..> MarketPost : "manages"
+    SupabaseOrderService ..> SchoolMeetingPoint : "fetches"
+    SupabaseOrderService ..> OrderTransaction : "processes"
+    OrderTransaction --> MarketPost : "contains post"
+    OrderTransaction --> SchoolMeetingPoint : "meets at"</code></pre>
         </div>
       </section>
 
       <!-- ========================================== -->
-      <!-- 14. SEQUENCE DIAGRAM 1: REGISTRASI SISWA -->
+      <!-- 3.9.1 SEQUENCE DIAGRAM: LOGIN & BINDING -->
       <!-- ========================================== -->
-      <section class="doc-card" data-category="uml" id="diagram-seq-reg">
+      <section class="doc-card" data-category="uml" id="diagram-3-9-1">
         <div class="doc-card-header">
           <div class="doc-title-group">
             <div class="doc-title-row">
-              <span class="doc-badge badge-uml">Sequence</span>
-              <h2 class="doc-title">3.9.1 Sequence Diagram: Registrasi Akun Siswa (Verifikasi NIS)</h2>
+              <span class="doc-badge badge-uml">Bab 3.9.1</span>
+              <h2 class="doc-title">3.9.1 Sequence Diagram: Autentikasi NIS & Device Binding</h2>
+            </div>
+            <p class="doc-subtitle">Pertukaran pesan temporal saat proses login akun siswa dan pengikatan perangkat keras smartphone.</p>
+          </div>
+          <div class="card-toolbar">
+            <div class="tab-group">
+              <button class="tab-btn active" onclick="switchCardTab('diagram-3-9-1', 'diagram')">Diagram</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-9-1', 'text')">Analisis</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-9-1', 'code')">Kode</button>
+            </div>
+            <button class="action-btn" onclick="openDiagramModal('mer-3-9-1', '3.9.1 Sequence: Autentikasi NIS & Device Binding')">Perbesar</button>
+            <button class="action-btn" onclick="copyMermaid('src-3-9-1', this)">Salin</button>
+          </div>
+        </div>
+
+        <div class="diagram-panel tab-content-diagram">
+          <pre class="mermaid" id="mer-3-9-1">
+sequenceDiagram
+    autonumber
+    actor Siswa as 👤 Siswa
+    participant UI as 📱 LoginScreen
+    participant Ctrl as 🎮 AuthController
+    participant Svc as 🌐 SupabaseAuthService
+    participant DB as 🗄️ Supabase PostgreSQL
+
+    Siswa->>UI: Masukkan NIS & Password
+    UI->>Ctrl: login(nis, password)
+    Ctrl->>Svc: loginWithNis(nis, password)
+    Svc->>DB: Query student_registry (Cek NIS aktif)
+    
+    alt NIS Terdaftar & Aktif
+        DB-->>Svc: Data Siswa Valid
+        Svc->>DB: Authenticate via auth.users
+        DB-->>Svc: AuthResponse (JWT Token)
+        Svc->>DB: bindDevice(userId, deviceId)
+        DB-->>Svc: Device Binding Sukses
+        Svc-->>Ctrl: UserProfile
+        Ctrl-->>UI: Sukses Login (Navigasi ke Beranda)
+        UI-->>Siswa: Tampil Layar Feed Beranda
+    else NIS Tidak Valid / Tidak Aktif
+        DB-->>Svc: Record Not Found
+        Svc-->>Ctrl: Throw Exception: "NIS tidak terdaftar di SMKN 8"
+        Ctrl-->>UI: Tampilkan SnackBar Error
+        UI-->>Siswa: Pesan Peringatan Login Gagal
+    end
+          </pre>
+        </div>
+
+        <div class="text-panel tab-content-text">
+          <p><strong>Alur Kronologis Login:</strong></p>
+          <ol>
+            <li>Siswa memasukkan kredensial nomor induk dan password.</li>
+            <li>Sistem memvalidasi terlebih dahulu ke <code>student_registry</code> sekolah.</li>
+            <li>Jika nomor induk sah dan aktif, sistem menerbitkan JWT token dan mengeksekusi <code>bindDevice()</code> untuk mencatat ID smartphone siswa.</li>
+            <li>Jika nomor induk tidak terdaftar, proses digagalkan seketika dengan pesan peringatan resmi.</li>
+          </ol>
+        </div>
+
+        <div class="code-panel tab-content-code">
+          <pre id="src-3-9-1"><code>sequenceDiagram
+    autonumber
+    actor Siswa as 👤 Siswa
+    participant UI as 📱 LoginScreen
+    participant Ctrl as 🎮 AuthController
+    participant Svc as 🌐 SupabaseAuthService
+    participant DB as 🗄️ Supabase PostgreSQL
+
+    Siswa->>UI: Masukkan NIS & Password
+    UI->>Ctrl: login(nis, password)
+    Ctrl->>Svc: loginWithNis(nis, password)
+    Svc->>DB: Query student_registry (Cek NIS aktif)
+    
+    alt NIS Terdaftar & Aktif
+        DB-->>Svc: Data Siswa Valid
+        Svc->>DB: Authenticate via auth.users
+        DB-->>Svc: AuthResponse (JWT Token)
+        Svc->>DB: bindDevice(userId, deviceId)
+        DB-->>Svc: Device Binding Sukses
+        Svc-->>Ctrl: UserProfile
+        Ctrl-->>UI: Sukses Login (Navigasi ke Beranda)
+        UI-->>Siswa: Tampil Layar Feed Beranda
+    else NIS Tidak Valid / Tidak Aktif
+        DB-->>Svc: Record Not Found
+        Svc-->>Ctrl: Throw Exception: "NIS tidak terdaftar di SMKN 8"
+        Ctrl-->>UI: Tampilkan SnackBar Error
+        UI-->>Siswa: Pesan Peringatan Login Gagal
+    end</code></pre>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- 3.9.2 SEQUENCE DIAGRAM: CHECKOUT COD -->
+      <!-- ========================================== -->
+      <section class="doc-card" data-category="uml" id="diagram-3-9-2">
+        <div class="doc-card-header">
+          <div class="doc-title-group">
+            <div class="doc-title-row">
+              <span class="doc-badge badge-uml">Bab 3.9.2</span>
+              <h2 class="doc-title">3.9.2 Sequence Diagram: Checkout Pesanan COD Titik Temu Sekolah</h2>
+            </div>
+            <p class="doc-subtitle">Pertukaran pesan temporal saat proses pemesanan barang, transaksi atomik database, dan trigger notifikasi.</p>
+          </div>
+          <div class="card-toolbar">
+            <div class="tab-group">
+              <button class="tab-btn active" onclick="switchCardTab('diagram-3-9-2', 'diagram')">Diagram</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-9-2', 'text')">Analisis</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-9-2', 'code')">Kode</button>
+            </div>
+            <button class="action-btn" onclick="openDiagramModal('mer-3-9-2', '3.9.2 Sequence: Checkout Pesanan COD Titik Temu')">Perbesar</button>
+            <button class="action-btn" onclick="copyMermaid('src-3-9-2', this)">Salin</button>
+          </div>
+        </div>
+
+        <div class="diagram-panel tab-content-diagram">
+          <pre class="mermaid" id="mer-3-9-2">
+sequenceDiagram
+    autonumber
+    actor Pembeli as 👤 Siswa Pembeli
+    participant UI as 📱 CheckoutScreen
+    participant Ctrl as 🎮 CheckoutController
+    participant Svc as 🌐 SupabaseOrderService
+    participant DB as 🗄️ Supabase PostgreSQL
+    actor Penjual as 👤 Siswa Penjual
+
+    Pembeli->>UI: Buka Halaman Checkout
+    UI->>Ctrl: loadMeetingPoints()
+    Ctrl->>Svc: fetchMeetingPoints()
+    Svc->>DB: SELECT * FROM school_meeting_points WHERE is_active = true
+    DB-->>Svc: List Titik Temu (Gazebo, Kantin, Lab)
+    Svc-->>Ctrl: Data Lokasi Sekolah
+    Ctrl-->>UI: Render Pilihan Spot COD di Denah
+
+    Pembeli->>UI: Pilih Titik Temu & Tulis Catatan
+    Pembeli->>UI: Tekan Tombol "Konfirmasi Pesanan"
+    UI->>Ctrl: submitCodOrder(postId, note)
+    
+    activate Ctrl
+    Ctrl->>Svc: createCodOrder(payload)
+    activate Svc
+    
+    critical Verifikasi Stok Atomik
+        Svc->>DB: BEGIN TRANSACTION
+        Svc->>DB: SELECT stock FROM market_posts WHERE id = :postId FOR UPDATE
+        alt Stok Habis (stock <= 0)
+            DB-->>Svc: Stock = 0
+            Svc->>DB: ROLLBACK
+            Svc-->>Ctrl: Error: Stok Habis
+            Ctrl-->>UI: Tampilkan Alert Gagal (Stok Kosong)
+        else Stok Tersedia (stock > 0)
+            Svc->>DB: INSERT INTO orders (buyer_id, seller_id, post_id, meeting_point_id, status='pending')
+            Svc->>DB: UPDATE market_posts SET stock = stock - 1 WHERE id = :postId
+            Svc->>DB: COMMIT TRANSACTION
+            DB-->>Svc: Record Order Berhasil Dibuat
+            
+            Svc->>DB: TRIGGER Notifikasi Masuk ke Penjual
+            DB-->>Penjual: Push Notification: "Ada Pesanan COD Baru Masuk!"
+            
+            Svc-->>Ctrl: Order Sukses
+            deactivate Svc
+            Ctrl-->>UI: Emit State Sukses
+            deactivate Ctrl
+            UI-->>Pembeli: Tampilkan Modal Sukses & Panduan Titik Temu
+        end
+    end
+          </pre>
+        </div>
+
+        <div class="text-panel tab-content-text">
+          <p><strong>Rincian Prosedur Transaksi COD Atomik:</strong></p>
+          <ul>
+            <li><strong>Langkah 1-6</strong>: Pengambilan daftar master data lokasi pertemuan sekolah aktif dari <code>school_meeting_points</code>.</li>
+            <li><strong>Langkah 7-18</strong>: Blok <code>critical</code> transaksi atomik yang mengunci baris produk (<code>SELECT ... FOR UPDATE</code>), memotong stok, dan menyimpan pesanan ke tabel <code>orders</code>.</li>
+            <li><strong>Langkah 19-25</strong>: Trigger push notification realtime ke ponsel penjual dan rendering bukti digital di layar pembeli.</li>
+          </ul>
+        </div>
+
+        <div class="code-panel tab-content-code">
+          <pre id="src-3-9-2"><code>sequenceDiagram
+    autonumber
+    actor Pembeli as 👤 Siswa Pembeli
+    participant UI as 📱 CheckoutScreen
+    participant Ctrl as 🎮 CheckoutController
+    participant Svc as 🌐 SupabaseOrderService
+    participant DB as 🗄️ Supabase PostgreSQL
+    actor Penjual as 👤 Siswa Penjual
+
+    Pembeli->>UI: Buka Halaman Checkout
+    UI->>Ctrl: loadMeetingPoints()
+    Ctrl->>Svc: fetchMeetingPoints()
+    Svc->>DB: SELECT * FROM school_meeting_points WHERE is_active = true
+    DB-->>Svc: List Titik Temu (Gazebo, Kantin, Lab)
+    Svc-->>Ctrl: Data Lokasi Sekolah
+    Ctrl-->>UI: Render Pilihan Spot COD di Denah
+
+    Pembeli->>UI: Pilih Titik Temu & Tulis Catatan
+    Pembeli->>UI: Tekan Tombol "Konfirmasi Pesanan"
+    UI->>Ctrl: submitCodOrder(postId, note)
+    
+    activate Ctrl
+    Ctrl->>Svc: createCodOrder(payload)
+    activate Svc
+    
+    critical Verifikasi Stok Atomik
+        Svc->>DB: BEGIN TRANSACTION
+        Svc->>DB: SELECT stock FROM market_posts WHERE id = :postId FOR UPDATE
+        alt Stok Habis (stock <= 0)
+            DB-->>Svc: Stock = 0
+            Svc->>DB: ROLLBACK
+            Svc-->>Ctrl: Error: Stok Habis
+            Ctrl-->>UI: Tampilkan Alert Gagal (Stok Kosong)
+        else Stok Tersedia (stock > 0)
+            Svc->>DB: INSERT INTO orders (buyer_id, seller_id, post_id, meeting_point_id, status='pending')
+            Svc->>DB: UPDATE market_posts SET stock = stock - 1 WHERE id = :postId
+            Svc->>DB: COMMIT TRANSACTION
+            DB-->>Svc: Record Order Berhasil Dibuat
+            
+            Svc->>DB: TRIGGER Notifikasi Masuk ke Penjual
+            DB-->>Penjual: Push Notification: "Ada Pesanan COD Baru Masuk!"
+            
+            Svc-->>Ctrl: Order Sukses
+            deactivate Svc
+            Ctrl-->>UI: Emit State Sukses
+            deactivate Ctrl
+            UI-->>Pembeli: Tampilkan Modal Sukses & Panduan Titik Temu
+        end
+    end</code></pre>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- 3.9.3 SEQUENCE DIAGRAM: REGISTRASI SISWA -->
+      <!-- ========================================== -->
+      <section class="doc-card" data-category="uml" id="diagram-3-9-3">
+        <div class="doc-card-header">
+          <div class="doc-title-group">
+            <div class="doc-title-row">
+              <span class="doc-badge badge-uml">Bab 3.9.3</span>
+              <h2 class="doc-title">3.9.3 Sequence Diagram: Registrasi Akun Siswa (Verifikasi NIS)</h2>
             </div>
             <p class="doc-subtitle">Pertukaran pesan temporal saat pendaftaran akun baru dengan verifikasi silang ke buku induk sekolah.</p>
           </div>
           <div class="card-toolbar">
             <div class="tab-group">
-              <button class="tab-btn active" onclick="switchCardTab('diagram-seq-reg', 'diagram')">Diagram</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-seq-reg', 'text')">Analisis</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-seq-reg', 'code')">Kode</button>
+              <button class="tab-btn active" onclick="switchCardTab('diagram-3-9-3', 'diagram')">Diagram</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-9-3', 'text')">Analisis</button>
+              <button class="tab-btn" onclick="switchCardTab('diagram-3-9-3', 'code')">Kode</button>
             </div>
-            <button class="action-btn" onclick="openDiagramModal('mer-seq-reg', '3.9.1 Sequence: Registrasi Akun Siswa')">Perbesar</button>
-            <button class="action-btn" onclick="copyMermaid('src-seq-reg', this)">Salin</button>
+            <button class="action-btn" onclick="openDiagramModal('mer-3-9-3', '3.9.3 Sequence: Registrasi Akun Siswa')">Perbesar</button>
+            <button class="action-btn" onclick="copyMermaid('src-3-9-3', this)">Salin</button>
           </div>
         </div>
 
         <div class="diagram-panel tab-content-diagram">
-          <pre class="mermaid" id="mer-seq-reg">
+          <pre class="mermaid" id="mer-3-9-3">
 sequenceDiagram
     autonumber
-    actor Siswa as Siswa Pendaftar
-    participant UI as RegisterScreen
-    participant Ctrl as AuthController
-    participant Svc as SupabaseAuthService
-    participant DB_Reg as student_registry (Buku Induk)
-    participant Auth_Svr as Supabase Auth (auth.users)
-    participant DB_Prof as profiles (Data Akun)
+    actor Siswa as 👤 Siswa Pendaftar
+    participant UI as 📱 RegisterScreen
+    participant Ctrl as 🎮 AuthController
+    participant Svc as 🌐 SupabaseAuthService
+    participant DB_Reg as 🗄️ student_registry (Buku Induk)
+    participant Auth_Svr as 🔐 Supabase Auth (auth.users)
+    participant DB_Prof as 🗄️ profiles (Data Akun)
 
     Siswa->>UI: Input NIS, Username, Password, & Konfirmasi
     UI->>Ctrl: registerWithNis(nis, username, password)
@@ -2600,22 +2682,22 @@ sequenceDiagram
         <div class="text-panel tab-content-text">
           <p><strong>Alur Kronologis Registrasi Siswa:</strong></p>
           <ol>
-            <li><strong>Tahap 1</strong>: Sistem memverifikasi apakah NIS terdaftar dan berstatus aktif di <code>student_registry</code>. Jika tidak, proses berhenti seketika.</li>
-            <li><strong>Tahap 2</strong>: Memastikan NIS belum pernah didaftarkan sebelumnya di <code>profiles</code> untuk mencegah satu siswa membuat banyak akun.</li>
-            <li><strong>Tahap 3 & 4</strong>: Menerbitkan UUID kredensial di <code>auth.users</code> dan menyimpan biodata resmi siswa ke <code>profiles</code>.</li>
+            <li><strong>Tahap 1</strong>: Sistem memverifikasi apakah NIS terdaftar dan berstatus aktif di <code>student_registry</code>. Jika tidak, proses ditolak seketika.</li>
+            <li><strong>Tahap 2</strong>: Memastikan NIS belum pernah didaftarkan sebelumnya di <code>profiles</code> untuk mencegah duplikasi akun.</li>
+            <li><strong>Tahap 3 &amp; 4</strong>: Menerbitkan UUID kredensial di <code>auth.users</code> dan menyimpan biodata resmi siswa ke <code>profiles</code>.</li>
           </ol>
         </div>
 
         <div class="code-panel tab-content-code">
-          <pre id="src-seq-reg"><code>sequenceDiagram
+          <pre id="src-3-9-3"><code>sequenceDiagram
     autonumber
-    actor Siswa as Siswa Pendaftar
-    participant UI as RegisterScreen
-    participant Ctrl as AuthController
-    participant Svc as SupabaseAuthService
-    participant DB_Reg as student_registry (Buku Induk)
-    participant Auth_Svr as Supabase Auth (auth.users)
-    participant DB_Prof as profiles (Data Akun)
+    actor Siswa as 👤 Siswa Pendaftar
+    participant UI as 📱 RegisterScreen
+    participant Ctrl as 🎮 AuthController
+    participant Svc as 🌐 SupabaseAuthService
+    participant DB_Reg as 🗄️ student_registry (Buku Induk)
+    participant Auth_Svr as 🔐 Supabase Auth (auth.users)
+    participant DB_Prof as 🗄️ profiles (Data Akun)
 
     Siswa->>UI: Input NIS, Username, Password, & Konfirmasi
     UI->>Ctrl: registerWithNis(nis, username, password)
@@ -2624,6 +2706,7 @@ sequenceDiagram
     Ctrl->>Svc: executeRegistration(payload)
     activate Svc
     
+    %% TAHAP 1: VALIDASI BUKU INDUK
     Svc->>DB_Reg: SELECT * FROM student_registry WHERE nis = :nis AND is_active = true
     activate DB_Reg
     alt NIS Tidak Terdaftar / Tidak Aktif di SMKN 8
@@ -2635,6 +2718,7 @@ sequenceDiagram
     else NIS Terdaftar Valid
         DB_Reg-->>Svc: Record Siswa (Nama Lengkap, Kelas, Jurusan)
         
+        %% TAHAP 2: CEK DUPLIKASI AKUN
         Svc->>DB_Prof: SELECT id FROM profiles WHERE nis = :nis
         activate DB_Prof
         alt NIS Sudah Pernah Didaftarkan Sebelumnya
@@ -2646,11 +2730,13 @@ sequenceDiagram
         else NIS Belum Pernah Didaftarkan (Fresh Account)
             DB_Prof-->>Svc: Data Kosong
             
+            %% TAHAP 3: PEMBUATAN AKUN SUPABASE AUTH
             Svc->>Auth_Svr: signUp(email: nis@smkn8semarang.sch.id, password)
             activate Auth_Svr
             Auth_Svr-->>Svc: User Credential Created (UUID)
             deactivate Auth_Svr
             
+            %% TAHAP 4: RECORD PROFILE RESMI
             Svc->>DB_Prof: INSERT INTO profiles (id, nis, username, full_name, class_group, role='user')
             activate DB_Prof
             DB_Prof-->>Svc: Profile Created Successfully
@@ -2667,293 +2753,13 @@ sequenceDiagram
       </section>
 
       <!-- ========================================== -->
-      <!-- 15. SEQUENCE DIAGRAM 2: LOGIN & DEVICE BIND -->
-      <!-- ========================================== -->
-      <section class="doc-card" data-category="uml" id="diagram-seq-login">
-        <div class="doc-card-header">
-          <div class="doc-title-group">
-            <div class="doc-title-row">
-              <span class="doc-badge badge-uml">Sequence</span>
-              <h2 class="doc-title">3.9.2 Sequence Diagram: Login Siswa & Device Binding</h2>
-            </div>
-            <p class="doc-subtitle">Pertukaran pesan temporal saat login akun siswa beserta pengikatan identitas hardware smartphone.</p>
-          </div>
-          <div class="card-toolbar">
-            <div class="tab-group">
-              <button class="tab-btn active" onclick="switchCardTab('diagram-seq-login', 'diagram')">Diagram</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-seq-login', 'text')">Analisis</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-seq-login', 'code')">Kode</button>
-            </div>
-            <button class="action-btn" onclick="openDiagramModal('mer-seq-login', '3.9.2 Sequence: Login & Device Binding')">Perbesar</button>
-            <button class="action-btn" onclick="copyMermaid('src-seq-login', this)">Salin</button>
-          </div>
-        </div>
-
-        <div class="diagram-panel tab-content-diagram">
-          <pre class="mermaid" id="mer-seq-login">
-sequenceDiagram
-    autonumber
-    actor Siswa as Siswa
-    participant UI as LoginScreen
-    participant Ctrl as AuthController
-    participant Svc as SupabaseAuthService
-    participant Auth_Svr as Supabase Auth (JWT Engine)
-    participant DB_Prof as profiles
-    participant DB_Dev as device_registrations
-
-    Siswa->>UI: Input NIS & Password Akun
-    UI->>Ctrl: login(nis, password)
-    activate Ctrl
-    
-    Ctrl->>Svc: authenticate(nis, password)
-    activate Svc
-    
-    Svc->>Auth_Svr: signInWithPassword(nis_email, password)
-    activate Auth_Svr
-    alt Kredensial Salah / Password Keliru
-        Auth_Svr-->>Svc: 400 Bad Request (Invalid Credentials)
-        deactivate Auth_Svr
-        Svc-->>Ctrl: Throw AuthException: 'NIS atau Password salah'
-        Ctrl-->>UI: Update State Gagal
-        UI-->>Siswa: Tampilkan SnackBar Merah: 'Password Salah'
-    else Kredensial Benar
-        Auth_Svr-->>Svc: Session Valid (Access Token & User UUID)
-        
-        %% CEK REGISTRASI HARDWARE DEVICE
-        Svc->>DB_Dev: SELECT COUNT(*) FROM device_registrations WHERE user_id = :uid
-        activate DB_Dev
-        DB_Dev-->>Svc: Jumlah Perangkat Terdaftar
-        deactivate DB_Dev
-        
-        opt Belum Mencapai Batas Perangkat
-            Svc->>DB_Dev: INSERT INTO device_registrations (user_id, device_id, device_model)
-        end
-        
-        Svc->>DB_Prof: SELECT * FROM profiles WHERE id = :uid
-        activate DB_Prof
-        DB_Prof-->>Svc: Data Lengkap Siswa (Nama, Avatar, Jurusan)
-        deactivate DB_Prof
-        
-        Svc-->>Ctrl: Login Sukses & Sesi Terverifikasi
-        deactivate Svc
-        Ctrl-->>UI: Update State Login Berhasil
-        deactivate Ctrl
-        UI-->>Siswa: Navigasi Otomatis Membuka Layar Beranda (Feed & Market)
-    end
-          </pre>
-        </div>
-
-        <div class="text-panel tab-content-text">
-          <p><strong>Device Binding Security:</strong></p>
-          <p>Sistem menyimpan informasi fingerprint perangkat (ID hardware dan tipe smartphone) ke tabel <code>device_registrations</code> guna mengidentifikasi aktivitas login mencurigakan atau pembagian akun antar siswa yang dilarang sekolah.</p>
-        </div>
-
-        <div class="code-panel tab-content-code">
-          <pre id="src-seq-login"><code>sequenceDiagram
-    autonumber
-    actor Siswa as Siswa
-    participant UI as LoginScreen
-    participant Ctrl as AuthController
-    participant Svc as SupabaseAuthService
-    participant Auth_Svr as Supabase Auth (JWT Engine)
-    participant DB_Prof as profiles
-    participant DB_Dev as device_registrations
-
-    Siswa->>UI: Input NIS & Password Akun
-    UI->>Ctrl: login(nis, password)
-    activate Ctrl
-    
-    Ctrl->>Svc: authenticate(nis, password)
-    activate Svc
-    
-    Svc->>Auth_Svr: signInWithPassword(nis_email, password)
-    activate Auth_Svr
-    alt Kredensial Salah / Password Keliru
-        Auth_Svr-->>Svc: 400 Bad Request (Invalid Credentials)
-        deactivate Auth_Svr
-        Svc-->>Ctrl: Throw AuthException: 'NIS atau Password salah'
-        Ctrl-->>UI: Update State Gagal
-        UI-->>Siswa: Tampilkan SnackBar Merah: 'Password Salah'
-    else Kredensial Benar
-        Auth_Svr-->>Svc: Session Valid (Access Token & User UUID)
-        
-        Svc->>DB_Dev: SELECT COUNT(*) FROM device_registrations WHERE user_id = :uid
-        activate DB_Dev
-        DB_Dev-->>Svc: Jumlah Perangkat Terdaftar
-        deactivate DB_Dev
-        
-        opt Belum Mencapai Batas Perangkat
-            Svc->>DB_Dev: INSERT INTO device_registrations (user_id, device_id, device_model)
-        end
-        
-        Svc->>DB_Prof: SELECT * FROM profiles WHERE id = :uid
-        activate DB_Prof
-        DB_Prof-->>Svc: Data Lengkap Siswa (Nama, Avatar, Jurusan)
-        deactivate DB_Prof
-        
-        Svc-->>Ctrl: Login Sukses & Sesi Terverifikasi
-        deactivate Svc
-        Ctrl-->>UI: Update State Login Berhasil
-        deactivate Ctrl
-        UI-->>Siswa: Navigasi Otomatis Membuka Layar Beranda (Feed & Market)
-    end</code></pre>
-        </div>
-      </section>
-
-      <!-- ========================================== -->
-      <!-- 16. SEQUENCE DIAGRAM 3: INSIASI BELI BY DM -->
-      <!-- ========================================== -->
-      <section class="doc-card" data-category="uml" id="diagram-seq-checkout">
-        <div class="doc-card-header">
-          <div class="doc-title-group">
-            <div class="doc-title-row">
-              <span class="doc-badge badge-uml">Sequence</span>
-              <h2 class="doc-title">3.9.3 Sequence Diagram: Inisiasi Pembelian Produk via Direct Message (Feed-to-DM)</h2>
-            </div>
-            <p class="doc-subtitle">Pertukaran pesan temporal saat calon pembeli menekan Beli Sekarang di feed hingga room chat tersemat konteks produk.</p>
-          </div>
-          <div class="card-toolbar">
-            <div class="tab-group">
-              <button class="tab-btn active" onclick="switchCardTab('diagram-seq-checkout', 'diagram')">Diagram</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-seq-checkout', 'text')">Analisis</button>
-              <button class="tab-btn" onclick="switchCardTab('diagram-seq-checkout', 'code')">Kode</button>
-            </div>
-            <button class="action-btn" onclick="openDiagramModal('mer-seq-checkout', '3.9.3 Sequence: Inisiasi Beli via DM')">Perbesar</button>
-            <button class="action-btn" onclick="copyMermaid('src-seq-checkout', this)">Salin</button>
-          </div>
-        </div>
-
-        <div class="diagram-panel tab-content-diagram">
-          <pre class="mermaid" id="mer-seq-checkout">
-sequenceDiagram
-    autonumber
-    actor Pembeli as Siswa Pembeli
-    participant Feed as HomeFeedScreen
-    participant Ctrl as DirectMessagesController
-    participant Svc as DirectMessagesService
-    participant DB as Supabase PostgreSQL
-    participant Room as ChatConversationScreen
-    actor Penjual as Siswa Penjual
-
-    Pembeli->>Feed: Mengetuk Tombol Overlay 'Beli Sekarang' di Foto Produk
-    Feed->>Ctrl: onBuyNowClick(ProductContext payload)
-    activate Ctrl
-    
-    Ctrl->>Svc: openOrCreateConversation(sellerId, postId)
-    activate Svc
-    
-    Svc->>DB: SELECT id FROM conversations WHERE buyer_id = :uid AND seller_id = :sellerId AND post_id = :postId
-    activate DB
-    alt Percakapan Belum Ada
-        DB-->>Svc: 0 Row
-        Svc->>DB: INSERT INTO conversations (buyer_id, seller_id, post_id, is_request=true)
-        DB-->>Svc: Record Percakapan Baru (conversation_id)
-    else Percakapan Sudah Ada
-        DB-->>Svc: Record Percakapan Eksisting (conversation_id)
-    end
-    deactivate DB
-    
-    Svc-->>Ctrl: Conversation Ready (id, is_request)
-    deactivate Svc
-    
-    Ctrl->>Room: Navigasi Buka Layar Chat (conversation, productContext)
-    deactivate Ctrl
-    activate Room
-    
-    Room->>Room: Sematkan Komponen ChatProductCard di Header Chat
-    Room->>Room: Pre-fill Template Pesan Teks di ChatComposerBar
-    
-    Room-->>Pembeli: Tampilkan Ruang Obrolan Siap Kirim
-    deactivate Room
-
-    Pembeli->>Room: Tekan Kirim Pesan Janjian COD
-    activate Room
-    Room->>Svc: sendMessage(conversation_id, text)
-    activate Svc
-    Svc->>DB: INSERT INTO direct_messages (conversation_id, sender_id, message_text)
-    deactivate Svc
-    
-    DB-->>Penjual: Realtime Signal / Push Notif Masuk ke Tab 'Pembeli'
-    Penjual->>Room: Buka Tab Pembeli & Balas Janji Temu COD
-    Room-->>Pembeli: Tampilkan Balasan Konfirmasi Lokasi & Jam Istirahat
-    deactivate Room
-          </pre>
-        </div>
-
-        <div class="text-panel tab-content-text">
-          <p><strong>Rincian Interaksi Temporal Feed-to-DM:</strong></p>
-          <ul>
-            <li><strong>Langkah 1-2</strong>: Pembeli menekan tombol overlay di container gambar postingan produk.</li>
-            <li><strong>Langkah 3-7</strong>: Layanan mencari apakah obrolan terkait produk ini sudah ada atau membuat baru dengan penanda <code>is_request = true</code>.</li>
-            <li><strong>Langkah 8-11</strong>: Navigasi membuka layar <code>ChatConversationScreen</code> dengan penambatan otomatis <code>ChatProductCard</code> dan pesan pembuka.</li>
-            <li><strong>Langkah 12-16</strong>: Pengiriman pesan teks koordinasi jam istirahat sekolah yang otomatis disaring ke tab <strong>Pembeli</strong> di HP penjual.</li>
-          </ul>
-        </div>
-
-        <div class="code-panel tab-content-code">
-          <pre id="src-seq-checkout"><code>sequenceDiagram
-    autonumber
-    actor Pembeli as Siswa Pembeli
-    participant Feed as HomeFeedScreen
-    participant Ctrl as DirectMessagesController
-    participant Svc as DirectMessagesService
-    participant DB as Supabase PostgreSQL
-    participant Room as ChatConversationScreen
-    actor Penjual as Siswa Penjual
-
-    Pembeli->>Feed: Mengetuk Tombol Overlay 'Beli Sekarang' di Foto Produk
-    Feed->>Ctrl: onBuyNowClick(ProductContext payload)
-    activate Ctrl
-    
-    Ctrl->>Svc: openOrCreateConversation(sellerId, postId)
-    activate Svc
-    
-    Svc->>DB: SELECT id FROM conversations WHERE buyer_id = :uid AND seller_id = :sellerId AND post_id = :postId
-    activate DB
-    alt Percakapan Belum Ada
-        DB-->>Svc: 0 Row
-        Svc->>DB: INSERT INTO conversations (buyer_id, seller_id, post_id, is_request=true)
-        DB-->>Svc: Record Percakapan Baru (conversation_id)
-    else Percakapan Sudah Ada
-        DB-->>Svc: Record Percakapan Eksisting (conversation_id)
-    end
-    deactivate DB
-    
-    Svc-->>Ctrl: Conversation Ready (id, is_request)
-    deactivate Svc
-    
-    Ctrl->>Room: Navigasi Buka Layar Chat (conversation, productContext)
-    deactivate Ctrl
-    activate Room
-    
-    Room->>Room: Sematkan Komponen ChatProductCard di Header Chat
-    Room->>Room: Pre-fill Template Pesan Teks di ChatComposerBar
-    
-    Room-->>Pembeli: Tampilkan Ruang Obrolan Siap Kirim
-    deactivate Room
-
-    Pembeli->>Room: Tekan Kirim Pesan Janjian COD
-    activate Room
-    Room->>Svc: sendMessage(conversation_id, text)
-    activate Svc
-    Svc->>DB: INSERT INTO direct_messages (conversation_id, sender_id, message_text)
-    deactivate Svc
-    
-    DB-->>Penjual: Realtime Signal / Push Notif Masuk ke Tab 'Pembeli'
-    Penjual->>Room: Buka Tab Pembeli & Balas Janji Temu COD
-    Room-->>Pembeli: Tampilkan Balasan Konfirmasi Lokasi & Jam Istirahat
-    deactivate Room</code></pre>
-        </div>
-      </section>
-
-      <!-- ========================================== -->
-      <!-- 17. KAMUS DATA & TABEL LENGKAP -->
+      <!-- KAMUS DATA & TABEL LENGKAP -->
       <!-- ========================================== -->
       <section class="doc-card" data-category="database" id="doc-data-dictionary">
         <div class="doc-card-header">
           <div class="doc-title-group">
             <div class="doc-title-row">
-              <span class="doc-badge badge-database">Basis Data</span>
+              <span class="doc-badge badge-database">Kamus Data</span>
               <h2 class="doc-title">Kamus Data & Spesifikasi Entitas Baku (Supabase PostgreSQL)</h2>
             </div>
             <p class="doc-subtitle">Daftar tabel resmi, kunci relasi, dan fungsi masing-masing entitas pada database sNaps.</p>
@@ -2961,7 +2767,7 @@ sequenceDiagram
           <div class="card-toolbar">
             <div class="tab-group">
               <button class="tab-btn active" onclick="switchCardTab('doc-data-dictionary', 'text')">Tabel</button>
-              <button class="tab-btn" onclick="switchCardTab('doc-data-dictionary', 'code')">SQL</button>
+              <button class="tab-btn" onclick="switchCardTab('doc-data-dictionary', 'code')">SQL DDL</button>
             </div>
           </div>
         </div>
@@ -2988,7 +2794,7 @@ sequenceDiagram
                   <td><code>profiles</code></td>
                   <td>Data akun pengguna aktif aplikasi sNaps</td>
                   <td><code>id</code> (UUID)</td>
-                  <td>Terikat ke <code>auth.users(id)</code> & <code>student_registry(nis)</code></td>
+                  <td>Terikat ke <code>auth.users(id)</code> &amp; <code>student_registry(nis)</code></td>
                 </tr>
                 <tr>
                   <td><code>market_posts</code></td>
@@ -2997,8 +2803,20 @@ sequenceDiagram
                   <td><code>seller_id</code> &rarr; <code>profiles(id)</code></td>
                 </tr>
                 <tr>
+                  <td><code>school_meeting_points</code></td>
+                  <td>Master lokasi titik temu COD di lingkungan sekolah</td>
+                  <td><code>id</code> (UUID)</td>
+                  <td>Lokasi referensi transaksi resmi</td>
+                </tr>
+                <tr>
+                  <td><code>orders</code></td>
+                  <td>Transaksi pesanan COD antar siswa</td>
+                  <td><code>id</code> (UUID)</td>
+                  <td><code>buyer_id</code>, <code>seller_id</code>, <code>post_id</code>, <code>meeting_point_id</code></td>
+                </tr>
+                <tr>
                   <td><code>conversations</code></td>
-                  <td>Wadah ruang obrolan langsung (dengan flag <code>is_request</code>)</td>
+                  <td>Wadah ruang obrolan langsung antar 2 pengguna</td>
                   <td><code>id</code> (UUID)</td>
                   <td><code>buyer_id</code>, <code>seller_id</code>, <code>post_id</code></td>
                 </tr>
@@ -3009,16 +2827,10 @@ sequenceDiagram
                   <td><code>conversation_id</code>, <code>sender_id</code></td>
                 </tr>
                 <tr>
-                  <td><code>device_registrations</code></td>
-                  <td>Pencatatan hardware perangkat smartphone siswa</td>
-                  <td><code>id</code> (UUID)</td>
-                  <td><code>user_id</code> &rarr; <code>profiles(id)</code></td>
-                </tr>
-                <tr>
                   <td><code>content_reports</code></td>
                   <td>Laporan penertiban konten melanggar oleh siswa</td>
                   <td><code>id</code> (UUID)</td>
-                  <td><code>reporter_id</code>, <code>post_id</code></td>
+                  <td><code>reporter_id</code>, <code>target_post_id</code></td>
                 </tr>
               </tbody>
             </table>
@@ -3026,32 +2838,32 @@ sequenceDiagram
         </div>
 
         <div class="code-panel tab-content-code">
-          <pre><code>-- Skema DDL Inti Tabel conversations (Social Commerce Feed-to-DM)
-CREATE TABLE public.conversations (
+          <pre><code>-- Skema DDL Inti Tabel orders (PostgreSQL)
+CREATE TABLE public.orders (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    order_code TEXT NOT NULL UNIQUE,
     buyer_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
     seller_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
-    post_id UUID REFERENCES public.market_posts(id) ON DELETE SET NULL,
-    is_request BOOLEAN NOT NULL DEFAULT false,
+    post_id UUID NOT NULL REFERENCES public.market_posts(id) ON DELETE RESTRICT,
+    meeting_point_id UUID NOT NULL REFERENCES public.school_meeting_points(id) ON DELETE RESTRICT,
+    buyer_notes TEXT,
+    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'completed', 'cancelled')),
+    total_amount NUMERIC NOT NULL CHECK (total_amount >= 0),
     created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
-);
-
--- Indeks Penunjang Filter Cepat Tab Pembeli
-CREATE INDEX idx_conversations_seller_request 
-ON public.conversations(seller_id, is_request);</code></pre>
+);</code></pre>
         </div>
       </section>
 
       <!-- ========================================== -->
-      <!-- 18. SSOT RUANG LINGKUP SISTEM -->
+      <!-- 00. SSOT SPESIFIKASI SISTEM -->
       <!-- ========================================== -->
-      <section class="doc-card" data-category="spec" id="doc-ssot">
+      <section class="doc-card" data-category="ssot" id="doc-ssot">
         <div class="doc-card-header">
           <div class="doc-title-group">
             <div class="doc-title-row">
               <span class="doc-badge badge-spec">SSOT Master</span>
-              <h2 class="doc-title">00. Single Source of Truth (SSOT) & Ruang Lingkup Sistem</h2>
+              <h2 class="doc-title">00. Single Source of Truth (SSOT) &amp; Ruang Lingkup Sistem</h2>
             </div>
             <p class="doc-subtitle">Dokumen acuan baku konsistensi nama aktor, entitas, dan batas fungsional seluruh diagram Bab III.</p>
           </div>
@@ -3066,23 +2878,23 @@ ON public.conversations(seller_id, is_request);</code></pre>
         <div class="text-panel tab-content-text active" style="display: block;">
           <div class="callout">
             <div class="callout-title">Tujuan SSOT (Single Source of Truth)</div>
-            Mencegah ketidaksinkronan nama aktor, nama entitas database, dan cakupan fitur di antara anggota pengembang sistem. Mengadopsi arsitektur Social Commerce Feed-to-DM sesuai fase rilis beta.
+            Mencegah ketidaksinkronan nama aktor, nama entitas database, dan cakupan fitur di antara anggota pengembang sistem. Seluruh artefak diagram mengacu mutlak pada nama baku di dokumen ini.
           </div>
 
           <p><strong>1. Aktor Resmi Sistem:</strong></p>
           <ul>
-            <li><strong>Siswa (Warga Sekolah)</strong>: Pengguna terdaftar melalui verifikasi NIS. Memiliki peran ganda C2C (berbelanja produk vokasi, menjual karya, membuat thread diskusi di feed, berpartisipasi polling, mengirim direct message, dan janjian COD via chat).</li>
-            <li><strong>Admin Sekolah</strong>: Pengelola dari pihak sekolah yang mengelola master registry siswa (NIS & Kelas), memverifikasi laporan konten melanggar, dan memantau log keamanan.</li>
+            <li><strong>Siswa (Warga Sekolah)</strong>: Pengguna terdaftar melalui verifikasi NIS. Memiliki peran ganda C2C (berbelanja produk vokasi, menjual karya, membuat thread diskusi di feed, berpartisipasi polling, mengirim direct message, dan memesan produk via COD titik temu sekolah).</li>
+            <li><strong>Admin Sekolah</strong>: Pengelola dari pihak sekolah yang mengelola master registry siswa (NIS &amp; Kelas), memverifikasi laporan konten melanggar, dan memantau log keamanan.</li>
           </ul>
 
-          <p><strong>2. 6 Modul & Fitur Utama Aplikasi:</strong></p>
+          <p><strong>2. 6 Modul &amp; Fitur Utama Aplikasi:</strong></p>
           <ol>
-            <li><strong>Modul Autentikasi NIS & Device Binding</strong>: Validasi NIS terhadap buku induk sekolah dan pencegahan duplikasi akun.</li>
-            <li><strong>Modul Feed Komunitas & Diskusi (Threads Style)</strong>: Publikasi utas, polling interaktif, dan komentar bersarang.</li>
-            <li><strong>Modul Marketplace Vokasi & Karya Siswa</strong>: Manajemen listing produk kejuruan (PPLG, DKV, Kuliner, dll) di linimasa.</li>
-            <li><strong>Modul Transaksi Social Commerce Feed-to-DM</strong>: Inisiasi beli langsung dari feed ke DM dengan penambatan kartu produk <code>ChatProductCard</code> dan smart filter inbox.</li>
-            <li><strong>Modul Komunikasi Langsung (Direct Chat)</strong>: Obrolan privat langsung antara calon pembeli dan penjual untuk koordinasi janji temu COD di sekolah.</li>
-            <li><strong>Modul Administrasi & Keamanan Sekolah</strong>: Moderasi konten dan pengelolaan master data.</li>
+            <li><strong>Modul Autentikasi NIS &amp; Device Binding</strong>: Validasi NIS terhadap buku induk sekolah dan pencegahan duplikasi akun.</li>
+            <li><strong>Modul Feed Komunitas &amp; Diskusi (Threads Style)</strong>: Publikasi utas, polling interaktif, dan komentar bersarang.</li>
+            <li><strong>Modul Marketplace Vokasi &amp; Karya Siswa</strong>: Manajemen listing produk kejuruan (PPLG, DKV, Kuliner, dll).</li>
+            <li><strong>Modul Transaksi COD Titik Temu Sekolah</strong>: Checkout tanpa biaya admin dengan penentuan titik kumpul resmi sekolah.</li>
+            <li><strong>Modul Komunikasi Langsung (Direct Chat)</strong>: Obrolan privat langsung antara calon pembeli dan penjual.</li>
+            <li><strong>Modul Administrasi &amp; Keamanan Sekolah</strong>: Moderasi konten dan pengelolaan master data.</li>
           </ol>
         </div>
 
@@ -3093,7 +2905,7 @@ graph TD
         M1["1. Modul Autentikasi NIS & Registrasi Perangkat"]
         M2["2. Modul Feed Komunitas & Diskusi (Threads Style)"]
         M3["3. Modul Marketplace Vokasi & Karya Siswa"]
-        M4["4. Modul Transaksi Social Commerce Feed-to-DM"]
+        M4["4. Modul Transaksi COD Titik Temu Sekolah"]
         M5["5. Modul Komunikasi Langsung (Direct Chat)"]
         M6["6. Modul Administrasi & Keamanan Sekolah"]
     end
@@ -3102,14 +2914,14 @@ graph TD
       </section>
 
       <!-- ========================================== -->
-      <!-- 19. STANDARISASI REGISTRY SISWA -->
+      <!-- STANDARISASI REGISTRY SISWA -->
       <!-- ========================================== -->
-      <section class="doc-card" data-category="spec" id="doc-student-registry">
+      <section class="doc-card" data-category="ssot" id="doc-student-registry">
         <div class="doc-card-header">
           <div class="doc-title-group">
             <div class="doc-title-row">
-              <span class="doc-badge badge-spec">Spesifikasi</span>
-              <h2 class="doc-title">Standarisasi & Aturan Impor Data Siswa (Student Registry Standard)</h2>
+              <span class="doc-badge badge-spec">Standar Buku Induk</span>
+              <h2 class="doc-title">Standarisasi Registry Siswa &amp; Aturan Penamaan Kelas Romawi</h2>
             </div>
             <p class="doc-subtitle">Buku panduan baku penamaan kelas Romawi, master data jurusan SMKN 8, dan mekanisme normalisasi otomatis.</p>
           </div>
@@ -3126,16 +2938,16 @@ graph TD
           <p>Format kelas resmi menggunakan kombinasi: <code>&lt;TINGKAT_ROMAWI&gt; &lt;JURUSAN&gt; &lt;NOMOR_ROMBEL&gt;</code></p>
           <ul>
             <li>Benar (Standar Baku): <code>X PPLG 1</code>, <code>XI PPLG 2</code>, <code>XII PPLG 1</code>, <code>XI DKV 1</code>, <code>XI TJKT 2</code></li>
-            <li>Salah (Akan Ditolak/Dinormalisasi): <code>11 pplg 2</code> (angka arab & huruf kecil), <code>XI-PPLG-2</code> (tanda hubung), <code>Kelas XI PPLG 2</code> (kata depan 'Kelas')</li>
+            <li>Salah (Akan Ditolak/Dinormalisasi): <code>11 pplg 2</code> (angka arab &amp; huruf kecil), <code>XI-PPLG-2</code> (tanda hubung), <code>Kelas XI PPLG 2</code> (kata depan 'Kelas')</li>
           </ul>
 
           <p><strong>2. Master Jurusan di SMKN 8 Semarang:</strong></p>
           <div class="doc-table-wrapper">
             <table class="doc-table">
               <tr><th>Singkatan</th><th>Nama Program Keahlian</th><th>Rombel Valid</th></tr>
-              <tr><td><code>PPLG</code></td><td>Pengembangan Perangkat Lunak & Gim</td><td>1, 2</td></tr>
+              <tr><td><code>PPLG</code></td><td>Pengembangan Perangkat Lunak &amp; Gim</td><td>1, 2</td></tr>
               <tr><td><code>DKV</code></td><td>Desain Komunikasi Visual</td><td>1, 2</td></tr>
-              <tr><td><code>TJKT</code></td><td>Teknik Jaringan Komputer & Telekomunikasi</td><td>1, 2</td></tr>
+              <tr><td><code>TJKT</code></td><td>Teknik Jaringan Komputer &amp; Telekomunikasi</td><td>1, 2</td></tr>
               <tr><td><code>LK</code></td><td>Layanan Perbankan Syariah / Keuangan</td><td>1, 2</td></tr>
               <tr><td><code>PS</code></td><td>Perbankan Syariah</td><td>1</td></tr>
             </table>
@@ -3169,185 +2981,6 @@ graph TD
     }
   }
 }</code></pre>
-        </div>
-      </section>
-
-      <!-- ========================================== -->
-      <!-- 20. KONTRAK DATA FE KE BE -->
-      <!-- ========================================== -->
-      <section class="doc-card" data-category="spec" id="doc-fe-be-contract">
-        <div class="doc-card-header">
-          <div class="doc-title-group">
-            <div class="doc-title-row">
-              <span class="doc-badge badge-spec">API Contract</span>
-              <h2 class="doc-title">Kontrak Data Detail Frontend ke Backend (FE &rarr; BE Specification)</h2>
-            </div>
-            <p class="doc-subtitle">Matriks transformasi penamaan CamelCase ke Snake_Case dan spesifikasi payload API per interaksi UI.</p>
-          </div>
-          <div class="card-toolbar">
-            <div class="tab-group">
-              <button class="tab-btn active" onclick="switchCardTab('doc-fe-be-contract', 'text')">Mapping</button>
-              <button class="tab-btn" onclick="switchCardTab('doc-fe-be-contract', 'code')">Contoh Payload</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="text-panel tab-content-text active" style="display: block;">
-          <p><strong>1. Matriks Transformasi Penamaan:</strong></p>
-          <div class="doc-table-wrapper">
-            <table class="doc-table">
-              <thead>
-                <tr>
-                  <th>Field Frontend (camelCase)</th>
-                  <th>Kolom Database (snake_case)</th>
-                  <th>Tipe Data TypeScript / Postgres</th>
-                  <th>Keterangan</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td><code>postType</code></td><td><code>post_type</code></td><td><code>'thread' | 'product'</code></td><td>Tipe postingan</td></tr>
-                <tr><td><code>originalPrice</code></td><td><code>original_price</code></td><td><code>number / numeric</code></td><td>Harga coret sebelum diskon</td></tr>
-                <tr><td><code>locationTag</code></td><td><code>location_tag</code></td><td><code>string / text</code></td><td>Lokasi e.g. 'X PPLG 1', 'Kantin Depan'</td></tr>
-                <tr><td><code>topicTag</code></td><td><code>topic_tag</code></td><td><code>string / text</code></td><td>Topik e.g. 'PJBL', 'frontend'</td></tr>
-                <tr><td><code>isRequest</code></td><td><code>is_request</code></td><td><code>boolean</code></td><td><code>true</code> jika pesan berasal dari tombol beli</td></tr>
-                <tr><td><code>postId</code></td><td><code>post_id</code></td><td><code>string / uuid</code></td><td>FK ke market_posts</td></tr>
-                <tr><td><code>parentCommentId</code></td><td><code>parent_comment_id</code></td><td><code>string | null / uuid</code></td><td>NULL = Root, UUID = Nested</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="code-panel tab-content-code">
-          <pre><code>// Contoh Payload Inisiasi Percakapan Produk (FE -> BE)
-{
-  "buyer_id": "7d6c5b4a-3f2e-1d0c-9b8a-7f6e5d4c3b2a",
-  "seller_id": "8f3b2a1c-4d5e-6f7a-8b9c-0d1e2f3a4b5c",
-  "post_id": "9a1b2c3d-4e5f-6a7b-8c9d-0e1f2a3b4c5d",
-  "is_request": true,
-  "initial_message": "Halo kak, saya tertarik membeli stiker DKV (Rp 15.000). Apakah bisa COD di area tangga lantai 2 pas jam istirahat?"
-}</code></pre>
-        </div>
-      </section>
-
-      <!-- ========================================== -->
-      <!-- 21. KEAMANAN & RLS BACKEND -->
-      <!-- ========================================== -->
-      <section class="doc-card" data-category="spec" id="doc-backend-spec">
-        <div class="doc-card-header">
-          <div class="doc-title-group">
-            <div class="doc-title-row">
-              <span class="doc-badge badge-spec">Keamanan</span>
-              <h2 class="doc-title">Spesifikasi Backend & Row Level Security (RLS) Invariants</h2>
-            </div>
-            <p class="doc-subtitle">Aturan isolasi data di PostgreSQL untuk mencegah akses ilegal antar siswa.</p>
-          </div>
-          <div class="card-toolbar">
-            <div class="tab-group">
-              <button class="tab-btn active" onclick="switchCardTab('doc-backend-spec', 'text')">Kebijakan RLS</button>
-              <button class="tab-btn" onclick="switchCardTab('doc-backend-spec', 'code')">SQL Policy</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="text-panel tab-content-text active" style="display: block;">
-          <p><strong>Invarian Keamanan Data (Security Invariants):</strong></p>
-          <ul>
-            <li><strong>Pemisahan Kepemilikan Produk</strong>: Siswa hanya dapat mengedit atau menghapus record pada <code>market_posts</code> jika <code>seller_id = auth.uid()</code>.</li>
-            <li><strong>Kerahasiaan Obrolan DM</strong>: Record pada tabel <code>conversations</code> dan <code>direct_messages</code> hanya dapat dibaca oleh peserta obrolan (<code>buyer_id = auth.uid()</code> atau <code>seller_id = auth.uid()</code>). Pihak ketiga tidak memiliki hak akses baca.</li>
-            <li><strong>Integritas Buku Induk</strong>: Tabel <code>student_registry</code> berstatus Read-Only untuk siswa dan hanya dapat dimodifikasi oleh akun bertaraf <code>admin</code>.</li>
-          </ul>
-        </div>
-
-        <div class="code-panel tab-content-code">
-          <pre><code>-- Kebijakan RLS Kerahasiaan Percakapan DM
-ALTER TABLE public.conversations ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Pengguna hanya dapat melihat percakapan miliknya"
-ON public.conversations
-FOR SELECT
-TO authenticated
-USING (
-    buyer_id = auth.uid() OR seller_id = auth.uid()
-);
-
-CREATE POLICY "Siswa pembeli dapat membuat percakapan baru"
-ON public.conversations
-FOR INSERT
-TO authenticated
-WITH CHECK (
-    buyer_id = auth.uid()
-);</code></pre>
-        </div>
-      </section>
-
-      <!-- ========================================== -->
-      <!-- 22. OVERVIEW & INTERAKSI APLIKASI -->
-      <!-- ========================================== -->
-      <section class="doc-card" data-category="spec" id="doc-overview-interaction">
-        <div class="doc-card-header">
-          <div class="doc-title-group">
-            <div class="doc-title-row">
-              <span class="doc-badge badge-spec">Overview UX</span>
-              <h2 class="doc-title">Overview Aplikasi & Arsitektur Interaksi Pengguna (PWA)</h2>
-            </div>
-            <p class="doc-subtitle">Konsep Social Commerce Feed-to-DM, user persona matrix, dan standar rekayasa taktil 120 FPS.</p>
-          </div>
-          <div class="card-toolbar">
-            <div class="tab-group">
-              <button class="tab-btn active" onclick="switchCardTab('doc-overview-interaction', 'text')">Deskripsi</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="text-panel tab-content-text active" style="display: block;">
-          <p><strong>1. Visi Produk Ekosistem sNaps (Social Commerce):</strong></p>
-          <p>sNaps mengadopsi interaksi modern serupa Instagram Shop / TikTok direct inquiry:</p>
-          <ul>
-            <li><strong>Feed Terpadu Tanpa Friksi</strong>: Linimasa memuat konten diskusi dan karya jualan dalam satu feed alami. Produk memiliki tombol overlay <em>Beli Sekarang</em> yang langsung memicu DM.</li>
-            <li><strong>Smart Inbox Filtering</strong>: Penjual tidak lagi dipusingkan memilah chat; semua pesan pembelian otomatis masuk ke tab khusus <em>Pembeli</em>.</li>
-            <li><strong>Transaksi COD Berbasis Jam Istirahat</strong>: Kedua siswa berkoordinasi tempat dan waktu secara organik lewat pesan teks.</li>
-          </ul>
-
-          <p><strong>2. User Persona Matrix:</strong></p>
-          <div class="doc-table-wrapper">
-            <table class="doc-table">
-              <tr><th>Persona Siswa</th><th>Kebutuhan Kritis UX</th><th>Solusi di sNaps</th></tr>
-              <tr><td><strong>Siswa Penjual</strong></td><td>Mengetahui calon pembeli serius tanpa chat tercampur obrolan pertemanan</td><td>Pemisahan tab inbox "Pembeli" via flag <code>is_request</code></td></tr>
-              <tr><td><strong>Siswa Pembeli</strong></td><td>Inquiry produk instan tanpa form checkout kaku</td><td>Tombol overlay "Beli Sekarang" langsung membuka DM + ChatProductCard</td></tr>
-              <tr><td><strong>Siswa Kreator</strong></td><td>Media berbagi tutorial, cuplikan karya, dan diskusi tugas kejuruan</td><td>Feed utas sosial dengan komentar bersarang multi-level</td></tr>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- ========================================== -->
-      <!-- 23. PANDUAN PRESENTASI PWA -->
-      <!-- ========================================== -->
-      <section class="doc-card" data-category="spec" id="doc-pwa-presentation">
-        <div class="doc-card-header">
-          <div class="doc-title-group">
-            <div class="doc-title-row">
-              <span class="doc-badge badge-spec">Presentasi</span>
-              <h2 class="doc-title">Panduan Presentasi Pengujian & Demonstrasi PWA</h2>
-            </div>
-            <p class="doc-subtitle">Struktur panduan pengujian saat demonstrasi tugas ujian akhir atau presentasi project-based learning (PJBL).</p>
-          </div>
-          <div class="card-toolbar">
-            <div class="tab-group">
-              <button class="tab-btn active" onclick="switchCardTab('doc-pwa-presentation', 'text')">Panduan</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="text-panel tab-content-text active" style="display: block;">
-          <p><strong>Skenario Urutan Demonstrasi Saat Ujian / Presentasi:</strong></p>
-          <ol>
-            <li><strong>Demo 1: Instalasi PWA & Offline Support</strong>: Menunjukkan aplikasi berjalan fullscreen tanpa bar peramban (standalone mode) di smartphone Android.</li>
-            <li><strong>Demo 2: Verifikasi NIS Dua Lapis</strong>: Memasukkan NIS ilegal untuk membuktikan validasi buku induk, lalu login dengan NIS terdaftar.</li>
-            <li><strong>Demo 3: Publikasi Listing Karya Vokasi</strong>: Mengunggah produk karya siswa jurusan PPLG/DKV dan memeriksa pembaruan otomatis di feed dengan tombol overlay Beli Sekarang.</li>
-            <li><strong>Demo 4: Inisiasi Beli via Social Commerce DM</strong>: Mengetuk Beli Sekarang pada foto produk, mendemonstrasikan pembukaan room chat DM dengan ChatProductCard tersemat, dan menunjukkan pesan masuk di tab filter "Pembeli" pada ponsel penjual.</li>
-            <li><strong>Demo 5: Janji Temu COD di Jam Istirahat</strong>: Menunjukkan percakapan koordinasi spot bertemu sekolah dan serah terima fisik secara tunai.</li>
-          </ol>
         </div>
       </section>
 
@@ -3622,7 +3255,7 @@ WITH CHECK (
       });
 
       searchAlert.style.display = 'flex';
-      searchAlertText.innerText = `Ditemukan ${matchCount} dokumen yang cocok dengan kata kunci "${query}"`;
+      searchAlertText.innerText = `Ditemukan ${matchCount} bagian Bab III yang cocok dengan kata kunci "${query}"`;
     });
 
     btnClearSearch.addEventListener('click', () => {
@@ -3700,7 +3333,7 @@ WITH CHECK (
         }
       });
       document.getElementById('btn-expand-all').innerText = allExpanded ? 'Ringkas Semua' : 'Detail Semua';
-      showToast(allExpanded ? 'Semua deskripsi dibuka' : 'Deskripsi diringkas');
+      showToast(allExpanded ? 'Semua penjelasan dibuka' : 'Penjelasan diringkas');
     });
 
     // 12. Click on Diagram to Zoom
