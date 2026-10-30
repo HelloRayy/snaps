@@ -70,5 +70,25 @@ void main() {
       expect(find.text('Halo bro apa kabar?'), findsNothing);
       expect(find.byIcon(Icons.emoji_emotions_outlined), findsOneWidget);
     });
+
+    testWidgets('tapping textfield triggers onTap callback', (tester) async {
+      bool tapped = false;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ChatComposerBar(
+              onSendMessage: (_) {},
+              onTap: () => tapped = true,
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(TextField));
+      await tester.pump();
+
+      expect(tapped, isTrue);
+    });
   });
 }

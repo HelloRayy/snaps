@@ -30,7 +30,8 @@ class ChatConversationScreen extends StatefulWidget {
   State<ChatConversationScreen> createState() => _ChatConversationScreenState();
 }
 
-class _ChatConversationScreenState extends State<ChatConversationScreen> {
+class _ChatConversationScreenState extends State<ChatConversationScreen>
+    with WidgetsBindingObserver {
   late String _activeConvId;
   late List<ChatMessageModel> _messages;
   final ScrollController _scrollController = ScrollController();
@@ -42,6 +43,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
     _activeConvId = widget.conversation.id;
     DirectMessagesService.instance.activeConversationId = _activeConvId;
     DirectMessagesService.instance.addListener(_onServiceChanged);
+    WidgetsBinding.instance.addObserver(this);
 
     final savedMessages = DirectMessagesService.instance.getMessages(_activeConvId);
     if (savedMessages.isNotEmpty) {
@@ -65,6 +67,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
     }
 
     _initRealtimeChat();
+    _scrollToBottom(150);
   }
 
   void _onServiceChanged() {
@@ -183,17 +186,26 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
     }
     DirectMessagesService.instance.removeListener(_onServiceChanged);
     _messagesSubscription?.unsubscribe();
+    WidgetsBinding.instance.removeObserver(this);
     _scrollController.dispose();
     super.dispose();
   }
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    _scrollToBottom(60);
+    _scrollToBottom(250);
+  }
 
-  void _scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+
+  void _scrollToBottom([int delayMs = 60]) {
+    Future.delayed(Duration(milliseconds: delayMs), () {
+      if (!mounted) return;
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
           duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOut,
+          curve: Curves.easeOutCubic,
         );
       }
     });
@@ -382,6 +394,10 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
           ChatComposerBar(
             onSendMessage: _handleSendMessage,
             onSendMessageWithMedia: _handleSendMessageWithMedia,
+            onTap: () {
+              _scrollToBottom(50);
+              _scrollToBottom(250);
+            },
           ),
         ],
       ),

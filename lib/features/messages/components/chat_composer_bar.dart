@@ -17,6 +17,8 @@ class ChatComposerBar extends StatefulWidget {
   final void Function(String text, List<String> images)? onSendMessageWithMedia;
   final VoidCallback? onAttachmentTap;
   final String placeholder;
+  final VoidCallback? onTap;
+  final FocusNode? focusNode;
 
   const ChatComposerBar({
     super.key,
@@ -24,6 +26,8 @@ class ChatComposerBar extends StatefulWidget {
     this.onSendMessageWithMedia,
     this.onAttachmentTap,
     this.placeholder = 'Message',
+    this.onTap,
+    this.focusNode,
   });
 
   @override
@@ -32,6 +36,8 @@ class ChatComposerBar extends StatefulWidget {
 
 class _ChatComposerBarState extends State<ChatComposerBar> {
   late final TextEditingController _controller;
+  late final FocusNode _focusNode;
+  bool _internalFocusNode = false;
   bool _canSend = false;
   bool _isSendPressed = false;
   final List<String> _attachedImages = [];
@@ -41,6 +47,19 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
     super.initState();
     _controller = TextEditingController();
     _controller.addListener(_handleTextChanged);
+    if (widget.focusNode != null) {
+      _focusNode = widget.focusNode!;
+    } else {
+      _focusNode = FocusNode();
+      _internalFocusNode = true;
+    }
+    _focusNode.addListener(_handleFocusChanged);
+  }
+
+  void _handleFocusChanged() {
+    if (_focusNode.hasFocus) {
+      widget.onTap?.call();
+    }
   }
 
   void _handleTextChanged() {
@@ -52,6 +71,10 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
 
   @override
   void dispose() {
+    _focusNode.removeListener(_handleFocusChanged);
+    if (_internalFocusNode) {
+      _focusNode.dispose();
+    }
     _controller.removeListener(_handleTextChanged);
     _controller.dispose();
     super.dispose();
@@ -98,8 +121,8 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
+    final isKeyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final pillBgColor = isDark ? const Color(0xFF1E293B) : Colors.white;
@@ -109,13 +132,14 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
     final iconColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
 
     return Container(
+      color: Colors.transparent,
       padding: EdgeInsets.only(
         left: 14.0,
         right: 14.0,
-        bottom: bottomInset > 0
-            ? bottomInset + 8.0
-            : (bottomPadding > 0 ? bottomPadding + 6.0 : 14.0),
         top: 6.0,
+        bottom: isKeyboardOpen
+            ? 8.0
+            : (bottomPadding > 0 ? bottomPadding + 4.0 : 12.0),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -293,6 +317,8 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                     padding: const EdgeInsets.symmetric(vertical: 2.0),
                     child: TextField(
                       controller: _controller,
+                      focusNode: _focusNode,
+                      onTap: widget.onTap,
                       textInputAction: TextInputAction.newline,
                       keyboardType: TextInputType.multiline,
                       minLines: 1,
