@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:snapan_market/core/components/glass_toolbar_top.dart';
+import 'package:snapan_market/core/components/snaps_skeleton.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/features/map/screens/campus_map_screen.dart';
@@ -41,6 +42,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
   final ScrollController _scrollController = ScrollController();
   RealtimeChannel? _messagesSubscription;
   bool _isLoadingProduct = false;
+  bool _isLoadingMessages = true;
 
   @override
   void initState() {
@@ -53,22 +55,10 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
     final savedMessages = DirectMessagesService.instance.getMessages(_activeConvId);
     if (savedMessages.isNotEmpty) {
       _messages = List.from(savedMessages);
-    } else if (widget.conversation.lastMessage.trim().isNotEmpty) {
-      final initialMsg = ChatMessageModel(
-        id: "msg-${DateTime.now().millisecondsSinceEpoch}",
-        senderId: widget.conversation.isSender ? "saya" : widget.conversation.user.username,
-        text: widget.conversation.lastMessage.trim(),
-        timestamp: widget.conversation.timestamp,
-        isMe: widget.conversation.isSender,
-      );
-      _messages = [initialMsg];
-      DirectMessagesService.instance.addMessage(
-        _activeConvId,
-        initialMsg,
-        conversation: widget.conversation,
-      );
+      _isLoadingMessages = false;
     } else {
       _messages = [];
+      _isLoadingMessages = true;
     }
 
     _initRealtimeChat();
@@ -85,6 +75,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
     if (updated.isNotEmpty) {
       setState(() {
         _messages = List.from(updated);
+        _isLoadingMessages = false;
       });
       _scrollToBottom();
     }
@@ -147,13 +138,20 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
       }
     }
 
-    // Load message history from Supabase
-    final live = await DirectMessagesService.instance.loadMessages(_activeConvId);
-    if (live.isNotEmpty && mounted) {
-      setState(() {
-        _messages = List.from(live);
-      });
-      _scrollToBottom();
+    try {
+      final live = await DirectMessagesService.instance.loadMessages(_activeConvId);
+      if (live.isNotEmpty && mounted) {
+        setState(() {
+          _messages = List.from(live);
+        });
+        _scrollToBottom();
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingMessages = false;
+        });
+      }
     }
 
     // Subscribe to live realtime messages and read-status updates
@@ -404,36 +402,63 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
         child: Column(
           children: [
             Expanded(
-              child: ListView(
-                controller: _scrollController,
-                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 14.0),
-              children: [
-                if (widget.conversation.productContext != null)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 2.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: ChatProductCard(
-                        product: widget.conversation.productContext!,
-                        location: widget.conversation.productContext?.location ?? "Kantin Belakang SMKN 8 Semarang",
-                        onViewProduct: _isLoadingProduct ? null : _handleViewProduct,
-                        onCheckLocation: () {
-                          Navigator.of(context).push(
-                            AppSlidePageRoute(
-                              builder: (_) => CampusMapScreen(
-                                onBack: () => Navigator.pop(context),
+              child: _isLoadingMessages && _messages.isEmpty
+                  ? Column(
+                      children: [
+                        if (widget.conversation.productContext != null)
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(14.0, 14.0, 14.0, 0.0),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: ChatProductCard(
+                                product: widget.conversation.productContext!,
+                                location: widget.conversation.productContext?.location ?? "Kantin Belakang SMKN 8 Semarang",
+                                onViewProduct: _isLoadingProduct ? null : _handleViewProduct,
+                                onCheckLocation: () {
+                                  Navigator.of(context).push(
+                                    AppSlidePageRoute(
+                                      builder: (_) => CampusMapScreen(
+                                        onBack: () => Navigator.pop(context),
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        const Expanded(child: ChatConversationSkeleton()),
+                      ],
+                    )
+                  : ListView(
+                      controller: _scrollController,
+                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                      padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 14.0),
+                      children: [
+                        if (widget.conversation.productContext != null)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 2.0),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: ChatProductCard(
+                                product: widget.conversation.productContext!,
+                                location: widget.conversation.productContext?.location ?? "Kantin Belakang SMKN 8 Semarang",
+                                onViewProduct: _isLoadingProduct ? null : _handleViewProduct,
+                                onCheckLocation: () {
+                                  Navigator.of(context).push(
+                                    AppSlidePageRoute(
+                                      builder: (_) => CampusMapScreen(
+                                        onBack: () => Navigator.pop(context),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ..._messages.map((msg) => ChatMessageBubble(message: msg)),
+                      ],
                     ),
-                  ),
-                ..._messages.map((msg) => ChatMessageBubble(message: msg)),
-              ],
             ),
-          ),
           ChatComposerBar(
             initialText: _messages.isEmpty ? widget.initialDraft : null,
             onSendMessage: _handleSendMessage,
