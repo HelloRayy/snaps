@@ -6,3 +6,4 @@ export 'skeleton/post_card_skeleton.dart';
 export 'skeleton/conversation_skeleton.dart';
 export 'skeleton/activity_skeleton.dart';
 export 'skeleton/comment_skeleton.dart';
+export 'skeleton/chat_conversation_skeleton.dart';
