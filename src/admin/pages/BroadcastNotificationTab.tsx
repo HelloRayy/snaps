@@ -16,7 +16,7 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
   const [selectedUser, setSelectedUser] = useState<ProfileRow | null>(null);
   
   // Custom Sound Mock Field
-  const [soundChoice, setSoundChoice] = useState<string>('default_snaps');
+  const [soundChoice, setSoundChoice] = useState<string>('snaps_update');
   const [customSoundUrl, setCustomSoundUrl] = useState<string>('');
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
 
@@ -113,16 +113,22 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
 
-      if (soundChoice === 'chime_bell') {
-        osc.frequency.setValueAtTime(880, ctx.currentTime); // A5
-        osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.3);
-      } else if (soundChoice === 'water_drop') {
-        osc.frequency.setValueAtTime(1200, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.15);
+      if (soundChoice === 'snaps_update') {
+        osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+        osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1); // E5
+        osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2); // G5
+      } else if (soundChoice === 'snaps_warning') {
+        osc.frequency.setValueAtTime(800, ctx.currentTime);
+        osc.frequency.setValueAtTime(600, ctx.currentTime + 0.15);
+      } else if (soundChoice === 'snaps_goofy') {
+        osc.frequency.setValueAtTime(350, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(850, ctx.currentTime + 0.25);
+      } else if (soundChoice === 'native') {
+        osc.frequency.setValueAtTime(440, ctx.currentTime);
       } else {
-        // default_snaps
-        osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.1); // A5
+        // snaps_default (Pop)
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.1);
       }
 
       gain.gain.setValueAtTime(0.2, ctx.currentTime);
@@ -476,10 +482,11 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
                       onChange={(e) => setSoundChoice(e.target.value)}
                       style={{ borderRadius: '6px', fontSize: '12.5px' }}
                     >
-                      <option value="default_snaps">Snaps Pop (Default Bawaan)</option>
-                      <option value="chime_bell">Chime Bell (Resmi / Lembut)</option>
-                      <option value="water_drop">Water Drop (Modern Minimalis)</option>
-                      <option value="custom">URL Audio Mandiri (Kustom)</option>
+                      <option value="snaps_update">Snaps Update (Pengumuman & Update Fitur)</option>
+                      <option value="snaps_default">Snaps Pop (Default Bawaan / DM)</option>
+                      <option value="snaps_warning">Snaps Warning (Peringatan & Keamanan)</option>
+                      <option value="snaps_goofy">Snaps Goofy (Event & Seru)</option>
+                      <option value="native">Nada Bawaan Sistem HP (Default OS)</option>
                     </select>
                   </div>
 

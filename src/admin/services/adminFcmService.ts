@@ -94,6 +94,7 @@ export interface FcmPushPayload {
   actionType?: string;
   actionUrl?: string;
   actionButtonLabel?: string;
+  sound?: string;
 }
 
 export const adminFcmService = {
@@ -103,7 +104,7 @@ export const adminFcmService = {
    * expandable banner BigTextStyle meskipun app sedang tertutup / mati.
    */
   async sendPushNotificationToTokens(payload: FcmPushPayload): Promise<{ success: number; failed: number }> {
-    const { tokens, title, message, actionType, actionUrl, actionButtonLabel } = payload;
+    const { tokens, title, message, actionType, actionUrl, actionButtonLabel, sound } = payload;
     if (!tokens || tokens.length === 0) {
       return { success: 0, failed: 0 };
     }
@@ -123,6 +124,25 @@ export const adminFcmService = {
 
       let successCount = 0;
       let failedCount = 0;
+
+      // Resolve sound and target Android channel
+      const rawSound = (sound || 'snaps_update').toLowerCase().trim();
+      let channelId = 'snaps_announcements_v2';
+      let soundResource = 'snaps_update';
+
+      if (rawSound === 'snaps_warning' || rawSound === 'warning') {
+        channelId = 'snaps_warning_v1';
+        soundResource = 'snaps_warning';
+      } else if (rawSound === 'snaps_goofy' || rawSound === 'goofy') {
+        channelId = 'snaps_goofy_v1';
+        soundResource = 'snaps_goofy';
+      } else if (rawSound === 'snaps_default' || rawSound === 'default' || rawSound === 'dm') {
+        channelId = 'snaps_direct_messages_v2';
+        soundResource = 'snaps_default';
+      } else if (rawSound === 'native' || rawSound === 'system') {
+        channelId = 'snaps_system_tone';
+        soundResource = 'default';
+      }
 
       // Cek apakah notifikasi membawa aksi tombol khusus
       const hasActionButton = Boolean(
@@ -144,6 +164,8 @@ export const adminFcmService = {
             data: {
               title: safeTitle,
               message: safeMessage,
+              sound: soundResource,
+              channel_id: channelId,
               action_type: actionType || 'none',
               action_url: actionUrl || '',
               action_button_label: actionButtonLabel || 'Buka Tautan',
@@ -161,7 +183,9 @@ export const adminFcmService = {
               body: safeMessage,
             };
             messagePayload.android.notification = {
-              channel_id: 'snaps_announcements',
+              channel_id: channelId,
+              sound: soundResource,
+              default_sound: soundResource === 'default',
               click_action: 'FLUTTER_NOTIFICATION_CLICK',
               tag: 'snaps_broadcast',
             };
