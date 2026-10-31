@@ -379,7 +379,7 @@ print(json.dumps({
     'version_code': ${REAL_VERSION_CODE},
     'version_name': '${VERSION_NAME}',
     'download_url': '${DOWNLOAD_URL}',
-    'title': 'Pembaruan Snaps v${VERSION_NAME}',
+    'title': '$([ "$IS_MANDATORY" = "true" ] && echo "Pembaruan Wajib Snaps v${VERSION_NAME}" || echo "Pembaruan Snaps v${VERSION_NAME}")',
     'changelog': '''${CHANGELOG}''',
     'is_mandatory': ${MANDATORY_VAL},
     'is_active': True

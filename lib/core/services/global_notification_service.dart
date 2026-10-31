@@ -663,8 +663,8 @@ class GlobalNotificationService {
 
         // Bersihkan channel legacy tanpa suara kustom agar OS membaca channel baru
         try {
-          await androidPlatformPlugin.deleteNotificationChannel('snaps_announcements');
-          await androidPlatformPlugin.deleteNotificationChannel('snaps_direct_messages');
+          await androidPlatformPlugin.deleteNotificationChannel(channelId: 'snaps_announcements');
+          await androidPlatformPlugin.deleteNotificationChannel(channelId: 'snaps_direct_messages');
         } catch (_) {}
 
         // 1. Channel DM / Pesan Masuk (Suara snaps_default)
