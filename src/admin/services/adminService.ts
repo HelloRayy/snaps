@@ -874,6 +874,7 @@ export const adminService = {
               actionType: payload.actionType,
               actionUrl: payload.actionUrl,
               actionButtonLabel: payload.actionButtonLabel,
+              sound: payload.soundUrl || 'snaps_update',
             });
             fcmSentCount = fcmRes.success;
             fcmFailedCount = fcmRes.failed;
