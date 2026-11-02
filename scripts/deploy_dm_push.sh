@@ -22,7 +22,7 @@ echo "[1/3] Mengunggah secret FIREBASE_SERVICE_ACCOUNT ke Supabase..."
 ./node_modules/.bin/supabase secrets set FIREBASE_SERVICE_ACCOUNT="$(cat src/admin/firebase-service-account.json)" --project-ref "$PROJECT_REF"
 
 echo "[2/3] Mendeploy Edge Function send-dm-push..."
-./node_modules/.bin/supabase functions deploy send-dm-push --project-ref "$PROJECT_REF" --no-verify-jwt
+./node_modules/.bin/supabase functions deploy send-dm-push --project-ref "$PROJECT_REF" --no-verify-jwt --use-api
 
 echo "[3/3] Melakukan verifikasi endpoint..."
 curl -i -X POST "https://${PROJECT_REF}.supabase.co/functions/v1/send-dm-push" \
