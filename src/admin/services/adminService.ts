@@ -824,6 +824,7 @@ export const adminService = {
         message: payload.message,
         action_url: payload.actionUrl || null,
         action_type: payload.actionType || 'none',
+        sound: payload.soundUrl || 'snaps_update',
         is_read: false,
       }));
 

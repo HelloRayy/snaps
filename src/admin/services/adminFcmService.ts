@@ -131,10 +131,10 @@ export const adminFcmService = {
       let soundResource = 'snaps_update';
 
       if (rawSound === 'snaps_warning' || rawSound === 'warning') {
-        channelId = 'snaps_warning_v1';
+        channelId = 'snaps_warning_v2';
         soundResource = 'snaps_warning';
       } else if (rawSound === 'snaps_goofy' || rawSound === 'goofy') {
-        channelId = 'snaps_goofy_v1';
+        channelId = 'snaps_goofy_v2';
         soundResource = 'snaps_goofy';
       } else if (rawSound === 'snaps_default' || rawSound === 'default' || rawSound === 'dm') {
         channelId = 'snaps_direct_messages_v3';

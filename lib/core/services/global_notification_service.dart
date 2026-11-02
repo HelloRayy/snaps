@@ -73,9 +73,10 @@ _NotificationChannelConfig _resolveNotificationChannel({
       sound == 'warning' ||
       type == 'warning' ||
       type == 'alert' ||
+      reqId == 'snaps_warning_v2' ||
       reqId == 'snaps_warning_v1') {
     return const _NotificationChannelConfig(
-      channelId: 'snaps_warning_v1',
+      channelId: 'snaps_warning_v2',
       channelName: 'Peringatan & Keamanan',
       channelDesc: 'Peringatan penting, keamanan akun, dan tata tertib Snaps.',
       sound: RawResourceAndroidNotificationSound('snaps_warning'),
@@ -85,9 +86,10 @@ _NotificationChannelConfig _resolveNotificationChannel({
   if (sound == 'snaps_goofy' ||
       sound == 'goofy' ||
       type == 'goofy' ||
+      reqId == 'snaps_goofy_v2' ||
       reqId == 'snaps_goofy_v1') {
     return const _NotificationChannelConfig(
-      channelId: 'snaps_goofy_v1',
+      channelId: 'snaps_goofy_v2',
       channelName: 'Event & Interaksi Seru',
       channelDesc: 'Notifikasi seru, event khusus, dan interaksi komunitas Snaps.',
       sound: RawResourceAndroidNotificationSound('snaps_goofy'),
@@ -678,6 +680,8 @@ class GlobalNotificationService {
           await androidPlatformPlugin.deleteNotificationChannel(channelId: 'snaps_direct_messages');
           await androidPlatformPlugin.deleteNotificationChannel(channelId: 'snaps_announcements_v2');
           await androidPlatformPlugin.deleteNotificationChannel(channelId: 'snaps_direct_messages_v2');
+          await androidPlatformPlugin.deleteNotificationChannel(channelId: 'snaps_warning_v1');
+          await androidPlatformPlugin.deleteNotificationChannel(channelId: 'snaps_goofy_v1');
         } catch (_) {}
 
         // 1. Channel DM / Pesan Masuk (Suara snaps_default v3)
@@ -706,9 +710,9 @@ class GlobalNotificationService {
         );
         await androidPlatformPlugin.createNotificationChannel(updateChannel);
 
-        // 3. Channel Peringatan & Keamanan (Suara snaps_warning)
+        // 3. Channel Peringatan & Keamanan (Suara snaps_warning v2)
         const warningChannel = AndroidNotificationChannel(
-          'snaps_warning_v1',
+          'snaps_warning_v2',
           'Peringatan & Keamanan',
           description: 'Peringatan penting, keamanan akun, dan tata tertib Snaps.',
           importance: Importance.max,
@@ -719,9 +723,9 @@ class GlobalNotificationService {
         );
         await androidPlatformPlugin.createNotificationChannel(warningChannel);
 
-        // 4. Channel Event & Goofy (Suara snaps_goofy)
+        // 4. Channel Event & Goofy (Suara snaps_goofy v2)
         const goofyChannel = AndroidNotificationChannel(
-          'snaps_goofy_v1',
+          'snaps_goofy_v2',
           'Event & Interaksi Seru',
           description: 'Notifikasi seru, event khusus, dan interaksi komunitas Snaps.',
           importance: Importance.max,
@@ -732,7 +736,6 @@ class GlobalNotificationService {
         );
         await androidPlatformPlugin.createNotificationChannel(goofyChannel);
       }
-
       _isLocalNotifsInitialized = true;
     } catch (e) {
       debugPrint('Error initializing local notifications: $e');
