@@ -127,7 +127,7 @@ export const adminFcmService = {
 
       // Resolve sound and target Android channel
       const rawSound = (sound || 'snaps_update').toLowerCase().trim();
-      let channelId = 'snaps_announcements_v2';
+      let channelId = 'snaps_announcements_v3';
       let soundResource = 'snaps_update';
 
       if (rawSound === 'snaps_warning' || rawSound === 'warning') {
@@ -137,7 +137,7 @@ export const adminFcmService = {
         channelId = 'snaps_goofy_v1';
         soundResource = 'snaps_goofy';
       } else if (rawSound === 'snaps_default' || rawSound === 'default' || rawSound === 'dm') {
-        channelId = 'snaps_direct_messages_v2';
+        channelId = 'snaps_direct_messages_v3';
         soundResource = 'snaps_default';
       } else if (rawSound === 'native' || rawSound === 'system') {
         channelId = 'snaps_system_tone';

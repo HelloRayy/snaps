@@ -231,13 +231,13 @@ Deno.serve(async (req) => {
                 sender_avatar: senderAvatar,
                 message: messagePreview,
                 sound: "snaps_default",
-                channel_id: "snaps_direct_messages_v2",
+                channel_id: "snaps_direct_messages_v3",
               },
               android: {
                 priority: "high",
                 collapse_key: `dm_${conversationId}`,
                 notification: {
-                  channel_id: "snaps_direct_messages_v2",
+                  channel_id: "snaps_direct_messages_v3",
                   sound: "snaps_default",
                   click_action: "FLUTTER_NOTIFICATION_CLICK",
                   tag: `dm_${conversationId}`,

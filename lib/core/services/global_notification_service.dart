@@ -100,9 +100,10 @@ _NotificationChannelConfig _resolveNotificationChannel({
       type == 'broadcast' ||
       type == 'announcement' ||
       type == 'system' ||
+      reqId == 'snaps_announcements_v3' ||
       reqId == 'snaps_announcements_v2') {
     return const _NotificationChannelConfig(
-      channelId: 'snaps_announcements_v2',
+      channelId: 'snaps_announcements_v3',
       channelName: 'Pengumuman & Update Snaps',
       channelDesc: 'Notifikasi broadcast pengumuman resmi dan update fitur Snaps.',
       sound: RawResourceAndroidNotificationSound('snaps_update'),
@@ -120,7 +121,7 @@ _NotificationChannelConfig _resolveNotificationChannel({
 
   // Default: DM / Chat
   return const _NotificationChannelConfig(
-    channelId: 'snaps_direct_messages_v2',
+    channelId: 'snaps_direct_messages_v3',
     channelName: 'Pesan Masuk (DM)',
     channelDesc: 'Notifikasi pesan langsung dari pembeli dan penjual Snaps.',
     sound: RawResourceAndroidNotificationSound('snaps_default'),
@@ -400,7 +401,7 @@ class GlobalNotificationService {
             title: title,
             message: body,
             payloadJson: jsonEncode(message.data),
-            channelId: 'snaps_direct_messages_v2',
+            channelId: 'snaps_direct_messages_v3',
             avatarUrl: senderAvatar,
           );
 
@@ -675,11 +676,13 @@ class GlobalNotificationService {
         try {
           await androidPlatformPlugin.deleteNotificationChannel(channelId: 'snaps_announcements');
           await androidPlatformPlugin.deleteNotificationChannel(channelId: 'snaps_direct_messages');
+          await androidPlatformPlugin.deleteNotificationChannel(channelId: 'snaps_announcements_v2');
+          await androidPlatformPlugin.deleteNotificationChannel(channelId: 'snaps_direct_messages_v2');
         } catch (_) {}
 
-        // 1. Channel DM / Pesan Masuk (Suara snaps_default)
+        // 1. Channel DM / Pesan Masuk (Suara snaps_default v3)
         const dmChannel = AndroidNotificationChannel(
-          'snaps_direct_messages_v2',
+          'snaps_direct_messages_v3',
           'Pesan Masuk (DM)',
           description: 'Notifikasi pesan langsung dari pembeli dan penjual Snaps.',
           importance: Importance.max,
@@ -690,9 +693,9 @@ class GlobalNotificationService {
         );
         await androidPlatformPlugin.createNotificationChannel(dmChannel);
 
-        // 2. Channel Pengumuman & Update (Suara snaps_update)
+        // 2. Channel Pengumuman & Update (Suara snaps_update v3)
         const updateChannel = AndroidNotificationChannel(
-          'snaps_announcements_v2',
+          'snaps_announcements_v3',
           'Pengumuman & Update Snaps',
           description: 'Notifikasi broadcast pengumuman resmi dan update fitur Snaps.',
           importance: Importance.max,
@@ -828,7 +831,9 @@ class GlobalNotificationService {
     String? avatarUrl,
   }) async {
     try {
-      bool isDm = channelId == 'snaps_direct_messages' || channelId == 'snaps_direct_messages_v2';
+      bool isDm = channelId == 'snaps_direct_messages' ||
+          channelId == 'snaps_direct_messages_v2' ||
+          channelId == 'snaps_direct_messages_v3';
       String? soundKey;
       String? typeKey;
       List<AndroidNotificationAction>? actions;
