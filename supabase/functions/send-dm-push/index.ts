@@ -230,12 +230,15 @@ Deno.serve(async (req) => {
                 sender_name: senderName,
                 sender_avatar: senderAvatar,
                 message: messagePreview,
+                sound: "snaps_default",
+                channel_id: "snaps_direct_messages_v2",
               },
               android: {
                 priority: "high",
                 collapse_key: `dm_${conversationId}`,
                 notification: {
-                  channel_id: "snaps_direct_messages",
+                  channel_id: "snaps_direct_messages_v2",
+                  sound: "snaps_default",
                   click_action: "FLUTTER_NOTIFICATION_CLICK",
                   tag: `dm_${conversationId}`,
                   ...(senderAvatar.startsWith("http") ? { image: senderAvatar } : {}),

@@ -99,6 +99,7 @@ _NotificationChannelConfig _resolveNotificationChannel({
       type == 'update' ||
       type == 'broadcast' ||
       type == 'announcement' ||
+      type == 'system' ||
       reqId == 'snaps_announcements_v2') {
     return const _NotificationChannelConfig(
       channelId: 'snaps_announcements_v2',
@@ -437,10 +438,19 @@ class GlobalNotificationService {
           isRead: false,
         );
 
+        final mergedPayload = Map<String, dynamic>.from(message.data);
+        mergedPayload.addAll(fakeNotif.toJson());
+        final fcmSound = message.data['sound']?.toString();
+        final fcmChannel = message.data['channel_id']?.toString();
+        if (fcmSound != null && fcmSound.isNotEmpty) {
+          mergedPayload['sound'] = fcmSound;
+        }
+
         _showOsNotification(
           title: title,
           message: body,
-          payloadJson: jsonEncode(fakeNotif.toJson()),
+          payloadJson: jsonEncode(mergedPayload),
+          channelId: fcmChannel,
         );
 
         showTopBanner(

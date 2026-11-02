@@ -81,7 +81,7 @@
         <!-- Default Notification Channel & Icon for Firebase Cloud Messaging -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="snaps_announcements" />
+            android:value="snaps_announcements_v2" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@mipmap/ic_launcher" />
