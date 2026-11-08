@@ -23,6 +23,7 @@ enum ActivityTimelineGroup {
 class ActivityNotification {
   final String id;
   final ActivityType type;
+  final String? actorId;
   final String actorName;
   final String actorUsername;
   final String actorAvatar;
@@ -40,6 +41,7 @@ class ActivityNotification {
   const ActivityNotification({
     required this.id,
     required this.type,
+    this.actorId,
     required this.actorName,
     required this.actorUsername,
     required this.actorAvatar,
@@ -120,6 +122,7 @@ class ActivityNotification {
     }
 
     final actor = json['actor'] as Map<String, dynamic>?;
+    final actorId = json['actor_id']?.toString() ?? actor?['id']?.toString();
     final actorUsername = notifType == ActivityType.system ? 'snaps' : (actor?['username']?.toString() ?? '');
     final defaultActorName = notifType == ActivityType.system ? 'Snaps' : (actorUsername.isNotEmpty ? '@$actorUsername' : 'Pengguna');
     final rawActorName = actor?['full_name']?.toString() ?? defaultActorName;
@@ -145,6 +148,7 @@ class ActivityNotification {
     return ActivityNotification(
       id: json['id']?.toString() ?? '',
       type: notifType,
+      actorId: actorId,
       actorName: actorName,
       actorUsername: actorUsername,
       actorAvatar: actorAvatar,
@@ -164,6 +168,7 @@ class ActivityNotification {
     return {
       'id': id,
       'type': type.name,
+      'actor_id': actorId,
       'actor_name': actorName,
       'actor_username': actorUsername,
       'actor_avatar': actorAvatar,
@@ -182,6 +187,7 @@ class ActivityNotification {
   ActivityNotification copyWith({
     String? id,
     ActivityType? type,
+    String? actorId,
     String? actorName,
     String? actorUsername,
     String? actorAvatar,
@@ -199,6 +205,7 @@ class ActivityNotification {
     return ActivityNotification(
       id: id ?? this.id,
       type: type ?? this.type,
+      actorId: actorId ?? this.actorId,
       actorName: actorName ?? this.actorName,
       actorUsername: actorUsername ?? this.actorUsername,
       actorAvatar: actorAvatar ?? this.actorAvatar,

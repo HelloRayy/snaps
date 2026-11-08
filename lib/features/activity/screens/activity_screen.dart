@@ -77,16 +77,13 @@ class _ActivityScreenState extends State<ActivityScreen> {
   List<ActivityNotification> get _filteredNotifications {
     switch (_activeTabIndex) {
       case 1:
-        return _notifications.where((n) => n.type == ActivityType.system).toList();
+        return _notifications.where((n) => n.type == ActivityType.comment).toList();
       case 2:
-        return _notifications.where((n) =>
-          n.type == ActivityType.like ||
-          n.type == ActivityType.comment ||
-          n.type == ActivityType.mention ||
-          n.type == ActivityType.follow
-        ).toList();
+        return _notifications.where((n) => n.type == ActivityType.mention).toList();
       case 3:
-        return _notifications.where((n) => n.type == ActivityType.order).toList();
+        return _notifications.where((n) => n.type == ActivityType.like).toList();
+      case 4:
+        return _notifications.where((n) => n.type == ActivityType.follow).toList();
       default:
         return _notifications;
     }
@@ -139,6 +136,17 @@ class _ActivityScreenState extends State<ActivityScreen> {
     } catch (e) {
       debugPrint('Error navigating to post from activity: $e');
     }
+  }
+
+  void _navigateToProfile(String username) {
+    final clean = username.trim().replaceAll('@', '');
+    if (clean.isEmpty || clean.toLowerCase() == 'snaps') return;
+    Navigator.push(
+      context,
+      AppSlidePageRoute(
+        builder: (_) => ProfileScreen(username: clean),
+      ),
+    );
   }
 
   void _markAllAsRead() {
@@ -202,6 +210,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                                 children: [
                                   ActivityItemTile(
                                     notification: notif,
+                                    onAvatarTap: () => _navigateToProfile(notif.actorUsername),
                                     onTap: () {
                                       _markSingleAsRead(notif);
                                       final isAnnouncement = notif.type == ActivityType.system ||
@@ -212,14 +221,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                                         final targetUsername = notif.actionUrl?.isNotEmpty == true
                                             ? notif.actionUrl!
                                             : notif.actorUsername;
-                                        if (targetUsername.isNotEmpty) {
-                                          Navigator.push(
-                                            context,
-                                            AppSlidePageRoute(
-                                              builder: (_) => ProfileScreen(username: targetUsername),
-                                            ),
-                                          );
-                                        }
+                                        _navigateToProfile(targetUsername);
                                       } else if (notif.postId != null && notif.postId!.isNotEmpty) {
                                         _navigateToPost(notif.postId!);
                                       }
