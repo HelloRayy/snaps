@@ -364,6 +364,25 @@ class PostDetailController extends ChangeNotifier {
           }
         }
       },
+      onToggleProductAvailability: () async {
+        final newStock = post.isSoldOut ? 1 : 0;
+        final updated = post.copyWith(stock: newStock);
+        post = updated;
+        notifyListeners();
+        onBookmarkToggle?.call(updated);
+        try {
+          await SupabaseService.instance.updatePostStock(post.id, newStock);
+          if (context.mounted) {
+            SnapsToast.success(
+              context,
+              newStock <= 0 ? 'Produk ditandai habis' : 'Produk ditandai tersedia',
+              hasBottomNav: false,
+            );
+          }
+        } catch (e) {
+          debugPrint('Error updatePostStock: $e');
+        }
+      },
     );
   }
 }

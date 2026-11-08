@@ -111,36 +111,54 @@ class StickyBuyBar extends StatelessWidget {
 
             const SizedBox(width: 8.0),
 
-            // Right Primary Button: "Beli Sekarang" + Price
+            // Right Primary Button: "Beli Sekarang" / "Produk Habis" + Price
             Expanded(
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: () {
-                    HapticFeedback.mediumImpact();
-                    onBuyClick?.call();
-                  },
+                  onTap: (stockCount != null && stockCount! <= 0)
+                      ? null
+                      : () {
+                          HapticFeedback.mediumImpact();
+                          onBuyClick?.call();
+                        },
                   borderRadius: BorderRadius.circular(24.0),
                   child: Container(
                     height: 44.0,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(24.0),
-                      gradient: const LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Color(0xFF3B82F6), // Kumo Blue 500
-                          Color(0xFF1D64EC), // Kumo Primary Blue
-                        ],
+                      gradient: (stockCount != null && stockCount! <= 0)
+                          ? const LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Color(0xFF64748B),
+                                Color(0xFF475569),
+                              ],
+                            )
+                          : const LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Color(0xFF3B82F6), // Kumo Blue 500
+                                Color(0xFF1D64EC), // Kumo Primary Blue
+                              ],
+                            ),
+                      border: Border.all(
+                        color: (stockCount != null && stockCount! <= 0)
+                            ? const Color(0xFF475569)
+                            : const Color(0xFF154EC1),
+                        width: 1.0,
                       ),
-                      border: Border.all(color: const Color(0xFF154EC1), width: 1.0),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF1D64EC).withValues(alpha: 0.28),
-                          blurRadius: 10.0,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
+                      boxShadow: (stockCount != null && stockCount! <= 0)
+                          ? null
+                          : [
+                              BoxShadow(
+                                color: const Color(0xFF1D64EC).withValues(alpha: 0.28),
+                                blurRadius: 10.0,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
                     ),
                     child: Stack(
                       alignment: Alignment.center,
@@ -167,17 +185,21 @@ class StickyBuyBar extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               // Left Label with Credit Card icon
-                              const Row(
+                              Row(
                                 children: [
                                   Icon(
-                                    Icons.credit_card_rounded,
+                                    (stockCount != null && stockCount! <= 0)
+                                        ? Icons.remove_circle_outline_rounded
+                                        : Icons.credit_card_rounded,
                                     size: 18.0,
                                     color: Colors.white,
                                   ),
-                                  SizedBox(width: 8.0),
+                                  const SizedBox(width: 8.0),
                                   Text(
-                                    'Beli Sekarang',
-                                    style: TextStyle(
+                                    (stockCount != null && stockCount! <= 0)
+                                        ? 'Produk Habis'
+                                        : 'Beli Sekarang',
+                                    style: const TextStyle(
                                       fontSize: 13.5,
                                       fontWeight: FontWeight.w600,
                                       color: Colors.white,

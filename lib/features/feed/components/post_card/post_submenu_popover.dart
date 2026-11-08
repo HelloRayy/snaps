@@ -21,6 +21,7 @@ class PostSubmenuPopover extends StatefulWidget {
   final VoidCallback? onReport;
   final VoidCallback? onDeletePost;
   final VoidCallback? onClosePoll;
+  final VoidCallback? onToggleProductAvailability;
 
   const PostSubmenuPopover({
     super.key,
@@ -34,6 +35,7 @@ class PostSubmenuPopover extends StatefulWidget {
     this.onReport,
     this.onDeletePost,
     this.onClosePoll,
+    this.onToggleProductAvailability,
   });
 
   /// Shows the popover anchored to the tap position with transparent background
@@ -49,6 +51,7 @@ class PostSubmenuPopover extends StatefulWidget {
     VoidCallback? onReport,
     VoidCallback? onDeletePost,
     VoidCallback? onClosePoll,
+    VoidCallback? onToggleProductAvailability,
     Offset? position,
   }) {
     HapticFeedback.lightImpact();
@@ -81,6 +84,7 @@ class PostSubmenuPopover extends StatefulWidget {
                   onReport: onReport,
                   onDeletePost: onDeletePost,
                   onClosePoll: onClosePoll,
+                  onToggleProductAvailability: onToggleProductAvailability,
                 ),
               ),
             ),
@@ -180,6 +184,26 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
           ),
 
           if (widget.isOwner) ...[
+            if (widget.post.isProduct) ...[
+              PostSubmenuItem(
+                icon: widget.post.isSoldOut
+                    ? CupertinoIcons.arrow_counterclockwise
+                    : CupertinoIcons.checkmark_circle,
+                iconColor: widget.post.isSoldOut
+                    ? AppColors.primary
+                    : const Color(0xFF64748B),
+                textColor: widget.post.isSoldOut
+                    ? AppColors.primary
+                    : (isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A)),
+                label: widget.post.isSoldOut
+                    ? 'Tandai Produk Tersedia'
+                    : 'Tandai Produk Habis',
+                onTap: () {
+                  Navigator.pop(context);
+                  widget.onToggleProductAvailability?.call();
+                },
+              ),
+            ],
             if (widget.post.poll != null && !widget.post.poll!.isExpired) ...[
               PostSubmenuItem(
                 icon: CupertinoIcons.stopwatch,

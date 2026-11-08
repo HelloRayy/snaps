@@ -195,6 +195,24 @@ class SupabaseFeedService {
     }
   }
 
+  /// Update stock / availability for a product post (e.g. 1 for available, 0 for sold out)
+  Future<bool> updatePostStock(String postId, int newStock) async {
+    final user = _currentUser;
+    if (user == null) return false;
+
+    try {
+      await _client
+          .from('market_posts')
+          .update({'stock': newStock})
+          .eq('id', postId)
+          .eq('seller_id', user.id);
+      return true;
+    } catch (e) {
+      debugPrint('[SupabaseFeedService] Error updatePostStock: $e');
+      return false;
+    }
+  }
+
   /// Fetch posts created by a specific user/seller
   Future<List<MarketPostModel>> fetchUserPosts(String userId) async {
     try {
