@@ -327,6 +327,28 @@ class HomeFeedController extends ChangeNotifier {
     }
   }
 
+  Future<void> toggleProductAvailability(MarketPostModel post) async {
+    final idx = posts.indexWhere((p) => p.id == post.id);
+    if (idx == -1) return;
+
+    final newStock = post.isSoldOut ? 1 : 0;
+    final updated = post.copyWith(stock: newStock);
+    posts[idx] = updated;
+    notifyListeners();
+
+    try {
+      final success = await SupabaseService.instance.updatePostStock(post.id, newStock);
+      if (!success) {
+        posts[idx] = post;
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error toggleProductAvailability: $e');
+      posts[idx] = post;
+      notifyListeners();
+    }
+  }
+
   void removePostById(String postId) {
     posts.removeWhere((p) => p.id == postId);
     notifyListeners();

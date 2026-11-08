@@ -40,6 +40,7 @@ class _PostMediaSectionState extends State<PostMediaSection> {
           left: 12.0,
           bottom: 12.0,
           child: PostBuyNowButton(
+            isSoldOut: widget.item.isSoldOut,
             onPressed: () => widget.onBuyNowClick?.call(widget.item),
           ),
         ),

@@ -202,47 +202,29 @@ class PostActionBar extends StatelessWidget {
                   ],
                 ),
               ),
-              if (item.isProduct && item.stock != null && item.stock! > 0)
-                const SizedBox(width: 8.0),
             ],
 
-            // Stock Indicator Pill (for products with stock > 0)
-            if (item.isProduct && item.stock != null && item.stock! > 0)
+            // Availability Badge (Only shown when product is sold out)
+            if (item.isProduct && item.isSoldOut)
               Container(
-                constraints: const BoxConstraints(minHeight: 26.0),
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+                constraints: const BoxConstraints(minHeight: 24.0),
+                padding: const EdgeInsets.symmetric(horizontal: 9.0, vertical: 3.0),
                 decoration: BoxDecoration(
-                  color: isDark
-                      ? const Color(0xFF1D1F1F)
-                      : const Color(0xFFF1F5F9).withValues(alpha: 0.9),
-                  borderRadius: BorderRadius.circular(13.0),
+                  color: isDark ? const Color(0xFF27272A) : const Color(0xFFF1F5F9),
+                  borderRadius: BorderRadius.circular(12.0),
                   border: Border.all(
-                    color: isDark
-                        ? const Color(0x1AFFFFFF)
-                        : const Color(0xFFE2E8F0).withValues(alpha: 0.8),
+                    color: isDark ? const Color(0x26FFFFFF) : const Color(0xFFE2E8F0),
                     width: 1.0,
                   ),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    FeedBoxIcon(
-                      size: 14.0,
-                      color: isDark ? AppColors.darkTextSecondary : const Color(0xFF71717A),
-                      strokeWidth: 1.8,
-                    ),
-                    const SizedBox(width: 4.5),
-                    Text(
-                      '${item.stock}',
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1E293B),
-                        letterSpacing: -0.2,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  'Produk Habis',
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? AppColors.darkTextSecondary : const Color(0xFF94A3B8),
+                    letterSpacing: -0.2,
+                  ),
                 ),
               ),
           ],

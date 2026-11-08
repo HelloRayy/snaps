@@ -76,6 +76,17 @@ class PostCardHeader extends StatelessWidget {
           onPostClick?.call(updated);
         }
       },
+      onToggleProductAvailability: () {
+        final newStock = item.isSoldOut ? 1 : 0;
+        SupabaseService.instance.updatePostStock(item.id, newStock);
+        final updated = item.copyWith(stock: newStock);
+        onPostClick?.call(updated);
+        SnapsToast.success(
+          context,
+          newStock <= 0 ? 'Produk ditandai habis' : 'Produk ditandai tersedia',
+          hasBottomNav: true,
+        );
+      },
       onHidePost: () {},
       onMuteAuthor: () {},
       onReport: () {

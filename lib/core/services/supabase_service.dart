@@ -209,6 +209,9 @@ class SupabaseService {
   Future<void> deletePost(String postId, {bool asAdmin = false}) =>
       feed.deletePost(postId, asAdmin: asAdmin);
 
+  Future<bool> updatePostStock(String postId, int newStock) =>
+      feed.updatePostStock(postId, newStock);
+
   Future<MarketPostModel?> fetchPostById(String postId) =>
       feed.fetchPostById(postId);
 

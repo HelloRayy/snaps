@@ -691,6 +691,8 @@ class MarketPostModel {
   bool get isDeleted => deletedAt != null;
   bool get isProduct => postType == 'product';
   bool get isThread => postType == 'thread';
+  bool get isAvailable => isProduct && (stock == null || stock! > 0);
+  bool get isSoldOut => isProduct && stock != null && stock! <= 0;
   String get sellerName => seller.name;
   String get sellerUsername => seller.username ?? seller.name;
   String get sellerAvatar => seller.avatar;

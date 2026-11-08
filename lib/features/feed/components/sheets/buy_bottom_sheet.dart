@@ -221,11 +221,15 @@ class _BuyBottomSheetState extends State<BuyBottomSheet> {
                                 borderRadius: BorderRadius.circular(6.0),
                               ),
                               child: Text(
-                                _isService ? '$_maxStock Slot' : 'Stok $_maxStock',
-                                style: const TextStyle(
+                                _maxStock <= 0
+                                    ? 'Produk Habis'
+                                    : (_isService
+                                        ? '$_maxStock Slot'
+                                        : (_maxStock > 1 ? 'Stok $_maxStock' : 'Tersedia')),
+                                style: TextStyle(
                                   fontSize: 11.0,
                                   fontWeight: FontWeight.w600,
-                                  color: Color(0xFF64748B),
+                                  color: _maxStock <= 0 ? const Color(0xFFEF4444) : const Color(0xFF64748B),
                                 ),
                               ),
                             ),
@@ -292,63 +296,65 @@ class _BuyBottomSheetState extends State<BuyBottomSheet> {
 
               const SizedBox(height: 16.0),
 
-              // 4. Quantity Row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Jumlah Pesanan',
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF0F172A),
+              // 4. Quantity Row (Only displayed if item has multiple units or services)
+              if (_maxStock > 1) ...[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Jumlah Pesanan',
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF0F172A),
+                      ),
                     ),
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF1F5F9),
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(CupertinoIcons.minus, size: 16.0),
-                          visualDensity: VisualDensity.compact,
-                          onPressed: _quantity > 1
-                              ? () {
-                                  HapticFeedback.lightImpact();
-                                  setState(() => _quantity -= 1);
-                                }
-                              : null,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text(
-                            '$_quantity',
-                            style: const TextStyle(
-                              fontSize: 14.5,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF0F172A),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF1F5F9),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(CupertinoIcons.minus, size: 16.0),
+                            visualDensity: VisualDensity.compact,
+                            onPressed: _quantity > 1
+                                ? () {
+                                    HapticFeedback.lightImpact();
+                                    setState(() => _quantity -= 1);
+                                  }
+                                : null,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text(
+                              '$_quantity',
+                              style: const TextStyle(
+                                fontSize: 14.5,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF0F172A),
+                              ),
                             ),
                           ),
-                        ),
-                        IconButton(
-                          icon: const Icon(CupertinoIcons.plus, size: 16.0),
-                          visualDensity: VisualDensity.compact,
-                          onPressed: _quantity < _maxStock
-                              ? () {
-                                  HapticFeedback.lightImpact();
-                                  setState(() => _quantity += 1);
-                                }
-                              : null,
-                        ),
-                      ],
+                          IconButton(
+                            icon: const Icon(CupertinoIcons.plus, size: 16.0),
+                            visualDensity: VisualDensity.compact,
+                            onPressed: _quantity < _maxStock
+                                ? () {
+                                    HapticFeedback.lightImpact();
+                                    setState(() => _quantity += 1);
+                                  }
+                                : null,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 20.0),
+                  ],
+                ),
+                const SizedBox(height: 20.0),
+              ] else
+                const SizedBox(height: 8.0),
 
               // 5. Total Price & Place Order Button
               Row(
