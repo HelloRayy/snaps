@@ -1,10 +1,11 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:snapan_market/core/theme/app_colors.dart';
 
-/// Floating overlay button "Beli Sekarang" with right icon for product posts in feed.
-/// Styled to match the simple, clean white pill button in the Activity Page.
+/// Floating translucent overlay button "Beli Sekarang" with right icon (SNAPS-99).
+/// Features an elegant frosted translucent pill surface over feed product images
+/// with crisp white text and a subtle backdrop blur.
 class PostBuyNowButton extends StatefulWidget {
   final VoidCallback onPressed;
 
@@ -22,11 +23,6 @@ class _PostBuyNowButtonState extends State<PostBuyNowButton> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? AppColors.darkSurface : Colors.white;
-    final borderColor = isDark ? AppColors.darkBorder : const Color(0xFFCBD5E1);
-    final contentColor = isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A);
-
     return GestureDetector(
       onTapDown: (_) {
         setState(() => _isPressed = true);
@@ -40,44 +36,50 @@ class _PostBuyNowButtonState extends State<PostBuyNowButton> {
         scale: _isPressed ? 0.94 : 1.0,
         duration: const Duration(milliseconds: 90),
         curve: Curves.easeOutCubic,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 13.0, vertical: 6.0),
-          decoration: BoxDecoration(
-            color: bgColor,
-            borderRadius: BorderRadius.circular(100.0),
-            border: Border.all(
-              color: borderColor,
-              width: 1.0,
-            ),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x1F000000),
-                blurRadius: 8.0,
-                offset: Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                'Beli Sekarang',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 12.0,
-                  fontWeight: FontWeight.w600,
-                  color: contentColor,
-                  letterSpacing: -0.2,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(100.0),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 6.5),
+              decoration: BoxDecoration(
+                color: const Color(0xCC0F172A), // 80% translucent deep slate
+                borderRadius: BorderRadius.circular(100.0),
+                border: Border.all(
+                  color: const Color(0x33FFFFFF), // 20% subtle white outline
+                  width: 0.8,
                 ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x26000000),
+                    blurRadius: 6.0,
+                    offset: Offset(0, 1.5),
+                  ),
+                ],
               ),
-              const SizedBox(width: 5.5),
-              Icon(
-                LucideIcons.arrowRight,
-                size: 13.5,
-                color: contentColor,
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'Beli Sekarang',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
+                  SizedBox(width: 5.5),
+                  Icon(
+                    LucideIcons.arrowRight,
+                    size: 13.5,
+                    color: Colors.white,
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

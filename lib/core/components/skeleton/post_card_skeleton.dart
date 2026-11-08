@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:snapan_market/core/components/skeleton/snaps_shimmer.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
-/// Sliced Post Card Skeleton matching MarketPostCard 1:1 (<150 lines)
+/// Refined Post Card Skeleton (SNAPS-96):
+/// 1 Circle avatar + 3 graded text rectangles without bulky image placeholders
+/// to guarantee fast, fluid frame-rates on entry-level student devices.
 class PostCardSkeleton extends StatelessWidget {
-  final bool hasImage;
-
-  const PostCardSkeleton({super.key, this.hasImage = false});
+  const PostCardSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,66 +22,47 @@ class PostCardSkeleton extends StatelessWidget {
           ),
         ),
       ),
-      child: Row(
+      child: const Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Left Author Avatar Placeholder
-          const SnapsSkeletonBox.circle(size: 40.0),
-          const SizedBox(width: 12.0),
+          // 1 Circle: Author Avatar Placeholder (40x40)
+          SnapsSkeletonBox.circle(size: 40.0),
+          SizedBox(width: 12.0),
 
-          // Right Content Placeholder
+          // 3 Rectangles: Graded Text Placeholders
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header (Name, Badge, Time)
-                const Row(
+                // Rectangle 1: Name & Badge line (~35% width, 12dp height)
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        SnapsSkeletonBox(width: 100.0, height: 13.0, borderRadius: 4.0),
-                        SizedBox(width: 6.0),
-                        SnapsSkeletonBox(width: 50.0, height: 11.0, borderRadius: 4.0),
-                      ],
-                    ),
+                    SnapsSkeletonBox(width: 110.0, height: 12.0, borderRadius: 4.0),
                     SnapsSkeletonBox(width: 32.0, height: 11.0, borderRadius: 4.0),
                   ],
                 ),
-                const SizedBox(height: 10.0),
+                SizedBox(height: 10.0),
 
-                // Text Lines
-                const SnapsSkeletonBox(width: double.infinity, height: 12.0, borderRadius: 4.0),
-                const SizedBox(height: 6.0),
-                const SnapsSkeletonBox(width: 240.0, height: 12.0, borderRadius: 4.0),
-                const SizedBox(height: 6.0),
-                const SnapsSkeletonBox(width: 160.0, height: 12.0, borderRadius: 4.0),
+                // Rectangle 2: Primary Content Line (~85% width, 14dp height)
+                SnapsSkeletonBox(width: double.infinity, height: 14.0, borderRadius: 4.0),
+                SizedBox(height: 8.0),
 
-                if (hasImage) ...[
-                  const SizedBox(height: 12.0),
-                  // Image Media Card Placeholder (16:9 ratio matching MarketPostCard)
-                  const AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: SnapsSkeletonBox(
-                      width: double.infinity,
-                      height: double.infinity,
-                      borderRadius: 14.0,
-                    ),
-                  ),
-                ],
+                // Rectangle 3: Secondary Subtext Line (~60% width, 12dp height)
+                FractionallySizedBox(
+                  widthFactor: 0.65,
+                  child: SnapsSkeletonBox(width: double.infinity, height: 12.0, borderRadius: 4.0),
+                ),
+                SizedBox(height: 14.0),
 
-                const SizedBox(height: 16.0),
-
-                // Action Bar (Like, Comment, Repost, Bookmark)
-                const Row(
+                // Compact Micro-Action Bar
+                Row(
                   children: [
-                    SnapsSkeletonBox(width: 44.0, height: 16.0, borderRadius: 6.0),
-                    SizedBox(width: 24.0),
-                    SnapsSkeletonBox(width: 44.0, height: 16.0, borderRadius: 6.0),
-                    SizedBox(width: 24.0),
-                    SnapsSkeletonBox(width: 32.0, height: 16.0, borderRadius: 6.0),
-                    Spacer(),
-                    SnapsSkeletonBox(width: 20.0, height: 16.0, borderRadius: 4.0),
+                    SnapsSkeletonBox(width: 36.0, height: 14.0, borderRadius: 4.0),
+                    SizedBox(width: 20.0),
+                    SnapsSkeletonBox(width: 36.0, height: 14.0, borderRadius: 4.0),
+                    SizedBox(width: 20.0),
+                    SnapsSkeletonBox(width: 30.0, height: 14.0, borderRadius: 4.0),
                   ],
                 ),
               ],
@@ -93,7 +74,7 @@ class PostCardSkeleton extends StatelessWidget {
   }
 }
 
-/// Feed Timeline Skeleton containing multiple PostCardSkeletons on a solid pure white canvas
+/// Feed Timeline Skeleton containing multiple PostCardSkeletons on a solid canvas
 class FeedTimelineSkeleton extends StatelessWidget {
   final int itemCount;
 
@@ -107,10 +88,7 @@ class FeedTimelineSkeleton extends StatelessWidget {
         child: Column(
           children: List.generate(
             itemCount,
-            (index) => PostCardSkeleton(
-              // Alternate images on odd indices for realistic layout rhythm
-              hasImage: index % 2 == 1,
-            ),
+            (index) => const PostCardSkeleton(),
           ),
         ),
       ),
