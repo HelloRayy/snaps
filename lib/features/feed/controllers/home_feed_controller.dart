@@ -153,7 +153,7 @@ class HomeFeedController extends ChangeNotifier {
     }
   }
 
-  /// Infinite scroll pagination: fetch next batch of posts (15 items)
+  /// Infinite scroll pagination: fetch next batch of posts (15 items) via keyset cursor
   Future<void> fetchMorePosts() async {
     if (isLoadingMore || !hasMorePosts || isLoading) return;
 
@@ -162,8 +162,14 @@ class HomeFeedController extends ChangeNotifier {
 
     try {
       final currentOffset = posts.length;
+      final lastCreatedAt = posts.isNotEmpty ? posts.last.rawCreatedAt : null;
+
       final results = await Future.wait([
-        SupabaseService.instance.fetchFeedPosts(limit: _pageSize, offset: currentOffset),
+        SupabaseService.instance.fetchFeedPosts(
+          limit: _pageSize,
+          offset: currentOffset,
+          beforeCreatedAt: lastCreatedAt,
+        ),
         SupabaseService.instance.fetchLikedPostIds(),
         SupabaseService.instance.fetchBookmarkedPostIds(),
       ]);

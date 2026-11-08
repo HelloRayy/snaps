@@ -491,6 +491,7 @@ class MarketPostModel {
   final bool isReposted;
   final bool isSaved;
   final String timestamp;
+  final String? rawCreatedAt;
   final DateTime? deletedAt;
   final List<ThreadChainItemModel> threadChain;
   final List<PostCommentModel> comments;
@@ -520,6 +521,7 @@ class MarketPostModel {
     this.isReposted = false,
     this.isSaved = false,
     required this.timestamp,
+    this.rawCreatedAt,
     this.deletedAt,
     this.threadChain = const [],
     this.comments = const [],
@@ -678,6 +680,7 @@ class MarketPostModel {
       isReposted: json['is_reposted'] == true || json['isReposted'] == true,
       isSaved: json['is_saved'] == true || json['isSaved'] == true,
       timestamp: _formatRelativeTimestamp(json['created_at'] ?? json['timestamp']),
+      rawCreatedAt: json['created_at']?.toString(),
       deletedAt: json['deleted_at'] != null ? DateTime.tryParse(json['deleted_at'].toString()) : null,
       threadChain: parsedChain,
       comments: parsedComments,
@@ -719,6 +722,7 @@ class MarketPostModel {
     bool? isReposted,
     bool? isSaved,
     String? timestamp,
+    String? rawCreatedAt,
     List<ThreadChainItemModel>? threadChain,
     List<PostCommentModel>? comments,
     PostPollModel? poll,
@@ -747,6 +751,8 @@ class MarketPostModel {
       isReposted: isReposted ?? this.isReposted,
       isSaved: isSaved ?? this.isSaved,
       timestamp: timestamp ?? this.timestamp,
+      rawCreatedAt: rawCreatedAt ?? this.rawCreatedAt,
+      deletedAt: deletedAt,
       threadChain: threadChain ?? this.threadChain,
       comments: comments ?? this.comments,
       poll: poll ?? this.poll,

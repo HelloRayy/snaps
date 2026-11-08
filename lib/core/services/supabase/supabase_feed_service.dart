@@ -41,17 +41,32 @@ class SupabaseFeedService {
     _lastFeedFetchTime = null;
   }
 
-  /// Fetch live feed posts joined with profiles (default 15 items per batch)
+  /// Fetch live feed posts joined with profiles (supports keyset cursor pagination or offset fallback)
   Future<List<MarketPostModel>> fetchFeedPosts({
     int limit = 15,
     int offset = 0,
+    String? beforeCreatedAt,
   }) async {
     try {
-      final response = await _client
+      var query = _client
           .from('market_posts')
-          .select('*, seller:profiles!market_posts_seller_id_fkey(*), post_likes(count), post_comments(count)')
-          .order('created_at', ascending: false)
-          .range(offset, offset + limit - 1);
+          .select('*, seller:profiles!market_posts_seller_id_fkey(*), post_likes(count), post_comments(count)');
+
+      // SNAPS-97: Keyset pagination by timestamp cursor to eliminate O(N) offset scanning
+      if (beforeCreatedAt != null && beforeCreatedAt.isNotEmpty) {
+        query = query.lt('created_at', beforeCreatedAt);
+      }
+
+      final dynamic response;
+      if (beforeCreatedAt != null && beforeCreatedAt.isNotEmpty) {
+        response = await query
+            .order('created_at', ascending: false)
+            .limit(limit);
+      } else {
+        response = await query
+            .order('created_at', ascending: false)
+            .range(offset, offset + limit - 1);
+      }
 
       final rawList = (response as List<dynamic>)
           .whereType<Map<String, dynamic>>()
@@ -68,7 +83,7 @@ class SupabaseFeedService {
             )
           : rawList;
 
-      if (offset == 0) {
+      if (offset == 0 && beforeCreatedAt == null) {
         _cachedFeedPosts = List.from(hydratedList);
         _lastFeedFetchTime = DateTime.now();
       }

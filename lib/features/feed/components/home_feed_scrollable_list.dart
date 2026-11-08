@@ -148,6 +148,7 @@ class HomeFeedScrollableListState extends State<HomeFeedScrollableList> {
         child: CustomScrollView(
           key: key,
           controller: scrollController,
+          cacheExtent: 450.0,
           physics: const BouncingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics(),
           ),
@@ -171,18 +172,21 @@ class HomeFeedScrollableListState extends State<HomeFeedScrollableList> {
                 itemCount: posts.length,
                 itemBuilder: (context, index) {
                   final post = posts[index];
-                  return MarketPostCard(
-                    key: ValueKey(post.id),
-                    item: post,
-                    onLikeToggle: widget.onLikeToggle,
-                    onRepostToggle: widget.onRepostToggle,
-                    onPostClick: widget.onPostClick,
-                    onTopicClick: widget.onTopicClick,
-                    onUserClick: widget.onUserClick,
-                    onImageClick: widget.onImageClick,
-                    onDeletePost: widget.onDeletePost,
-                    onVotePoll: widget.onVotePoll,
-                    onBuyNowClick: widget.onBuyNowClick,
+                  return RepaintBoundary(
+                    key: ValueKey('repaint_${post.id}'),
+                    child: MarketPostCard(
+                      key: ValueKey(post.id),
+                      item: post,
+                      onLikeToggle: widget.onLikeToggle,
+                      onRepostToggle: widget.onRepostToggle,
+                      onPostClick: widget.onPostClick,
+                      onTopicClick: widget.onTopicClick,
+                      onUserClick: widget.onUserClick,
+                      onImageClick: widget.onImageClick,
+                      onDeletePost: widget.onDeletePost,
+                      onVotePoll: widget.onVotePoll,
+                      onBuyNowClick: widget.onBuyNowClick,
+                    ),
                   );
                 },
               ),

@@ -155,8 +155,13 @@ class SupabaseService {
   Future<List<MarketPostModel>> fetchFeedPosts({
     int limit = 15,
     int offset = 0,
+    String? beforeCreatedAt,
   }) =>
-      feed.fetchFeedPosts(limit: limit, offset: offset);
+      feed.fetchFeedPosts(
+        limit: limit,
+        offset: offset,
+        beforeCreatedAt: beforeCreatedAt,
+      );
 
   Future<MarketPostModel> createPost({
     required String postType,
