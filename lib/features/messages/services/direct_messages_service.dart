@@ -26,6 +26,13 @@ class DirectMessagesService extends ChangeNotifier {
 
   String resolveConversationId(String id) => _migratedConversationIds[id] ?? id;
 
+  ConversationModel? findConversationById(String id) {
+    final resolved = resolveConversationId(id);
+    final idx = _conversations.indexWhere((c) => c.id == resolved || c.id == id);
+    if (idx != -1) return _conversations[idx];
+    return null;
+  }
+
   void init() {
     _authSub?.cancel();
     final currentUser = SupabaseService.instance.currentUser;

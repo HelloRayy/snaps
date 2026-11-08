@@ -41,6 +41,7 @@ class ChatConversationScreen extends StatefulWidget {
 class _ChatConversationScreenState extends State<ChatConversationScreen>
     with WidgetsBindingObserver {
   late String _activeConvId;
+  late ConversationModel _currentConversation;
   late List<ChatMessageModel> _messages;
   final ScrollController _scrollController = ScrollController();
   RealtimeChannel? _messagesSubscription;
@@ -50,6 +51,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
   @override
   void initState() {
     super.initState();
+    _currentConversation = widget.conversation;
     _activeConvId = widget.conversation.id;
     DirectMessagesService.instance.activeConversationId = _activeConvId;
     DirectMessagesService.instance.addListener(_onServiceChanged);
@@ -74,12 +76,18 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
     if (resolvedId != _activeConvId) {
       _resubscribeToNewConversationId(resolvedId);
     }
+    final latestConv = DirectMessagesService.instance.findConversationById(resolvedId);
     final updated = DirectMessagesService.instance.getMessages(_activeConvId);
-    if (updated.isNotEmpty) {
-      setState(() {
+    setState(() {
+      if (latestConv != null && latestConv.productContext != null) {
+        _currentConversation = latestConv;
+      }
+      if (updated.isNotEmpty) {
         _messages = List.from(updated);
         _isLoadingMessages = false;
-      });
+      }
+    });
+    if (updated.isNotEmpty) {
       _scrollToBottom();
     }
   }
@@ -329,7 +337,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
   }
 
   Future<void> _handleViewProduct() async {
-    final productId = widget.conversation.productId;
+    final productId = _currentConversation.productId;
     if (productId == null || productId.trim().isEmpty) {
       SnapsToast.show(
         context,
@@ -467,7 +475,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final isCardFromMe = widget.conversation.isSender || !widget.conversation.isSeller;
+    final isCardFromMe = _currentConversation.isSender || !_currentConversation.isSeller;
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF0B0F17) : const Color(0xFFF6F7F9),
       appBar: GlassToolbarTop(
@@ -513,14 +521,14 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                       padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 14.0),
                       children: [
                         _buildChatHeader(isDark),
-                        if (widget.conversation.productContext != null)
+                        if (_currentConversation.productContext != null)
                           Padding(
                             padding: const EdgeInsets.only(bottom: 12.0),
                             child: Align(
                               alignment: isCardFromMe ? Alignment.centerRight : Alignment.centerLeft,
                               child: ChatProductCard(
-                                product: widget.conversation.productContext!,
-                                location: widget.conversation.productContext?.location ?? "Kantin Belakang SMKN 8 Semarang",
+                                product: _currentConversation.productContext!,
+                                location: _currentConversation.productContext?.location ?? "Kantin Belakang SMKN 8 Semarang",
                                 shape: isCardFromMe ? ChatProductCardShape.sent : ChatProductCardShape.firstReceived,
                                 isMe: isCardFromMe,
                                 onViewProduct: _isLoadingProduct ? null : _handleViewProduct,
@@ -548,14 +556,14 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                       padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 14.0),
                       children: [
                         _buildChatHeader(isDark),
-                        if (widget.conversation.productContext != null)
+                        if (_currentConversation.productContext != null)
                           Padding(
                             padding: const EdgeInsets.only(bottom: 12.0),
                             child: Align(
                               alignment: isCardFromMe ? Alignment.centerRight : Alignment.centerLeft,
                               child: ChatProductCard(
-                                product: widget.conversation.productContext!,
-                                location: widget.conversation.productContext?.location ?? "Kantin Belakang SMKN 8 Semarang",
+                                product: _currentConversation.productContext!,
+                                location: _currentConversation.productContext?.location ?? "Kantin Belakang SMKN 8 Semarang",
                                 shape: isCardFromMe ? ChatProductCardShape.sent : ChatProductCardShape.firstReceived,
                                 isMe: isCardFromMe,
                                 onViewProduct: _isLoadingProduct ? null : _handleViewProduct,
