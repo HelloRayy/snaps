@@ -244,8 +244,8 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.92);
-      backdrop-filter: blur(10px);
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(8px);
       z-index: 1000;
       flex-direction: column;
     }
@@ -258,33 +258,33 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px 24px;
-      background: rgba(30, 41, 59, 0.8);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      color: #fff;
+      padding: 14px 24px;
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      z-index: 20;
     }
 
     .zoom-modal-title {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      color: var(--text);
     }
 
     .zoom-modal-controls {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .btn-ctrl {
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #fff;
-      font-size: 0.85rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 0.825rem;
       font-weight: 600;
-      padding: 8px 14px;
+      padding: 7px 14px;
       border-radius: 8px;
       cursor: pointer;
       display: inline-flex;
@@ -294,31 +294,35 @@
     }
 
     .btn-ctrl:hover {
-      background: var(--primary);
+      background: var(--primary-pastel);
       border-color: var(--primary);
+      color: var(--primary);
     }
 
     .btn-close {
-      background: rgba(239, 68, 68, 0.2);
-      border-color: rgba(239, 68, 68, 0.4);
-      color: #FCA5A5;
+      background: #FEE2E2;
+      border-color: #FCA5A5;
+      color: #DC2626;
     }
 
     .btn-close:hover {
-      background: #EF4444;
+      background: #DC2626;
+      border-color: #DC2626;
       color: #fff;
     }
 
     .zoom-viewport {
       flex: 1;
       width: 100%;
-      height: 100%;
+      height: calc(100vh - 65px);
       position: relative;
       overflow: hidden;
       display: flex;
       justify-content: center;
       align-items: center;
-      background: #0F172A;
+      background-color: #F8FAFC;
+      background-image: radial-gradient(#CBD5E1 1px, transparent 1px);
+      background-size: 24px 24px;
       cursor: grab;
     }
 
@@ -327,9 +331,9 @@
     }
 
     .zoom-viewport svg {
+      display: block;
       width: 100% !important;
       height: 100% !important;
-      max-width: none !important;
     }
 
     .zoom-hint {
@@ -338,13 +342,14 @@
       left: 50%;
       transform: translateX(-50%);
       background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #94A3B8;
-      padding: 8px 16px;
+      color: #FFFFFF;
+      padding: 7px 18px;
       border-radius: 20px;
       font-size: 0.775rem;
+      font-weight: 500;
       pointer-events: none;
       z-index: 10;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
@@ -2101,6 +2106,16 @@ sequenceDiagram
       // Clone SVG for HD Pan-Zoom
       const clonedSvg = svg.cloneNode(true);
       clonedSvg.removeAttribute('id');
+      
+      // Pastikan viewBox terbawa dari SVG asli jika belum ada
+      if (!clonedSvg.getAttribute('viewBox')) {
+        const w = svg.getAttribute('width') || svg.getBoundingClientRect().width || 1200;
+        const h = svg.getAttribute('height') || svg.getBoundingClientRect().height || 800;
+        clonedSvg.setAttribute('viewBox', `0 0 ${parseFloat(w)} ${parseFloat(h)}`);
+      }
+      clonedSvg.removeAttribute('width');
+      clonedSvg.removeAttribute('height');
+      clonedSvg.removeAttribute('style');
       clonedSvg.style.width = '100%';
       clonedSvg.style.height = '100%';
       viewport.appendChild(clonedSvg);
@@ -2111,6 +2126,7 @@ sequenceDiagram
       // Initialize svgPanZoom
       if (currentPanZoom) {
         try { currentPanZoom.destroy(); } catch (e) {}
+        currentPanZoom = null;
       }
 
       setTimeout(() => {
@@ -2120,14 +2136,19 @@ sequenceDiagram
             controlIconsEnabled: false,
             fit: true,
             center: true,
-            minZoom: 0.2,
-            maxZoom: 10,
-            zoomScaleSensitivity: 0.3
+            minZoom: 0.1,
+            maxZoom: 20,
+            zoomScaleSensitivity: 0.25
           });
+          currentPanZoom.resize();
+          currentPanZoom.fit();
+          currentPanZoom.center();
+          // Zoom sedikit agar proporsional dan teks terbaca jelas
+          currentPanZoom.zoomBy(1.25);
         } catch (err) {
           console.error('Pan-zoom init error:', err);
         }
-      }, 50);
+      }, 100);
     }
 
     function closeZoomModal() {
