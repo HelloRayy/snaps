@@ -3,9 +3,18 @@
   "installCommand": "npm install",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/docs",
+      "destination": "/docs.html"
+    },
+    {
+      "source": "/docs.html",
+      "destination": "/docs.html"
+    },
+    {
+      "source": "/((?!docs|docs\\.html).*)",
       "destination": "/index.html"
     }
   ],
