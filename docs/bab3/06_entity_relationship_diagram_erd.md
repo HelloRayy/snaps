@@ -18,21 +18,18 @@ erDiagram
     STUDENT_REGISTRY ||--o| PROFILES : "didaftarkan sebagai (1:0..1)"
     
     PROFILES ||--o{ MARKET_POSTS : "membuat postingan/produk (1:N)"
-    PROFILES ||--o{ ORDERS : "membeli barang (1:N)"
-    PROFILES ||--o{ ORDERS : "menjual barang (1:N)"
     PROFILES ||--o{ CONVERSATIONS : "terlibat percakapan (1:N)"
+    PROFILES ||--o{ DIRECT_MESSAGES : "mengirim pesan (1:N)"
     PROFILES ||--o{ POST_COMMENTS : "menulis komentar (1:N)"
     PROFILES ||--o{ POST_LIKES : "memberikan apresiasi (1:N)"
     PROFILES ||--o{ CONTENT_REPORTS : "mengirim aduan (1:N)"
 
-    MARKET_POSTS ||--o{ ORDERS : "dipesan dalam (1:N)"
+    MARKET_POSTS ||--o{ CONVERSATIONS : "menjadi konteks produk (1:N)"
     MARKET_POSTS ||--o{ POST_COMMENTS : "memiliki komentar (1:N)"
     MARKET_POSTS ||--o{ POST_LIKES : "memiliki apresiasi (1:N)"
     MARKET_POSTS ||--o{ CONTENT_REPORTS : "menjadi objek aduan (1:N)"
 
-    SCHOOL_MEETING_POINTS ||--o{ ORDERS : "menjadi lokasi COD (1:N)"
-
-    CONVERSATIONS ||--o{ DIRECT_MESSAGES : "memuat isi pesan (1:N)"
+    CONVERSATIONS ||--o{ DIRECT_MESSAGES : "memuat riwayat pesan (1:N)"
 ```
 
 ---
@@ -47,18 +44,18 @@ erDiagram
 - **Partisipasi**: Satu profil siswa dapat mempublikasikan banyak produk karya vokasi maupun thread diskusi komunitas.
 - **Kunci Asing**: Kolom `seller_id` pada `MARKET_POSTS` merujuk ke `id` pada tabel `PROFILES`.
 
-### 3.3 Relasi `PROFILES` (Buyer & Seller) ke `ORDERS` (One-to-Many / `1:N`)
-- **Partisipasi**: Satu siswa dapat menjadi pembeli pada banyak pesanan (`buyer_id`) dan sekaligus menjadi penjual pada banyak pesanan lain (`seller_id`).
-- **Model Bisnis**: Mengadopsi arsitektur C2C (*Peer-to-Peer*) terpadu di mana siswa tidak perlu berganti akun untuk bertindak sebagai penjual atau pembeli.
+### 3.3 Relasi `PROFILES` ke `CONVERSATIONS` (One-to-Many / `1:N`)
+- **Partisipasi**: Siswa dapat terlibat dalam banyak ruang obrolan (*conversations*) baik sebagai pihak pertama maupun pihak kedua.
+- **Model Bisnis**: Mengadopsi koordinasi C2C (*Peer-to-Peer*) terpadu di mana siswa berinteraksi dan menyepakati transaksi COD langsung lewat ruang obrolan.
 
-### 3.4 Relasi `MARKET_POSTS` ke `ORDERS` (One-to-Many / `1:N`)
-- **Partisipasi**: Satu jenis produk karya siswa dapat dipesan berkali-kali oleh pembeli yang berbeda selama sisa stok produk masih mencukupi.
+### 3.4 Relasi `MARKET_POSTS` ke `CONVERSATIONS` (One-to-Many / `1:N`)
+- **Partisipasi**: Satu postingan produk karya dapat menjadi konteks pembicaraan pada banyak ruang obrolan antara calon pembeli yang berbeda dengan penjual.
 
-### 3.5 Relasi `SCHOOL_MEETING_POINTS` ke `ORDERS` (One-to-Many / `1:N`)
-- **Partisipasi**: Satu titik temu resmi sekolah (contoh: *Gazebo Depan PPLG*) dapat menjadi lokasi pertemuan transaksi COD untuk banyak pesanan siswa.
+### 3.5 Relasi `CONVERSATIONS` ke `DIRECT_MESSAGES` (One-to-Many / `1:N`)
+- **Partisipasi**: Setiap satu ruang percakapan memuat banyak baris pesan obrolan (*direct_messages*) yang dikirimkan secara bergantian oleh kedua siswa.
 
-### 3.6 Relasi `CONVERSATIONS` ke `DIRECT_MESSAGES` (One-to-Many / `1:N`)
-- **Partisipasi**: Satu ruang obrolan transaksi memuat banyak pesan teks riwayat percakapan antara pembeli dan penjual.
+### 3.6 Entitas Master `SCHOOL_MEETING_POINTS`
+- **Fungsi**: Berdiri sebagai entitas data master titik kumpul resmi sekolah (seperti Gazebo PPLG, Kantin, Lobby) yang diakses siswa saat mendiskusikan janji temu COD di ruang obrolan.
 
 ---
 
@@ -67,6 +64,6 @@ erDiagram
 | Relasi Parent ➔ Child | Foreign Key | On Delete Rule | On Update Rule | Alasan Desain Sistem |
 |---|---|---|---|---|
 | `PROFILES` ➔ `MARKET_POSTS` | `seller_id` | `CASCADE` / Soft Delete | `CASCADE` | Jika profil dinonaktifkan permanen, listing ikut dinonaktifkan. |
-| `PROFILES` ➔ `ORDERS` | `buyer_id` / `seller_id` | `RESTRICT` | `CASCADE` | Riwayat pesanan tidak boleh terhapus demi transparansi audit transaksi. |
-| `SCHOOL_MEETING_POINTS` ➔ `ORDERS` | `meeting_point_id` | `RESTRICT` | `CASCADE` | Titik kumpul yang pernah dipakai COD tidak boleh terhapus dari riwayat pesanan. |
-| `CONVERSATIONS` ➔ `DIRECT_MESSAGES` | `conversation_id` | `CASCADE` | `CASCADE` | Jika obrolan dihapus kedua pihak, seluruh pesan pesan ikut terhapus. |
+| `PROFILES` ➔ `CONVERSATIONS` | `participant_one` / `participant_two` | `CASCADE` | `CASCADE` | Riwayat obrolan dibersihkan jika akun pengguna dihapus. |
+| `MARKET_POSTS` ➔ `CONVERSATIONS` | `product_id` | `SET NULL` | `CASCADE` | Obrolan tetap bertahan meskipun postingan produk telah dihapus penjual. |
+| `CONVERSATIONS` ➔ `DIRECT_MESSAGES` | `conversation_id` | `CASCADE` | `CASCADE` | Jika obrolan dihapus, seluruh isi pesan obrolan ikut terhapus. |

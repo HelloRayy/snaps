@@ -261,49 +261,45 @@ flowchart LR
     Admin --> UC13
 ```
 
-### Skenario Use Case Utama (UC-07: Checkout Pesanan COD Titik Temu)
+#### Skenario Use Case Utama (UC-07: Pemesanan Langsung via Chat DM & COD Titik Temu)
 - **Aktor Utama**: Siswa Pembeli
 - **Aktor Sekunder**: Siswa Penjual, Database Server
-- **Kondisi Awal (Pre-condition)**: Pembeli terautentikasi NIS dan stok produk $> 0$.
-- **Kondisi Akhir (Post-condition)**: Record `orders` tercipta dengan status `pending`, stok terpotong, dan notifikasi terkirim ke penjual.
-- **Alur Normal**: Pembeli memilih barang -> Memilih titik temu resmi sekolah -> Mengisi catatan waktu COD -> Menekan konfirmasi pesanan -> Sistem mengunci stok dan menerbitkan pesanan -> Penjual menerima notifikasi realtime.
-- **Alur Alternatif**: Jika stok habis saat divalidasi, sistem membatalkan proses dan memunculkan dialog stok telah habis.
+- **Kondisi Awal (Pre-condition)**: Pembeli terautentikasi NIS dan melihat karya produk di aplikasi.
+- **Kondisi Akhir (Post-condition)**: Ruang percakapan `conversations` terhubung membawa konteks produk dan notifikasi terkirim ke penjual.
+- **Alur Normal**: Pembeli memilih produk -> Menekan tombol 'Beli Sekarang' -> Sistem langsung menghubungkan ke ruang chat DM penjual dengan kartu ringkasan produk menempel -> Kedua siswa berdiskusi dan menyepakati titik temu COD -> Bertemu fisik saat jam istirahat untuk serah terima barang dan pembayaran tunai.
+- **Alur Alternatif**: Jika penjual belum merespons, pembeli dapat meninggalkan pesan teks dan menunggu notifikasi balasan.
 
 ---
 
-## 3.6 Activity Diagram (Checkout COD Titik Temu)
+## 3.6 Activity Diagram (Pemesanan COD via Chat DM)
 
 ```mermaid
 flowchart TD
     subgraph Pembeli["Siswa Pembeli"]
         A1([Mulai: Buka Detail Produk]) --> A2[Tekan 'Beli Sekarang']
-        A2 --> A3[Pilih Titik Temu Resmi Sekolah]
-        A3 --> A4[Tulis Catatan Waktu Pertemuan COD]
-        A4 --> A5[Tekan 'Konfirmasi Pesanan']
-        A8[Terima Konfirmasi & Modal Sukses] --> A9[Temui Penjual di Spot COD Sesuai Jadwal]
-        A9 --> A10[Periksa Fisik Barang & Serahkan Uang Tunai]
-        A10 --> A11[Tekan 'Konfirmasi Pesanan Selesai' di Aplikasi]
+        A3[Langsung Masuk ke Ruang Chat DM Penjual]
+        A4[Kirim Pesan & Sepakati Titik Temu COD]
+        A5[Temui Penjual di Spot COD Sesuai Janjian]
+        A6[Periksa Fisik Barang & Serahkan Uang Tunai]
     end
 
     subgraph Sistem["Sistem sNaps"]
-        A5 --> S1{Cek Ketersediaan Stok}
-        S1 -- Habis <= 0 --> S2[Tampilkan Notifikasi 'Stok Habis' & Batalkan]
-        S2 --> S_End([Batal / Selesai])
-        S1 -- Tersedia > 0 --> S3[Simpan Pesanan ke Tabel orders: Status PENDING]
-        S3 --> S4[Kunci Stok & Kurangi Kuantitas Produk]
-        S4 --> S5[Kirim Push Notifikasi Realtime ke Penjual]
-        S5 --> A8
-        A11 --> S6[Update Status Pesanan: COMPLETED]
-        S6 --> S7[Catat Riwayat Transaksi Berhasil]
-        S7 --> S_Final([Selesai: Transaksi Berhasil])
+        A2 --> S1[Hubungkan ke Percakapan: conversations & direct_messages]
+        S1 --> S2[Otomatis Lampirkan Kartu Ringkasan Produk di Chat]
+        S2 --> S3[Kirim Push Notifikasi Realtime ke HP Penjual]
+        S3 --> A3
+        A4 --> S4[Simpan Pesan Janjian COD ke Database]
+        S4 --> P2
+        A6 --> S_Final([Selesai: Transaksi Berhasil])
     end
 
     subgraph Penjual["Siswa Penjual"]
-        S5 -.-> P1[Terima Notifikasi Pesanan Masuk]
-        P1 --> P2[Tinjau Titik Temu & Catatan Pembeli]
-        P2 --> P3[Bawa Produk ke Titik Temu yang Dipilih]
-        P3 --> A9
-        A10 --> P4[Terima Uang Tunai & Serahkan Barang]
+        S3 -.-> P1[Terima Notifikasi Chat Masuk]
+        P1 --> P2[Buka Chat & Sepakati Janjian di Titik Temu]
+        P2 --> P3[Bawa Produk ke Spot COD Saat Jam Istirahat]
+        P3 --> A5
+        A6 --> P4[Terima Uang Tunai & Serahkan Barang]
+        P4 --> S_Final
     end
 ```
 
@@ -315,10 +311,9 @@ flowchart TD
 Struktur konseptual data logis mendefinisikan hubungan bisnis antara entitas utama:
 - `student_registry`: Master buku induk sekolah (NIS, Nama, Kelas, Jurusan).
 - `profiles`: Akun aktif pengguna aplikasi sNaps.
-- `market_posts`: Listing produk wirausaha dan thread forum diskusi.
-- `school_meeting_points`: Daftar lokasi titik temu fisik di sekolah.
-- `orders`: Data pesanan COD antar siswa.
-- `conversations` & `direct_messages`: Data obrolan privat antar pengguna.
+- `market_posts`: Listing produk karya vokasi dan thread forum diskusi.
+- `school_meeting_points`: Daftar lokasi titik temu fisik resmi di sekolah.
+- `conversations` & `direct_messages`: Data obrolan privat antar pengguna terintegrasi konteks produk.
 - `content_reports`: Data pelaporan konten melanggar etika sekolah.
 
 ### 3.7.2 Physical Data Model (PDM)
@@ -352,7 +347,6 @@ erDiagram
         TEXT title
         TEXT description
         INT price
-        INT stock
         TEXT type
         TEXT category
         JSONB image_urls
@@ -370,24 +364,13 @@ erDiagram
         BOOLEAN is_active
     }
 
-    orders {
-        UUID id PK
-        UUID buyer_id FK
-        UUID seller_id FK
-        UUID post_id FK
-        UUID meeting_point_id FK
-        INT total_price
-        TEXT buyer_note
-        TEXT status
-        TIMESTAMPTZ created_at
-        TIMESTAMPTZ completed_at
-    }
-
     conversations {
         UUID id PK
-        UUID buyer_id FK
-        UUID seller_id FK
-        UUID post_id FK
+        UUID participant_one FK
+        UUID participant_two FK
+        UUID product_id FK
+        TEXT last_message
+        TIMESTAMPTZ last_message_at
         TIMESTAMPTZ created_at
     }
 
@@ -411,14 +394,14 @@ erDiagram
 
     student_registry ||--o| profiles : "nis"
     profiles ||--o{ market_posts : "seller_id"
-    profiles ||--o{ orders : "buyer_id"
-    profiles ||--o{ orders : "seller_id"
-    market_posts ||--o{ orders : "post_id"
-    school_meeting_points ||--o{ orders : "meeting_point_id"
-    profiles ||--o{ conversations : "buyer_id"
-    profiles ||--o{ conversations : "seller_id"
+    profiles ||--o{ conversations : "participant_one"
+    profiles ||--o{ conversations : "participant_two"
+    market_posts ||--o{ conversations : "product_id"
     conversations ||--o{ direct_messages : "conversation_id"
+    profiles ||--o{ direct_messages : "sender_id"
     profiles ||--o{ content_reports : "reporter_id"
+    market_posts ||--o{ content_reports : "target_post_id"
+```    profiles ||--o{ content_reports : "reporter_id"
     market_posts ||--o{ content_reports : "target_post_id"
 ```
 

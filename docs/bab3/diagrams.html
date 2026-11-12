@@ -899,42 +899,36 @@ erDiagram
     STUDENT_REGISTRY ||--o| PROFILES : "didaftarkan sebagai (1:0..1)"
     
     PROFILES ||--o{ MARKET_POSTS : "membuat postingan/produk (1:N)"
-    PROFILES ||--o{ ORDERS : "membeli barang (1:N)"
-    PROFILES ||--o{ ORDERS : "menjual barang (1:N)"
     PROFILES ||--o{ CONVERSATIONS : "terlibat percakapan (1:N)"
+    PROFILES ||--o{ DIRECT_MESSAGES : "mengirim pesan (1:N)"
     PROFILES ||--o{ POST_COMMENTS : "menulis komentar (1:N)"
     PROFILES ||--o{ POST_LIKES : "memberikan apresiasi (1:N)"
     PROFILES ||--o{ CONTENT_REPORTS : "mengirim aduan (1:N)"
 
-    MARKET_POSTS ||--o{ ORDERS : "dipesan dalam (1:N)"
+    MARKET_POSTS ||--o{ CONVERSATIONS : "menjadi konteks produk (1:N)"
     MARKET_POSTS ||--o{ POST_COMMENTS : "memiliki komentar (1:N)"
     MARKET_POSTS ||--o{ POST_LIKES : "memiliki apresiasi (1:N)"
     MARKET_POSTS ||--o{ CONTENT_REPORTS : "menjadi objek aduan (1:N)"
 
-    SCHOOL_MEETING_POINTS ||--o{ ORDERS : "menjadi lokasi COD (1:N)"
-
-    CONVERSATIONS ||--o{ DIRECT_MESSAGES : "memuat isi pesan (1:N)"
+    CONVERSATIONS ||--o{ DIRECT_MESSAGES : "memuat riwayat pesan (1:N)"
         </pre>
       </div>
       <pre class="code-container" id="code-06"><code id="src-06">erDiagram
     STUDENT_REGISTRY ||--o| PROFILES : "didaftarkan sebagai (1:0..1)"
     
     PROFILES ||--o{ MARKET_POSTS : "membuat postingan/produk (1:N)"
-    PROFILES ||--o{ ORDERS : "membeli barang (1:N)"
-    PROFILES ||--o{ ORDERS : "menjual barang (1:N)"
     PROFILES ||--o{ CONVERSATIONS : "terlibat percakapan (1:N)"
+    PROFILES ||--o{ DIRECT_MESSAGES : "mengirim pesan (1:N)"
     PROFILES ||--o{ POST_COMMENTS : "menulis komentar (1:N)"
     PROFILES ||--o{ POST_LIKES : "memberikan apresiasi (1:N)"
     PROFILES ||--o{ CONTENT_REPORTS : "mengirim aduan (1:N)"
 
-    MARKET_POSTS ||--o{ ORDERS : "dipesan dalam (1:N)"
+    MARKET_POSTS ||--o{ CONVERSATIONS : "menjadi konteks produk (1:N)"
     MARKET_POSTS ||--o{ POST_COMMENTS : "memiliki komentar (1:N)"
     MARKET_POSTS ||--o{ POST_LIKES : "memiliki apresiasi (1:N)"
     MARKET_POSTS ||--o{ CONTENT_REPORTS : "menjadi objek aduan (1:N)"
 
-    SCHOOL_MEETING_POINTS ||--o{ ORDERS : "menjadi lokasi COD (1:N)"
-
-    CONVERSATIONS ||--o{ DIRECT_MESSAGES : "memuat isi pesan (1:N)"</code></pre>
+    CONVERSATIONS ||--o{ DIRECT_MESSAGES : "memuat riwayat pesan (1:N)"</code></pre>
     </section>
 
     <!-- 9. CONCEPTUAL DATA MODEL -->
@@ -976,7 +970,6 @@ classDiagram
         Judul_Publikasi
         Deskripsi_Rinci
         Nilai_Harga_Jual
-        Jumlah_Ketersediaan_Stok
         Jenis_Konten
         Kategori_Vokasi
         Koleksi_Gambar_Visual
@@ -994,17 +987,10 @@ classDiagram
         Status_Operasional_Buka
     }
 
-    class TRANSAKSI_PESANAN {
-        ID_Transaksi
-        Catatan_Waktu_Pertemuan
-        Total_Nominal_COD
-        Status_Alur_Pesanan
-        Waktu_Penerbitan_Pesanan
-        Waktu_Penyelesaian_Fisik
-    }
-
     class RUANG_PERCAKAPAN {
         ID_Obrolan
+        Pesan_Terakhir
+        Waktu_Pesan_Terakhir
         Waktu_Inisiasi
     }
 
@@ -1024,11 +1010,8 @@ classDiagram
 
     SISWA_REGISTRY "1" -- "0..1" PENGGUNA_SISTEM : Memvalidasi_Kepemilikan
     PENGGUNA_SISTEM "1" -- "0..*" KARYA_DAN_PRODUK : Mempublikasikan
-    PENGGUNA_SISTEM "1" -- "0..*" TRANSAKSI_PESANAN : Mengajukan_Pesanan
-    PENGGUNA_SISTEM "1" -- "0..*" TRANSAKSI_PESANAN : Menerima_Pesanan
-    KARYA_DAN_PRODUK "1" -- "0..*" TRANSAKSI_PESANAN : Menjadi_Objek_Jual
-    TITIK_TEMU_SEKOLAH "1" -- "0..*" TRANSAKSI_PESANAN : Menjadi_Lokasi_COD
     PENGGUNA_SISTEM "1" -- "0..*" RUANG_PERCAKAPAN : Menjadi_Partisipan
+    KARYA_DAN_PRODUK "1" -- "0..*" RUANG_PERCAKAPAN : Menjadi_Konteks_Produk
     RUANG_PERCAKAPAN "1" -- "1..*" PESAN_LANGSUNG : Memuat_Pesan
     PENGGUNA_SISTEM "1" -- "0..*" ADUAN_KONTEN : Mengajukan_Laporan
     KARYA_DAN_PRODUK "1" -- "0..*" ADUAN_KONTEN : Dilaporkan_Pelanggaran
@@ -1058,7 +1041,6 @@ classDiagram
         Judul_Publikasi
         Deskripsi_Rinci
         Nilai_Harga_Jual
-        Jumlah_Ketersediaan_Stok
         Jenis_Konten
         Kategori_Vokasi
         Koleksi_Gambar_Visual
@@ -1076,17 +1058,10 @@ classDiagram
         Status_Operasional_Buka
     }
 
-    class TRANSAKSI_PESANAN {
-        ID_Transaksi
-        Catatan_Waktu_Pertemuan
-        Total_Nominal_COD
-        Status_Alur_Pesanan
-        Waktu_Penerbitan_Pesanan
-        Waktu_Penyelesaian_Fisik
-    }
-
     class RUANG_PERCAKAPAN {
         ID_Obrolan
+        Pesan_Terakhir
+        Waktu_Pesan_Terakhir
         Waktu_Inisiasi
     }
 
@@ -1106,11 +1081,8 @@ classDiagram
 
     SISWA_REGISTRY "1" -- "0..1" PENGGUNA_SISTEM : Memvalidasi_Kepemilikan
     PENGGUNA_SISTEM "1" -- "0..*" KARYA_DAN_PRODUK : Mempublikasikan
-    PENGGUNA_SISTEM "1" -- "0..*" TRANSAKSI_PESANAN : Mengajukan_Pesanan
-    PENGGUNA_SISTEM "1" -- "0..*" TRANSAKSI_PESANAN : Menerima_Pesanan
-    KARYA_DAN_PRODUK "1" -- "0..*" TRANSAKSI_PESANAN : Menjadi_Objek_Jual
-    TITIK_TEMU_SEKOLAH "1" -- "0..*" TRANSAKSI_PESANAN : Menjadi_Lokasi_COD
     PENGGUNA_SISTEM "1" -- "0..*" RUANG_PERCAKAPAN : Menjadi_Partisipan
+    KARYA_DAN_PRODUK "1" -- "0..*" RUANG_PERCAKAPAN : Menjadi_Konteks_Produk
     RUANG_PERCAKAPAN "1" -- "1..*" PESAN_LANGSUNG : Memuat_Pesan
     PENGGUNA_SISTEM "1" -- "0..*" ADUAN_KONTEN : Mengajukan_Laporan
     KARYA_DAN_PRODUK "1" -- "0..*" ADUAN_KONTEN : Dilaporkan_Pelanggaran</code></pre>
@@ -1158,7 +1130,6 @@ erDiagram
         TEXT title "NOT NULL - Judul Produk/Karya"
         TEXT description "NOT NULL - Deskripsi Rinci"
         INT price "NOT NULL, DEFAULT 0 - Harga (Rupiah)"
-        INT stock "NOT NULL, DEFAULT 1 - Stok Barang"
         TEXT type "NOT NULL - CHECK (type IN ('thread', 'product'))"
         TEXT category "NOT NULL - PPLG, DKV, Kuliner, Umum"
         JSONB image_urls "DEFAULT '[]'::jsonb - Galeri Foto"
@@ -1176,24 +1147,13 @@ erDiagram
         BOOLEAN is_active "DEFAULT true - Status Titik Aktif"
     }
 
-    orders {
-        UUID id PK "Primary Key"
-        UUID buyer_id FK "NOT NULL - FK ke profiles.id"
-        UUID seller_id FK "NOT NULL - FK ke profiles.id"
-        UUID post_id FK "NOT NULL - FK ke market_posts.id"
-        UUID meeting_point_id FK "NOT NULL - FK ke school_meeting_points.id"
-        INT total_price "NOT NULL - Nilai Transaksi COD"
-        TEXT buyer_note "NOT NULL - Catatan Jam COD Pembeli"
-        TEXT status "NOT NULL, DEFAULT 'pending' - CHECK (status IN ('pending', 'confirmed', 'completed', 'cancelled'))"
-        TIMESTAMPTZ created_at "DEFAULT NOW() - Waktu Pesan"
-        TIMESTAMPTZ completed_at "NULLABLE - Waktu Selesai Fisik"
-    }
-
     conversations {
         UUID id PK "Primary Key"
-        UUID buyer_id FK "NOT NULL - FK ke profiles.id"
-        UUID seller_id FK "NOT NULL - FK ke profiles.id"
-        UUID post_id FK "NULLABLE - FK ke market_posts.id"
+        UUID participant_one FK "NOT NULL - FK ke profiles.id"
+        UUID participant_two FK "NOT NULL - FK ke profiles.id"
+        UUID product_id FK "NULLABLE - FK ke market_posts.id"
+        TEXT last_message "NULLABLE - Cuplikan Pesan Terakhir"
+        TIMESTAMPTZ last_message_at "DEFAULT NOW() - Waktu Pesan Terakhir"
         TIMESTAMPTZ created_at "DEFAULT NOW() - Waktu Dibuat"
     }
 
@@ -1214,6 +1174,16 @@ erDiagram
         TEXT status "NOT NULL, DEFAULT 'pending' - CHECK (status IN ('pending', 'reviewed', 'dismissed', 'taken_down'))"
         TIMESTAMPTZ created_at "DEFAULT NOW() - Waktu Laporan"
     }
+
+    student_registry ||--o| profiles : "nis"
+    profiles ||--o{ market_posts : "seller_id"
+    profiles ||--o{ conversations : "participant_one"
+    profiles ||--o{ conversations : "participant_two"
+    market_posts ||--o{ conversations : "product_id"
+    conversations ||--o{ direct_messages : "conversation_id"
+    profiles ||--o{ direct_messages : "sender_id"
+    profiles ||--o{ content_reports : "reporter_id"
+    market_posts ||--o{ content_reports : "target_post_id"
         </pre>
       </div>
       <pre class="code-container" id="code-08"><code id="src-08">erDiagram
@@ -1243,7 +1213,6 @@ erDiagram
         TEXT title "NOT NULL - Judul Produk/Karya"
         TEXT description "NOT NULL - Deskripsi Rinci"
         INT price "NOT NULL, DEFAULT 0 - Harga (Rupiah)"
-        INT stock "NOT NULL, DEFAULT 1 - Stok Barang"
         TEXT type "NOT NULL - CHECK (type IN ('thread', 'product'))"
         TEXT category "NOT NULL - PPLG, DKV, Kuliner, Umum"
         JSONB image_urls "DEFAULT '[]'::jsonb - Galeri Foto"
@@ -1261,24 +1230,13 @@ erDiagram
         BOOLEAN is_active "DEFAULT true - Status Titik Aktif"
     }
 
-    orders {
-        UUID id PK "Primary Key"
-        UUID buyer_id FK "NOT NULL - FK ke profiles.id"
-        UUID seller_id FK "NOT NULL - FK ke profiles.id"
-        UUID post_id FK "NOT NULL - FK ke market_posts.id"
-        UUID meeting_point_id FK "NOT NULL - FK ke school_meeting_points.id"
-        INT total_price "NOT NULL - Nilai Transaksi COD"
-        TEXT buyer_note "NOT NULL - Catatan Jam COD Pembeli"
-        TEXT status "NOT NULL, DEFAULT 'pending' - CHECK (status IN ('pending', 'confirmed', 'completed', 'cancelled'))"
-        TIMESTAMPTZ created_at "DEFAULT NOW() - Waktu Pesan"
-        TIMESTAMPTZ completed_at "NULLABLE - Waktu Selesai Fisik"
-    }
-
     conversations {
         UUID id PK "Primary Key"
-        UUID buyer_id FK "NOT NULL - FK ke profiles.id"
-        UUID seller_id FK "NOT NULL - FK ke profiles.id"
-        UUID post_id FK "NULLABLE - FK ke market_posts.id"
+        UUID participant_one FK "NOT NULL - FK ke profiles.id"
+        UUID participant_two FK "NOT NULL - FK ke profiles.id"
+        UUID product_id FK "NULLABLE - FK ke market_posts.id"
+        TEXT last_message "NULLABLE - Cuplikan Pesan Terakhir"
+        TIMESTAMPTZ last_message_at "DEFAULT NOW() - Waktu Pesan Terakhir"
         TIMESTAMPTZ created_at "DEFAULT NOW() - Waktu Dibuat"
     }
 
@@ -1298,7 +1256,17 @@ erDiagram
         TEXT reason "NOT NULL - Alasan Laporan Siswa"
         TEXT status "NOT NULL, DEFAULT 'pending' - CHECK (status IN ('pending', 'reviewed', 'dismissed', 'taken_down'))"
         TIMESTAMPTZ created_at "DEFAULT NOW() - Waktu Laporan"
-    }</code></pre>
+    }
+
+    student_registry ||--o| profiles : "nis"
+    profiles ||--o{ market_posts : "seller_id"
+    profiles ||--o{ conversations : "participant_one"
+    profiles ||--o{ conversations : "participant_two"
+    market_posts ||--o{ conversations : "product_id"
+    conversations ||--o{ direct_messages : "conversation_id"
+    profiles ||--o{ direct_messages : "sender_id"
+    profiles ||--o{ content_reports : "reporter_id"
+    market_posts ||--o{ content_reports : "target_post_id"</code></pre>
     </section>
 
     <!-- 11. ACTIVITY DIAGRAM -->

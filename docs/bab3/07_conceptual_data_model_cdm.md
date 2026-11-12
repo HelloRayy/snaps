@@ -38,7 +38,6 @@ classDiagram
         Judul_Publikasi
         Deskripsi_Rinci
         Nilai_Harga_Jual
-        Jumlah_Ketersediaan_Stok
         Jenis_Konten
         Kategori_Vokasi
         Koleksi_Gambar_Visual
@@ -56,17 +55,10 @@ classDiagram
         Status_Operasional_Buka
     }
 
-    class TRANSAKSI_PESANAN {
-        ID_Transaksi
-        Catatan_Waktu_Pertemuan
-        Total_Nominal_COD
-        Status_Alur_Pesanan
-        Waktu_Penerbitan_Pesanan
-        Waktu_Penyelesaian_Fisik
-    }
-
     class RUANG_PERCAKAPAN {
         ID_Obrolan
+        Pesan_Terakhir
+        Waktu_Pesan_Terakhir
         Waktu_Inisiasi
     }
 
@@ -86,11 +78,8 @@ classDiagram
 
     SISWA_REGISTRY "1" -- "0..1" PENGGUNA_SISTEM : Memvalidasi_Kepemilikan
     PENGGUNA_SISTEM "1" -- "0..*" KARYA_DAN_PRODUK : Mempublikasikan
-    PENGGUNA_SISTEM "1" -- "0..*" TRANSAKSI_PESANAN : Mengajukan_Pesanan
-    PENGGUNA_SISTEM "1" -- "0..*" TRANSAKSI_PESANAN : Menerima_Pesanan
-    KARYA_DAN_PRODUK "1" -- "0..*" TRANSAKSI_PESANAN : Menjadi_Objek_Jual
-    TITIK_TEMU_SEKOLAH "1" -- "0..*" TRANSAKSI_PESANAN : Menjadi_Lokasi_COD
     PENGGUNA_SISTEM "1" -- "0..*" RUANG_PERCAKAPAN : Menjadi_Partisipan
+    KARYA_DAN_PRODUK "1" -- "0..*" RUANG_PERCAKAPAN : Menjadi_Konteks_Produk
     RUANG_PERCAKAPAN "1" -- "1..*" PESAN_LANGSUNG : Memuat_Pesan
     PENGGUNA_SISTEM "1" -- "0..*" ADUAN_KONTEN : Mengajukan_Laporan
     KARYA_DAN_PRODUK "1" -- "0..*" ADUAN_KONTEN : Dilaporkan_Pelanggaran
@@ -110,15 +99,20 @@ classDiagram
 
 ### 3.3 Entitas Bisnis `KARYA_DAN_PRODUK`
 - **Konsep Bisnis**: Komoditas digital atau fisik yang diciptakan siswa untuk dipamerkan atau diperjualbelikan.
-- **Atribut Logis**: `ID_Karya`, `Judul_Publikasi`, `Deskripsi_Rinci`, `Nilai_Harga_Jual`, `Jumlah_Ketersediaan_Stok`, `Jenis_Konten` (*Karya Thread* atau *Produk Vokasi*), `Kategori_Vokasi`.
+- **Atribut Logis**: `ID_Karya`, `Judul_Publikasi`, `Deskripsi_Rinci`, `Nilai_Harga_Jual`, `Jenis_Konten` (*Karya Thread* atau *Produk Vokasi*), `Kategori_Vokasi`.
 
 ### 3.4 Entitas Bisnis `TITIK_TEMU_SEKOLAH`
 - **Konsep Bisnis**: Landmark fisik di dalam area SMKN 8 Semarang yang disepakati sebagai lokasi aman transaksi COD.
 - **Atribut Logis**: `ID_Titik_Kumpul`, `Nama_Tempat_Sekolah` (*Gazebo PPLG, Kantin Timur, Depan Bengkel Otomotif*), `Zona_Gedung_Kampus`.
 
-### 3.5 Entitas Bisnis `TRANSAKSI_PESANAN`
-- **Konsep Bisnis**: Kontrak kesepakatan transaksi COD antara dua siswa di sekolah.
-- **Atribut Logis**: `ID_Transaksi`, `Catatan_Waktu_Pertemuan`, `Total_Nominal_COD`, `Status_Alur_Pesanan` (*Menunggu, Diterima, Selesai, Dibatalkan*).
+### 3.5 Entitas Bisnis `RUANG_PERCAKAPAN` & `PESAN_LANGSUNG`
+- **Konsep Bisnis**: Media komunikasi langsung antar-siswa untuk koordinasi janji temu COD dan tanya jawab produk.
+- **Atribut Logis**: `ID_Obrolan`, `Pesan_Terakhir`, `Isi_Teks_Obrolan`, `Waktu_Pengiriman`.
+
+---
+
+## 4. Keunggulan Desain Konseptual
+Struktur CDM ini sepenuhnya independen terhadap teknologi database. Jika sekolah di masa mendatang ingin memindahkan penyimpanan dari PostgreSQL ke database lain (seperti MySQL, MariaDB, atau Oracle), model konseptual ini tetap 100% valid dan tidak perlu diubah.
 
 ---
 
