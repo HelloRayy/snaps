@@ -15,59 +15,50 @@ Alur sistem digital memodelkan bagaimana instruksi komputasi berjalan di aplikas
 
 ```mermaid
 flowchart TD
-    Start([Mulai: Siswa Membuka Aplikasi sNaps]) --> CheckAuth{Apakah Token Sesi Login Aktif?}
-    CheckAuth -- Tidak --> InputNIS[Input NIS & Password Siswa]
-    InputNIS --> ValidateRegistry[(Validasi ke Tabel student_registry)]
+    Start([Mulai: Siswa Buka Snaps]) --> CheckAuth{Apakah Sudah Login?}
+    CheckAuth -- Belum --> InputNIS[Input NIS & Password]
+    InputNIS --> ValidateRegistry[(Validasi ke student_registry)]
     ValidateRegistry --> CheckNISValid{Apakah NIS Terdaftar & Aktif?}
-    CheckNISValid -- Tidak --> ShowAlertAuth[Tampilkan Peringatan: 'NIS Tidak Terdaftar di SMKN 8'] --> InputNIS
-    CheckNISValid -- Ya --> CreateSession[Terbitkan Sesi JWT & Muat Profil Siswa]
+    CheckNISValid -- Tidak --> ShowAlertAuth[Tampilkan Peringatan: 'NIS Tidak Terdaftar'] --> InputNIS
+    CheckNISValid -- Ya --> LoginSuccess[Login Berhasil]
     
-    CheckAuth -- Ya --> LoadHome[Buka Layar Beranda: Feed Komunitas & Marketplace]
-    CreateSession --> LoadHome
+    CheckAuth -- Sudah --> LoadHome[Masuk ke Halaman Beranda]
+    LoginSuccess --> LoadHome
 
-    LoadHome --> UserNavChoice{Pilih Aktivitas Siswa}
+    LoadHome --> UserNavChoice{Pilih Aktivitas}
 
     %% JALUR PENJUAL
-    UserNavChoice -- Jual Produk / Unjuk Karya --> OpenCreatePost[Buka Formulir Pembuatan Listing Produk]
-    OpenCreatePost --> FillProductData[Input Judul, Deskripsi, Kategori Jurusan, Foto, Harga, Stok]
-    FillProductData --> ValidateInput{Validasi Input Lengkap?}
-    ValidateInput -- Tidak --> ShowErrorForm[Tampilkan Pesan Error Validasi Form] --> FillProductData
-    ValidateInput -- Ya --> InsertProductDB[(Simpan Record Baru ke Tabel market_posts)]
-    InsertProductDB --> PostBroadcast[Produk Tayang Secara Publik di Feed] --> EndSellerWait([Selesai: Menunggu Pembeli])
+    UserNavChoice -- Jual Produk / Unjuk Karya --> OpenCreatePost[Buka Formulir Buat Postingan]
+    OpenCreatePost --> FillProductData[Input Foto, Judul, Deskripsi, Kategori Jurusan, & Harga]
+    FillProductData --> ValidateInput{Validasi Lengkap?}
+    ValidateInput -- Tidak --> ShowErrorForm[Tampilkan Pesan Error] --> FillProductData
+    ValidateInput -- Ya --> InsertProductDB[(Simpan ke Database PostgreSQL)]
+    InsertProductDB --> PostBroadcast[Produk Tayang di Beranda & Marketplace] --> EndSellerWait([Selesai])
 
     %% JALUR PEMBELI
-    UserNavChoice -- Beli Produk Vokasi --> BrowseMarket[Jelajah Katalog & Filter Kategori: PPLG / DKV / Kuliner]
-    BrowseMarket --> OpenDetail[Buka Halaman Detail Produk & Profil Penjual]
-    OpenDetail --> CheckAvailableStock{Cek Database: Apakah Stok > 0?}
-    CheckAvailableStock -- Habis (0) --> ShowEmptyState[Tombol Beli Dinonaktifkan: 'Stok Habis'] --> BrowseMarket
-    CheckAvailableStock -- Tersedia --> TapBuy[Tekan Tombol 'Beli Sekarang']
+    UserNavChoice -- Beli Produk Vokasi --> BrowseMarket[Jelajah Beranda & Pilih Produk]
+    BrowseMarket --> OpenDetail[Buka Halaman Detail Produk]
+    OpenDetail --> TapBuy[Tekan Tombol 'Beli Sekarang']
     
-    TapBuy --> OpenCheckoutSheet[Sistem Membuka Lembar Checkout COD]
-    OpenCheckoutSheet --> LoadMeetingPoints[(Query Daftar Spot dari school_meeting_points)]
-    LoadMeetingPoints --> SelectPoint[Pembeli Memilih Titik Temu via Dropdown / List: Gazebo / Kantin / Lab]
-    SelectPoint --> InputBuyerNote[Pembeli Menulis Catatan Jam Pertemuan COD]
-    InputBuyerNote --> TapConfirmOrder[Tekan 'Konfirmasi Pesanan']
-
-    TapConfirmOrder --> ConnectDirectChat[(Sistem Menghubungkan ke Percakapan: conversations & direct_messages)]
-    ConnectDirectChat --> SendAutoChatMsg[Sistem Mengirim Pesan Otomatis: Ringkasan Produk, Harga & Titik Temu COD]
-    SendAutoChatMsg --> TriggerPushNotif[Kirim Push Notifikasi Pesan Masuk ke HP Siswa Penjual]
-    TriggerPushNotif --> ShowSuccessModal[Tampilkan Modal Sukses Pesanan & Tombol 'Buka Obrolan']
+    TapBuy --> DirectToDM[Langsung Masuk ke Ruang Chat DM Penjual]
+    DirectToDM --> AttachProductCard[Sistem Otomatis Melampirkan Kartu Ringkasan Produk di Chat]
+    AttachProductCard --> TriggerPushNotif[Kirim Push Notifikasi Chat Masuk ke HP Penjual]
+    TriggerPushNotif --> ChatAgreement[Kedua Siswa Diskusi & Menyepakati Titik Temu COD via Chat]
     
-    ShowSuccessModal --> OpenChatRoom[Buka Ruang Obrolan: Siswa Saling Mengonfirmasi Janjian COD]
-    OpenChatRoom --> MeetPhysicalCOD[Kedua Siswa Bertemu di Titik Temu Sekolah Sesuai Janjian]
+    ChatAgreement --> MeetPhysicalCOD[Bertemu Fisik di Titik Temu Sekolah Pas Jam Istirahat]
     MeetPhysicalCOD --> CompleteVerification[Pembeli Memeriksa Fisik Barang & Membayar Tunai]
-    CompleteVerification --> EndFinish([Selesai: Transaksi COD Berhasil])
+    CompleteVerification --> EndFinish([Selesai: Transaksi Berhasil])
 ```
 
 ---
 
 ## 3. Penjelasan Tahapan Krusial Sistem
 
-1. **Validasi Akun Siswa Terpadu**:
-   Aplikasi memverifikasi identitas siswa terhadap database buku induk `student_registry` SMKN 8 Semarang dan menghubungkannya dengan profil autentikasi akun.
-2. **Standarisasi Lokasi Titik Temu (*School Meeting Points*)**:
-   Sistem menyajikan pilihan titik kumpul resmi sekolah melalui *dropdown / list selector* (seperti Gazebo PPLG, Kantin, Lobby) tanpa memerlukan peta denah 2D yang berat di perangkat siswa.
-3. **Koordinasi Otomatis via Direct Messaging**:
-   Setelah konfirmasi pesanan, sistem secara otomatis menerbitkan konteks transaksi ke ruang obrolan (*Direct Message*) penjual dengan format pesan rapi yang mencantumkan nama produk, harga, dan titik temu COD terpilih.
-4. **Verifikasi Transaksi Tunai Mandiri**:
-   Penyelesaian transaksi dilakukan langsung saat kedua siswa bertemu fisik di lokasi sekolah dengan memeriksa kondisi barang dan penyerahan uang tunai secara aman.
+1. **Autentikasi Siswa Berbasis NIS**:
+   Aplikasi memastikan setiap pengguna adalah siswa aktif SMKN 8 Semarang dengan memeriksa identitas ke database `student_registry`.
+2. **Publikasi Karya Fleksibel (Tanpa Beban Stok)**:
+   Siswa dapat mempublikasikan karya vokasi atau barang preloved dengan mengisi foto, deskripsi, kategori jurusan, dan harga secara instan.
+3. **Pemesanan Instan Langsung ke Chat DM (*Direct-to-DM Flow*)**:
+   Ketika pembeli menekan tombol 'Beli Sekarang', sistem langsung menghubungkan pembeli ke ruang obrolan pribadi (*Direct Message*) penjual dengan otomatis melampirkan kartu ringkasan produk.
+4. **Kesepakatan Titik Temu COD & Transaksi Tunai**:
+   Kedua siswa menyepakati titik kumpul sekolah (seperti Gazebo PPLG, Kantin, atau Lobby) secara langsung lewat percakapan chat, kemudian bertemu fisik saat jam istirahat untuk serah terima barang dan pembayaran tunai.

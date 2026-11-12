@@ -46,35 +46,34 @@ Diagram berikut menggambarkan alur terotomatisasi transaksi C2C dan interaksi ko
 
 ```mermaid
 flowchart TD
-    Start([Mulai: Siswa Membuka Aplikasi sNaps]) --> AuthCheck{Sudah Login NIS?}
-    AuthCheck -- Belum --> LoginNIS[Input NIS & Password -> Validasi student_registry]
-    LoginNIS --> FeedScreen[Tampil Beranda: Feed Karya & Marketplace Vokasi]
-    AuthCheck -- Sudah --> FeedScreen
+    Start([Mulai: Siswa Buka Snaps]) --> AuthCheck{Apakah Sudah Login?}
+    AuthCheck -- Belum --> LoginNIS[Input NIS & Password]
+    LoginNIS --> ValidateDB[(Validasi ke student_registry)]
+    ValidateDB --> LoginSuccess[Login Berhasil]
     
-    FeedScreen --> ActionChoice{Pilihan Aktivitas Siswa}
+    AuthCheck -- Sudah --> FeedScreen[Masuk ke Halaman Beranda]
+    LoginSuccess --> FeedScreen
+    
+    FeedScreen --> ActionChoice{Pilih Aktivitas}
     
     %% Alur Penjual
-    ActionChoice -- Buat Listing Produk --> FormProduct[Input Judul, Foto, Kategori Jurusan, Harga, Stok]
-    FormProduct --> SaveDB[(Simpan ke Database PostgreSQL)]
-    SaveDB --> PostPublished[Produk Tayang di Feed & Marketplace] --> EndWait([Selesai])
+    ActionChoice -- Jual Produk / Unjuk Karya --> FormProduct[Buka Form Buat Postingan]
+    FormProduct --> FillData[Input Foto, Judul, Deskripsi, Kategori Jurusan, & Harga]
+    FillData --> SaveDB[(Simpan ke Database PostgreSQL)]
+    SaveDB --> PostPublished[Produk Tayang di Beranda & Marketplace] --> EndWait([Selesai])
     
     %% Alur Pembeli
-    ActionChoice -- Beli Produk --> ViewDetail[Buka Halaman Detail Produk & Profil Penjual]
-    ViewDetail --> CheckStock{Stok Produk Tersedia > 0?}
-    CheckStock -- Habis --> AlertEmpty[Tampilkan Notifikasi 'Stok Habis'] --> EndWait
-    CheckStock -- Tersedia --> TapCheckout[Tekan Tombol 'Beli Sekarang']
+    ActionChoice -- Beli Produk Vokasi --> ViewDetail[Buka Halaman Detail Produk]
+    ViewDetail --> TapCheckout[Tekan Tombol 'Beli Sekarang']
     
-    TapCheckout --> SelectMeetingPoint[Pilih Titik Temu COD via Dropdown / List: Gazebo / Kantin / Lab]
-    SelectMeetingPoint --> InputNotes[Tulis Catatan Waktu Janjian COD]
-    InputNotes --> ConfirmOrder[Tekan 'Konfirmasi Pesanan']
+    TapCheckout --> DirectToDM[Langsung Masuk ke Ruang Chat DM Penjual]
+    DirectToDM --> AttachCard[Sistem Otomatis Melampirkan Kartu Ringkasan Produk di Chat]
+    AttachCard --> SendPushNotif[Kirim Push Notifikasi Chat Masuk ke Siswa Penjual]
+    SendPushNotif --> ChatAgreement[Kedua Siswa Diskusi & Menyepakati Titik Temu COD via Chat]
     
-    ConfirmOrder --> SystemProcess[(Sistem Menghubungkan ke Chat: conversations & direct_messages)]
-    SystemProcess --> SendPushNotif[Kirim Push Notifikasi Chat & Pesan Otomatis ke Siswa Penjual]
-    SendPushNotif --> OrderSuccessModal[Tampilkan Modal Sukses & Arahkan Masuk ke Ruang Obrolan]
-    
-    OrderSuccessModal --> MeetCOD[Kedua Siswa Bertemu di Titik Temu Sekolah Sesuai Janjian]
+    ChatAgreement --> MeetCOD[Bertemu Fisik di Titik Temu Sekolah Pas Jam Istirahat]
     MeetCOD --> InspectItem[Pembeli Memeriksa Fisik Barang & Membayar Tunai]
-    InspectItem --> Finish([Selesai: Transaksi COD Berhasil])
+    InspectItem --> Finish([Selesai: Transaksi Berhasil])
 ```
 
 ---
