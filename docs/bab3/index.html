@@ -1273,8 +1273,8 @@ erDiagram
     <section class="card" data-category="usecase" id="diagram-10">
       <div class="card-header">
         <div class="card-title-group">
-          <h2>3.8 Activity Diagram (Checkout COD Titik Temu)</h2>
-          <p>Alur kerja dinamis dengan 3 swimlanes: Siswa Pembeli, Sistem sNaps, dan Siswa Penjual</p>
+          <h2>3.8 Activity Diagram (Pemesanan Langsung via Chat DM)</h2>
+          <p>Alur kerja pemesanan dinamis 3 swimlanes: Siswa Pembeli, Sistem sNaps, dan Siswa Penjual</p>
         </div>
         <div class="card-actions">
           <button class="btn-action" onclick="toggleCode('code-10')">Lihat Mermaid</button>
@@ -1288,42 +1288,34 @@ flowchart TD
     %% SWIMLANE PEMBELI
     subgraph SwimlaneBuyer["👤 SISWA PEMBELI"]
         ActStart([Mulai: Buka Layar Detail Produk]) --> ActTapBuy[Tekan Tombol 'Beli Sekarang']
-        ActTapBuy --> ActSelectSpot[Pilih Titik Kumpul COD Resmi Sekolah]
-        ActSelectSpot --> ActWriteNote[Tulis Catatan Pertemuan Jam Istirahat Sekolah]
-        ActWriteNote --> ActSubmitOrder[Tekan Tombol 'Konfirmasi Pesanan']
-        
-        ActReceiveSuccess[Menerima Ringkasan Pesanan & ID Transaksi] --> ActGoToSpot[Datang ke Titik Temu Sekolah Sesuai Catatan]
+        ActOpenChat[Buka Ruang Obrolan DM dengan Kartu Produk Terlampir] --> ActSendMsg[Kirim Pesan & Sepakati Titik Temu COD]
+        ActSendMsg --> ActGoToSpot[Datang ke Titik Temu Sekolah Saat Jam Istirahat]
         ActGoToSpot --> ActInspectItem[Periksa Fisik Barang & Serahkan Uang Tunai]
-        ActInspectItem --> ActConfirmReceived[Tekan Tombol 'Pesanan Diterima' di Aplikasi]
     end
 
     %% SWIMLANE SISTEM
     subgraph SwimlaneSystem["⚡ SISTEM sNAPS (Flutter & Supabase)"]
-        ActSubmitOrder --> SysCheckStock{Sistem Memeriksa Kuantitas Stok di Database}
+        ActTapBuy --> SysGetConv{Cek Apakah Ruang Percakapan Sudah Ada?}
+        SysGetConv -- Belum Ada --> SysCreateConv[Buat Record Baru di conversations Terkait post_id]
+        SysGetConv -- Sudah Ada --> SysReuseConv[Gunakan ID Ruang Percakapan yang Ada]
+        SysCreateConv --> SysAttachCard[Lampirkan Konteks Kartu Produk Otomatis]
+        SysReuseConv --> SysAttachCard
+        SysAttachCard --> ActOpenChat
         
-        %% Cabang Stok Habis
-        SysCheckStock -- Stok Habis (stock <= 0) --> SysAlertEmpty[Tampilkan Notifikasi Dialog: 'Stok Produk Habis']
-        SysAlertEmpty --> SysAbortOrder[Batalkan Sesi Checkout & Refresh Halaman]
-        SysAbortOrder --> SysEndAbort([Selesai: Transaksi Dibatalkan])
-
-        %% Cabang Stok Mencukupi
-        SysCheckStock -- Stok Tersedia (stock > 0) --> SysCreateOrder[Simpan Record Baru ke Tabel orders: Status PENDING]
-        SysCreateOrder --> SysDeductStock[Kunci & Kurangi Kuantitas Stok di market_posts]
-        SysDeductStock --> SysSendPush[Kirimkan Push Notifikasi Realtime ke Siswa Penjual]
-        SysSendPush --> ActReceiveSuccess
+        ActSendMsg --> SysSaveMsg[Simpan Pesan ke Tabel direct_messages]
+        SysSaveMsg --> SysSendPush[Kirimkan Push Notifikasi Realtime ke Siswa Penjual]
         
-        ActConfirmReceived --> SysUpdateStatus[Perbarui Status Transaksi Menjadi COMPLETED]
-        SysUpdateStatus --> SysLogHistory[Catat Riwayat Transaksi Sukses ke Buku Rekap]
-        SysLogHistory --> SysEndSuccess([Selesai: Transaksi Sukses])
+        ActInspectItem --> SysEndSuccess([Selesai: Transaksi COD Sukses])
     end
 
     %% SWIMLANE PENJUAL
     subgraph SwimlaneSeller["👤 SISWA PENJUAL"]
-        SysSendPush -.-> ActReceivePush[Menerima Notifikasi Pesanan Masuk di Smartphone]
-        ActReceivePush --> ActReviewDetails[Melihat Titik Temu yang Dipilih Pembeli]
-        ActReviewDetails --> ActBringProduct[Membawa Barang ke Titik Temu Saat Jam Istirahat]
+        SysSendPush -.-> ActReceivePush[Menerima Notifikasi Pesan Masuk di HP]
+        ActReceivePush --> ActReplyChat[Buka Chat DM & Sepakati Janjian Titik Temu]
+        ActReplyChat --> ActBringProduct[Bawa Karya/Produk ke Spot COD Sekolah]
         ActBringProduct --> ActGoToSpot
-        ActInspectItem --> ActReceiveCash[Menerima Uang Tunai Pembayaran COD]
+        ActInspectItem --> ActReceiveCash[Terima Uang Tunai & Serahkan Barang Fisik]
+        ActReceiveCash --> SysEndSuccess
     end
         </pre>
       </div>
@@ -1331,42 +1323,34 @@ flowchart TD
     %% SWIMLANE PEMBELI
     subgraph SwimlaneBuyer["👤 SISWA PEMBELI"]
         ActStart([Mulai: Buka Layar Detail Produk]) --> ActTapBuy[Tekan Tombol 'Beli Sekarang']
-        ActTapBuy --> ActSelectSpot[Pilih Titik Kumpul COD Resmi Sekolah]
-        ActSelectSpot --> ActWriteNote[Tulis Catatan Pertemuan Jam Istirahat Sekolah]
-        ActWriteNote --> ActSubmitOrder[Tekan Tombol 'Konfirmasi Pesanan']
-        
-        ActReceiveSuccess[Menerima Ringkasan Pesanan & ID Transaksi] --> ActGoToSpot[Datang ke Titik Temu Sekolah Sesuai Catatan]
+        ActOpenChat[Buka Ruang Obrolan DM dengan Kartu Produk Terlampir] --> ActSendMsg[Kirim Pesan & Sepakati Titik Temu COD]
+        ActSendMsg --> ActGoToSpot[Datang ke Titik Temu Sekolah Saat Jam Istirahat]
         ActGoToSpot --> ActInspectItem[Periksa Fisik Barang & Serahkan Uang Tunai]
-        ActInspectItem --> ActConfirmReceived[Tekan Tombol 'Pesanan Diterima' di Aplikasi]
     end
 
     %% SWIMLANE SISTEM
     subgraph SwimlaneSystem["⚡ SISTEM sNAPS (Flutter & Supabase)"]
-        ActSubmitOrder --> SysCheckStock{Sistem Memeriksa Kuantitas Stok di Database}
+        ActTapBuy --> SysGetConv{Cek Apakah Ruang Percakapan Sudah Ada?}
+        SysGetConv -- Belum Ada --> SysCreateConv[Buat Record Baru di conversations Terkait post_id]
+        SysGetConv -- Sudah Ada --> SysReuseConv[Gunakan ID Ruang Percakapan yang Ada]
+        SysCreateConv --> SysAttachCard[Lampirkan Konteks Kartu Produk Otomatis]
+        SysReuseConv --> SysAttachCard
+        SysAttachCard --> ActOpenChat
         
-        %% Cabang Stok Habis
-        SysCheckStock -- Stok Habis (stock <= 0) --> SysAlertEmpty[Tampilkan Notifikasi Dialog: 'Stok Produk Habis']
-        SysAlertEmpty --> SysAbortOrder[Batalkan Sesi Checkout & Refresh Halaman]
-        SysAbortOrder --> SysEndAbort([Selesai: Transaksi Dibatalkan])
-
-        %% Cabang Stok Mencukupi
-        SysCheckStock -- Stok Tersedia (stock > 0) --> SysCreateOrder[Simpan Record Baru ke Tabel orders: Status PENDING]
-        SysCreateOrder --> SysDeductStock[Kunci & Kurangi Kuantitas Stok di market_posts]
-        SysDeductStock --> SysSendPush[Kirimkan Push Notifikasi Realtime ke Siswa Penjual]
-        SysSendPush --> ActReceiveSuccess
+        ActSendMsg --> SysSaveMsg[Simpan Pesan ke Tabel direct_messages]
+        SysSaveMsg --> SysSendPush[Kirimkan Push Notifikasi Realtime ke Siswa Penjual]
         
-        ActConfirmReceived --> SysUpdateStatus[Perbarui Status Transaksi Menjadi COMPLETED]
-        SysUpdateStatus --> SysLogHistory[Catat Riwayat Transaksi Sukses ke Buku Rekap]
-        SysLogHistory --> SysEndSuccess([Selesai: Transaksi Sukses])
+        ActInspectItem --> SysEndSuccess([Selesai: Transaksi COD Sukses])
     end
 
     %% SWIMLANE PENJUAL
     subgraph SwimlaneSeller["👤 SISWA PENJUAL"]
-        SysSendPush -.-> ActReceivePush[Menerima Notifikasi Pesanan Masuk di Smartphone]
-        ActReceivePush --> ActReviewDetails[Melihat Titik Temu yang Dipilih Pembeli]
-        ActReviewDetails --> ActBringProduct[Membawa Barang ke Titik Temu Saat Jam Istirahat]
+        SysSendPush -.-> ActReceivePush[Menerima Notifikasi Pesan Masuk di HP]
+        ActReceivePush --> ActReplyChat[Buka Chat DM & Sepakati Janjian Titik Temu]
+        ActReplyChat --> ActBringProduct[Bawa Karya/Produk ke Spot COD Sekolah]
         ActBringProduct --> ActGoToSpot
-        ActInspectItem --> ActReceiveCash[Menerima Uang Tunai Pembayaran COD]
+        ActInspectItem --> ActReceiveCash[Terima Uang Tunai & Serahkan Barang Fisik]
+        ActReceiveCash --> SysEndSuccess
     end</code></pre>
     </section>
 
@@ -1374,8 +1358,8 @@ flowchart TD
     <section class="card" data-category="uml" id="diagram-11">
       <div class="card-header">
         <div class="card-title-group">
-          <h2>3.9 Class Diagram Arsitektur Checkout</h2>
-          <p>Struktur OOP Flutter & Supabase: Presentation, Controller, Domain Entity, dan Service Layer</p>
+          <h2>3.9 Class Diagram Arsitektur Social Commerce (Feed-to-DM)</h2>
+          <p>Struktur OOP Flutter & Supabase: Presentation, Navigator, Domain Model, dan Direct Messages Service</p>
         </div>
         <div class="card-actions">
           <button class="btn-action" onclick="toggleCode('code-11')">Lihat Mermaid</button>
@@ -1386,30 +1370,19 @@ flowchart TD
       <div class="diagram-wrapper">
         <pre class="mermaid" id="mer-11">
 classDiagram
-    %% PRESENTATION & CONTROLLER LAYER
-    class CheckoutScreen {
-        +MarketPost product
-        +createState() State~CheckoutScreen~
+    %% PRESENTATION & NAVIGATION LAYER
+    class HomeFeedScreen {
+        +HomeFeedController controller
+        +_handleBuyNow(MarketPostModel post) void
     }
 
-    class CheckoutController {
-        -SupabaseOrderService _orderService
-        +List~SchoolMeetingPoint~ meetingPoints
-        +SchoolMeetingPoint? selectedPoint
-        +String buyerNote
-        +bool isLoading
-        +bool isSubmitting
-        +loadMeetingPoints() Future~void~
-        +selectMeetingPoint(SchoolMeetingPoint point) void
-        +setBuyerNote(String note) void
-        +submitCodOrder(String postId) Future~bool~
+    class SocialCommerceNavigator {
+        +openDirectMessage(BuildContext context, MarketPostModel post) void
     }
 
-    class CheckoutBottomBar {
-        +int price
-        +bool isOrdering
-        +VoidCallback onOrderSubmit
-        +build(BuildContext context) Widget
+    class ChatConversationScreen {
+        +ConversationModel conversation
+        +createState() State~ChatConversationScreen~
     }
 
     %% DOMAIN ENTITY / MODEL LAYER
@@ -1426,97 +1399,98 @@ classDiagram
         +toJson() Map~String, dynamic~
     }
 
-    class MarketPost {
+    class MarketPostModel {
         +String id
-        +String sellerId
-        +String title
-        +String description
-        +int price
-        +int stock
-        +String type
+        +UserProfile seller
+        +String? title
+        +String caption
+        +int? price
         +String category
-        +List~String~ imageUrls
+        +List~String~ images
         +DateTime createdAt
-        +bool get isOutOfStock
-        +MarketPost.fromJson(Map~String, dynamic~ json)
+        +MarketPostModel.fromJson(Map~String, dynamic~ json)
     }
 
-    class SchoolMeetingPoint {
-        +String id
-        +String name
-        +String code
-        +String areaZone
-        +String description
-        +String? photoUrl
-        +bool isActive
-        +SchoolMeetingPoint.fromJson(Map~String, dynamic~ json)
+    class ProductContext {
+        +String title
+        +String price
+        +String? image
+        +String location
     }
 
-    class OrderTransaction {
+    class ConversationModel {
         +String id
-        +String buyerId
-        +String sellerId
-        +String postId
-        +String meetingPointId
-        +int totalPrice
-        +String buyerNote
-        +String status
+        +UserProfile user
+        +String? productId
+        +String lastMessage
+        +DateTime lastMessageAt
+        +int unreadCount
+        +ProductContext? productContext
+        +ConversationModel.fromJson(Map~String, dynamic~ json, String currentUserId)
+    }
+
+    class ChatMessageModel {
+        +String id
+        +String conversationId
+        +String senderId
+        +String messageText
+        +bool isRead
         +DateTime createdAt
-        +DateTime? completedAt
-        +OrderTransaction.fromJson(Map~String, dynamic~ json)
+        +ChatMessageModel.fromJson(Map~String, dynamic~ json, String currentUserId)
     }
 
     %% DATA SERVICE & BACKEND GATEWAY LAYER
-    class SupabaseOrderService {
-        -SupabaseClient _client
-        +fetchActiveMeetingPoints() Future~List~SchoolMeetingPoint~~
-        +createAtomicCodOrder(String postId, String meetingPointId, String note) Future~OrderTransaction~
-        +verifyProductStock(String postId) Future~int~
-        +updateOrderStatus(String orderId, String status) Future~void~
+    class DirectMessagesService {
+        -List~ConversationModel~ _conversations
+        -Map~String, List~ChatMessageModel~~ _conversationMessages
+        +static DirectMessagesService instance
+        +loadConversations() Future~void~
+        +loadMessages(String conversationId) Future~List~ChatMessageModel~~
+        +sendMessage(String conversationId, String text) Future~ChatMessageModel~
+        +markAsRead(String conversationId) Future~void~
+    }
+
+    class SupabaseService {
+        -SupabaseClient client
+        +static SupabaseService instance
+        +fetchConversations() Future~List~Map~~~~
+        +fetchMessages(String convId) Future~List~Map~~~~
+        +sendChatMessage(String convId, String text) Future~Map~
+        +subscribeToGlobalInbox(Function onNewMessage) RealtimeChannel
     }
 
     %% RELASI & DEPENDENSI OOP
-    CheckoutScreen --> CheckoutController : "binds & observes"
-    CheckoutScreen *-- CheckoutBottomBar : "contains"
-    CheckoutController --> SupabaseOrderService : "calls business logic"
+    HomeFeedScreen --> SocialCommerceNavigator : "delegates buy action"
+    SocialCommerceNavigator --> DirectMessagesService : "retrieves/creates conversation"
+    SocialCommerceNavigator --> ChatConversationScreen : "navigates to"
+    SocialCommerceNavigator ..> ProductContext : "creates context"
     
-    CheckoutController o-- SchoolMeetingPoint : "holds selected"
-    CheckoutController ..> OrderTransaction : "creates instance"
+    ChatConversationScreen --> DirectMessagesService : "observes messages"
+    ChatConversationScreen o-- ConversationModel : "holds active"
+    ConversationModel o-- ProductContext : "contains"
+    ConversationModel o-- UserProfile : "peer user"
     
-    SupabaseOrderService ..> SchoolMeetingPoint : "deserializes"
-    SupabaseOrderService ..> OrderTransaction : "persists to Supabase"
-    SupabaseOrderService ..> MarketPost : "checks stock"
+    DirectMessagesService --> SupabaseService : "calls realtime gateway"
+    DirectMessagesService o-- ConversationModel : "manages list"
+    DirectMessagesService o-- ChatMessageModel : "caches messages"
     
-    OrderTransaction --> MarketPost : "references"
-    OrderTransaction --> SchoolMeetingPoint : "delivered at"
-    OrderTransaction --> UserProfile : "involves buyer & seller"
+    MarketPostModel --> UserProfile : "seller"
         </pre>
       </div>
       <pre class="code-container" id="code-11"><code id="src-11">classDiagram
-    %% PRESENTATION & CONTROLLER LAYER
-    class CheckoutScreen {
-        +MarketPost product
-        +createState() State~CheckoutScreen~
+    %% PRESENTATION & NAVIGATION LAYER
+    class HomeFeedScreen {
+        +HomeFeedController controller
+        +_handleBuyNow(MarketPostModel post) void
     }
 
-    class CheckoutController {
-        -SupabaseOrderService _orderService
-        +List~SchoolMeetingPoint~ meetingPoints
-        +SchoolMeetingPoint? selectedPoint
-        +String buyerNote
-        +bool isLoading
-        +bool isSubmitting
-        +loadMeetingPoints() Future~void~
-        +selectMeetingPoint(SchoolMeetingPoint point) void
-        +setBuyerNote(String note) void
-        +submitCodOrder(String postId) Future~bool~
+    class SocialCommerceNavigator {
+        +openDirectMessage(BuildContext context, MarketPostModel post) void
     }
 
-    class CheckoutBottomBar {
-        +int price
-        +bool isOrdering
-        +VoidCallback onOrderSubmit
-        +build(BuildContext context) Widget
+    class ChatConversationScreen {
+        +ConversationModel conversation
+        +createState() State~ChatConversationScreen~
     }
 
     %% DOMAIN ENTITY / MODEL LAYER
@@ -1533,70 +1507,82 @@ classDiagram
         +toJson() Map~String, dynamic~
     }
 
-    class MarketPost {
+    class MarketPostModel {
         +String id
-        +String sellerId
-        +String title
-        +String description
-        +int price
-        +int stock
-        +String type
+        +UserProfile seller
+        +String? title
+        +String caption
+        +int? price
         +String category
-        +List~String~ imageUrls
+        +List~String~ images
         +DateTime createdAt
-        +bool get isOutOfStock
-        +MarketPost.fromJson(Map~String, dynamic~ json)
+        +MarketPostModel.fromJson(Map~String, dynamic~ json)
     }
 
-    class SchoolMeetingPoint {
-        +String id
-        +String name
-        +String code
-        +String areaZone
-        +String description
-        +String? photoUrl
-        +bool isActive
-        +SchoolMeetingPoint.fromJson(Map~String, dynamic~ json)
+    class ProductContext {
+        +String title
+        +String price
+        +String? image
+        +String location
     }
 
-    class OrderTransaction {
+    class ConversationModel {
         +String id
-        +String buyerId
-        +String sellerId
-        +String postId
-        +String meetingPointId
-        +int totalPrice
-        +String buyerNote
-        +String status
+        +UserProfile user
+        +String? productId
+        +String lastMessage
+        +DateTime lastMessageAt
+        +int unreadCount
+        +ProductContext? productContext
+        +ConversationModel.fromJson(Map~String, dynamic~ json, String currentUserId)
+    }
+
+    class ChatMessageModel {
+        +String id
+        +String conversationId
+        +String senderId
+        +String messageText
+        +bool isRead
         +DateTime createdAt
-        +DateTime? completedAt
-        +OrderTransaction.fromJson(Map~String, dynamic~ json)
+        +ChatMessageModel.fromJson(Map~String, dynamic~ json, String currentUserId)
     }
 
     %% DATA SERVICE & BACKEND GATEWAY LAYER
-    class SupabaseOrderService {
-        -SupabaseClient _client
-        +fetchActiveMeetingPoints() Future~List~SchoolMeetingPoint~~
-        +createAtomicCodOrder(String postId, String meetingPointId, String note) Future~OrderTransaction~
-        +verifyProductStock(String postId) Future~int~
-        +updateOrderStatus(String orderId, String status) Future~void~
+    class DirectMessagesService {
+        -List~ConversationModel~ _conversations
+        -Map~String, List~ChatMessageModel~~ _conversationMessages
+        +static DirectMessagesService instance
+        +loadConversations() Future~void~
+        +loadMessages(String conversationId) Future~List~ChatMessageModel~~
+        +sendMessage(String conversationId, String text) Future~ChatMessageModel~
+        +markAsRead(String conversationId) Future~void~
+    }
+
+    class SupabaseService {
+        -SupabaseClient client
+        +static SupabaseService instance
+        +fetchConversations() Future~List~Map~~~~
+        +fetchMessages(String convId) Future~List~Map~~~~
+        +sendChatMessage(String convId, String text) Future~Map~
+        +subscribeToGlobalInbox(Function onNewMessage) RealtimeChannel
     }
 
     %% RELASI & DEPENDENSI OOP
-    CheckoutScreen --> CheckoutController : "binds & observes"
-    CheckoutScreen *-- CheckoutBottomBar : "contains"
-    CheckoutController --> SupabaseOrderService : "calls business logic"
+    HomeFeedScreen --> SocialCommerceNavigator : "delegates buy action"
+    SocialCommerceNavigator --> DirectMessagesService : "retrieves/creates conversation"
+    SocialCommerceNavigator --> ChatConversationScreen : "navigates to"
+    SocialCommerceNavigator ..> ProductContext : "creates context"
     
-    CheckoutController o-- SchoolMeetingPoint : "holds selected"
-    CheckoutController ..> OrderTransaction : "creates instance"
+    ChatConversationScreen --> DirectMessagesService : "observes messages"
+    ChatConversationScreen o-- ConversationModel : "holds active"
+    ConversationModel o-- ProductContext : "contains"
+    ConversationModel o-- UserProfile : "peer user"
     
-    SupabaseOrderService ..> SchoolMeetingPoint : "deserializes"
-    SupabaseOrderService ..> OrderTransaction : "persists to Supabase"
-    SupabaseOrderService ..> MarketPost : "checks stock"
+    DirectMessagesService --> SupabaseService : "calls realtime gateway"
+    DirectMessagesService o-- ConversationModel : "manages list"
+    DirectMessagesService o-- ChatMessageModel : "caches messages"
     
-    OrderTransaction --> MarketPost : "references"
-    OrderTransaction --> SchoolMeetingPoint : "delivered at"
-    OrderTransaction --> UserProfile : "involves buyer & seller"</code></pre>
+    MarketPostModel --> UserProfile : "seller"</code></pre>
     </section>
 
     <!-- 13. SEQUENCE DIAGRAM 1: REGISTRASI -->
@@ -1853,6 +1839,115 @@ sequenceDiagram
         deactivate Ctrl
         UI-->>Siswa: Navigasi Otomatis Membuka Layar Beranda (Feed & Market)
     end</code></pre>
+    </section>
+
+    <!-- 15. SEQUENCE DIAGRAM 3: SOCIAL COMMERCE FEED-TO-DM -->
+    <section class="card" data-category="uml" id="diagram-12c">
+      <div class="card-header">
+        <div class="card-title-group">
+          <h2>3.10.3 Sequence Diagram: Pemesanan Langsung via Chat DM (Feed-to-DM)</h2>
+          <p>Alur navigasi dari kartu produk feed, inisialisasi obrolan direct message, dan notifikasi realtime</p>
+        </div>
+        <div class="card-actions">
+          <button class="btn-action" onclick="toggleCode('code-12c')">Lihat Mermaid</button>
+          <button class="btn-action" onclick="copyCode('src-12c', this)">Salin Kode</button>
+          <button class="btn-action" onclick="openLive('src-12c')">Buka di Mermaid Live</button>
+        </div>
+      </div>
+      <div class="diagram-wrapper">
+        <pre class="mermaid" id="mer-12c">
+sequenceDiagram
+    autonumber
+    actor Pembeli as 👤 Siswa Pembeli
+    participant UI_Feed as 📱 HomeFeedScreen
+    participant Nav as 🧭 SocialCommerceNavigator
+    participant Svc_DM as 💬 DirectMessagesService
+    participant UI_Chat as 📱 ChatConversationScreen
+    participant DB as 🗄️ Supabase (PostgreSQL & Realtime)
+    actor Penjual as 👤 Siswa Penjual
+
+    Pembeli->>UI_Feed: Tekan Tombol 'Beli Sekarang' pada Postingan Produk
+    UI_Feed->>Nav: openDirectMessage(context, post)
+    activate Nav
+    
+    Nav->>Nav: Bentuk ProductContext(title, price, image, location)
+    Nav->>Svc_DM: Cek Riwayat Percakapan dengan Penjual
+    activate Svc_DM
+    
+    alt Percakapan Belum Ada
+        Svc_DM->>DB: Buat Record di conversations (participant_one, participant_two, product_id)
+        DB-->>Svc_DM: Return ConversationModel Baru
+    else Percakapan Sudah Ada
+        Svc_DM-->>Nav: Gunakan ConversationModel yang Tersedia
+    end
+    deactivate Svc_DM
+    
+    Nav->>UI_Chat: Navigasi Membuka Layar Chat (Bawa ConversationModel & ProductContext)
+    deactivate Nav
+    activate UI_Chat
+    UI_Chat-->>Pembeli: Tampilkan Layar Chat dengan Kartu Produk Menempel di Atas Input
+    
+    Pembeli->>UI_Chat: Ketik Pesan & Tekan Kirim (cth: "Halo kak, COD di Gazebo PPLG istirahat pertama?")
+    UI_Chat->>Svc_DM: sendMessage(conversationId, text)
+    activate Svc_DM
+    Svc_DM->>DB: INSERT INTO direct_messages (conversation_id, sender_id, content)
+    activate DB
+    DB-->>Svc_DM: Record Pesan Tersimpan
+    
+    DB-->>Penjual: Realtime Broadcast / Push Notification Chat Masuk
+    deactivate DB
+    deactivate Svc_DM
+    
+    Penjual->>UI_Chat: Buka DM & Sepakati Janjian di Titik Temu
+    Pembeli->>Penjual: Bertemu di Lokasi Sekolah, Periksa Barang & Bayar Tunai
+    deactivate UI_Chat
+        </pre>
+      </div>
+      <pre class="code-container" id="code-12c"><code id="src-12c">sequenceDiagram
+    autonumber
+    actor Pembeli as 👤 Siswa Pembeli
+    participant UI_Feed as 📱 HomeFeedScreen
+    participant Nav as 🧭 SocialCommerceNavigator
+    participant Svc_DM as 💬 DirectMessagesService
+    participant UI_Chat as 📱 ChatConversationScreen
+    participant DB as 🗄️ Supabase (PostgreSQL & Realtime)
+    actor Penjual as 👤 Siswa Penjual
+
+    Pembeli->>UI_Feed: Tekan Tombol 'Beli Sekarang' pada Postingan Produk
+    UI_Feed->>Nav: openDirectMessage(context, post)
+    activate Nav
+    
+    Nav->>Nav: Bentuk ProductContext(title, price, image, location)
+    Nav->>Svc_DM: Cek Riwayat Percakapan dengan Penjual
+    activate Svc_DM
+    
+    alt Percakapan Belum Ada
+        Svc_DM->>DB: Buat Record di conversations (participant_one, participant_two, product_id)
+        DB-->>Svc_DM: Return ConversationModel Baru
+    else Percakapan Sudah Ada
+        Svc_DM-->>Nav: Gunakan ConversationModel yang Tersedia
+    end
+    deactivate Svc_DM
+    
+    Nav->>UI_Chat: Navigasi Membuka Layar Chat (Bawa ConversationModel & ProductContext)
+    deactivate Nav
+    activate UI_Chat
+    UI_Chat-->>Pembeli: Tampilkan Layar Chat dengan Kartu Produk Menempel di Atas Input
+    
+    Pembeli->>UI_Chat: Ketik Pesan & Tekan Kirim (cth: "Halo kak, COD di Gazebo PPLG istirahat pertama?")
+    UI_Chat->>Svc_DM: sendMessage(conversationId, text)
+    activate Svc_DM
+    Svc_DM->>DB: INSERT INTO direct_messages (conversation_id, sender_id, content)
+    activate DB
+    DB-->>Svc_DM: Record Pesan Tersimpan
+    
+    DB-->>Penjual: Realtime Broadcast / Push Notification Chat Masuk
+    deactivate DB
+    deactivate Svc_DM
+    
+    Penjual->>UI_Chat: Buka DM & Sepakati Janjian di Titik Temu
+    Pembeli->>Penjual: Bertemu di Lokasi Sekolah, Periksa Barang & Bayar Tunai
+    deactivate UI_Chat</code></pre>
     </section>
 
   </main>

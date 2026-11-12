@@ -249,7 +249,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       CheckoutLocationCard(
                         selectedSpot: _selectedSpot,
                         onSelectSpotTap: _openLocationPicker,
-                        onSelectMapTap: _openMapPicker,
                       ),
                       const SizedBox(height: 12.0),
                       CheckoutBuyerNoteCard(controller: _noteController),

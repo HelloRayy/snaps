@@ -411,6 +411,21 @@ erDiagram
 
 ```mermaid
 classDiagram
+    %% Presentation & Navigation
+    class HomeFeedScreen {
+        +HomeFeedController controller
+        +_handleBuyNow(MarketPostModel post) void
+    }
+
+    class SocialCommerceNavigator {
+        +openDirectMessage(BuildContext context, MarketPostModel post) void
+    }
+
+    class ChatConversationScreen {
+        +ConversationModel conversation
+        +createState() State~ChatConversationScreen~
+    }
+
     %% Models
     class UserProfile {
         +String id
@@ -425,93 +440,78 @@ classDiagram
         +toJson() Map
     }
 
-    class MarketPost {
+    class MarketPostModel {
         +String id
-        +String sellerId
-        +String title
-        +String description
-        +int price
-        +int stock
-        +String type
+        +UserProfile seller
+        +String? title
+        +String caption
+        +int? price
         +String category
-        +List~String~ imageUrls
+        +List~String~ images
         +DateTime createdAt
-        +bool get isOutOfStock
     }
 
-    class SchoolMeetingPoint {
-        +String id
-        +String name
-        +String code
-        +String areaZone
-        +String description
-        +String? photoUrl
-        +bool isActive
+    class ProductContext {
+        +String title
+        +String price
+        +String? image
+        +String location
     }
 
-    class OrderTransaction {
+    class ConversationModel {
         +String id
-        +String buyerId
-        +String sellerId
-        +String postId
-        +String meetingPointId
-        +int totalPrice
-        +String buyerNote
-        +String status
+        +UserProfile user
+        +String? productId
+        +String lastMessage
+        +DateTime lastMessageAt
+        +int unreadCount
+        +ProductContext? productContext
+    }
+
+    class ChatMessageModel {
+        +String id
+        +String conversationId
+        +String senderId
+        +String messageText
+        +bool isRead
         +DateTime createdAt
     }
 
     %% Services
-    class SupabaseAuthService {
-        -_client SupabaseClient
-        +loginWithNis(String nis, String password) Future~AuthResponse~
-        +registerWithNis(String nis, String username, String password) Future~void~
-        +bindDevice(String userId, String deviceId) Future~void~
-        +getCurrentUser() UserProfile?
+    class DirectMessagesService {
+        -List~ConversationModel~ _conversations
+        -Map~String, List~ChatMessageModel~~ _conversationMessages
+        +static DirectMessagesService instance
+        +loadConversations() Future~void~
+        +loadMessages(String conversationId) Future~List~ChatMessageModel~~
+        +sendMessage(String conversationId, String text) Future~ChatMessageModel~
+        +markAsRead(String conversationId) Future~void~
     }
 
-    class SupabaseFeedService {
-        -_client SupabaseClient
-        +fetchFeedPosts(int page, String? category) Future~List~MarketPost~~
-        +createPost(MarketPost post) Future~MarketPost~
-        +likePost(String postId) Future~void~
-        +addComment(String postId, String comment) Future~void~
-    }
-
-    class SupabaseOrderService {
-        -_client SupabaseClient
-        +createCodOrder(OrderTransaction order) Future~OrderTransaction~
-        +fetchMeetingPoints() Future~List~SchoolMeetingPoint~~
-        +updateOrderStatus(String orderId, String newStatus) Future~void~
-    }
-
-    %% Controllers
-    class AuthController {
-        -SupabaseAuthService _authService
-        +UserProfile? currentUser
-        +bool isLoading
-        +login(String nis, String password) Future~bool~
-        +logout() Future~void~
-    }
-
-    class CheckoutController {
-        -SupabaseOrderService _orderService
-        +List~SchoolMeetingPoint~ meetingPoints
-        +SchoolMeetingPoint? selectedPoint
-        +bool isSubmitting
-        +loadMeetingPoints() Future~void~
-        +submitCodOrder(String postId, String buyerNote) Future~bool~
+    class SupabaseService {
+        -SupabaseClient client
+        +static SupabaseService instance
+        +fetchConversations() Future~List~Map~~~~
+        +fetchMessages(String convId) Future~List~Map~~~~
+        +sendChatMessage(String convId, String text) Future~Map~
+        +subscribeToGlobalInbox(Function onNewMessage) RealtimeChannel
     }
 
     %% Relationships
-    AuthController --> SupabaseAuthService : "uses"
-    CheckoutController --> SupabaseOrderService : "uses"
-    SupabaseAuthService ..> UserProfile : "returns"
-    SupabaseFeedService ..> MarketPost : "manages"
-    SupabaseOrderService ..> SchoolMeetingPoint : "fetches"
-    SupabaseOrderService ..> OrderTransaction : "processes"
-    OrderTransaction --> MarketPost : "contains post"
-    OrderTransaction --> SchoolMeetingPoint : "meets at"
+    HomeFeedScreen --> SocialCommerceNavigator : "delegates buy action"
+    SocialCommerceNavigator --> DirectMessagesService : "retrieves/creates conversation"
+    SocialCommerceNavigator --> ChatConversationScreen : "navigates to"
+    SocialCommerceNavigator ..> ProductContext : "creates context"
+    
+    ChatConversationScreen --> DirectMessagesService : "observes messages"
+    ChatConversationScreen o-- ConversationModel : "holds active"
+    ConversationModel o-- ProductContext : "contains"
+    ConversationModel o-- UserProfile : "peer user"
+    
+    DirectMessagesService --> SupabaseService : "calls realtime gateway"
+    DirectMessagesService o-- ConversationModel : "manages list"
+    DirectMessagesService o-- ChatMessageModel : "caches messages"
+    MarketPostModel --> UserProfile : "seller"
 ```
 
 ---
@@ -554,56 +554,52 @@ sequenceDiagram
     end
 ```
 
-### 3.9.2 Sequence Diagram: Checkout Pesanan COD Titik Temu Sekolah
+### 3.9.2 Sequence Diagram: Pemesanan Langsung via Chat DM (Feed-to-DM)
 
 ```mermaid
 sequenceDiagram
     autonumber
     actor Pembeli as 👤 Siswa Pembeli
-    participant UI as 📱 CheckoutScreen
-    participant Ctrl as 🎮 CheckoutController
-    participant Svc as 🌐 SupabaseOrderService
-    participant DB as 🗄️ Supabase PostgreSQL
+    participant UI_Feed as 📱 HomeFeedScreen
+    participant Nav as 🧭 SocialCommerceNavigator
+    participant Svc_DM as 💬 DirectMessagesService
+    participant UI_Chat as 📱 ChatConversationScreen
+    participant DB as 🗄️ Supabase (PostgreSQL & Realtime)
     actor Penjual as 👤 Siswa Penjual
 
-    Pembeli->>UI: Buka Halaman Checkout
-    UI->>Ctrl: loadMeetingPoints()
-    Ctrl->>Svc: fetchMeetingPoints()
-    Svc->>DB: SELECT * FROM school_meeting_points WHERE is_active = true
-    DB-->>Svc: List Titik Temu (Gazebo, Kantin, Lab)
-    Svc-->>Ctrl: Data Lokasi Sekolah
-    Ctrl-->>UI: Render Pilihan Spot COD di Denah
-
-    Pembeli->>UI: Pilih Titik Temu & Tulis Catatan
-    Pembeli->>UI: Tekan Tombol "Konfirmasi Pesanan"
-    UI->>Ctrl: submitCodOrder(postId, note)
+    Pembeli->>UI_Feed: Tekan Tombol 'Beli Sekarang' pada Postingan Produk
+    UI_Feed->>Nav: openDirectMessage(context, post)
+    activate Nav
     
-    activate Ctrl
-    Ctrl->>Svc: createCodOrder(payload)
-    activate Svc
+    Nav->>Nav: Bentuk ProductContext(title, price, image, location)
+    Nav->>Svc_DM: Cek Riwayat Percakapan dengan Penjual
+    activate Svc_DM
     
-    critical Verifikasi Stok Atomik
-        Svc->>DB: BEGIN TRANSACTION
-        Svc->>DB: SELECT stock FROM market_posts WHERE id = :postId FOR UPDATE
-        alt Stok Habis (stock <= 0)
-            DB-->>Svc: Stock = 0
-            Svc->>DB: ROLLBACK
-            Svc-->>Ctrl: Error: Stok Habis
-            Ctrl-->>UI: Tampilkan Alert Gagal (Stok Kosong)
-        else Stok Tersedia (stock > 0)
-            Svc->>DB: INSERT INTO orders (buyer_id, seller_id, post_id, meeting_point_id, status='pending')
-            Svc->>DB: UPDATE market_posts SET stock = stock - 1 WHERE id = :postId
-            Svc->>DB: COMMIT TRANSACTION
-            DB-->>Svc: Record Order Berhasil Dibuat
-            
-            Svc->>DB: TRIGGER Notifikasi Masuk ke Penjual
-            DB-->>Penjual: Push Notification: "Ada Pesanan COD Baru Masuk!"
-            
-            Svc-->>Ctrl: Order Sukses
-            deactivate Svc
-            Ctrl-->>UI: Emit State Sukses
-            deactivate Ctrl
-            UI-->>Pembeli: Tampilkan Modal Sukses & Panduan Titik Temu
-        end
+    alt Percakapan Belum Ada
+        Svc_DM->>DB: Buat Record di conversations (participant_one, participant_two, product_id)
+        DB-->>Svc_DM: Return ConversationModel Baru
+    else Percakapan Sudah Ada
+        Svc_DM-->>Nav: Gunakan ConversationModel yang Tersedia
     end
+    deactivate Svc_DM
+    
+    Nav->>UI_Chat: Navigasi Membuka Layar Chat (Bawa ConversationModel & ProductContext)
+    deactivate Nav
+    activate UI_Chat
+    UI_Chat-->>Pembeli: Tampilkan Layar Chat dengan Kartu Produk Menempel di Atas Input
+    
+    Pembeli->>UI_Chat: Ketik Pesan & Tekan Kirim (cth: "Halo kak, COD di Gazebo PPLG istirahat pertama?")
+    UI_Chat->>Svc_DM: sendMessage(conversationId, text)
+    activate Svc_DM
+    Svc_DM->>DB: INSERT INTO direct_messages (conversation_id, sender_id, content)
+    activate DB
+    DB-->>Svc_DM: Record Pesan Tersimpan
+    
+    DB-->>Penjual: Realtime Broadcast / Push Notification Chat Masuk
+    deactivate DB
+    deactivate Svc_DM
+    
+    Penjual->>UI_Chat: Buka DM & Sepakati Janjian di Titik Temu
+    Pembeli->>Penjual: Bertemu di Lokasi Sekolah, Periksa Barang & Bayar Tunai
+    deactivate UI_Chat
 ```

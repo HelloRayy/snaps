@@ -5,13 +5,13 @@ import "package:snapan_market/features/locations/models/campus_location_spot.dar
 class CheckoutLocationCard extends StatelessWidget {
   final CampusLocationSpot selectedSpot;
   final VoidCallback onSelectSpotTap;
-  final VoidCallback onSelectMapTap;
+  final VoidCallback? onSelectMapTap;
 
   const CheckoutLocationCard({
     super.key,
     required this.selectedSpot,
     required this.onSelectSpotTap,
-    required this.onSelectMapTap,
+    this.onSelectMapTap,
   });
 
   @override
@@ -66,31 +66,32 @@ class CheckoutLocationCard extends StatelessWidget {
                   ),
                 ],
               ),
-              InkWell(
-                onTap: onSelectMapTap,
-                borderRadius: BorderRadius.circular(8.0),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF1F5F9),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: Row(
-                    children: const [
-                      Icon(Icons.map_outlined, size: 13.0, color: Color(0xFF334155)),
-                      SizedBox(width: 4.0),
-                      Text(
-                        "Denah",
-                        style: TextStyle(
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF334155),
+              if (onSelectMapTap != null)
+                InkWell(
+                  onTap: onSelectMapTap,
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF1F5F9),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Row(
+                      children: const [
+                        Icon(Icons.map_outlined, size: 13.0, color: Color(0xFF334155)),
+                        SizedBox(width: 4.0),
+                        Text(
+                          "Denah",
+                          style: TextStyle(
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF334155),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
           const SizedBox(height: 12.0),
