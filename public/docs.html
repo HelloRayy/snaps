@@ -1901,12 +1901,18 @@ flowchart TD
         <div class="diagram-panel tab-content-diagram">
           <pre class="mermaid" id="mer-3-7-1">
 erDiagram
-    STUDENT_REGISTRY ||--o| PROFILES : "memiliki identitas NIS"
+    %% 1. Verifikasi Buku Induk Siswa
+    STUDENT_REGISTRY ||--o| PROFILES : "terverifikasi NIS (1:1)"
+
+    %% 2. Modul Postingan Produk & Thread Komunitas
     PROFILES ||--o{ MARKET_POSTS : "membuat postingan"
+
+    %% 3. Modul Obrolan Transaksi Langsung (Direct-to-DM)
     PROFILES ||--o{ CONVERSATIONS : "partisipan obrolan"
-    MARKET_POSTS ||--o{ CONVERSATIONS : "lampiran barang transaksi"
-    CONVERSATIONS ||--o{ DIRECT_MESSAGES : "memuat pesan"
-    PROFILES ||--o{ DIRECT_MESSAGES : "pengirim pesan"
+    MARKET_POSTS ||--o{ CONVERSATIONS : "lampiran produk"
+    CONVERSATIONS ||--o{ DIRECT_MESSAGES : "berisi riwayat pesan"
+
+    %% 4. Modul Moderasi & Keamanan Konten
     PROFILES ||--o{ CONTENT_REPORTS : "mengajukan laporan"
     MARKET_POSTS ||--o{ CONTENT_REPORTS : "konten dilaporkan"
           </pre>
@@ -1926,21 +1932,18 @@ erDiagram
 
         <div class="code-panel tab-content-code">
           <pre id="src-3-7-1"><code>erDiagram
-    student_registry ||--o| profiles : "nis"
-    profiles ||--o{ market_posts : "seller_id"
-    profiles ||--o{ conversations : "participant_one"
-    profiles ||--o{ conversations : "participant_two"
-    market_posts ||--o{ conversations : "product_id"
-    conversations ||--o{ direct_messages : "conversation_id"
-    profiles ||--o{ direct_messages : "sender_id"
-    profiles ||--o{ content_reports : "reporter_id"
-          <pre id="src-3-7-1"><code>erDiagram
-    STUDENT_REGISTRY ||--o| PROFILES : "memiliki identitas NIS"
+    %% 1. Verifikasi Buku Induk Siswa
+    STUDENT_REGISTRY ||--o| PROFILES : "terverifikasi NIS (1:1)"
+
+    %% 2. Modul Postingan Produk & Thread Komunitas
     PROFILES ||--o{ MARKET_POSTS : "membuat postingan"
+
+    %% 3. Modul Obrolan Transaksi Langsung (Direct-to-DM)
     PROFILES ||--o{ CONVERSATIONS : "partisipan obrolan"
-    MARKET_POSTS ||--o{ CONVERSATIONS : "lampiran barang transaksi"
-    CONVERSATIONS ||--o{ DIRECT_MESSAGES : "memuat pesan"
-    PROFILES ||--o{ DIRECT_MESSAGES : "pengirim pesan"
+    MARKET_POSTS ||--o{ CONVERSATIONS : "lampiran produk"
+    CONVERSATIONS ||--o{ DIRECT_MESSAGES : "berisi riwayat pesan"
+
+    %% 4. Modul Moderasi & Keamanan Konten
     PROFILES ||--o{ CONTENT_REPORTS : "mengajukan laporan"
     MARKET_POSTS ||--o{ CONTENT_REPORTS : "konten dilaporkan"
 </code></pre>
