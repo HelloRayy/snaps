@@ -1357,23 +1357,23 @@ flowchart LR
 
     subgraph C1["1.0 Akun"]
         P1(("1.0<br/>Kelola Akun Siswa"))
-        D_Siswa[("tb_siswa_sekolah")]
-        D_Akun[("tb_akun_pengguna")]
+        D_Siswa[("Data Siswa Sekolah")]
+        D_Akun[("Data Akun Pengguna")]
     end
 
     subgraph C2["2.0 Postingan"]
         P2(("2.0<br/>Kelola Postingan & Jualan"))
-        D_Post[("tb_postingan_jualan")]
+        D_Post[("Data Postingan & Jualan")]
     end
 
     subgraph C3["3.0 Chat & COD"]
         P3(("3.0<br/>Kelola Chat & Janjian COD"))
-        D_Chat[("tb_percakapan_chat")]
+        D_Chat[("Data Percakapan & Chat")]
     end
 
     subgraph C4["4.0 Laporan"]
         P4(("4.0<br/>Kelola Laporan & Keamanan"))
-        D_Lapor[("tb_laporan_konten")]
+        D_Lapor[("Data Laporan Konten")]
     end
 
     %% Relasi 1.0
@@ -1423,23 +1423,23 @@ flowchart LR
 
     subgraph C1["1.0 Akun"]
         P1(("1.0<br/>Kelola Akun Siswa"))
-        D_Siswa[("tb_siswa_sekolah")]
-        D_Akun[("tb_akun_pengguna")]
+        D_Siswa[("Data Siswa Sekolah")]
+        D_Akun[("Data Akun Pengguna")]
     end
 
     subgraph C2["2.0 Postingan"]
         P2(("2.0<br/>Kelola Postingan & Jualan"))
-        D_Post[("tb_postingan_jualan")]
+        D_Post[("Data Postingan & Jualan")]
     end
 
     subgraph C3["3.0 Chat & COD"]
         P3(("3.0<br/>Kelola Chat & Janjian COD"))
-        D_Chat[("tb_percakapan_chat")]
+        D_Chat[("Data Percakapan & Chat")]
     end
 
     subgraph C4["4.0 Laporan"]
         P4(("4.0<br/>Kelola Laporan & Keamanan"))
-        D_Lapor[("tb_laporan_konten")]
+        D_Lapor[("Data Laporan Konten")]
     end
 
     %% Relasi 1.0
@@ -1503,12 +1503,12 @@ flowchart LR
 
     subgraph C31["Sub-Proses 3.1"]
         P31(("3.1<br/>Pilih Barang & Buka Chat"))
-        D_Post[("tb_postingan_jualan")]
+        D_Post[("Data Postingan & Jualan")]
     end
 
     subgraph C32["Sub-Proses 3.2"]
         P32(("3.2<br/>Kirim Pesan & Janjian COD"))
-        D_Chat[("tb_percakapan_chat")]
+        D_Chat[("Data Percakapan & Chat")]
     end
 
     %% Relasi 3.1
@@ -1541,12 +1541,12 @@ flowchart LR
 
     subgraph C31["Sub-Proses 3.1"]
         P31(("3.1<br/>Pilih Barang & Buka Chat"))
-        D_Post[("tb_postingan_jualan")]
+        D_Post[("Data Postingan & Jualan")]
     end
 
     subgraph C32["Sub-Proses 3.2"]
         P32(("3.2<br/>Kirim Pesan & Janjian COD"))
-        D_Chat[("tb_percakapan_chat")]
+        D_Chat[("Data Percakapan & Chat")]
     end
 
     %% Relasi 3.1
@@ -1744,32 +1744,49 @@ flowchart LR
         <div class="diagram-panel tab-content-diagram">
           <pre class="mermaid" id="mer-3-6">
 flowchart TD
+    %% Swimlane 1: Pembeli
     subgraph Pembeli["Siswa Pembeli"]
-        A1([Mulai: Buka Detail Produk]) --> A2[Tekan 'Beli Sekarang']
-        A3[Langsung Masuk ke Ruang Chat DM Penjual]
-        A4[Kirim Pesan & Sepakati Titik Temu COD]
-        A5[Temui Penjual di Spot COD Sesuai Janjian]
-        A6[Periksa Fisik Barang & Serahkan Uang Tunai]
+        A1([Mulai: Buka Detail Produk])
+        A2[Tekan 'Beli Sekarang']
+        A3[Masuk ke Ruang Chat DM]
+        A4[Kirim Pesan & Sepakati Titik Temu]
+        A5[Temui Penjual di Spot COD]
+        A6[Cek Barang & Bayar Tunai]
     end
 
+    %% Swimlane 2: Sistem sNaps
     subgraph Sistem["Sistem sNaps"]
-        A2 --> S1[Hubungkan ke Percakapan: conversations & direct_messages]
-        S1 --> S2[Otomatis Lampirkan Kartu Ringkasan Produk di Chat]
-        S2 --> S3[Kirim Push Notifikasi Realtime ke HP Penjual]
-        S3 --> A3
-        A4 --> S4[Simpan Pesan Janjian COD ke Database]
-        S4 --> P2
-        A6 --> S_Final([Selesai: Transaksi Berhasil])
+        S1[Hubungkan Ruang Percakapan]
+        S2[Lampirkan Kartu Produk Otomatis]
+        S3[Kirim Notifikasi ke Penjual]
+        S4[Simpan Riwayat Chat ke Database]
+        S5([Selesai: Transaksi Berhasil])
     end
 
+    %% Swimlane 3: Penjual
     subgraph Penjual["Siswa Penjual"]
-        S3 -.-> P1[Terima Notifikasi Chat Masuk]
-        P1 --> P2[Buka Chat & Sepakati Janjian di Titik Temu]
-        P2 --> P3[Bawa Produk ke Spot COD Saat Jam Istirahat]
-        P3 --> A5
-        A6 --> P4[Terima Uang Tunai & Serahkan Barang]
-        P4 --> S_Final
+        P1[Terima Notifikasi Chat Masuk]
+        P2[Buka Chat & Sepakati Janjian]
+        P3[Bawa Barang ke Spot COD]
+        P4[Serahkan Barang & Terima Uang]
     end
+
+    %% Alur Kronologis Teratur
+    A1 --> A2
+    A2 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> A3
+    S3 --> P1
+    A3 --> A4
+    A4 --> S4
+    S4 --> P2
+    P2 --> P3
+    A4 --> A5
+    P3 --> P4
+    A5 --> A6
+    A6 --> P4
+    P4 --> S5
           </pre>
         </div>
 
@@ -1809,6 +1826,51 @@ flowchart TD
         P3 --> A5
         A6 --> P4[Terima Uang Tunai & Serahkan Barang]
         P4 --> S_Final
+          <pre id="src-3-6"><code>flowchart TD
+    %% Swimlane 1: Pembeli
+    subgraph Pembeli["Siswa Pembeli"]
+        A1([Mulai: Buka Detail Produk])
+        A2[Tekan 'Beli Sekarang']
+        A3[Masuk ke Ruang Chat DM]
+        A4[Kirim Pesan & Sepakati Titik Temu]
+        A5[Temui Penjual di Spot COD]
+        A6[Cek Barang & Bayar Tunai]
+    end
+
+    %% Swimlane 2: Sistem sNaps
+    subgraph Sistem["Sistem sNaps"]
+        S1[Hubungkan Ruang Percakapan]
+        S2[Lampirkan Kartu Produk Otomatis]
+        S3[Kirim Notifikasi ke Penjual]
+        S4[Simpan Riwayat Chat ke Database]
+        S5([Selesai: Transaksi Berhasil])
+    end
+
+    %% Swimlane 3: Penjual
+    subgraph Penjual["Siswa Penjual"]
+        P1[Terima Notifikasi Chat Masuk]
+        P2[Buka Chat & Sepakati Janjian]
+        P3[Bawa Barang ke Spot COD]
+        P4[Serahkan Barang & Terima Uang]
+    end
+
+    %% Alur Kronologis Teratur
+    A1 --> A2
+    A2 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> A3
+    S3 --> P1
+    A3 --> A4
+    A4 --> S4
+    S4 --> P2
+    P2 --> P3
+    A4 --> A5
+    P3 --> P4
+    A5 --> A6
+    A6 --> P4
+    P4 --> S5
+</code></pre>
     end</code></pre>
         </div>
       </section>
@@ -1839,15 +1901,14 @@ flowchart TD
         <div class="diagram-panel tab-content-diagram">
           <pre class="mermaid" id="mer-3-7-1">
 erDiagram
-    student_registry ||--o| profiles : "nis"
-    profiles ||--o{ market_posts : "seller_id"
-    profiles ||--o{ conversations : "participant_one"
-    profiles ||--o{ conversations : "participant_two"
-    market_posts ||--o{ conversations : "product_id"
-    conversations ||--o{ direct_messages : "conversation_id"
-    profiles ||--o{ direct_messages : "sender_id"
-    profiles ||--o{ content_reports : "reporter_id"
-    market_posts ||--o{ content_reports : "target_post_id"
+    STUDENT_REGISTRY ||--o| PROFILES : "memiliki identitas NIS"
+    PROFILES ||--o{ MARKET_POSTS : "membuat postingan"
+    PROFILES ||--o{ CONVERSATIONS : "partisipan obrolan"
+    MARKET_POSTS ||--o{ CONVERSATIONS : "lampiran barang transaksi"
+    CONVERSATIONS ||--o{ DIRECT_MESSAGES : "memuat pesan"
+    PROFILES ||--o{ DIRECT_MESSAGES : "pengirim pesan"
+    PROFILES ||--o{ CONTENT_REPORTS : "mengajukan laporan"
+    MARKET_POSTS ||--o{ CONTENT_REPORTS : "konten dilaporkan"
           </pre>
         </div>
 
@@ -1873,7 +1934,16 @@ erDiagram
     conversations ||--o{ direct_messages : "conversation_id"
     profiles ||--o{ direct_messages : "sender_id"
     profiles ||--o{ content_reports : "reporter_id"
-    market_posts ||--o{ content_reports : "target_post_id"</code></pre>
+          <pre id="src-3-7-1"><code>erDiagram
+    STUDENT_REGISTRY ||--o| PROFILES : "memiliki identitas NIS"
+    PROFILES ||--o{ MARKET_POSTS : "membuat postingan"
+    PROFILES ||--o{ CONVERSATIONS : "partisipan obrolan"
+    MARKET_POSTS ||--o{ CONVERSATIONS : "lampiran barang transaksi"
+    CONVERSATIONS ||--o{ DIRECT_MESSAGES : "memuat pesan"
+    PROFILES ||--o{ DIRECT_MESSAGES : "pengirim pesan"
+    PROFILES ||--o{ CONTENT_REPORTS : "mengajukan laporan"
+    MARKET_POSTS ||--o{ CONTENT_REPORTS : "konten dilaporkan"
+</code></pre>
         </div>
       </section>
 
@@ -1974,15 +2044,20 @@ erDiagram
         TIMESTAMPTZ created_at
     }
 
-    student_registry ||--o| profiles : "nis"
+    %% Relasi Identitas & Akun
+    student_registry ||--o| profiles : "nis (1:1)"
+
+    %% Relasi Postingan & Laporan
     profiles ||--o{ market_posts : "seller_id"
+    profiles ||--o{ content_reports : "reporter_id"
+    market_posts ||--o{ content_reports : "target_post_id"
+
+    %% Relasi Direct-to-DM & Transaksi COD
     profiles ||--o{ conversations : "participant_one"
     profiles ||--o{ conversations : "participant_two"
     market_posts ||--o{ conversations : "product_id"
     conversations ||--o{ direct_messages : "conversation_id"
     profiles ||--o{ direct_messages : "sender_id"
-    profiles ||--o{ content_reports : "reporter_id"
-    market_posts ||--o{ content_reports : "target_post_id"
           </pre>
         </div>
 
@@ -2068,15 +2143,20 @@ erDiagram
         TIMESTAMPTZ created_at
     }
 
-    student_registry ||--o| profiles : "nis"
+    %% Relasi Identitas & Akun
+    student_registry ||--o| profiles : "nis (1:1)"
+
+    %% Relasi Postingan & Laporan
     profiles ||--o{ market_posts : "seller_id"
+    profiles ||--o{ content_reports : "reporter_id"
+    market_posts ||--o{ content_reports : "target_post_id"
+
+    %% Relasi Direct-to-DM & Transaksi COD
     profiles ||--o{ conversations : "participant_one"
     profiles ||--o{ conversations : "participant_two"
     market_posts ||--o{ conversations : "product_id"
     conversations ||--o{ direct_messages : "conversation_id"
-    profiles ||--o{ direct_messages : "sender_id"
-    profiles ||--o{ content_reports : "reporter_id"
-    market_posts ||--o{ content_reports : "target_post_id"</code></pre>
+    profiles ||--o{ direct_messages : "sender_id"</code></pre>
         </div>
       </section>
 
