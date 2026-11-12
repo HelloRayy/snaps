@@ -128,6 +128,7 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final authorHandle = widget.post.seller.username != null
         ? '@${widget.post.seller.username!.replaceAll('@', '')}'
         : widget.post.seller.name;
