@@ -237,18 +237,118 @@
         background: #fff;
         padding: 0;
       }
-      .card {
-        border: none;
-        box-shadow: none;
-        page-break-inside: avoid;
-        margin-bottom: 40px;
-      }
-      .diagram-wrapper {
-        padding: 10px 0;
-      }
+    }
+
+    /* HD Fullscreen Modal & Pan-Zoom Controls */
+    .zoom-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      flex-direction: column;
+    }
+
+    .zoom-modal.active {
+      display: flex;
+    }
+
+    .zoom-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      background: rgba(30, 41, 59, 0.8);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .zoom-modal-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .zoom-modal-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-ctrl {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .btn-ctrl:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .btn-close {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #FCA5A5;
+    }
+
+    .btn-close:hover {
+      background: #EF4444;
+      color: #fff;
+    }
+
+    .zoom-viewport {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #0F172A;
+      cursor: grab;
+    }
+
+    .zoom-viewport:active {
+      cursor: grabbing;
+    }
+
+    .zoom-viewport svg {
+      width: 100% !important;
+      height: 100% !important;
+      max-width: none !important;
+    }
+
+    .zoom-hint {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #94A3B8;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.775rem;
+      pointer-events: none;
+      z-index: 10;
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
 </head>
 <body>
 
@@ -1956,12 +2056,110 @@ sequenceDiagram
     <p>Dokumentasi Arsitektur Perangkat Lunak - Snapan Market Mobile (sNaps) &bull; SMKN 8 Semarang</p>
   </footer>
 
+  <!-- HD FULLSCREEN ZOOM MODAL -->
+  <div id="zoomModal" class="zoom-modal">
+    <div class="zoom-modal-header">
+      <div class="zoom-modal-title">
+        <span id="zoomModalTitle">Judul Diagram</span>
+      </div>
+      <div class="zoom-modal-controls">
+        <button class="btn-ctrl" onclick="zoomIn()" title="Perbesar (+)">Perbesar (+)</button>
+        <button class="btn-ctrl" onclick="zoomOut()" title="Perkecil (-)">Perkecil (-)</button>
+        <button class="btn-ctrl" onclick="resetZoom()" title="Reset Posisi (100%)">Reset (1:1)</button>
+        <button class="btn-ctrl btn-close" onclick="closeZoomModal()" title="Tutup Modal (Esc)">Tutup (Esc)</button>
+      </div>
+    </div>
+    <div class="zoom-viewport" id="zoomViewport">
+      <!-- Injected clone SVG rendered here -->
+    </div>
+    <div class="zoom-hint">Scroll mouse / pinch untuk Zoom &bull; Drag untuk Geser Diagram (Pan)</div>
+  </div>
+
   <script>
     mermaid.initialize({
       startOnLoad: true,
       theme: 'neutral',
       securityLevel: 'loose',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
+    });
+
+    let currentPanZoom = null;
+
+    function openZoomModal(wrapperId, title) {
+      const wrapper = document.getElementById(wrapperId);
+      if (!wrapper) return;
+      const svg = wrapper.querySelector('svg');
+      if (!svg) {
+        alert('Diagram sedang dimuat, silakan coba sesaat lagi.');
+        return;
+      }
+
+      document.getElementById('zoomModalTitle').innerText = title || 'Tampilan HD Diagram';
+      const viewport = document.getElementById('zoomViewport');
+      viewport.innerHTML = '';
+
+      // Clone SVG for HD Pan-Zoom
+      const clonedSvg = svg.cloneNode(true);
+      clonedSvg.removeAttribute('id');
+      clonedSvg.style.width = '100%';
+      clonedSvg.style.height = '100%';
+      viewport.appendChild(clonedSvg);
+
+      const modal = document.getElementById('zoomModal');
+      modal.classList.add('active');
+
+      // Initialize svgPanZoom
+      if (currentPanZoom) {
+        try { currentPanZoom.destroy(); } catch (e) {}
+      }
+
+      setTimeout(() => {
+        try {
+          currentPanZoom = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: false,
+            fit: true,
+            center: true,
+            minZoom: 0.2,
+            maxZoom: 10,
+            zoomScaleSensitivity: 0.3
+          });
+        } catch (err) {
+          console.error('Pan-zoom init error:', err);
+        }
+      }, 50);
+    }
+
+    function closeZoomModal() {
+      const modal = document.getElementById('zoomModal');
+      modal.classList.remove('active');
+      if (currentPanZoom) {
+        try { currentPanZoom.destroy(); } catch (e) {}
+        currentPanZoom = null;
+      }
+      document.getElementById('zoomViewport').innerHTML = '';
+    }
+
+    function zoomIn() {
+      if (currentPanZoom) currentPanZoom.zoomIn();
+    }
+
+    function zoomOut() {
+      if (currentPanZoom) currentPanZoom.zoomOut();
+    }
+
+    function resetZoom() {
+      if (currentPanZoom) {
+        currentPanZoom.resetZoom();
+        currentPanZoom.center();
+      }
+    }
+
+    // Keyboard shortcut for modal
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeZoomModal();
+      if (e.key === '+' || e.key === '=') zoomIn();
+      if (e.key === '-') zoomOut();
     });
 
     function toggleCode(codeId) {
@@ -2011,6 +2209,28 @@ sequenceDiagram
         }
       });
     }
+
+    // Inject "Zoom HD" button into each diagram card automatically
+    window.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.card').forEach((card) => {
+        const actions = card.querySelector('.card-actions');
+        const titleEl = card.querySelector('.card-title-group h2');
+        const title = titleEl ? titleEl.innerText : 'Diagram';
+        const wrapper = card.querySelector('.diagram-wrapper');
+        if (actions && wrapper) {
+          if (!wrapper.id) wrapper.id = 'wrap-' + card.id;
+          const zoomBtn = document.createElement('button');
+          zoomBtn.className = 'btn-action';
+          zoomBtn.style.background = 'var(--primary-pastel)';
+          zoomBtn.style.color = 'var(--primary)';
+          zoomBtn.style.borderColor = '#C7D2FE';
+          zoomBtn.style.fontWeight = '600';
+          zoomBtn.innerText = 'Zoom HD (Layar Penuh)';
+          zoomBtn.onclick = () => openZoomModal(wrapper.id, title);
+          actions.prepend(zoomBtn);
+        }
+      });
+    });
   </script>
 </body>
 </html>
