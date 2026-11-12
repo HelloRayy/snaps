@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:snapan_market/core/components/mention_suggestion_list.dart';
 import 'package:snapan_market/core/services/snaps_asset_picker.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -435,11 +436,11 @@ class _CommentInputBarState extends State<CommentInputBar> {
                       alignment: Alignment.center,
                       children: [
                         Icon(
-                          CupertinoIcons.photo_on_rectangle,
+                          LucideIcons.image,
                           color: _attachedImages.isNotEmpty
                               ? AppColors.primary
                               : (isDark ? AppColors.darkTextPrimary : const Color(0xFF1A1A1A)),
-                          size: 20.0,
+                          size: 19.0,
                         ),
                         if (_attachedImages.isNotEmpty)
                           Positioned(

@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/create_post/models/create_post_types.dart';
 import 'package:snapan_market/features/feed/components/post_card/adaptive_carousel_card.dart';
@@ -196,7 +197,7 @@ class CreatePostGifPreview extends StatelessWidget {
                         height: 150.0,
                         width: double.infinity,
                         color: const Color(0xFFF1F5F9),
-                        child: const Icon(CupertinoIcons.photo, size: 32.0, color: AppColors.muted),
+                        child: const Icon(LucideIcons.image, size: 30.0, color: AppColors.muted),
                       ),
                     ),
                   ),

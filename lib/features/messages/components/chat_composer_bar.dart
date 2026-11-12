@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:snapan_market/core/services/snaps_asset_picker.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
@@ -280,8 +281,8 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                         alignment: Alignment.center,
                         children: [
                           Icon(
-                            CupertinoIcons.photo_on_rectangle,
-                            size: 22.0,
+                            LucideIcons.image,
+                            size: 21.0,
                             color: _attachedImages.isNotEmpty
                                 ? AppColors.primary
                                 : iconColor,
@@ -380,8 +381,8 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                                 ),
                                 child: const Center(
                                   child: Icon(
-                                    CupertinoIcons.arrow_up,
-                                    size: 20.0,
+                                    LucideIcons.arrowUp,
+                                    size: 19.0,
                                     color: Colors.white,
                                   ),
                                 ),
@@ -397,9 +398,9 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                               height: 42.0,
                               child: Center(
                                 child: Icon(
-                                  Icons.emoji_emotions_outlined,
+                                  LucideIcons.smile,
                                   color: iconColor,
-                                  size: 25.0,
+                                  size: 22.0,
                                 ),
                               ),
                             ),

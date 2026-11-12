@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:snapan_market/core/components/mascot_flair_badge.dart';
 import 'package:snapan_market/core/components/mascot_bundle_picker_button.dart';
 import 'package:snapan_market/core/components/mascot_gallery_bottom_sheet.dart';
@@ -79,13 +80,13 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
               ),
               const SizedBox(height: 14),
               ListTile(
-                leading: const Icon(Icons.photo_library_outlined, color: AppColors.primary),
+                leading: const Icon(LucideIcons.image, color: AppColors.primary),
                 title: Text('Buka Galeri HP', style: TextStyle(fontWeight: FontWeight.w600, color: itemTitleColor)),
                 subtitle: Text('Pilih foto profil dari galeri (Kompres 1080p)', style: TextStyle(color: itemSubColor)),
                 onTap: () => Navigator.pop(ctx, ImageSource.gallery),
               ),
               ListTile(
-                leading: const Icon(Icons.camera_alt_outlined, color: AppColors.primary),
+                leading: const Icon(LucideIcons.camera, color: AppColors.primary),
                 title: Text('Ambil Foto Kamera', style: TextStyle(fontWeight: FontWeight.w600, color: itemTitleColor)),
                 subtitle: Text('Ambil selfie atau foto baru langsung', style: TextStyle(color: itemSubColor)),
                 onTap: () => Navigator.pop(ctx, ImageSource.camera),

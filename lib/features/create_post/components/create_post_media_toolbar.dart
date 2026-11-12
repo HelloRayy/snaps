@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/create_post/models/create_post_types.dart';
 
@@ -83,12 +84,12 @@ class CreatePostMediaToolbar extends StatelessWidget {
           const SizedBox(height: 8.0),
         ],
 
-        // 2. 7-Icon Media Action Bar (Minimalist Threads-style icons)
+        // 2. 7-Icon Media Action Bar (Minimalist Lucide Icons)
         Row(
           children: [
-            // 1. Foto
+            // 1. Foto / Galeri
             _MediaIconButton(
-              icon: CupertinoIcons.photo,
+              icon: LucideIcons.image,
               tooltip: 'Foto',
               onTap: onPickImage,
             ),
@@ -109,10 +110,10 @@ class CreatePostMediaToolbar extends StatelessWidget {
                 child: const Text(
                   'GIF',
                   style: TextStyle(
-                    fontSize: 9.5,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.3,
-                    color: Color(0xFF64748B),
+                     fontSize: 9.5,
+                     fontWeight: FontWeight.w800,
+                     letterSpacing: 0.3,
+                     color: Color(0xFF64748B),
                   ),
                 ),
               ),
@@ -122,7 +123,7 @@ class CreatePostMediaToolbar extends StatelessWidget {
 
             // 3. Emoji (Toggles Inline Emoji Scroller)
             _MediaIconButton(
-              icon: CupertinoIcons.smiley,
+              icon: LucideIcons.smile,
               tooltip: 'Emoji',
               isActive: showEmojiBar,
               onTap: onToggleEmoji,
@@ -131,7 +132,7 @@ class CreatePostMediaToolbar extends StatelessWidget {
 
             // 4. Polling
             _MediaIconButton(
-              icon: CupertinoIcons.chart_bar_square,
+              icon: LucideIcons.barChart2,
               tooltip: 'Polling',
               isActive: showPollBuilder,
               onTap: onTogglePoll,
@@ -140,7 +141,7 @@ class CreatePostMediaToolbar extends StatelessWidget {
 
             // 5. Topik
             _MediaIconButton(
-              icon: CupertinoIcons.number,
+              icon: LucideIcons.hash,
               tooltip: 'Topik',
               onTap: onPickTopic,
             ),
@@ -148,7 +149,7 @@ class CreatePostMediaToolbar extends StatelessWidget {
 
             // 6. Lokasi COD
             _MediaIconButton(
-              icon: CupertinoIcons.location,
+              icon: LucideIcons.mapPin,
               tooltip: 'Lokasi COD',
               onTap: onPickLocation,
             ),
@@ -156,7 +157,7 @@ class CreatePostMediaToolbar extends StatelessWidget {
 
             // 7. Audio
             _MediaIconButton(
-              icon: CupertinoIcons.music_note_2,
+              icon: LucideIcons.music,
               tooltip: 'Audio',
               onTap: onAudioTap,
             ),
