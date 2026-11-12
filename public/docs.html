@@ -1144,37 +1144,34 @@ flowchart TD
         <div class="diagram-panel tab-content-diagram">
           <pre class="mermaid" id="mer-3-2-2">
 flowchart TD
-    Start([Mulai: Siswa Membuka Aplikasi sNaps]) --> AuthCheck{Sudah Login NIS?}
-    AuthCheck -- Belum --> LoginNIS[Input NIS & Password -> Validasi student_registry]
-    LoginNIS --> FeedScreen[Tampil Beranda: Feed Karya & Marketplace Vokasi]
-    AuthCheck -- Sudah --> FeedScreen
+    Start([Mulai: Siswa Buka Snaps]) --> CheckAuth{Sudah Login?}
     
-    FeedScreen --> ActionChoice{Pilihan Aktivitas Siswa}
-    
-    %% Alur Penjual
-    ActionChoice -- Buat Listing Produk --> FormProduct[Input Judul, Foto, Kategori Jurusan, Harga, Stok]
-    FormProduct --> SaveDB[(Simpan ke Database PostgreSQL)]
-    SaveDB --> PostPublished[Produk Tayang di Feed & Marketplace] --> EndWait([Selesai])
-    
-    %% Alur Pembeli
-    ActionChoice -- Beli Produk --> ViewDetail[Buka Halaman Detail Produk & Profil Penjual]
-    ViewDetail --> CheckStock{Stok Produk Tersedia > 0?}
-    CheckStock -- Habis --> AlertEmpty[Tampilkan Notifikasi 'Stok Habis'] --> EndWait
-    CheckStock -- Tersedia --> TapCheckout[Tekan Tombol 'Beli Sekarang']
-    
-    TapCheckout --> SelectMeetingPoint[Pilih Titik Temu COD Resmi Sekolah: Gazebo / Kantin / Lab]
-    SelectMeetingPoint --> InputNotes[Tulis Catatan Pertemuan COD]
-    InputNotes --> ConfirmOrder[Konfirmasi Pesanan COD]
-    
-    ConfirmOrder --> SystemProcess[(Sistem Mengunci Stok & Menerbitkan Record Pesanan)]
-    SystemProcess --> SendPushNotif[Kirim Push Notification ke Siswa Penjual]
-    SendPushNotif --> OrderSuccessModal[Tampilkan Bukti Pesanan & ID Transaksi]
-    
-    OrderSuccessModal --> MeetCOD[Kedua Siswa Bertemu di Spot COD Sesuai Jadwal]
-    MeetCOD --> InspectItem[Pembeli Memeriksa Fisik Barang & Membayar Tunai]
-    InspectItem --> ConfirmCompletion[Siswa Mengonfirmasi 'Pesanan Diterima']
-    ConfirmCompletion --> AutoDeductStock[(Sistem Memperbarui Status Pesanan: COMPLETED)]
-    AutoDeductStock --> Finish([Selesai: Transaksi Sukses])
+    %% Alur Login Sederhana
+    CheckAuth -- Belum --> FormLogin[Input NIS & Password]
+    FormLogin --> ValidasiLogin[(Validasi ke student_registry)]
+    ValidasiLogin --> Beranda[Masuk ke Halaman Beranda]
+    CheckAuth -- Sudah --> Beranda
+
+    %% Pilihan Menu Utama
+    Beranda --> PilihAksi{Pilih Aktivitas}
+
+    %% JALUR 1: JUAL KARYA (KIRI)
+    PilihAksi -- Jual Produk / Karya --> FormJual[Buka Form Buat Postingan]
+    FormJual --> InputJual[Input Foto, Judul, Kategori Jurusan & Harga]
+    InputJual --> SimpanPost[(Simpan ke Database PostgreSQL)]
+    SimpanPost --> TayangPost[Produk Tayang di Beranda]
+    TayangPost --> SelesaiJual([Selesai])
+
+    %% JALUR 2: BELI PRODUK (KANAN)
+    PilihAksi -- Beli Produk --> BukaDetail[Buka Halaman Detail Produk]
+    BukaDetail --> KlikBeli[Tekan Tombol 'Beli Sekarang']
+    KlikBeli --> MasukChat[Langsung Masuk ke Ruang Chat DM Penjual]
+    MasukChat --> TempelProduk[Sistem Otomatis Melampirkan Kartu Produk di Chat]
+    TempelProduk --> NotifPenjual[Kirim Push Notifikasi Chat ke HP Penjual]
+    NotifPenjual --> JanjianCOD[Kedua Siswa Diskusi & Janjian Titik Temu COD]
+    JanjianCOD --> KetemuCOD[Bertemu Fisik di Area Sekolah Pas Jam Istirahat]
+    KetemuCOD --> BayarTunai[Pembeli Cek Kondisi Barang & Bayar Tunai]
+    BayarTunai --> SelesaiBeli([Selesai: Transaksi Berhasil])
           </pre>
         </div>
 
@@ -1182,45 +1179,42 @@ flowchart TD
           <p><strong>Penjelasan Alur Sistem Digital:</strong></p>
           <ol>
             <li><strong>Autentikasi Buku Induk</strong>: Siswa divalidasi ke <code>student_registry</code> sebelum dapat mengakses beranda.</li>
-            <li><strong>Jalur Penjual</strong>: Pembuatan listing produk kejuruan tersimpan otomatis ke database PostgreSQL Supabase.</li>
-            <li><strong>Jalur Pembeli</strong>: Pengecekan stok aktif, pemilihan titik temu resmi sekolah (Gazebo/Kantin/Lab), serta penguncian stok atomik saat pesanan diterbitkan.</li>
-            <li><strong>Penyelesaian Pesanan</strong>: Serah terima fisik saat jam istirahat dan konfirmasi pesanan selesai di aplikasi.</li>
+            <li><strong>Jalur Penjual</strong>: Pembuatan listing produk kejuruan tersimpan otomatis ke database PostgreSQL Supabase tanpa beban input stok.</li>
+            <li><strong>Jalur Pembeli (Direct-to-DM)</strong>: Tombol 'Beli Sekarang' langsung membuka ruang obrolan pribadi dengan kartu produk menempel otomatis.</li>
+            <li><strong>Penyelesaian Pesanan COD</strong>: Siswa menyepakati titik kumpul sekolah (Gazebo/Kantin/Lobby) dan menyelesaikan pembayaran tunai secara langsung.</li>
           </ol>
         </div>
 
         <div class="code-panel tab-content-code">
           <pre id="src-3-2-2"><code>flowchart TD
-    Start([Mulai: Siswa Membuka Aplikasi sNaps]) --> AuthCheck{Sudah Login NIS?}
-    AuthCheck -- Belum --> LoginNIS[Input NIS & Password -> Validasi student_registry]
-    LoginNIS --> FeedScreen[Tampil Beranda: Feed Karya & Marketplace Vokasi]
-    AuthCheck -- Sudah --> FeedScreen
+    Start([Mulai: Siswa Buka Snaps]) --> CheckAuth{Sudah Login?}
     
-    FeedScreen --> ActionChoice{Pilihan Aktivitas Siswa}
-    
-    %% Alur Penjual
-    ActionChoice -- Buat Listing Produk --> FormProduct[Input Judul, Foto, Kategori Jurusan, Harga, Stok]
-    FormProduct --> SaveDB[(Simpan ke Database PostgreSQL)]
-    SaveDB --> PostPublished[Produk Tayang di Feed & Marketplace] --> EndWait([Selesai])
-    
-    %% Alur Pembeli
-    ActionChoice -- Beli Produk --> ViewDetail[Buka Halaman Detail Produk & Profil Penjual]
-    ViewDetail --> CheckStock{Stok Produk Tersedia > 0?}
-    CheckStock -- Habis --> AlertEmpty[Tampilkan Notifikasi 'Stok Habis'] --> EndWait
-    CheckStock -- Tersedia --> TapCheckout[Tekan Tombol 'Beli Sekarang']
-    
-    TapCheckout --> SelectMeetingPoint[Pilih Titik Temu COD Resmi Sekolah: Gazebo / Kantin / Lab]
-    SelectMeetingPoint --> InputNotes[Tulis Catatan Pertemuan COD]
-    InputNotes --> ConfirmOrder[Konfirmasi Pesanan COD]
-    
-    ConfirmOrder --> SystemProcess[(Sistem Mengunci Stok & Menerbitkan Record Pesanan)]
-    SystemProcess --> SendPushNotif[Kirim Push Notification ke Siswa Penjual]
-    SendPushNotif --> OrderSuccessModal[Tampilkan Bukti Pesanan & ID Transaksi]
-    
-    OrderSuccessModal --> MeetCOD[Kedua Siswa Bertemu di Spot COD Sesuai Jadwal]
-    MeetCOD --> InspectItem[Pembeli Memeriksa Fisik Barang & Membayar Tunai]
-    InspectItem --> ConfirmCompletion[Siswa Mengonfirmasi 'Pesanan Diterima']
-    ConfirmCompletion --> AutoDeductStock[(Sistem Memperbarui Status Pesanan: COMPLETED)]
-    AutoDeductStock --> Finish([Selesai: Transaksi Sukses])</code></pre>
+    %% Alur Login Sederhana
+    CheckAuth -- Belum --> FormLogin[Input NIS & Password]
+    FormLogin --> ValidasiLogin[(Validasi ke student_registry)]
+    ValidasiLogin --> Beranda[Masuk ke Halaman Beranda]
+    CheckAuth -- Sudah --> Beranda
+
+    %% Pilihan Menu Utama
+    Beranda --> PilihAksi{Pilih Aktivitas}
+
+    %% JALUR 1: JUAL KARYA (KIRI)
+    PilihAksi -- Jual Produk / Karya --> FormJual[Buka Form Buat Postingan]
+    FormJual --> InputJual[Input Foto, Judul, Kategori Jurusan & Harga]
+    InputJual --> SimpanPost[(Simpan ke Database PostgreSQL)]
+    SimpanPost --> TayangPost[Produk Tayang di Beranda]
+    TayangPost --> SelesaiJual([Selesai])
+
+    %% JALUR 2: BELI PRODUK (KANAN)
+    PilihAksi -- Beli Produk --> BukaDetail[Buka Halaman Detail Produk]
+    BukaDetail --> KlikBeli[Tekan Tombol 'Beli Sekarang']
+    KlikBeli --> MasukChat[Langsung Masuk ke Ruang Chat DM Penjual]
+    MasukChat --> TempelProduk[Sistem Otomatis Melampirkan Kartu Produk di Chat]
+    TempelProduk --> NotifPenjual[Kirim Push Notifikasi Chat ke HP Penjual]
+    NotifPenjual --> JanjianCOD[Kedua Siswa Diskusi & Janjian Titik Temu COD]
+    JanjianCOD --> KetemuCOD[Bertemu Fisik di Area Sekolah Pas Jam Istirahat]
+    KetemuCOD --> BayarTunai[Pembeli Cek Kondisi Barang & Bayar Tunai]
+    BayarTunai --> SelesaiBeli([Selesai: Transaksi Berhasil])</code></pre>
         </div>
       </section>
 
@@ -1373,7 +1367,7 @@ flowchart TD
     D2[("D2: profiles")]
     D3[("D3: market_posts")]
     D4[("D4: school_meeting_points")]
-    D5[("D5: orders")]
+    D5[("D5: conversations & direct_messages")]
     D6[("D6: content_reports")]
 
     Siswa -->|NIS & Password| P1
@@ -1387,16 +1381,16 @@ flowchart TD
     P2 -->|Timeline Beranda| Siswa
 
     Siswa -->|Unggah Produk Vokasi| P3
-    P3 -->|Simpan Produk & Stok| D3
+    P3 -->|Simpan Produk| D3
     D3 -->|Katalog Produk| P3
     P3 -->|Tampilkan Produk Jurusan| Siswa
 
     Siswa -->|Pilih Barang & Titik Temu| P4
     D4 -->|Data Titik Temu Sekolah| P4
-    P4 -->|Validasi Stok & Buat Order| D5
-    P4 -->|Update Stok Terkunci| D3
-    D5 -->|Status Pesanan| P4
-    P4 -->|Notifikasi Pesanan & Bukti COD| Siswa
+    P4 -->|Validasi Ketersediaan Produk| D3
+    P4 -->|Simpan Riwayat Janjian COD| D5
+    D5 -->|Ambil Pesan & Konteks Produk| P4
+    P4 -->|Notifikasi Chat & Ringkasan COD| Siswa
 
     Siswa -->|Laporkan Konten| P5
     P5 -->|Simpan Laporan| D6
@@ -1414,8 +1408,8 @@ flowchart TD
           <ol>
             <li><strong>1.0 Autentikasi & Profil Siswa</strong>: Validasi nomor induk ke <code>student_registry</code> dan pembentukan sesi di <code>profiles</code>.</li>
             <li><strong>2.0 Feed Komunitas & Diskusi Vokasi</strong>: Penyimpanan dan penayangan utas komunitas di <code>market_posts</code>.</li>
-            <li><strong>3.0 Manajemen Produk & Katalog Karya</strong>: Pengelolaan katalog produk, foto galeri, dan kuantitas stok.</li>
-            <li><strong>4.0 Transaksi COD & Titik Temu</strong>: Pengecekan stok, pemilihan lokasi dari <code>school_meeting_points</code>, dan pencatatan pesanan di <code>orders</code>.</li>
+            <li><strong>3.0 Manajemen Produk & Katalog Karya</strong>: Pengelolaan katalog produk dan foto karya tanpa batasan kuantitas stok.</li>
+            <li><strong>4.0 Transaksi COD & Titik Temu</strong>: Inisialisasi obrolan di <code>conversations & direct_messages</code>, pemilihan lokasi <code>school_meeting_points</code>, dan pembayaran tunai langsung.</li>
             <li><strong>5.0 Moderasi Konten & Master Registry</strong>: Penertiban pelanggaran di <code>content_reports</code> dan pengelolaan buku induk sekolah.</li>
           </ol>
         </div>
@@ -1435,7 +1429,7 @@ flowchart TD
     D2[("D2: profiles")]
     D3[("D3: market_posts")]
     D4[("D4: school_meeting_points")]
-    D5[("D5: orders")]
+    D5[("D5: conversations & direct_messages")]
     D6[("D6: content_reports")]
 
     Siswa -->|NIS & Password| P1
@@ -1449,16 +1443,16 @@ flowchart TD
     P2 -->|Timeline Beranda| Siswa
 
     Siswa -->|Unggah Produk Vokasi| P3
-    P3 -->|Simpan Produk & Stok| D3
+    P3 -->|Simpan Produk| D3
     D3 -->|Katalog Produk| P3
     P3 -->|Tampilkan Produk Jurusan| Siswa
 
     Siswa -->|Pilih Barang & Titik Temu| P4
     D4 -->|Data Titik Temu Sekolah| P4
-    P4 -->|Validasi Stok & Buat Order| D5
-    P4 -->|Update Stok Terkunci| D3
-    D5 -->|Status Pesanan| P4
-    P4 -->|Notifikasi Pesanan & Bukti COD| Siswa
+    P4 -->|Validasi Ketersediaan Produk| D3
+    P4 -->|Simpan Riwayat Janjian COD| D5
+    D5 -->|Ambil Pesan & Konteks Produk| P4
+    P4 -->|Notifikasi Chat & Ringkasan COD| Siswa
 
     Siswa -->|Laporkan Konten| P5
     P5 -->|Simpan Laporan| D6
@@ -1500,41 +1494,39 @@ flowchart TD
     Pembeli["👤 Siswa Pembeli"]
     Penjual["👤 Siswa Penjual"]
 
-    P41(("4.1<br/>Validasi Kuantitas &<br/>Ketersediaan Stok"))
-    P42(("4.2<br/>Pemilihan Titik Temu<br/>Resmi Sekolah"))
-    P43(("4.3<br/>Penerbitan Pesanan &<br/>Notifikasi Realtime"))
-    P44(("4.4<br/>Verifikasi Fisik COD &<br/>Penyelesaian Pesanan"))
+    P41(("4.1<br/>Pengecekan Ketersediaan<br/>Produk"))
+    P42(("4.2<br/>Pemilihan Titik Temu<br/>(Dropdown Spot)"))
+    P43(("4.3<br/>Inisialisasi Chat &<br/>Notifikasi Realtime"))
+    P44(("4.4<br/>Verifikasi Fisik COD &<br/>Serah Terima Tunai"))
 
     D3[("D3: market_posts")]
     D4[("D4: school_meeting_points")]
-    D5[("D5: orders")]
+    D5[("D5: conversations & direct_messages")]
 
     Pembeli -->|Pilih Item & Kuantitas| P41
-    D3 -->|Cek Kuantitas Stok| P41
+    D3 -->|Cek Sisa Stok| P41
     P41 -->|Stok Valid| P42
 
     D4 -->|Daftar Titik Temu Aktif| P42
     Pembeli -->|Pilih Titik Kumpul & Catatan Jam| P42
     P42 -->|Data Lengkap Checkout| P43
 
-    P43 -->|"Simpan Pesanan (Status: PENDING)"| D5
-    P43 -->|Kurangi Kuantitas Stok| D3
-    P43 -->|Push Notifikasi Pesanan Baru| Penjual
-    P43 -->|Ringkasan Pesanan Digital| Pembeli
+    P43 -->|"Simpan Pesan Janjian COD Otomatis"| D5
+    P43 -->|Push Notifikasi Chat Masuk| Penjual
+    P43 -->|Buka Ruang Obrolan Terpadu| Pembeli
 
-    Pembeli -->|Konfirmasi Terima Barang| P44
-    Penjual -->|Konfirmasi Penyerahan Fisik & Uang| P44
-    P44 -->|"Update Status (COMPLETED)"| D5
+    Pembeli -->|Periksa Fisik Barang & Bayar Tunai di Spot COD| P44
+    Penjual -->|Serahkan Barang & Terima Uang Tunai| P44
           </pre>
         </div>
 
         <div class="text-panel tab-content-text">
           <p><strong>Sub-Proses 4.0:</strong></p>
           <ul>
-            <li><strong>4.1 Validasi Stok</strong>: Memastikan kuantitas yang dipesan tidak melebihi stok yang tersisa di <code>market_posts</code>.</li>
+            <li><strong>4.1 Ketersediaan Produk</strong>: Menampilkan data listing produk dari <code>market_posts</code>.</li>
             <li><strong>4.2 Pemilihan Titik Temu</strong>: Mengambil daftar master spot aktif dari <code>school_meeting_points</code>.</li>
-            <li><strong>4.3 Penerbitan Pesanan</strong>: Menyimpan record berstatus <code>pending</code> di <code>orders</code>, mengurangi stok, dan mengirim push notification ke penjual.</li>
-            <li><strong>4.4 Verifikasi Fisik COD</strong>: Mengubah status pesanan menjadi <code>completed</code> setelah kedua siswa bertatap muka dan menyelesaikan pembayaran tunai.</li>
+            <li><strong>4.3 Inisialisasi Chat</strong>: Menyimpan record obrolan di <code>conversations & direct_messages</code> dan mengirim push notification ke penjual.</li>
+            <li><strong>4.4 Verifikasi Fisik COD</strong>: Serah terima barang fisik dan pembayaran tunai langsung di sekolah.</li>
           </ul>
         </div>
 
@@ -1543,31 +1535,29 @@ flowchart TD
     Pembeli["👤 Siswa Pembeli"]
     Penjual["👤 Siswa Penjual"]
 
-    P41(("4.1<br/>Validasi Kuantitas &<br/>Ketersediaan Stok"))
-    P42(("4.2<br/>Pemilihan Titik Temu<br/>Resmi Sekolah"))
-    P43(("4.3<br/>Penerbitan Pesanan &<br/>Notifikasi Realtime"))
-    P44(("4.4<br/>Verifikasi Fisik COD &<br/>Penyelesaian Pesanan"))
+    P41(("4.1<br/>Pengecekan Ketersediaan<br/>Produk"))
+    P42(("4.2<br/>Pemilihan Titik Temu<br/>(Dropdown Spot)"))
+    P43(("4.3<br/>Inisialisasi Chat &<br/>Notifikasi Realtime"))
+    P44(("4.4<br/>Verifikasi Fisik COD &<br/>Serah Terima Tunai"))
 
     D3[("D3: market_posts")]
     D4[("D4: school_meeting_points")]
-    D5[("D5: orders")]
+    D5[("D5: conversations & direct_messages")]
 
     Pembeli -->|Pilih Item & Kuantitas| P41
-    D3 -->|Cek Kuantitas Stok| P41
+    D3 -->|Cek Sisa Stok| P41
     P41 -->|Stok Valid| P42
 
     D4 -->|Daftar Titik Temu Aktif| P42
     Pembeli -->|Pilih Titik Kumpul & Catatan Jam| P42
     P42 -->|Data Lengkap Checkout| P43
 
-    P43 -->|"Simpan Pesanan (Status: PENDING)"| D5
-    P43 -->|Kurangi Kuantitas Stok| D3
-    P43 -->|Push Notifikasi Pesanan Baru| Penjual
-    P43 -->|Ringkasan Pesanan Digital| Pembeli
+    P43 -->|"Simpan Pesan Janjian COD Otomatis"| D5
+    P43 -->|Push Notifikasi Chat Masuk| Penjual
+    P43 -->|Buka Ruang Obrolan Terpadu| Pembeli
 
-    Pembeli -->|Konfirmasi Terima Barang| P44
-    Penjual -->|Konfirmasi Penyerahan Fisik & Uang| P44
-    P44 -->|"Update Status (COMPLETED)"| D5</code></pre>
+    Pembeli -->|Periksa Fisik Barang & Bayar Tunai di Spot COD| P44
+    Penjual -->|Serahkan Barang & Terima Uang Tunai| P44</code></pre>
         </div>
       </section>
 
@@ -1734,33 +1724,29 @@ flowchart LR
 flowchart TD
     subgraph Pembeli["Siswa Pembeli"]
         A1([Mulai: Buka Detail Produk]) --> A2[Tekan 'Beli Sekarang']
-        A2 --> A3[Pilih Titik Temu Resmi Sekolah]
-        A3 --> A4[Tulis Catatan Waktu Pertemuan COD]
-        A4 --> A5[Tekan 'Konfirmasi Pesanan']
-        A8[Terima Konfirmasi & Modal Sukses] --> A9[Temui Penjual di Spot COD Sesuai Jadwal]
-        A9 --> A10[Periksa Fisik Barang & Serahkan Uang Tunai]
-        A10 --> A11[Tekan 'Konfirmasi Pesanan Selesai' di Aplikasi]
+        A3[Langsung Masuk ke Ruang Chat DM Penjual]
+        A4[Kirim Pesan & Sepakati Titik Temu COD]
+        A5[Temui Penjual di Spot COD Sesuai Janjian]
+        A6[Periksa Fisik Barang & Serahkan Uang Tunai]
     end
 
     subgraph Sistem["Sistem sNaps"]
-        A5 --> S1{Cek Ketersediaan Stok}
-        S1 -- Habis <= 0 --> S2[Tampilkan Notifikasi 'Stok Habis' & Batalkan]
-        S2 --> S_End([Batal / Selesai])
-        S1 -- Tersedia > 0 --> S3[Simpan Pesanan ke Tabel orders: Status PENDING]
-        S3 --> S4[Kunci Stok & Kurangi Kuantitas Produk]
-        S4 --> S5[Kirim Push Notifikasi Realtime ke Penjual]
-        S5 --> A8
-        A11 --> S6[Update Status Pesanan: COMPLETED]
-        S6 --> S7[Catat Riwayat Transaksi Berhasil]
-        S7 --> S_Final([Selesai: Transaksi Berhasil])
+        A2 --> S1[Hubungkan ke Percakapan: conversations & direct_messages]
+        S1 --> S2[Otomatis Lampirkan Kartu Ringkasan Produk di Chat]
+        S2 --> S3[Kirim Push Notifikasi Realtime ke HP Penjual]
+        S3 --> A3
+        A4 --> S4[Simpan Pesan Janjian COD ke Database]
+        S4 --> P2
+        A6 --> S_Final([Selesai: Transaksi Berhasil])
     end
 
     subgraph Penjual["Siswa Penjual"]
-        S5 -.-> P1[Terima Notifikasi Pesanan Masuk]
-        P1 --> P2[Tinjau Titik Temu & Catatan Pembeli]
-        P2 --> P3[Bawa Produk ke Titik Temu yang Dipilih]
-        P3 --> A9
-        A10 --> P4[Terima Uang Tunai & Serahkan Barang]
+        S3 -.-> P1[Terima Notifikasi Chat Masuk]
+        P1 --> P2[Buka Chat & Sepakati Janjian di Titik Temu]
+        P2 --> P3[Bawa Produk ke Spot COD Saat Jam Istirahat]
+        P3 --> A5
+        A6 --> P4[Terima Uang Tunai & Serahkan Barang]
+        P4 --> S_Final
     end
           </pre>
         </div>
@@ -1768,9 +1754,9 @@ flowchart TD
         <div class="text-panel tab-content-text">
           <p><strong>Aktivitas Lintas Swimlane:</strong></p>
           <ul>
-            <li><strong>Pembeli</strong>: Menginisiasi pesanan dari layar produk, memilih titik kumpul resmi, membawa uang pas, dan menekan konfirmasi pesanan selesai.</li>
-            <li><strong>Sistem sNaps</strong>: Menjembatani validasi ketersediaan stok, mengunci baris database, mengirim sinyal notifikasi masuk ke penjual, dan memperbarui status pesanan menjadi <code>COMPLETED</code>.</li>
-            <li><strong>Penjual</strong>: Meninjau catatan pesanan, membawa produk ke lokasi spot sekolah yang disepakati, dan menerima pembayaran tunai.</li>
+            <li><strong>Pembeli</strong>: Menginisiasi transaksi langsung dengan tombol 'Beli Sekarang', membuka chat DM, menyepakati titik kumpul sekolah, dan menyerahkan uang tunai.</li>
+            <li><strong>Sistem sNaps</strong>: Menghubungkan ruang obrolan <code>conversations & direct_messages</code>, melampirkan kartu produk secara otomatis, dan mengirim push notification ke penjual.</li>
+            <li><strong>Penjual</strong>: Menerima notifikasi chat masuk, menyepakati waktu istirahat, membawa karya ke lokasi spot COD, dan menerima pembayaran tunai.</li>
           </ul>
         </div>
 
@@ -1778,33 +1764,29 @@ flowchart TD
           <pre id="src-3-6"><code>flowchart TD
     subgraph Pembeli["Siswa Pembeli"]
         A1([Mulai: Buka Detail Produk]) --> A2[Tekan 'Beli Sekarang']
-        A2 --> A3[Pilih Titik Temu Resmi Sekolah]
-        A3 --> A4[Tulis Catatan Waktu Pertemuan COD]
-        A4 --> A5[Tekan 'Konfirmasi Pesanan']
-        A8[Terima Konfirmasi & Modal Sukses] --> A9[Temui Penjual di Spot COD Sesuai Jadwal]
-        A9 --> A10[Periksa Fisik Barang & Serahkan Uang Tunai]
-        A10 --> A11[Tekan 'Konfirmasi Pesanan Selesai' di Aplikasi]
+        A3[Langsung Masuk ke Ruang Chat DM Penjual]
+        A4[Kirim Pesan & Sepakati Titik Temu COD]
+        A5[Temui Penjual di Spot COD Sesuai Janjian]
+        A6[Periksa Fisik Barang & Serahkan Uang Tunai]
     end
 
     subgraph Sistem["Sistem sNaps"]
-        A5 --> S1{Cek Ketersediaan Stok}
-        S1 -- Habis <= 0 --> S2[Tampilkan Notifikasi 'Stok Habis' & Batalkan]
-        S2 --> S_End([Batal / Selesai])
-        S1 -- Tersedia > 0 --> S3[Simpan Pesanan ke Tabel orders: Status PENDING]
-        S3 --> S4[Kunci Stok & Kurangi Kuantitas Produk]
-        S4 --> S5[Kirim Push Notifikasi Realtime ke Penjual]
-        S5 --> A8
-        A11 --> S6[Update Status Pesanan: COMPLETED]
-        S6 --> S7[Catat Riwayat Transaksi Berhasil]
-        S7 --> S_Final([Selesai: Transaksi Berhasil])
+        A2 --> S1[Hubungkan ke Percakapan: conversations & direct_messages]
+        S1 --> S2[Otomatis Lampirkan Kartu Ringkasan Produk di Chat]
+        S2 --> S3[Kirim Push Notifikasi Realtime ke HP Penjual]
+        S3 --> A3
+        A4 --> S4[Simpan Pesan Janjian COD ke Database]
+        S4 --> P2
+        A6 --> S_Final([Selesai: Transaksi Berhasil])
     end
 
     subgraph Penjual["Siswa Penjual"]
-        S5 -.-> P1[Terima Notifikasi Pesanan Masuk]
-        P1 --> P2[Tinjau Titik Temu & Catatan Pembeli]
-        P2 --> P3[Bawa Produk ke Titik Temu yang Dipilih]
-        P3 --> A9
-        A10 --> P4[Terima Uang Tunai & Serahkan Barang]
+        S3 -.-> P1[Terima Notifikasi Chat Masuk]
+        P1 --> P2[Buka Chat & Sepakati Janjian di Titik Temu]
+        P2 --> P3[Bawa Produk ke Spot COD Saat Jam Istirahat]
+        P3 --> A5
+        A6 --> P4[Terima Uang Tunai & Serahkan Barang]
+        P4 --> S_Final
     end</code></pre>
         </div>
       </section>
@@ -1837,13 +1819,11 @@ flowchart TD
 erDiagram
     student_registry ||--o| profiles : "nis"
     profiles ||--o{ market_posts : "seller_id"
-    profiles ||--o{ orders : "buyer_id"
-    profiles ||--o{ orders : "seller_id"
-    market_posts ||--o{ orders : "post_id"
-    school_meeting_points ||--o{ orders : "meeting_point_id"
-    profiles ||--o{ conversations : "buyer_id"
-    profiles ||--o{ conversations : "seller_id"
+    profiles ||--o{ conversations : "participant_one"
+    profiles ||--o{ conversations : "participant_two"
+    market_posts ||--o{ conversations : "product_id"
     conversations ||--o{ direct_messages : "conversation_id"
+    profiles ||--o{ direct_messages : "sender_id"
     profiles ||--o{ content_reports : "reporter_id"
     market_posts ||--o{ content_reports : "target_post_id"
           </pre>
@@ -1856,8 +1836,7 @@ erDiagram
             <li><code>profiles</code>: Akun aktif pengguna aplikasi sNaps yang terikat ke NIS buku induk.</li>
             <li><code>market_posts</code>: Listing produk wirausaha dan thread forum diskusi.</li>
             <li><code>school_meeting_points</code>: Daftar lokasi titik temu fisik di sekolah (Gazebo, Kantin, Lab).</li>
-            <li><code>orders</code>: Data pesanan COD antar siswa lengkap dengan lokasi spot dan status pesanan.</li>
-            <li><code>conversations</code> &amp; <code>direct_messages</code>: Data obrolan privat antar pengguna.</li>
+            <li><code>conversations</code> &amp; <code>direct_messages</code>: Data obrolan privat antar pengguna untuk transaksi langsung (Feed-to-DM).</li>
             <li><code>content_reports</code>: Data pelaporan konten melanggar etika sekolah.</li>
           </ul>
         </div>
@@ -1866,13 +1845,11 @@ erDiagram
           <pre id="src-3-7-1"><code>erDiagram
     student_registry ||--o| profiles : "nis"
     profiles ||--o{ market_posts : "seller_id"
-    profiles ||--o{ orders : "buyer_id"
-    profiles ||--o{ orders : "seller_id"
-    market_posts ||--o{ orders : "post_id"
-    school_meeting_points ||--o{ orders : "meeting_point_id"
-    profiles ||--o{ conversations : "buyer_id"
-    profiles ||--o{ conversations : "seller_id"
+    profiles ||--o{ conversations : "participant_one"
+    profiles ||--o{ conversations : "participant_two"
+    market_posts ||--o{ conversations : "product_id"
     conversations ||--o{ direct_messages : "conversation_id"
+    profiles ||--o{ direct_messages : "sender_id"
     profiles ||--o{ content_reports : "reporter_id"
     market_posts ||--o{ content_reports : "target_post_id"</code></pre>
         </div>
@@ -1930,7 +1907,6 @@ erDiagram
         TEXT title
         TEXT description
         INT price
-        INT stock
         TEXT type
         TEXT category
         JSONB image_urls
@@ -1948,24 +1924,13 @@ erDiagram
         BOOLEAN is_active
     }
 
-    orders {
-        UUID id PK
-        UUID buyer_id FK
-        UUID seller_id FK
-        UUID post_id FK
-        UUID meeting_point_id FK
-        INT total_price
-        TEXT buyer_note
-        TEXT status
-        TIMESTAMPTZ created_at
-        TIMESTAMPTZ completed_at
-    }
-
     conversations {
         UUID id PK
-        UUID buyer_id FK
-        UUID seller_id FK
-        UUID post_id FK
+        UUID participant_one FK
+        UUID participant_two FK
+        UUID product_id FK
+        TEXT last_message
+        TIMESTAMPTZ last_message_at
         TIMESTAMPTZ created_at
     }
 
@@ -1989,13 +1954,11 @@ erDiagram
 
     student_registry ||--o| profiles : "nis"
     profiles ||--o{ market_posts : "seller_id"
-    profiles ||--o{ orders : "buyer_id"
-    profiles ||--o{ orders : "seller_id"
-    market_posts ||--o{ orders : "post_id"
-    school_meeting_points ||--o{ orders : "meeting_point_id"
-    profiles ||--o{ conversations : "buyer_id"
-    profiles ||--o{ conversations : "seller_id"
+    profiles ||--o{ conversations : "participant_one"
+    profiles ||--o{ conversations : "participant_two"
+    market_posts ||--o{ conversations : "product_id"
     conversations ||--o{ direct_messages : "conversation_id"
+    profiles ||--o{ direct_messages : "sender_id"
     profiles ||--o{ content_reports : "reporter_id"
     market_posts ||--o{ content_reports : "target_post_id"
           </pre>
@@ -2006,7 +1969,7 @@ erDiagram
           <ul>
             <li>Tipe <code>UUID</code> digunakan sebagai Primary Key unik di seluruh tabel transaksi dan akun untuk menjamin skalabilitas terdistribusi.</li>
             <li>Relasi <code>profiles.nis</code> dihubungkan secara ketat ke <code>student_registry(nis)</code> untuk menjamin data akun selalu valid sebagai siswa aktif SMKN 8 Semarang.</li>
-            <li>Tabel <code>orders</code> mengunci 4 Foreign Key sekaligus: <code>buyer_id</code>, <code>seller_id</code>, <code>post_id</code>, dan <code>meeting_point_id</code>.</li>
+            <li>Tabel <code>conversations</code> mengaitkan <code>participant_one</code>, <code>participant_two</code>, dan opsional <code>product_id</code> dari <code>market_posts</code> untuk transaksi Direct-to-DM tanpa tabel orders perantara.</li>
           </ul>
         </div>
 
@@ -2038,7 +2001,6 @@ erDiagram
         TEXT title
         TEXT description
         INT price
-        INT stock
         TEXT type
         TEXT category
         JSONB image_urls
@@ -2056,24 +2018,13 @@ erDiagram
         BOOLEAN is_active
     }
 
-    orders {
-        UUID id PK
-        UUID buyer_id FK
-        UUID seller_id FK
-        UUID post_id FK
-        UUID meeting_point_id FK
-        INT total_price
-        TEXT buyer_note
-        TEXT status
-        TIMESTAMPTZ created_at
-        TIMESTAMPTZ completed_at
-    }
-
     conversations {
         UUID id PK
-        UUID buyer_id FK
-        UUID seller_id FK
-        UUID post_id FK
+        UUID participant_one FK
+        UUID participant_two FK
+        UUID product_id FK
+        TEXT last_message
+        TIMESTAMPTZ last_message_at
         TIMESTAMPTZ created_at
     }
 
@@ -2097,13 +2048,11 @@ erDiagram
 
     student_registry ||--o| profiles : "nis"
     profiles ||--o{ market_posts : "seller_id"
-    profiles ||--o{ orders : "buyer_id"
-    profiles ||--o{ orders : "seller_id"
-    market_posts ||--o{ orders : "post_id"
-    school_meeting_points ||--o{ orders : "meeting_point_id"
-    profiles ||--o{ conversations : "buyer_id"
-    profiles ||--o{ conversations : "seller_id"
+    profiles ||--o{ conversations : "participant_one"
+    profiles ||--o{ conversations : "participant_two"
+    market_posts ||--o{ conversations : "product_id"
     conversations ||--o{ direct_messages : "conversation_id"
+    profiles ||--o{ direct_messages : "sender_id"
     profiles ||--o{ content_reports : "reporter_id"
     market_posts ||--o{ content_reports : "target_post_id"</code></pre>
         </div>
@@ -2135,6 +2084,21 @@ erDiagram
         <div class="diagram-panel tab-content-diagram">
           <pre class="mermaid" id="mer-3-8">
 classDiagram
+    %% Presentation & Navigation
+    class HomeFeedScreen {
+        +HomeFeedController controller
+        +_handleBuyNow(MarketPostModel post) void
+    }
+
+    class SocialCommerceNavigator {
+        +openDirectMessage(BuildContext context, MarketPostModel post) void
+    }
+
+    class ChatConversationScreen {
+        +ConversationModel conversation
+        +createState() State~ChatConversationScreen~
+    }
+
     %% Models
     class UserProfile {
         +String id
@@ -2149,107 +2113,107 @@ classDiagram
         +toJson() Map
     }
 
-    class MarketPost {
+    class MarketPostModel {
         +String id
-        +String sellerId
-        +String title
-        +String description
-        +int price
-        +int stock
-        +String type
+        +UserProfile seller
+        +String? title
+        +String caption
+        +int? price
         +String category
-        +List~String~ imageUrls
+        +List~String~ images
         +DateTime createdAt
-        +bool get isOutOfStock
     }
 
-    class SchoolMeetingPoint {
-        +String id
-        +String name
-        +String code
-        +String areaZone
-        +String description
-        +String? photoUrl
-        +bool isActive
+    class ProductContext {
+        +String title
+        +String price
+        +String? image
+        +String location
     }
 
-    class OrderTransaction {
+    class ConversationModel {
         +String id
-        +String buyerId
-        +String sellerId
-        +String postId
-        +String meetingPointId
-        +int totalPrice
-        +String buyerNote
-        +String status
+        +UserProfile user
+        +String? productId
+        +String lastMessage
+        +DateTime lastMessageAt
+        +int unreadCount
+        +ProductContext? productContext
+    }
+
+    class ChatMessageModel {
+        +String id
+        +String conversationId
+        +String senderId
+        +String messageText
+        +bool isRead
         +DateTime createdAt
     }
 
     %% Services
-    class SupabaseAuthService {
-        -_client SupabaseClient
-        +loginWithNis(String nis, String password) Future~AuthResponse~
-        +registerWithNis(String nis, String username, String password) Future~void~
-        +bindDevice(String userId, String deviceId) Future~void~
-        +getCurrentUser() UserProfile?
+    class DirectMessagesService {
+        -List~ConversationModel~ _conversations
+        -Map~String, List~ChatMessageModel~~ _conversationMessages
+        +static DirectMessagesService instance
+        +loadConversations() Future~void~
+        +loadMessages(String conversationId) Future~List~ChatMessageModel~~
+        +sendMessage(String conversationId, String text) Future~ChatMessageModel~
+        +markAsRead(String conversationId) Future~void~
     }
 
-    class SupabaseFeedService {
-        -_client SupabaseClient
-        +fetchFeedPosts(int page, String? category) Future~List~MarketPost~~
-        +createPost(MarketPost post) Future~MarketPost~
-        +likePost(String postId) Future~void~
-        +addComment(String postId, String comment) Future~void~
-    }
-
-    class SupabaseOrderService {
-        -_client SupabaseClient
-        +createCodOrder(OrderTransaction order) Future~OrderTransaction~
-        +fetchMeetingPoints() Future~List~SchoolMeetingPoint~~
-        +updateOrderStatus(String orderId, String newStatus) Future~void~
-    }
-
-    %% Controllers
-    class AuthController {
-        -SupabaseAuthService _authService
-        +UserProfile? currentUser
-        +bool isLoading
-        +login(String nis, String password) Future~bool~
-        +logout() Future~void~
-    }
-
-    class CheckoutController {
-        -SupabaseOrderService _orderService
-        +List~SchoolMeetingPoint~ meetingPoints
-        +SchoolMeetingPoint? selectedPoint
-        +bool isSubmitting
-        +loadMeetingPoints() Future~void~
-        +submitCodOrder(String postId, String buyerNote) Future~bool~
+    class SupabaseService {
+        -SupabaseClient client
+        +static SupabaseService instance
+        +fetchConversations() Future~List~Map~~~~
+        +fetchMessages(String convId) Future~List~Map~~~~
+        +sendChatMessage(String convId, String text) Future~Map~
+        +subscribeToGlobalInbox(Function onNewMessage) RealtimeChannel
     }
 
     %% Relationships
-    AuthController --> SupabaseAuthService : "uses"
-    CheckoutController --> SupabaseOrderService : "uses"
-    SupabaseAuthService ..> UserProfile : "returns"
-    SupabaseFeedService ..> MarketPost : "manages"
-    SupabaseOrderService ..> SchoolMeetingPoint : "fetches"
-    SupabaseOrderService ..> OrderTransaction : "processes"
-    OrderTransaction --> MarketPost : "contains post"
-    OrderTransaction --> SchoolMeetingPoint : "meets at"
+    HomeFeedScreen --> SocialCommerceNavigator : "delegates buy action"
+    SocialCommerceNavigator --> DirectMessagesService : "retrieves/creates conversation"
+    SocialCommerceNavigator --> ChatConversationScreen : "navigates to"
+    SocialCommerceNavigator ..> ProductContext : "creates context"
+    
+    ChatConversationScreen --> DirectMessagesService : "observes messages"
+    ChatConversationScreen o-- ConversationModel : "holds active"
+    ConversationModel o-- ProductContext : "contains"
+    ConversationModel o-- UserProfile : "peer user"
+    
+    DirectMessagesService --> SupabaseService : "calls realtime gateway"
+    DirectMessagesService o-- ConversationModel : "manages list"
+    DirectMessagesService o-- ChatMessageModel : "caches messages"
+    MarketPostModel --> UserProfile : "seller"
           </pre>
         </div>
 
         <div class="text-panel tab-content-text">
           <p><strong>Separation of Concerns:</strong></p>
           <ul>
-            <li><strong>Entities / Models</strong>: <code>UserProfile</code>, <code>MarketPost</code>, <code>SchoolMeetingPoint</code>, dan <code>OrderTransaction</code> merepresentasikan model data domain murni.</li>
-            <li><strong>Services</strong>: Mengisolasi komunikasi Supabase API dan manipulasi data jarak jauh.</li>
-            <li><strong>Controllers</strong>: Menangani reaktifitas state management (loading state, error handling, dan data bindings ke UI).</li>
+            <li><strong>Entities / Models</strong>: <code>UserProfile</code>, <code>MarketPostModel</code>, <code>ConversationModel</code>, dan <code>ChatMessageModel</code> merepresentasikan domain data obrolan dan produk.</li>
+            <li><strong>Services</strong>: <code>DirectMessagesService</code> dan <code>SupabaseService</code> mengisolasi sinkronisasi pesan realtime PostgreSQL dan cache lokal.</li>
+            <li><strong>Navigation &amp; UI</strong>: <code>SocialCommerceNavigator</code> menghubungkan interaksi 'Beli Sekarang' di feed langsung ke ruang chat obrolan privat antar-siswa.</li>
           </ul>
         </div>
 
         <div class="code-panel tab-content-code">
           <pre id="src-3-8"><code>classDiagram
+    %% Presentation & Navigation
+    class HomeFeedScreen {
+        +HomeFeedController controller
+        +_handleBuyNow(MarketPostModel post) void
+    }
+
+    class SocialCommerceNavigator {
+        +openDirectMessage(BuildContext context, MarketPostModel post) void
+    }
+
+    class ChatConversationScreen {
+        +ConversationModel conversation
+        +createState() State~ChatConversationScreen~
+    }
+
     %% Models
     class UserProfile {
         +String id
@@ -2264,93 +2228,78 @@ classDiagram
         +toJson() Map
     }
 
-    class MarketPost {
+    class MarketPostModel {
         +String id
-        +String sellerId
-        +String title
-        +String description
-        +int price
-        +int stock
-        +String type
+        +UserProfile seller
+        +String? title
+        +String caption
+        +int? price
         +String category
-        +List~String~ imageUrls
+        +List~String~ images
         +DateTime createdAt
-        +bool get isOutOfStock
     }
 
-    class SchoolMeetingPoint {
-        +String id
-        +String name
-        +String code
-        +String areaZone
-        +String description
-        +String? photoUrl
-        +bool isActive
+    class ProductContext {
+        +String title
+        +String price
+        +String? image
+        +String location
     }
 
-    class OrderTransaction {
+    class ConversationModel {
         +String id
-        +String buyerId
-        +String sellerId
-        +String postId
-        +String meetingPointId
-        +int totalPrice
-        +String buyerNote
-        +String status
+        +UserProfile user
+        +String? productId
+        +String lastMessage
+        +DateTime lastMessageAt
+        +int unreadCount
+        +ProductContext? productContext
+    }
+
+    class ChatMessageModel {
+        +String id
+        +String conversationId
+        +String senderId
+        +String messageText
+        +bool isRead
         +DateTime createdAt
     }
 
     %% Services
-    class SupabaseAuthService {
-        -_client SupabaseClient
-        +loginWithNis(String nis, String password) Future~AuthResponse~
-        +registerWithNis(String nis, String username, String password) Future~void~
-        +bindDevice(String userId, String deviceId) Future~void~
-        +getCurrentUser() UserProfile?
+    class DirectMessagesService {
+        -List~ConversationModel~ _conversations
+        -Map~String, List~ChatMessageModel~~ _conversationMessages
+        +static DirectMessagesService instance
+        +loadConversations() Future~void~
+        +loadMessages(String conversationId) Future~List~ChatMessageModel~~
+        +sendMessage(String conversationId, String text) Future~ChatMessageModel~
+        +markAsRead(String conversationId) Future~void~
     }
 
-    class SupabaseFeedService {
-        -_client SupabaseClient
-        +fetchFeedPosts(int page, String? category) Future~List~MarketPost~~
-        +createPost(MarketPost post) Future~MarketPost~
-        +likePost(String postId) Future~void~
-        +addComment(String postId, String comment) Future~void~
-    }
-
-    class SupabaseOrderService {
-        -_client SupabaseClient
-        +createCodOrder(OrderTransaction order) Future~OrderTransaction~
-        +fetchMeetingPoints() Future~List~SchoolMeetingPoint~~
-        +updateOrderStatus(String orderId, String newStatus) Future~void~
-    }
-
-    %% Controllers
-    class AuthController {
-        -SupabaseAuthService _authService
-        +UserProfile? currentUser
-        +bool isLoading
-        +login(String nis, String password) Future~bool~
-        +logout() Future~void~
-    }
-
-    class CheckoutController {
-        -SupabaseOrderService _orderService
-        +List~SchoolMeetingPoint~ meetingPoints
-        +SchoolMeetingPoint? selectedPoint
-        +bool isSubmitting
-        +loadMeetingPoints() Future~void~
-        +submitCodOrder(String postId, String buyerNote) Future~bool~
+    class SupabaseService {
+        -SupabaseClient client
+        +static SupabaseService instance
+        +fetchConversations() Future~List~Map~~~~
+        +fetchMessages(String convId) Future~List~Map~~~~
+        +sendChatMessage(String convId, String text) Future~Map~
+        +subscribeToGlobalInbox(Function onNewMessage) RealtimeChannel
     }
 
     %% Relationships
-    AuthController --> SupabaseAuthService : "uses"
-    CheckoutController --> SupabaseOrderService : "uses"
-    SupabaseAuthService ..> UserProfile : "returns"
-    SupabaseFeedService ..> MarketPost : "manages"
-    SupabaseOrderService ..> SchoolMeetingPoint : "fetches"
-    SupabaseOrderService ..> OrderTransaction : "processes"
-    OrderTransaction --> MarketPost : "contains post"
-    OrderTransaction --> SchoolMeetingPoint : "meets at"</code></pre>
+    HomeFeedScreen --> SocialCommerceNavigator : "delegates buy action"
+    SocialCommerceNavigator --> DirectMessagesService : "retrieves/creates conversation"
+    SocialCommerceNavigator --> ChatConversationScreen : "navigates to"
+    SocialCommerceNavigator ..> ProductContext : "creates context"
+    
+    ChatConversationScreen --> DirectMessagesService : "observes messages"
+    ChatConversationScreen o-- ConversationModel : "holds active"
+    ConversationModel o-- ProductContext : "contains"
+    ConversationModel o-- UserProfile : "peer user"
+    
+    DirectMessagesService --> SupabaseService : "calls realtime gateway"
+    DirectMessagesService o-- ConversationModel : "manages list"
+    DirectMessagesService o-- ChatMessageModel : "caches messages"
+    MarketPostModel --> UserProfile : "seller"</code></pre>
         </div>
       </section>
 
@@ -2460,9 +2409,9 @@ sequenceDiagram
           <div class="doc-title-group">
             <div class="doc-title-row">
               <span class="doc-badge badge-uml">Bab 3.9.2</span>
-              <h2 class="doc-title">3.9.2 Sequence Diagram: Checkout Pesanan COD Titik Temu Sekolah</h2>
+              <h2 class="doc-title">3.9.2 Sequence Diagram: Pemesanan Langsung via Chat DM (Feed-to-DM)</h2>
             </div>
-            <p class="doc-subtitle">Pertukaran pesan temporal saat proses pemesanan barang, transaksi atomik database, dan trigger notifikasi.</p>
+            <p class="doc-subtitle">Pertukaran pesan temporal saat penekanan tombol 'Beli Sekarang' pada kartu produk menuju inisiasi percakapan DM langsung antar-siswa.</p>
           </div>
           <div class="card-toolbar">
             <div class="tab-group">
@@ -2470,7 +2419,7 @@ sequenceDiagram
               <button class="tab-btn" onclick="switchCardTab('diagram-3-9-2', 'text')">Analisis</button>
               <button class="tab-btn" onclick="switchCardTab('diagram-3-9-2', 'code')">Kode</button>
             </div>
-            <button class="action-btn" onclick="openDiagramModal('mer-3-9-2', '3.9.2 Sequence: Checkout Pesanan COD Titik Temu')">Perbesar</button>
+            <button class="action-btn" onclick="openDiagramModal('mer-3-9-2', '3.9.2 Sequence: Pemesanan Langsung via Chat DM (Feed-to-DM)')">Perbesar</button>
             <button class="action-btn" onclick="copyMermaid('src-3-9-2', this)">Salin</button>
           </div>
         </div>
@@ -2480,114 +2429,98 @@ sequenceDiagram
 sequenceDiagram
     autonumber
     actor Pembeli as 👤 Siswa Pembeli
-    participant UI as 📱 CheckoutScreen
-    participant Ctrl as 🎮 CheckoutController
-    participant Svc as 🌐 SupabaseOrderService
-    participant DB as 🗄️ Supabase PostgreSQL
+    participant UI_Feed as 📱 HomeFeedScreen
+    participant Nav as 🧭 SocialCommerceNavigator
+    participant Svc_DM as 💬 DirectMessagesService
+    participant UI_Chat as 📱 ChatConversationScreen
+    participant DB as 🗄️ Supabase (PostgreSQL & Realtime)
     actor Penjual as 👤 Siswa Penjual
 
-    Pembeli->>UI: Buka Halaman Checkout
-    UI->>Ctrl: loadMeetingPoints()
-    Ctrl->>Svc: fetchMeetingPoints()
-    Svc->>DB: SELECT * FROM school_meeting_points WHERE is_active = true
-    DB-->>Svc: List Titik Temu (Gazebo, Kantin, Lab)
-    Svc-->>Ctrl: Data Lokasi Sekolah
-    Ctrl-->>UI: Render Pilihan Spot COD di Denah
-
-    Pembeli->>UI: Pilih Titik Temu & Tulis Catatan
-    Pembeli->>UI: Tekan Tombol "Konfirmasi Pesanan"
-    UI->>Ctrl: submitCodOrder(postId, note)
+    Pembeli->>UI_Feed: Tekan Tombol 'Beli Sekarang' pada Postingan Produk
+    UI_Feed->>Nav: openDirectMessage(context, post)
+    activate Nav
     
-    activate Ctrl
-    Ctrl->>Svc: createCodOrder(payload)
-    activate Svc
+    Nav->>Nav: Bentuk ProductContext(title, price, image, location)
+    Nav->>Svc_DM: Cek Riwayat Percakapan dengan Penjual
+    activate Svc_DM
     
-    critical Verifikasi Stok Atomik
-        Svc->>DB: BEGIN TRANSACTION
-        Svc->>DB: SELECT stock FROM market_posts WHERE id = :postId FOR UPDATE
-        alt Stok Habis (stock <= 0)
-            DB-->>Svc: Stock = 0
-            Svc->>DB: ROLLBACK
-            Svc-->>Ctrl: Error: Stok Habis
-            Ctrl-->>UI: Tampilkan Alert Gagal (Stok Kosong)
-        else Stok Tersedia (stock > 0)
-            Svc->>DB: INSERT INTO orders (buyer_id, seller_id, post_id, meeting_point_id, status='pending')
-            Svc->>DB: UPDATE market_posts SET stock = stock - 1 WHERE id = :postId
-            Svc->>DB: COMMIT TRANSACTION
-            DB-->>Svc: Record Order Berhasil Dibuat
-            
-            Svc->>DB: TRIGGER Notifikasi Masuk ke Penjual
-            DB-->>Penjual: Push Notification: "Ada Pesanan COD Baru Masuk!"
-            
-            Svc-->>Ctrl: Order Sukses
-            deactivate Svc
-            Ctrl-->>UI: Emit State Sukses
-            deactivate Ctrl
-            UI-->>Pembeli: Tampilkan Modal Sukses & Panduan Titik Temu
-        end
+    alt Percakapan Belum Ada
+        Svc_DM->>DB: Buat Record di conversations (participant_one, participant_two, product_id)
+        DB-->>Svc_DM: Return ConversationModel Baru
+    else Percakapan Sudah Ada
+        Svc_DM-->>Nav: Gunakan ConversationModel yang Tersedia
     end
+    deactivate Svc_DM
+    
+    Nav->>UI_Chat: Navigasi Membuka Layar Chat (Bawa ConversationModel & ProductContext)
+    deactivate Nav
+    activate UI_Chat
+    UI_Chat-->>Pembeli: Tampilkan Layar Chat dengan Kartu Produk Menempel di Atas Input
+    
+    Pembeli->>UI_Chat: Ketik Pesan & Tekan Kirim (cth: "Halo kak, COD di Gazebo PPLG istirahat pertama?")
+    UI_Chat->>Svc_DM: sendMessage(conversationId, text)
+    activate Svc_DM
+    Svc_DM->>DB: INSERT INTO direct_messages (conversation_id, sender_id, content)
+    activate DB
+    DB-->>Svc_DM: Record Pesan Tersimpan
+    
+    DB-->>Penjual: Realtime Broadcast / Push Notification Chat Masuk
+    deactivate DB
+    deactivate Svc_DM
           </pre>
         </div>
 
         <div class="text-panel tab-content-text">
-          <p><strong>Rincian Prosedur Transaksi COD Atomik:</strong></p>
-          <ul>
-            <li><strong>Langkah 1-6</strong>: Pengambilan daftar master data lokasi pertemuan sekolah aktif dari <code>school_meeting_points</code>.</li>
-            <li><strong>Langkah 7-18</strong>: Blok <code>critical</code> transaksi atomik yang mengunci baris produk (<code>SELECT ... FOR UPDATE</code>), memotong stok, dan menyimpan pesanan ke tabel <code>orders</code>.</li>
-            <li><strong>Langkah 19-25</strong>: Trigger push notification realtime ke ponsel penjual dan rendering bukti digital di layar pembeli.</li>
-          </ul>
+          <p><strong>Alur Kronologis Social Commerce (Feed-to-DM):</strong></p>
+          <ol>
+            <li><strong>Langkah 1-4</strong>: Pembeli menekan 'Beli Sekarang' di beranda sosial, memicu <code>SocialCommerceNavigator</code> membentuk konteks produk otomatis.</li>
+            <li><strong>Langkah 5-10</strong>: Sistem memeriksa riwayat percakapan; jika baru pertama kali, record ruang obrolan dibuat di <code>conversations</code> mengunci ID produk.</li>
+            <li><strong>Langkah 11-17</strong>: Layar chat langsung terbuka menampilkan kartu ringkasan produk di atas input bar. Siswa bernegosiasi titik temu COD sekolah dan pesan tersimpan di <code>direct_messages</code>.</li>
+          </ol>
         </div>
 
         <div class="code-panel tab-content-code">
           <pre id="src-3-9-2"><code>sequenceDiagram
     autonumber
     actor Pembeli as 👤 Siswa Pembeli
-    participant UI as 📱 CheckoutScreen
-    participant Ctrl as 🎮 CheckoutController
-    participant Svc as 🌐 SupabaseOrderService
-    participant DB as 🗄️ Supabase PostgreSQL
+    participant UI_Feed as 📱 HomeFeedScreen
+    participant Nav as 🧭 SocialCommerceNavigator
+    participant Svc_DM as 💬 DirectMessagesService
+    participant UI_Chat as 📱 ChatConversationScreen
+    participant DB as 🗄️ Supabase (PostgreSQL & Realtime)
     actor Penjual as 👤 Siswa Penjual
 
-    Pembeli->>UI: Buka Halaman Checkout
-    UI->>Ctrl: loadMeetingPoints()
-    Ctrl->>Svc: fetchMeetingPoints()
-    Svc->>DB: SELECT * FROM school_meeting_points WHERE is_active = true
-    DB-->>Svc: List Titik Temu (Gazebo, Kantin, Lab)
-    Svc-->>Ctrl: Data Lokasi Sekolah
-    Ctrl-->>UI: Render Pilihan Spot COD di Denah
-
-    Pembeli->>UI: Pilih Titik Temu & Tulis Catatan
-    Pembeli->>UI: Tekan Tombol "Konfirmasi Pesanan"
-    UI->>Ctrl: submitCodOrder(postId, note)
+    Pembeli->>UI_Feed: Tekan Tombol 'Beli Sekarang' pada Postingan Produk
+    UI_Feed->>Nav: openDirectMessage(context, post)
+    activate Nav
     
-    activate Ctrl
-    Ctrl->>Svc: createCodOrder(payload)
-    activate Svc
+    Nav->>Nav: Bentuk ProductContext(title, price, image, location)
+    Nav->>Svc_DM: Cek Riwayat Percakapan dengan Penjual
+    activate Svc_DM
     
-    critical Verifikasi Stok Atomik
-        Svc->>DB: BEGIN TRANSACTION
-        Svc->>DB: SELECT stock FROM market_posts WHERE id = :postId FOR UPDATE
-        alt Stok Habis (stock <= 0)
-            DB-->>Svc: Stock = 0
-            Svc->>DB: ROLLBACK
-            Svc-->>Ctrl: Error: Stok Habis
-            Ctrl-->>UI: Tampilkan Alert Gagal (Stok Kosong)
-        else Stok Tersedia (stock > 0)
-            Svc->>DB: INSERT INTO orders (buyer_id, seller_id, post_id, meeting_point_id, status='pending')
-            Svc->>DB: UPDATE market_posts SET stock = stock - 1 WHERE id = :postId
-            Svc->>DB: COMMIT TRANSACTION
-            DB-->>Svc: Record Order Berhasil Dibuat
-            
-            Svc->>DB: TRIGGER Notifikasi Masuk ke Penjual
-            DB-->>Penjual: Push Notification: "Ada Pesanan COD Baru Masuk!"
-            
-            Svc-->>Ctrl: Order Sukses
-            deactivate Svc
-            Ctrl-->>UI: Emit State Sukses
-            deactivate Ctrl
-            UI-->>Pembeli: Tampilkan Modal Sukses & Panduan Titik Temu
-        end
-    end</code></pre>
+    alt Percakapan Belum Ada
+        Svc_DM->>DB: Buat Record di conversations (participant_one, participant_two, product_id)
+        DB-->>Svc_DM: Return ConversationModel Baru
+    else Percakapan Sudah Ada
+        Svc_DM-->>Nav: Gunakan ConversationModel yang Tersedia
+    end
+    deactivate Svc_DM
+    
+    Nav->>UI_Chat: Navigasi Membuka Layar Chat (Bawa ConversationModel & ProductContext)
+    deactivate Nav
+    activate UI_Chat
+    UI_Chat-->>Pembeli: Tampilkan Layar Chat dengan Kartu Produk Menempel di Atas Input
+    
+    Pembeli->>UI_Chat: Ketik Pesan & Tekan Kirim (cth: "Halo kak, COD di Gazebo PPLG istirahat pertama?")
+    UI_Chat->>Svc_DM: sendMessage(conversationId, text)
+    activate Svc_DM
+    Svc_DM->>DB: INSERT INTO direct_messages (conversation_id, sender_id, content)
+    activate DB
+    DB-->>Svc_DM: Record Pesan Tersimpan
+    
+    DB-->>Penjual: Realtime Broadcast / Push Notification Chat Masuk
+    deactivate DB
+    deactivate Svc_DM</code></pre>
         </div>
       </section>
 
