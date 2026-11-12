@@ -1245,86 +1245,84 @@ flowchart TD
           <pre class="mermaid" id="mer-3-3">
 flowchart LR
     subgraph SiswaEntity["Entitas Luar: Siswa"]
-        Siswa["👤 SISWA (Warga SMKN 8)"]
+        Siswa["👤 Siswa (SMKN 8)"]
     end
 
     subgraph CoreSystem["Sistem Utama"]
-        App(("0.0<br/>SISTEM APLIKASI<br/>SNAPAN MARKET MOBILE<br/>(sNAPS)"))
+        App(("0.0<br/>APLIKASI MOBILE<br/>sNAPS"))
     end
 
     subgraph AdminEntity["Entitas Luar: Admin"]
-        Admin["🛡️ ADMIN SEKOLAH"]
+        Admin["🛡️ Admin Sekolah"]
     end
 
     %% Siswa -> Sistem
-    Siswa -->|1. Kredensial Login NIS & Registrasi Perangkat| App
-    Siswa -->|2. Data Postingan Thread & Produk Vokasi| App
-    Siswa -->|3. Data Pesanan COD & Pilihan Titik Temu| App
-    Siswa -->|4. Pesan Chat Realtime| App
-    Siswa -->|5. Laporan Pelanggaran Konten| App
+    Siswa -->|1. Nomor Induk Siswa & Password| App
+    Siswa -->|2. Postingan Cerita & Barang Jualan| App
+    Siswa -->|3. Mulai Beli & Konteks Barang di Chat| App
+    Siswa -->|4. Kirim Pesan Chat & Janjian COD| App
+    Siswa -->|5. Laporan Konten Bermasalah| App
 
     %% Sistem -> Siswa
-    App -->|a. Akses Beranda & Profil Siswa| Siswa
-    App -->|b. Tampilan Feed & Katalog Produk Vokasi| Siswa
-    App -->|c. Notifikasi Status Pesanan & Lokasi COD| Siswa
-    App -->|d. Pesan Chat Masuk Realtime| Siswa
+    App -->|a. Halaman Beranda & Profil Akun| Siswa
+    App -->|b. Tampilan Cerita & Daftar Jualan Teman| Siswa
+    App -->|c. Notifikasi Chat Masuk di HP| Siswa
+    App -->|d. Obrolan Langsung & Kartu Barang| Siswa
 
     %% Admin -> Sistem
-    Admin -->|"1. Master Data Registry Siswa (NIS & Kelas)"| App
-    Admin -->|2. Master Titik Temu COD Sekolah| App
-    Admin -->|"3. Tindakan Moderasi (Banned Akun/Take Down Post)"| App
+    Admin -->|"1. Data Induk Siswa Aktif (NIS & Kelas)"| App
+    Admin -->|"2. Tindakan Banned Akun & Hapus Postingan"| App
 
     %% Sistem -> Admin
-    App -->|a. Notifikasi Laporan Konten Siswa| Admin
-    App -->|b. Log Keamanan & Registrasi Hardware| Admin
-    App -->|c. Rekapitulasi Data Siswa & Transaksi Sekolah| Admin
+    App -->|a. Notifikasi Laporan Konten dari Siswa| Admin
+    App -->|b. Catatan Perangkat Login Siswa| Admin
+    App -->|c. Rekap Aktivitas Pasar Sekolah| Admin
           </pre>
         </div>
 
         <div class="text-panel tab-content-text">
-          <p><strong>Batasan Entitas Eksternal:</strong></p>
+          <p><strong>Batasan Entitas Luar:</strong></p>
           <ul>
-            <li><strong>Siswa</strong>: Mengirimkan kredensial NIS, listing postingan karya, pemesanan COD, chat, dan laporan konten. Menerima akses profil, feed beranda, dan nota pesanan digital.</li>
-            <li><strong>Admin Sekolah</strong>: Menyediakan master buku induk (NIS & Rombel Kelas), master titik temu sekolah, dan tindakan moderasi akun. Menerima log keamanan dan rekapitulasi data.</li>
+            <li><strong>Siswa</strong>: Masuk pakai NIS, posting cerita/jualan, klik beli buat buka chat penjual, janjian tempat ketemuan COD, dan lapor postingan tidak pantas.</li>
+            <li><strong>Admin Sekolah</strong>: Menyediakan data siswa resmi biar orang luar nggak bisa masuk, serta memantau dan menghapus postingan yang dilaporkan.</li>
           </ul>
         </div>
 
         <div class="code-panel tab-content-code">
           <pre id="src-3-3"><code>flowchart LR
     subgraph SiswaEntity["Entitas Luar: Siswa"]
-        Siswa["👤 SISWA (Warga SMKN 8)"]
+        Siswa["👤 Siswa (SMKN 8)"]
     end
 
     subgraph CoreSystem["Sistem Utama"]
-        App(("0.0<br/>SISTEM APLIKASI<br/>SNAPAN MARKET MOBILE<br/>(sNAPS)"))
+        App(("0.0<br/>APLIKASI MOBILE<br/>sNAPS"))
     end
 
     subgraph AdminEntity["Entitas Luar: Admin"]
-        Admin["🛡️ ADMIN SEKOLAH"]
+        Admin["🛡️ Admin Sekolah"]
     end
 
     %% Siswa -> Sistem
-    Siswa -->|1. Kredensial Login NIS & Registrasi Perangkat| App
-    Siswa -->|2. Data Postingan Thread & Produk Vokasi| App
-    Siswa -->|3. Data Pesanan COD & Pilihan Titik Temu| App
-    Siswa -->|4. Pesan Chat Realtime| App
-    Siswa -->|5. Laporan Pelanggaran Konten| App
+    Siswa -->|1. Nomor Induk Siswa & Password| App
+    Siswa -->|2. Postingan Cerita & Barang Jualan| App
+    Siswa -->|3. Mulai Beli & Konteks Barang di Chat| App
+    Siswa -->|4. Kirim Pesan Chat & Janjian COD| App
+    Siswa -->|5. Laporan Konten Bermasalah| App
 
     %% Sistem -> Siswa
-    App -->|a. Akses Beranda & Profil Siswa| Siswa
-    App -->|b. Tampilan Feed & Katalog Produk Vokasi| Siswa
-    App -->|c. Notifikasi Status Pesanan & Lokasi COD| Siswa
-    App -->|d. Pesan Chat Masuk Realtime| Siswa
+    App -->|a. Halaman Beranda & Profil Akun| Siswa
+    App -->|b. Tampilan Cerita & Daftar Jualan Teman| Siswa
+    App -->|c. Notifikasi Chat Masuk di HP| Siswa
+    App -->|d. Obrolan Langsung & Kartu Barang| Siswa
 
     %% Admin -> Sistem
-    Admin -->|"1. Master Data Registry Siswa (NIS & Kelas)"| App
-    Admin -->|2. Master Titik Temu COD Sekolah| App
-    Admin -->|"3. Tindakan Moderasi (Banned Akun/Take Down Post)"| App
+    Admin -->|"1. Data Induk Siswa Aktif (NIS & Kelas)"| App
+    Admin -->|"2. Tindakan Banned Akun & Hapus Postingan"| App
 
     %% Sistem -> Admin
-    App -->|a. Notifikasi Laporan Konten Siswa| Admin
-    App -->|b. Log Keamanan & Registrasi Hardware| Admin
-    App -->|c. Rekapitulasi Data Siswa & Transaksi Sekolah| Admin</code></pre>
+    App -->|a. Notifikasi Laporan Konten dari Siswa| Admin
+    App -->|b. Catatan Perangkat Login Siswa| Admin
+    App -->|c. Rekap Aktivitas Pasar Sekolah| Admin</code></pre>
         </div>
       </section>
 
@@ -1353,129 +1351,138 @@ flowchart LR
 
         <div class="diagram-panel tab-content-diagram">
           <pre class="mermaid" id="mer-3-4-1">
-flowchart TD
-    Siswa["👤 Siswa"]
-    Admin["🛡️ Admin Sekolah"]
+flowchart LR
+    Siswa["Siswa (SMKN 8)"]
+    Admin["Admin Sekolah"]
 
-    P1(("1.0<br/>Autentikasi &<br/>Profil Siswa"))
-    P2(("2.0<br/>Feed Komunitas &<br/>Diskusi Vokasi"))
-    P3(("3.0<br/>Manajemen Produk &<br/>Katalog Karya"))
-    P4(("4.0<br/>Transaksi COD &<br/>Titik Temu"))
-    P5(("5.0<br/>Moderasi Konten &<br/>Master Registry"))
+    subgraph C1["1.0 Akun"]
+        P1(("1.0<br/>Kelola Akun Siswa"))
+        D_Siswa[("tb_siswa_sekolah")]
+        D_Akun[("tb_akun_pengguna")]
+    end
 
-    D1[("D1: student_registry")]
-    D2[("D2: profiles")]
-    D3[("D3: market_posts")]
-    D4[("D4: school_meeting_points")]
-    D5[("D5: conversations & direct_messages")]
-    D6[("D6: content_reports")]
+    subgraph C2["2.0 Postingan"]
+        P2(("2.0<br/>Kelola Postingan & Jualan"))
+        D_Post[("tb_postingan_jualan")]
+    end
 
-    Siswa -->|NIS & Password| P1
-    D1 -->|Verifikasi Validitas NIS| P1
-    P1 -->|Simpan Profil| D2
-    P1 -->|Session Aktif| Siswa
+    subgraph C3["3.0 Chat & COD"]
+        P3(("3.0<br/>Kelola Chat & Janjian COD"))
+        D_Chat[("tb_percakapan_chat")]
+    end
 
-    Siswa -->|Unggah Thread / Like / Komen| P2
-    P2 -->|Simpan Interaksi| D3
-    D3 -->|Ambil Data Feed| P2
-    P2 -->|Timeline Beranda| Siswa
+    subgraph C4["4.0 Laporan"]
+        P4(("4.0<br/>Kelola Laporan & Keamanan"))
+        D_Lapor[("tb_laporan_konten")]
+    end
 
-    Siswa -->|Unggah Produk Vokasi| P3
-    P3 -->|Simpan Produk| D3
-    D3 -->|Katalog Produk| P3
-    P3 -->|Tampilkan Produk Jurusan| Siswa
+    %% Relasi 1.0
+    Siswa -->|Data Pendaftaran & Login| P1
+    D_Siswa -->|Validasi NIS & Siswa Aktif| P1
+    P1 -->|Profil Siswa Terdaftar| D_Akun
+    P1 -->|Informasi Akun & Akses Masuk| Siswa
 
-    Siswa -->|Pilih Barang & Titik Temu| P4
-    D4 -->|Data Titik Temu Sekolah| P4
-    P4 -->|Validasi Ketersediaan Produk| D3
-    P4 -->|Simpan Riwayat Janjian COD| D5
-    D5 -->|Ambil Pesan & Konteks Produk| P4
-    P4 -->|Notifikasi Chat & Ringkasan COD| Siswa
+    %% Relasi 2.0
+    Siswa -->|Postingan Cerita & Barang| P2
+    P2 -->|Data Postingan Baru| D_Post
+    D_Post -->|Daftar Postingan & Produk| P2
+    P2 -->|Katalog Produk & Beranda| Siswa
 
-    Siswa -->|Laporkan Konten| P5
-    P5 -->|Simpan Laporan| D6
-    Admin -->|"Master Siswa (NIS/Kelas)"| P5
-    P5 -->|Update Registry| D1
-    Admin -->|Kelola Spot COD| P5
-    P5 -->|Update Titik Temu| D4
-    D6 -->|Daftar Laporan| P5
-    P5 -->|Hasil Moderasi| Admin
+    %% Relasi 3.0
+    Siswa -->|Pesan Obrolan & Janjian COD| P3
+    D_Post -->|Detail Barang Transaksi| P3
+    P3 -->|Pesan Obrolan Baru| D_Chat
+    D_Chat -->|Riwayat Obrolan| P3
+    P3 -->|Notifikasi Pesan Masuk| Siswa
+
+    %% Relasi 4.0
+    Siswa -->|Laporan Konten Bermasalah| P4
+    P4 -->|Catatan Laporan Masuk| D_Lapor
+    Admin -->|Data Induk Siswa Sekolah| P4
+    P4 -->|Pembaruan Status Siswa| D_Siswa
+    D_Lapor -->|Daftar Aduan Pelanggaran| P4
+    P4 -->|Rekap Pelanggaran Konten| Admin
+    Admin -->|Tindakan Moderasi & Sanksi| P4
           </pre>
         </div>
 
         <div class="text-panel tab-content-text">
           <p><strong>Sub-Proses Fungsional DFD Level 0:</strong></p>
           <ol>
-            <li><strong>1.0 Autentikasi & Profil Siswa</strong>: Validasi nomor induk ke <code>student_registry</code> dan pembentukan sesi di <code>profiles</code>.</li>
-            <li><strong>2.0 Feed Komunitas & Diskusi Vokasi</strong>: Penyimpanan dan penayangan utas komunitas di <code>market_posts</code>.</li>
-            <li><strong>3.0 Manajemen Produk & Katalog Karya</strong>: Pengelolaan katalog produk dan foto karya tanpa batasan kuantitas stok.</li>
-            <li><strong>4.0 Transaksi COD & Titik Temu</strong>: Inisialisasi obrolan di <code>conversations & direct_messages</code>, pemilihan lokasi <code>school_meeting_points</code>, dan pembayaran tunai langsung.</li>
-            <li><strong>5.0 Moderasi Konten & Master Registry</strong>: Penertiban pelanggaran di <code>content_reports</code> dan pengelolaan buku induk sekolah.</li>
+            <li><strong>1.0 Kelola Akun Siswa</strong>: Menerima data login, verifikasi ke data siswa sekolah, dan mengelola profil pengguna.</li>
+            <li><strong>2.0 Kelola Postingan &amp; Jualan</strong>: Menangani postingan cerita forum dan katalog barang jualan siswa.</li>
+            <li><strong>3.0 Kelola Chat &amp; Janjian COD</strong>: Menangani kirim pesan instan antar-siswa serta melampirkan konteks barang untuk janjian ketemuan.</li>
+            <li><strong>4.0 Kelola Laporan &amp; Keamanan</strong>: Menerima laporan postingan bermasalah dari siswa dan tindakan moderasi oleh admin sekolah.</li>
           </ol>
         </div>
 
         <div class="code-panel tab-content-code">
-          <pre id="src-3-4-1"><code>flowchart TD
-    Siswa["👤 Siswa"]
-    Admin["🛡️ Admin Sekolah"]
+          <pre id="src-3-4-1"><code>flowchart LR
+    Siswa["Siswa (SMKN 8)"]
+    Admin["Admin Sekolah"]
 
-    P1(("1.0<br/>Autentikasi &<br/>Profil Siswa"))
-    P2(("2.0<br/>Feed Komunitas &<br/>Diskusi Vokasi"))
-    P3(("3.0<br/>Manajemen Produk &<br/>Katalog Karya"))
-    P4(("4.0<br/>Transaksi COD &<br/>Titik Temu"))
-    P5(("5.0<br/>Moderasi Konten &<br/>Master Registry"))
+    subgraph C1["1.0 Akun"]
+        P1(("1.0<br/>Kelola Akun Siswa"))
+        D_Siswa[("tb_siswa_sekolah")]
+        D_Akun[("tb_akun_pengguna")]
+    end
 
-    D1[("D1: student_registry")]
-    D2[("D2: profiles")]
-    D3[("D3: market_posts")]
-    D4[("D4: school_meeting_points")]
-    D5[("D5: conversations & direct_messages")]
-    D6[("D6: content_reports")]
+    subgraph C2["2.0 Postingan"]
+        P2(("2.0<br/>Kelola Postingan & Jualan"))
+        D_Post[("tb_postingan_jualan")]
+    end
 
-    Siswa -->|NIS & Password| P1
-    D1 -->|Verifikasi Validitas NIS| P1
-    P1 -->|Simpan Profil| D2
-    P1 -->|Session Aktif| Siswa
+    subgraph C3["3.0 Chat & COD"]
+        P3(("3.0<br/>Kelola Chat & Janjian COD"))
+        D_Chat[("tb_percakapan_chat")]
+    end
 
-    Siswa -->|Unggah Thread / Like / Komen| P2
-    P2 -->|Simpan Interaksi| D3
-    D3 -->|Ambil Data Feed| P2
-    P2 -->|Timeline Beranda| Siswa
+    subgraph C4["4.0 Laporan"]
+        P4(("4.0<br/>Kelola Laporan & Keamanan"))
+        D_Lapor[("tb_laporan_konten")]
+    end
 
-    Siswa -->|Unggah Produk Vokasi| P3
-    P3 -->|Simpan Produk| D3
-    D3 -->|Katalog Produk| P3
-    P3 -->|Tampilkan Produk Jurusan| Siswa
+    %% Relasi 1.0
+    Siswa -->|Data Pendaftaran & Login| P1
+    D_Siswa -->|Validasi NIS & Siswa Aktif| P1
+    P1 -->|Profil Siswa Terdaftar| D_Akun
+    P1 -->|Informasi Akun & Akses Masuk| Siswa
 
-    Siswa -->|Pilih Barang & Titik Temu| P4
-    D4 -->|Data Titik Temu Sekolah| P4
-    P4 -->|Validasi Ketersediaan Produk| D3
-    P4 -->|Simpan Riwayat Janjian COD| D5
-    D5 -->|Ambil Pesan & Konteks Produk| P4
-    P4 -->|Notifikasi Chat & Ringkasan COD| Siswa
+    %% Relasi 2.0
+    Siswa -->|Postingan Cerita & Barang| P2
+    P2 -->|Data Postingan Baru| D_Post
+    D_Post -->|Daftar Postingan & Produk| P2
+    P2 -->|Katalog Produk & Beranda| Siswa
 
-    Siswa -->|Laporkan Konten| P5
-    P5 -->|Simpan Laporan| D6
-    Admin -->|"Master Siswa (NIS/Kelas)"| P5
-    P5 -->|Update Registry| D1
-    Admin -->|Kelola Spot COD| P5
-    P5 -->|Update Titik Temu| D4
-    D6 -->|Daftar Laporan| P5
-    P5 -->|Hasil Moderasi| Admin</code></pre>
+    %% Relasi 3.0
+    Siswa -->|Pesan Obrolan & Janjian COD| P3
+    D_Post -->|Detail Barang Transaksi| P3
+    P3 -->|Pesan Obrolan Baru| D_Chat
+    D_Chat -->|Riwayat Obrolan| P3
+    P3 -->|Notifikasi Pesan Masuk| Siswa
+
+    %% Relasi 4.0
+    Siswa -->|Laporan Konten Bermasalah| P4
+    P4 -->|Catatan Laporan Masuk| D_Lapor
+    Admin -->|Data Induk Siswa Sekolah| P4
+    P4 -->|Pembaruan Status Siswa| D_Siswa
+    D_Lapor -->|Daftar Aduan Pelanggaran| P4
+    P4 -->|Rekap Pelanggaran Konten| Admin
+    Admin -->|Tindakan Moderasi & Sanksi| P4</code></pre>
         </div>
       </section>
 
       <!-- ========================================== -->
-      <!-- 3.4.2 DFD LEVEL 1 (PROSES 4.0 TRANSAKSI COD) -->
+      <!-- 3.4.2 DFD LEVEL 1 (PROSES 3.0 CHAT & JANJIAN COD) -->
       <!-- ========================================== -->
       <section class="doc-card" data-category="dfd" id="diagram-3-4-2">
         <div class="doc-card-header">
           <div class="doc-title-group">
             <div class="doc-title-row">
               <span class="doc-badge badge-dfd">Bab 3.4.2</span>
-              <h2 class="doc-title">3.4.2 DFD Level 1 (Fokus: Proses 4.0 Transaksi COD)</h2>
+              <h2 class="doc-title">3.4.2 DFD Level 1 (Fokus: Proses 3.0 Chat & Janjian COD)</h2>
             </div>
-            <p class="doc-subtitle">Menguraikan rincian sub-proses transaksi pemesanan barang hingga serah terima di sekolah.</p>
+            <p class="doc-subtitle">Rincian sub-proses pemesanan barang dari klik tombol beli di beranda hingga koordinasi ketemuan di sekolah.</p>
           </div>
           <div class="card-toolbar">
             <div class="tab-group">
@@ -1483,81 +1490,77 @@ flowchart TD
               <button class="tab-btn" onclick="switchCardTab('diagram-3-4-2', 'text')">Analisis</button>
               <button class="tab-btn" onclick="switchCardTab('diagram-3-4-2', 'code')">Kode</button>
             </div>
-            <button class="action-btn" onclick="openDiagramModal('mer-3-4-2', '3.4.2 DFD Level 1 (Fokus: Proses 4.0 Transaksi COD)')">Perbesar</button>
+            <button class="action-btn" onclick="openDiagramModal('mer-3-4-2', '3.4.2 DFD Level 1 (Chat & Janjian COD)')">Perbesar</button>
             <button class="action-btn" onclick="copyMermaid('src-3-4-2', this)">Salin</button>
           </div>
         </div>
 
         <div class="diagram-panel tab-content-diagram">
           <pre class="mermaid" id="mer-3-4-2">
-flowchart TD
-    Pembeli["👤 Siswa Pembeli"]
-    Penjual["👤 Siswa Penjual"]
+flowchart LR
+    Pembeli["Siswa Pembeli"]
+    Penjual["Siswa Penjual"]
 
-    P41(("4.1<br/>Pengecekan Ketersediaan<br/>Produk"))
-    P42(("4.2<br/>Pemilihan Titik Temu<br/>(Dropdown Spot)"))
-    P43(("4.3<br/>Inisialisasi Chat &<br/>Notifikasi Realtime"))
-    P44(("4.4<br/>Verifikasi Fisik COD &<br/>Serah Terima Tunai"))
+    subgraph C31["Sub-Proses 3.1"]
+        P31(("3.1<br/>Pilih Barang & Buka Chat"))
+        D_Post[("tb_postingan_jualan")]
+    end
 
-    D3[("D3: market_posts")]
-    D4[("D4: school_meeting_points")]
-    D5[("D5: conversations & direct_messages")]
+    subgraph C32["Sub-Proses 3.2"]
+        P32(("3.2<br/>Kirim Pesan & Janjian COD"))
+        D_Chat[("tb_percakapan_chat")]
+    end
 
-    Pembeli -->|Pilih Item & Kuantitas| P41
-    D3 -->|Cek Sisa Stok| P41
-    P41 -->|Stok Valid| P42
+    %% Relasi 3.1
+    Pembeli -->|Pilihan Produk dari Feed| P31
+    D_Post -->|Informasi Produk & Penjual| P31
+    P31 -->|Halaman Obrolan & Kartu Barang| Pembeli
+    P31 -->|Data Percakapan Baru| D_Chat
 
-    D4 -->|Daftar Titik Temu Aktif| P42
-    Pembeli -->|Pilih Titik Kumpul & Catatan Jam| P42
-    P42 -->|Data Lengkap Checkout| P43
-
-    P43 -->|"Simpan Pesan Janjian COD Otomatis"| D5
-    P43 -->|Push Notifikasi Chat Masuk| Penjual
-    P43 -->|Buka Ruang Obrolan Terpadu| Pembeli
-
-    Pembeli -->|Periksa Fisik Barang & Bayar Tunai di Spot COD| P44
-    Penjual -->|Serahkan Barang & Terima Uang Tunai| P44
+    %% Relasi 3.2
+    Pembeli -->|Pesan Obrolan & Rencana COD| P32
+    P32 -->|Simpan Pesan Obrolan| D_Chat
+    D_Chat -->|Riwayat Obrolan Masuk| P32
+    P32 -->|Notifikasi Chat Masuk| Penjual
+    Penjual -->|Pesan Balasan Penjual| P32
           </pre>
         </div>
 
         <div class="text-panel tab-content-text">
-          <p><strong>Sub-Proses 4.0:</strong></p>
+          <p><strong>Sub-Proses 3.0:</strong></p>
           <ul>
-            <li><strong>4.1 Ketersediaan Produk</strong>: Menampilkan data listing produk dari <code>market_posts</code>.</li>
-            <li><strong>4.2 Pemilihan Titik Temu</strong>: Mengambil daftar master spot aktif dari <code>school_meeting_points</code>.</li>
-            <li><strong>4.3 Inisialisasi Chat</strong>: Menyimpan record obrolan di <code>conversations & direct_messages</code> dan mengirim push notification ke penjual.</li>
-            <li><strong>4.4 Verifikasi Fisik COD</strong>: Serah terima barang fisik dan pembayaran tunai langsung di sekolah.</li>
+            <li><strong>3.1 Pilih Barang &amp; Buka Chat</strong>: Pembeli memilih barang di beranda, sistem melampirkan kartu ringkasan barang dan membuka ruang obrolan langsung ke penjual.</li>
+            <li><strong>3.2 Kirim Pesan &amp; Janjian COD</strong>: Kedua siswa saling berbalas pesan untuk menentukan waktu dan spot ketemuan COD di sekolah (Gazebo, Kantin, dll).</li>
           </ul>
         </div>
 
         <div class="code-panel tab-content-code">
-          <pre id="src-3-4-2"><code>flowchart TD
-    Pembeli["👤 Siswa Pembeli"]
-    Penjual["👤 Siswa Penjual"]
+          <pre id="src-3-4-2"><code>flowchart LR
+    Pembeli["Siswa Pembeli"]
+    Penjual["Siswa Penjual"]
 
-    P41(("4.1<br/>Pengecekan Ketersediaan<br/>Produk"))
-    P42(("4.2<br/>Pemilihan Titik Temu<br/>(Dropdown Spot)"))
-    P43(("4.3<br/>Inisialisasi Chat &<br/>Notifikasi Realtime"))
-    P44(("4.4<br/>Verifikasi Fisik COD &<br/>Serah Terima Tunai"))
+    subgraph C31["Sub-Proses 3.1"]
+        P31(("3.1<br/>Pilih Barang & Buka Chat"))
+        D_Post[("tb_postingan_jualan")]
+    end
 
-    D3[("D3: market_posts")]
-    D4[("D4: school_meeting_points")]
-    D5[("D5: conversations & direct_messages")]
+    subgraph C32["Sub-Proses 3.2"]
+        P32(("3.2<br/>Kirim Pesan & Janjian COD"))
+        D_Chat[("tb_percakapan_chat")]
+    end
 
-    Pembeli -->|Pilih Item & Kuantitas| P41
-    D3 -->|Cek Sisa Stok| P41
-    P41 -->|Stok Valid| P42
+    %% Relasi 3.1
+    Pembeli -->|Pilihan Produk dari Feed| P31
+    D_Post -->|Informasi Produk & Penjual| P31
+    P31 -->|Halaman Obrolan & Kartu Barang| Pembeli
+    P31 -->|Data Percakapan Baru| D_Chat
 
-    D4 -->|Daftar Titik Temu Aktif| P42
-    Pembeli -->|Pilih Titik Kumpul & Catatan Jam| P42
-    P42 -->|Data Lengkap Checkout| P43
-
-    P43 -->|"Simpan Pesan Janjian COD Otomatis"| D5
-    P43 -->|Push Notifikasi Chat Masuk| Penjual
-    P43 -->|Buka Ruang Obrolan Terpadu| Pembeli
-
-    Pembeli -->|Periksa Fisik Barang & Bayar Tunai di Spot COD| P44
-    Penjual -->|Serahkan Barang & Terima Uang Tunai| P44</code></pre>
+    %% Relasi 3.2
+    Pembeli -->|Pesan Obrolan & Rencana COD| P32
+    P32 -->|Simpan Pesan Obrolan| D_Chat
+    D_Chat -->|Riwayat Obrolan Masuk| P32
+    P32 -->|Notifikasi Chat Masuk| Penjual
+    Penjual -->|Pesan Balasan Penjual| P32</code></pre>
         </div>
       </section>
 
@@ -1587,49 +1590,36 @@ flowchart TD
         <div class="diagram-panel tab-content-diagram">
           <pre class="mermaid" id="mer-3-5">
 flowchart LR
-    Siswa["👤 Siswa (Warga SMKN 8)"]
+    Siswa["👤 Siswa (SMKN 8)"]
     Admin["🛡️ Admin Sekolah"]
 
-    subgraph sNapsBoundary["Boundary Sistem sNaps"]
-        UC1(["Registrasi & Login NIS"])
-        UC1_INC(["Validasi Master Registry Sekolah"])
-        UC2(["Kelola Profil Siswa"])
-        UC3(["Publikasi Thread Komunitas"])
-        UC3_EXT(["Tambahkan Polling Interaktif"])
-        UC4(["Interaksi Feed (Like & Komentar)"])
-        UC5(["Publikasi Produk Vokasi & Karya"])
-        UC6(["Jelajah Katalog & Filter Jurusan"])
-        UC7(["Checkout Pesanan COD"])
-        UC7_INC1(["Validasi Kuantitas Stok"])
-        UC7_INC2(["Pilih Titik Temu Resmi Sekolah"])
-        UC8(["Direct Chat Realtime (DM)"])
-        UC9(["Laporkan Konten Melanggar"])
+    subgraph AppBoundary["«sistem» Aplikasi sNaps"]
+        UC1(["Login & Registrasi NIS"])
+        UC2(["Kelola Profil"])
+        UC3(["Posting Cerita Forum"])
+        UC4(["Posting Barang Jualan"])
+        UC5(["Lihat Feed & Jelajah Produk"])
+        UC6(["Chat DM & Janjian COD"])
+        UC7(["Laporkan Konten Bermasalah"])
 
-        UC10(["Kelola Master Registry Siswa"])
-        UC11(["Kelola Master Titik Temu COD"])
-        UC12(["Tinjau & Moderasi Konten"])
-        UC13(["Monitor Log Keamanan & Perangkat"])
+        UC8(["Kelola Data Induk Siswa"])
+        UC9(["Tinjau & Hapus Konten Laporan"])
+        UC10(["Pantau Keamanan Sistem"])
     end
 
-    Siswa --> UC1
-    Siswa --> UC2
-    Siswa --> UC3
-    Siswa --> UC4
-    Siswa --> UC5
-    Siswa --> UC6
-    Siswa --> UC7
-    Siswa --> UC8
-    Siswa --> UC9
+    %% Hubungan Aktor Siswa
+    Siswa --- UC1
+    Siswa --- UC2
+    Siswa --- UC3
+    Siswa --- UC4
+    Siswa --- UC5
+    Siswa --- UC6
+    Siswa --- UC7
 
-    UC1 -.->|"<<include>>"| UC1_INC
-    UC3_EXT -.->|"<<extend>>"| UC3
-    UC7 -.->|"<<include>>"| UC7_INC1
-    UC7 -.->|"<<include>>"| UC7_INC2
-
-    Admin --> UC10
-    Admin --> UC11
-    Admin --> UC12
-    Admin --> UC13
+    %% Hubungan Aktor Admin
+    UC8 --- Admin
+    UC9 --- Admin
+    UC10 --- Admin
           </pre>
         </div>
 
@@ -1692,6 +1682,38 @@ flowchart LR
     Admin --> UC10
     Admin --> UC11
     Admin --> UC12
+          <pre id="src-3-5"><code>flowchart LR
+    Siswa["👤 Siswa (SMKN 8)"]
+    Admin["🛡️ Admin Sekolah"]
+
+    subgraph AppBoundary["«sistem» Aplikasi sNaps"]
+        UC1(["Login & Registrasi NIS"])
+        UC2(["Kelola Profil"])
+        UC3(["Posting Cerita Forum"])
+        UC4(["Posting Barang Jualan"])
+        UC5(["Lihat Feed & Jelajah Produk"])
+        UC6(["Chat DM & Janjian COD"])
+        UC7(["Laporkan Konten Bermasalah"])
+
+        UC8(["Kelola Data Induk Siswa"])
+        UC9(["Tinjau & Hapus Konten Laporan"])
+        UC10(["Pantau Keamanan Sistem"])
+    end
+
+    %% Hubungan Aktor Siswa
+    Siswa --- UC1
+    Siswa --- UC2
+    Siswa --- UC3
+    Siswa --- UC4
+    Siswa --- UC5
+    Siswa --- UC6
+    Siswa --- UC7
+
+    %% Hubungan Aktor Admin
+    UC8 --- Admin
+    UC9 --- Admin
+    UC10 --- Admin
+</code></pre>
     Admin --> UC13</code></pre>
         </div>
       </section>

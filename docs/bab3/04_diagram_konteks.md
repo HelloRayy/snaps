@@ -15,41 +15,39 @@ Diagram Konteks (sering disebut sebagai DFD Level 0 Global) merupakan representa
 
 ```mermaid
 flowchart LR
-    subgraph ExternalEntity1["Entitas Eksternal 1"]
-        Siswa["👤 SISWA (Warga SMKN 8 Semarang)<br/>- Berperan sebagai Pembeli & Penjual C2C -"]
+    subgraph SiswaEntity["Entitas Luar: Siswa"]
+        Siswa["👤 Siswa (SMKN 8)"]
     end
 
-    subgraph CoreSystem["Lingkup Sistem Utama"]
-        App(("0.0<br/>SISTEM APLIKASI<br/>SNAPAN MARKET MOBILE<br/>(sNAPS)"))
+    subgraph CoreSystem["Sistem Utama"]
+        App(("0.0<br/>APLIKASI MOBILE<br/>sNAPS"))
     end
 
-    subgraph ExternalEntity2["Entitas Eksternal 2"]
-        Admin["🛡️ ADMIN SEKOLAH<br/>- Guru Pembina & Tim IT Sekolah -"]
+    subgraph AdminEntity["Entitas Luar: Admin"]
+        Admin["🛡️ Admin Sekolah"]
     end
 
-    %% ALIRAN DATA SISWA -> SISTEM
-    Siswa -->|1. Kredensial Login NIS & Registrasi Perangkat| App
-    Siswa -->|2. Data Postingan Thread & Produk Vokasi| App
-    Siswa -->|3. Data Pesanan COD & Pilihan Titik Temu| App
-    Siswa -->|4. Pesan Obrolan Direct Message| App
-    Siswa -->|5. Laporan Pengaduan Konten Melanggar| App
+    %% Siswa -> Sistem
+    Siswa -->|1. Nomor Induk Siswa & Password| App
+    Siswa -->|2. Postingan Cerita & Barang Jualan| App
+    Siswa -->|3. Mulai Beli & Konteks Barang di Chat| App
+    Siswa -->|4. Kirim Pesan Chat & Janjian COD| App
+    Siswa -->|5. Laporan Konten Bermasalah| App
 
-    %% ALIRAN DATA SISTEM -> SISWA
-    App -->|a. Akses Timeline Beranda & Info Profil| Siswa
-    App -->|b. Informasi Katalog Karya & Sisa Stok Realtime| Siswa
-    App -->|c. Push Notifikasi Pesanan Masuk & Janji COD| Siswa
-    App -->|d. Pesan Obrolan Masuk Realtime| Siswa
-    App -->|e. Bukti Pesanan Digital & QR Transaksi| Siswa
+    %% Sistem -> Siswa
+    App -->|a. Halaman Beranda & Profil Akun| Siswa
+    App -->|b. Tampilan Cerita & Daftar Jualan Teman| Siswa
+    App -->|c. Notifikasi Chat Masuk di HP| Siswa
+    App -->|d. Obrolan Langsung & Kartu Barang| Siswa
 
-    %% ALIRAN DATA ADMIN -> SISTEM
-    Admin -->|"1. Master Registry Data Siswa (NIS, Nama, Kelas)"| App
-    Admin -->|"2. Master Titik Temu Resmi COD (Gazebo/Kantin/Lab)"| App
-    Admin -->|3. Kebijakan Moderasi Konten & Suspend Akun| App
+    %% Admin -> Sistem
+    Admin -->|"1. Data Induk Siswa Aktif (NIS & Kelas)"| App
+    Admin -->|"2. Tindakan Banned Akun & Hapus Postingan"| App
 
-    %% ALIRAN DATA SISTEM -> ADMIN
-    App -->|a. Notifikasi Laporan Konten Bermasalah| Admin
-    App -->|b. Audit Log Keamanan & Perangkat Siswa| Admin
-    App -->|c. Laporan Rekapitulasi Aktivitas Pasar Sekolah| Admin
+    %% Sistem -> Admin
+    App -->|a. Notifikasi Laporan Konten dari Siswa| Admin
+    App -->|b. Catatan Perangkat Login Siswa| Admin
+    App -->|c. Rekap Aktivitas Pasar Sekolah| Admin
 ```
 
 ---
@@ -57,12 +55,10 @@ flowchart LR
 ## 3. Identifikasi Entitas Eksternal
 
 ### 3.1 Entitas Siswa
-- **Karakteristik**: Pengguna tangan pertama di lapangan (Siswa aktif SMKN 8 Semarang). Beroperasi dalam model *Consumer-to-Consumer* (C2C). Setiap siswa memiliki akun terpadu yang dapat membeli produk karya teman dan sekaligus mengunggah produk atau artikelnya sendiri.
-- **Tanggung Jawab Data Masuk**: Memasukkan data identitas NIS, mengunggah media gambar produk, memilih titik temu sekolah, serta melakukan konfirmasi penyelesaian transaksi fisik.
+- **Peran**: Siswa aktif SMKN 8 Semarang. Bisa cerita, posting jualan, beli barang teman via chat DM, dan janjian ketemuan COD di area sekolah.
 
 ### 3.2 Entitas Admin Sekolah
-- **Karakteristik**: Pihak pengelola dari institusi sekolah (Wakil Kepala Sekolah Bidang Kesiswaan / Tim IT PPLG).
-- **Tanggung Jawab Data Masuk**: Mengunggah master data NIS siswa aktif dari buku induk sekolah guna memastikan tidak ada pihak asing yang menyusup ke aplikasi, mengonfigurasi titik kumpul aman di lingkungan sekolah, dan meninjau postingan yang dilaporkan siswa.
+- **Peran**: Pengelola sekolah (Kesiswaan / Tim IT) yang menyediakan daftar NIS resmi siswa aktif agar orang luar tidak bisa daftar, serta menangani laporan postingan tidak pantas.
 
 ---
 
