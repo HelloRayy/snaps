@@ -12,7 +12,7 @@ class PostCardSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
       decoration: BoxDecoration(
         color: Colors.transparent,
         border: Border(
@@ -23,47 +23,37 @@ class PostCardSkeleton extends StatelessWidget {
         ),
       ),
       child: const Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // 1 Circle: Author Avatar Placeholder (40x40)
-          SnapsSkeletonBox.circle(size: 40.0),
-          SizedBox(width: 12.0),
+          // 1 Circle: Author Avatar Placeholder (48x48)
+          SnapsSkeletonBox.circle(size: 48.0),
+          SizedBox(width: 14.0),
 
-          // 3 Rectangles: Graded Text Placeholders
+          // 2 Pill Rectangles: Text Placeholders matching user reference
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Rectangle 1: Name & Badge line (~35% width, 12dp height)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SnapsSkeletonBox(width: 110.0, height: 12.0, borderRadius: 4.0),
-                    SnapsSkeletonBox(width: 32.0, height: 11.0, borderRadius: 4.0),
-                  ],
+                // Top line: long rounded pill (~80% width)
+                FractionallySizedBox(
+                  widthFactor: 0.82,
+                  child: SnapsSkeletonBox(
+                    width: double.infinity,
+                    height: 12.0,
+                    borderRadius: 100.0,
+                  ),
                 ),
                 SizedBox(height: 10.0),
 
-                // Rectangle 2: Primary Content Line (~85% width, 14dp height)
-                SnapsSkeletonBox(width: double.infinity, height: 14.0, borderRadius: 4.0),
-                SizedBox(height: 8.0),
-
-                // Rectangle 3: Secondary Subtext Line (~60% width, 12dp height)
+                // Bottom line: shorter rounded pill (~55% width)
                 FractionallySizedBox(
-                  widthFactor: 0.65,
-                  child: SnapsSkeletonBox(width: double.infinity, height: 12.0, borderRadius: 4.0),
-                ),
-                SizedBox(height: 14.0),
-
-                // Compact Micro-Action Bar
-                Row(
-                  children: [
-                    SnapsSkeletonBox(width: 36.0, height: 14.0, borderRadius: 4.0),
-                    SizedBox(width: 20.0),
-                    SnapsSkeletonBox(width: 36.0, height: 14.0, borderRadius: 4.0),
-                    SizedBox(width: 20.0),
-                    SnapsSkeletonBox(width: 30.0, height: 14.0, borderRadius: 4.0),
-                  ],
+                  widthFactor: 0.55,
+                  child: SnapsSkeletonBox(
+                    width: double.infinity,
+                    height: 12.0,
+                    borderRadius: 100.0,
+                  ),
                 ),
               ],
             ),

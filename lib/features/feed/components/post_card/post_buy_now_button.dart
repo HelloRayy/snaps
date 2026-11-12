@@ -80,19 +80,15 @@ class _PostBuyNowButtonState extends State<PostBuyNowButton> {
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 6.5),
+              padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 7.0),
               decoration: BoxDecoration(
-                color: const Color(0xCC0F172A), // 80% translucent deep slate
+                color: const Color(0x73000000), // ~45% soft translucent dark
                 borderRadius: BorderRadius.circular(100.0),
-                border: Border.all(
-                  color: const Color(0x33FFFFFF), // 20% subtle white outline
-                  width: 0.8,
-                ),
                 boxShadow: const [
                   BoxShadow(
-                    color: Color(0x26000000),
-                    blurRadius: 6.0,
-                    offset: Offset(0, 1.5),
+                    color: Color(0x1A000000),
+                    blurRadius: 4.0,
+                    offset: Offset(0, 1),
                   ),
                 ],
               ),
