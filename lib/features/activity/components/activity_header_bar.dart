@@ -62,7 +62,7 @@ class ActivityHeaderBar extends StatelessWidget {
             const SizedBox(height: 10.0),
           ],
 
-          // Category Chips (Horizontal Scrollable for overflow prevention ala Threads)
+          // Category Chips: 3 Focused Tabs
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
@@ -79,19 +79,9 @@ class ActivityHeaderBar extends StatelessWidget {
                   onTap: () => onTabChanged(1),
                 ),
                 _ActivityFilterChip(
-                  label: 'Mention',
+                  label: 'Pengumuman',
                   isActive: activeTabIndex == 2,
                   onTap: () => onTabChanged(2),
-                ),
-                _ActivityFilterChip(
-                  label: 'Suka',
-                  isActive: activeTabIndex == 3,
-                  onTap: () => onTabChanged(3),
-                ),
-                _ActivityFilterChip(
-                  label: 'Follow',
-                  isActive: activeTabIndex == 4,
-                  onTap: () => onTabChanged(4),
                 ),
               ],
             ),

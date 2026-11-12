@@ -77,13 +77,15 @@ class _ActivityScreenState extends State<ActivityScreen> {
   List<ActivityNotification> get _filteredNotifications {
     switch (_activeTabIndex) {
       case 1:
-        return _notifications.where((n) => n.type == ActivityType.comment).toList();
+        // Balasan & Interaksi langsung ke pengguna
+        return _notifications
+            .where((n) => n.type == ActivityType.comment || n.type == ActivityType.mention)
+            .toList();
       case 2:
-        return _notifications.where((n) => n.type == ActivityType.mention).toList();
-      case 3:
-        return _notifications.where((n) => n.type == ActivityType.like).toList();
-      case 4:
-        return _notifications.where((n) => n.type == ActivityType.follow).toList();
+        // Pengumuman sekolah & status pesanan
+        return _notifications
+            .where((n) => n.type == ActivityType.system || n.type == ActivityType.order)
+            .toList();
       default:
         return _notifications;
     }
