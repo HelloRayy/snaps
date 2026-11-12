@@ -46,34 +46,34 @@ Diagram berikut menggambarkan alur terotomatisasi transaksi C2C dan interaksi ko
 
 ```mermaid
 flowchart TD
-    Start([Mulai: Siswa Buka Snaps]) --> AuthCheck{Apakah Sudah Login?}
-    AuthCheck -- Belum --> LoginNIS[Input NIS & Password]
-    LoginNIS --> ValidateDB[(Validasi ke student_registry)]
-    ValidateDB --> LoginSuccess[Login Berhasil]
+    Start([Mulai: Siswa Buka Snaps]) --> CheckAuth{Sudah Login?}
     
-    AuthCheck -- Sudah --> FeedScreen[Masuk ke Halaman Beranda]
-    LoginSuccess --> FeedScreen
-    
-    FeedScreen --> ActionChoice{Pilih Aktivitas}
-    
-    %% Alur Penjual
-    ActionChoice -- Jual Produk / Unjuk Karya --> FormProduct[Buka Form Buat Postingan]
-    FormProduct --> FillData[Input Foto, Judul, Deskripsi, Kategori Jurusan, & Harga]
-    FillData --> SaveDB[(Simpan ke Database PostgreSQL)]
-    SaveDB --> PostPublished[Produk Tayang di Beranda & Marketplace] --> EndWait([Selesai])
-    
-    %% Alur Pembeli
-    ActionChoice -- Beli Produk Vokasi --> ViewDetail[Buka Halaman Detail Produk]
-    ViewDetail --> TapCheckout[Tekan Tombol 'Beli Sekarang']
-    
-    TapCheckout --> DirectToDM[Langsung Masuk ke Ruang Chat DM Penjual]
-    DirectToDM --> AttachCard[Sistem Otomatis Melampirkan Kartu Ringkasan Produk di Chat]
-    AttachCard --> SendPushNotif[Kirim Push Notifikasi Chat Masuk ke Siswa Penjual]
-    SendPushNotif --> ChatAgreement[Kedua Siswa Diskusi & Menyepakati Titik Temu COD via Chat]
-    
-    ChatAgreement --> MeetCOD[Bertemu Fisik di Titik Temu Sekolah Pas Jam Istirahat]
-    MeetCOD --> InspectItem[Pembeli Memeriksa Fisik Barang & Membayar Tunai]
-    InspectItem --> Finish([Selesai: Transaksi Berhasil])
+    %% Alur Login Sederhana
+    CheckAuth -- Belum --> FormLogin[Input NIS & Password]
+    FormLogin --> ValidasiLogin[(Validasi ke student_registry)]
+    ValidasiLogin --> Beranda[Masuk ke Halaman Beranda]
+    CheckAuth -- Sudah --> Beranda
+
+    %% Pilihan Menu Utama
+    Beranda --> PilihAksi{Pilih Aktivitas}
+
+    %% JALUR 1: JUAL KARYA (KIRI)
+    PilihAksi -- Jual Produk / Karya --> FormJual[Buka Form Buat Postingan]
+    FormJual --> InputJual[Input Foto, Judul, Kategori Jurusan & Harga]
+    InputJual --> SimpanPost[(Simpan ke Database PostgreSQL)]
+    SimpanPost --> TayangPost[Produk Tayang di Beranda]
+    TayangPost --> SelesaiJual([Selesai])
+
+    %% JALUR 2: BELI PRODUK (KANAN)
+    PilihAksi -- Beli Produk --> BukaDetail[Buka Halaman Detail Produk]
+    BukaDetail --> KlikBeli[Tekan Tombol 'Beli Sekarang']
+    KlikBeli --> MasukChat[Langsung Masuk ke Ruang Chat DM Penjual]
+    MasukChat --> TempelProduk[Sistem Otomatis Melampirkan Kartu Produk di Chat]
+    TempelProduk --> NotifPenjual[Kirim Push Notifikasi Chat ke HP Penjual]
+    NotifPenjual --> JanjianCOD[Kedua Siswa Diskusi & Janjian Titik Temu COD]
+    JanjianCOD --> KetemuCOD[Bertemu Fisik di Area Sekolah Pas Jam Istirahat]
+    KetemuCOD --> BayarTunai[Pembeli Cek Kondisi Barang & Bayar Tunai]
+    BayarTunai --> SelesaiBeli([Selesai: Transaksi Berhasil])
 ```
 
 ---

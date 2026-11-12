@@ -15,39 +15,34 @@ Alur sistem digital memodelkan bagaimana instruksi komputasi berjalan di aplikas
 
 ```mermaid
 flowchart TD
-    Start([Mulai: Siswa Buka Snaps]) --> CheckAuth{Apakah Sudah Login?}
-    CheckAuth -- Belum --> InputNIS[Input NIS & Password]
-    InputNIS --> ValidateRegistry[(Validasi ke student_registry)]
-    ValidateRegistry --> CheckNISValid{Apakah NIS Terdaftar & Aktif?}
-    CheckNISValid -- Tidak --> ShowAlertAuth[Tampilkan Peringatan: 'NIS Tidak Terdaftar'] --> InputNIS
-    CheckNISValid -- Ya --> LoginSuccess[Login Berhasil]
+    Start([Mulai: Siswa Buka Snaps]) --> CheckAuth{Sudah Login?}
     
-    CheckAuth -- Sudah --> LoadHome[Masuk ke Halaman Beranda]
-    LoginSuccess --> LoadHome
+    %% Alur Login Sederhana
+    CheckAuth -- Belum --> FormLogin[Input NIS & Password]
+    FormLogin --> ValidasiLogin[(Validasi ke student_registry)]
+    ValidasiLogin --> Beranda[Masuk ke Halaman Beranda]
+    CheckAuth -- Sudah --> Beranda
 
-    LoadHome --> UserNavChoice{Pilih Aktivitas}
+    %% Pilihan Menu Utama
+    Beranda --> PilihAksi{Pilih Aktivitas}
 
-    %% JALUR PENJUAL
-    UserNavChoice -- Jual Produk / Unjuk Karya --> OpenCreatePost[Buka Formulir Buat Postingan]
-    OpenCreatePost --> FillProductData[Input Foto, Judul, Deskripsi, Kategori Jurusan, & Harga]
-    FillProductData --> ValidateInput{Validasi Lengkap?}
-    ValidateInput -- Tidak --> ShowErrorForm[Tampilkan Pesan Error] --> FillProductData
-    ValidateInput -- Ya --> InsertProductDB[(Simpan ke Database PostgreSQL)]
-    InsertProductDB --> PostBroadcast[Produk Tayang di Beranda & Marketplace] --> EndSellerWait([Selesai])
+    %% JALUR 1: JUAL KARYA (KIRI)
+    PilihAksi -- Jual Produk / Karya --> FormJual[Buka Form Buat Postingan]
+    FormJual --> InputJual[Input Foto, Judul, Kategori Jurusan & Harga]
+    InputJual --> SimpanPost[(Simpan ke Database PostgreSQL)]
+    SimpanPost --> TayangPost[Produk Tayang di Beranda]
+    TayangPost --> SelesaiJual([Selesai])
 
-    %% JALUR PEMBELI
-    UserNavChoice -- Beli Produk Vokasi --> BrowseMarket[Jelajah Beranda & Pilih Produk]
-    BrowseMarket --> OpenDetail[Buka Halaman Detail Produk]
-    OpenDetail --> TapBuy[Tekan Tombol 'Beli Sekarang']
-    
-    TapBuy --> DirectToDM[Langsung Masuk ke Ruang Chat DM Penjual]
-    DirectToDM --> AttachProductCard[Sistem Otomatis Melampirkan Kartu Ringkasan Produk di Chat]
-    AttachProductCard --> TriggerPushNotif[Kirim Push Notifikasi Chat Masuk ke HP Penjual]
-    TriggerPushNotif --> ChatAgreement[Kedua Siswa Diskusi & Menyepakati Titik Temu COD via Chat]
-    
-    ChatAgreement --> MeetPhysicalCOD[Bertemu Fisik di Titik Temu Sekolah Pas Jam Istirahat]
-    MeetPhysicalCOD --> CompleteVerification[Pembeli Memeriksa Fisik Barang & Membayar Tunai]
-    CompleteVerification --> EndFinish([Selesai: Transaksi Berhasil])
+    %% JALUR 2: BELI PRODUK (KANAN)
+    PilihAksi -- Beli Produk --> BukaDetail[Buka Halaman Detail Produk]
+    BukaDetail --> KlikBeli[Tekan Tombol 'Beli Sekarang']
+    KlikBeli --> MasukChat[Langsung Masuk ke Ruang Chat DM Penjual]
+    MasukChat --> TempelProduk[Sistem Otomatis Melampirkan Kartu Produk di Chat]
+    TempelProduk --> NotifPenjual[Kirim Push Notifikasi Chat ke HP Penjual]
+    NotifPenjual --> JanjianCOD[Kedua Siswa Diskusi & Janjian Titik Temu COD]
+    JanjianCOD --> KetemuCOD[Bertemu Fisik di Area Sekolah Pas Jam Istirahat]
+    KetemuCOD --> BayarTunai[Pembeli Cek Kondisi Barang & Bayar Tunai]
+    BayarTunai --> SelesaiBeli([Selesai: Transaksi Berhasil])
 ```
 
 ---
