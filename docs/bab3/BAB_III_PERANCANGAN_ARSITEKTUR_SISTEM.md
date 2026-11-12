@@ -64,19 +64,17 @@ flowchart TD
     CheckStock -- Habis --> AlertEmpty[Tampilkan Notifikasi 'Stok Habis'] --> EndWait
     CheckStock -- Tersedia --> TapCheckout[Tekan Tombol 'Beli Sekarang']
     
-    TapCheckout --> SelectMeetingPoint[Pilih Titik Temu COD Resmi Sekolah: Gazebo / Kantin / Lab]
-    SelectMeetingPoint --> InputNotes[Tulis Catatan Pertemuan COD]
-    InputNotes --> ConfirmOrder[Konfirmasi Pesanan COD]
+    TapCheckout --> SelectMeetingPoint[Pilih Titik Temu COD via Dropdown / List: Gazebo / Kantin / Lab]
+    SelectMeetingPoint --> InputNotes[Tulis Catatan Waktu Janjian COD]
+    InputNotes --> ConfirmOrder[Tekan 'Konfirmasi Pesanan']
     
-    ConfirmOrder --> SystemProcess[(Sistem Mengunci Stok & Menerbitkan Record Pesanan)]
-    SystemProcess --> SendPushNotif[Kirim Push Notification ke Siswa Penjual]
-    SendPushNotif --> OrderSuccessModal[Tampilkan Bukti Pesanan & ID Transaksi]
+    ConfirmOrder --> SystemProcess[(Sistem Menghubungkan ke Chat: conversations & direct_messages)]
+    SystemProcess --> SendPushNotif[Kirim Push Notifikasi Chat & Pesan Otomatis ke Siswa Penjual]
+    SendPushNotif --> OrderSuccessModal[Tampilkan Modal Sukses & Arahkan Masuk ke Ruang Obrolan]
     
-    OrderSuccessModal --> MeetCOD[Kedua Siswa Bertemu di Spot COD Sesuai Jadwal]
+    OrderSuccessModal --> MeetCOD[Kedua Siswa Bertemu di Titik Temu Sekolah Sesuai Janjian]
     MeetCOD --> InspectItem[Pembeli Memeriksa Fisik Barang & Membayar Tunai]
-    InspectItem --> ConfirmCompletion[Siswa Mengonfirmasi 'Pesanan Diterima']
-    ConfirmCompletion --> AutoDeductStock[(Sistem Memperbarui Status Pesanan: COMPLETED)]
-    AutoDeductStock --> Finish([Selesai: Transaksi Sukses])
+    InspectItem --> Finish([Selesai: Transaksi COD Berhasil])
 ```
 
 ---
@@ -145,7 +143,7 @@ flowchart TD
     D2[("D2: profiles")]
     D3[("D3: market_posts")]
     D4[("D4: school_meeting_points")]
-    D5[("D5: orders")]
+    D5[("D5: conversations & direct_messages")]
     D6[("D6: content_reports")]
 
     Siswa -->|NIS & Password| P1
@@ -164,11 +162,11 @@ flowchart TD
     P3 -->|Tampilkan Produk Jurusan| Siswa
 
     Siswa -->|Pilih Barang & Titik Temu| P4
-    D4 -->|Data Titik Temu Sekolah| P4
-    P4 -->|Validasi Stok & Buat Order| D5
-    P4 -->|Update Stok Terkunci| D3
-    D5 -->|Status Pesanan| P4
-    P4 -->|Notifikasi Pesanan & Bukti COD| Siswa
+    D4 -->|Data Master Titik Temu| P4
+    P4 -->|Validasi Ketersediaan Produk| D3
+    P4 -->|Simpan Riwayat Janjian COD| D5
+    D5 -->|Pesan Obrolan & Konteks COD| P4
+    P4 -->|Notifikasi Chat & Ringkasan COD| Siswa
 
     Siswa -->|Laporkan Konten| P5
     P5 -->|Simpan Laporan| D6
@@ -181,38 +179,36 @@ flowchart TD
 ```
 
 ### 3.4.2 DFD Level 1 (Fokus: Proses 4.0 Transaksi COD)
-Menguraikan rincian sub-proses transaksi pemesanan barang hingga serah terima di sekolah:
+Menguraikan rincian sub-proses koordinasi transaksi pemesanan barang hingga serah terima di sekolah:
 
 ```mermaid
 flowchart TD
     Pembeli["👤 Siswa Pembeli"]
     Penjual["👤 Siswa Penjual"]
 
-    P41(("4.1<br/>Validasi Kuantitas &<br/>Ketersediaan Stok"))
-    P42(("4.2<br/>Pemilihan Titik Temu<br/>Resmi Sekolah"))
-    P43(("4.3<br/>Penerbitan Pesanan &<br/>Notifikasi Realtime"))
-    P44(("4.4<br/>Verifikasi Fisik COD &<br/>Penyelesaian Pesanan"))
+    P41(("4.1<br/>Validasi Produk &<br/>Ketersediaan"))
+    P42(("4.2<br/>Pemilihan Titik Temu<br/>(Dropdown Spot)"))
+    P43(("4.3<br/>Inisialisasi Chat &<br/>Notifikasi Realtime"))
+    P44(("4.4<br/>Verifikasi Fisik COD &<br/>Serah Terima Tunai"))
 
     D3[("D3: market_posts")]
     D4[("D4: school_meeting_points")]
-    D5[("D5: orders")]
+    D5[("D5: conversations & direct_messages")]
 
     Pembeli -->|Pilih Item & Kuantitas| P41
-    D3 -->|Cek Kuantitas Stok| P41
+    D3 -->|Cek Sisa Stok| P41
     P41 -->|Stok Valid| P42
 
     D4 -->|Daftar Titik Temu Aktif| P42
     Pembeli -->|Pilih Titik Kumpul & Catatan Jam| P42
     P42 -->|Data Lengkap Checkout| P43
 
-    P43 -->|"Simpan Pesanan (Status: PENDING)"| D5
-    P43 -->|Kurangi Kuantitas Stok| D3
-    P43 -->|Push Notifikasi Pesanan Baru| Penjual
-    P43 -->|Ringkasan Pesanan Digital| Pembeli
+    P43 -->|"Simpan Pesan Janjian COD Otomatis"| D5
+    P43 -->|Push Notifikasi Chat Masuk| Penjual
+    P43 -->|Buka Ruang Obrolan Terpadu| Pembeli
 
-    Pembeli -->|Konfirmasi Terima Barang| P44
-    Penjual -->|Konfirmasi Penyerahan Fisik & Uang| P44
-    P44 -->|"Update Status (COMPLETED)"| D5
+    Pembeli -->|Periksa Fisik Barang & Bayar Tunai di Spot COD| P44
+    Penjual -->|Serahkan Barang & Terima Uang Tunai| P44
 ```
 
 ---

@@ -33,7 +33,7 @@ flowchart TD
     D2[("D2: profiles")]
     D3[("D3: market_posts")]
     D4[("D4: school_meeting_points")]
-    D5[("D5: orders")]
+    D5[("D5: conversations & direct_messages")]
     D6[("D6: content_reports")]
 
     %% Aliran Proses 1.0 (Autentikasi)
@@ -54,14 +54,13 @@ flowchart TD
     D3 -->|Ambil Data Katalog Jurusan| P3
     P3 -->|Tampilkan Etalase Produk| Siswa
 
-    %% Aliran Proses 4.0 (Transaksi COD)
+    %% Aliran Proses 4.0 (Transaksi COD via Direct Message)
     Siswa -->|Pilih Produk & Titik Temu COD| P4
-    D4 -->|"Data Spot Resmi (Gazebo/Kantin/Lab)"| P4
-    P4 -->|Validasi Ketersediaan Stok| D3
-    P4 -->|"Simpan Record Pesanan (PENDING)"| D5
-    P4 -->|Kurangi Kuantitas Stok| D3
-    D5 -->|Ambil Status & Riwayat Order| P4
-    P4 -->|Notifikasi Pesanan & Kode COD| Siswa
+    D4 -->|"Data Master Titik Temu (Gazebo/Kantin/Lab)"| P4
+    P4 -->|Validasi Ketersediaan Produk| D3
+    P4 -->|"Simpan Riwayat Janjian COD"| D5
+    D5 -->|Ambil Pesan Obrolan & Konteks Produk| P4
+    P4 -->|Notifikasi Chat & Ringkasan Janjian COD| Siswa
 
     %% Aliran Proses 5.0 (Moderasi & Registry)
     Siswa -->|Aduan Pelanggaran Konten| P5
@@ -78,43 +77,41 @@ flowchart TD
 
 ## 3. DFD Level 1 (Fokus: Proses 4.0 Transaksi COD & Titik Temu)
 
-Untuk memahami mekanisme pencegahan *overselling* dan kepastian lokasi fisik di SMKN 8 Semarang, proses 4.0 didekomposisi lebih lanjut:
+Untuk memodelkan proses koordinasi transaksi langsung di lingkungan SMKN 8 Semarang secara akurat, proses 4.0 didekomposisi lebih lanjut:
 
 ```mermaid
 flowchart TD
     Pembeli["👤 Siswa Pembeli"]
     Penjual["👤 Siswa Penjual"]
 
-    P41(("4.1<br/>Pengecekan &<br/>Kunci Stok"))
-    P42(("4.2<br/>Pemilihan &<br/>Denah Titik Temu"))
-    P43(("4.3<br/>Penerbitan Order &<br/>Broadcast Realtime"))
-    P44(("4.4<br/>Verifikasi Fisik &<br/>Penyelesaian Pesanan"))
+    P41(("4.1<br/>Pengecekan Ketersediaan<br/>Produk"))
+    P42(("4.2<br/>Pemilihan Titik Temu<br/>(Dropdown Spot)"))
+    P43(("4.3<br/>Inisialisasi Chat &<br/>Notifikasi Realtime"))
+    P44(("4.4<br/>Verifikasi Fisik &<br/>Serah Terima Tunai"))
 
     D3[("D3: market_posts")]
     D4[("D4: school_meeting_points")]
-    D5[("D5: orders")]
+    D5[("D5: conversations & direct_messages")]
 
     %% 4.1
-    Pembeli -->|Pilih Item & Jumlah Beli| P41
-    D3 -->|Cek Sisa Stok Saat Ini| P41
-    P41 -->|Stok Tersedia Valid| P42
+    Pembeli -->|Pilih Item & Kuantitas| P41
+    D3 -->|Cek Sisa Stok Produk| P41
+    P41 -->|Produk Tersedia Valid| P42
     P41 -.->|Stok Habis: Batalkan| Pembeli
 
     %% 4.2
-    D4 -->|Daftar Titik Temu Aktif Sekolah| P42
-    Pembeli -->|Pilih Spot Kumpul & Catatan Jam| P42
-    P42 -->|Payload Checkout Lengkap| P43
+    D4 -->|Daftar Master Spot COD Sekolah| P42
+    Pembeli -->|Pilih Titik Temu & Catatan Jam| P42
+    P42 -->|Payload Checkout & Konteks COD| P43
 
     %% 4.3
-    P43 -->|"Simpan Order Baru (Status: PENDING)"| D5
-    P43 -->|Potong Sisa Stok Barang| D3
-    P43 -->|Push Notification Order Masuk| Penjual
-    P43 -->|Tanda Terima Digital & QR Code| Pembeli
+    P43 -->|"Simpan Pesan Janjian COD Otomatis"| D5
+    P43 -->|Push Notification Chat Masuk| Penjual
+    P43 -->|Buka Ruang Obrolan Terpadu| Pembeli
 
     %% 4.4
-    Pembeli -->|Konfirmasi Terima Fisik di Spot COD| P44
-    Penjual -->|Konfirmasi Uang Tunai Diterima| P44
-    P44 -->|Update Status Pesanan: COMPLETED| D5
+    Pembeli -->|Periksa Fisik Barang di Spot COD & Bayar Tunai| P44
+    Penjual -->|Serahkan Barang & Terima Uang Tunai| P44
 ```
 
 ---
@@ -123,8 +120,8 @@ flowchart TD
 
 | Sub-Proses | Datastore Terlibat | Mode Akses | Keterangan Fungsional |
 |---|---|---|---|
-| **1.0 Autentikasi** | `student_registry`, `profiles` | Read, Write | Memvalidasi NIS terdaftar dan mencatat perangkat resmi siswa. |
+| **1.0 Autentikasi** | `student_registry`, `profiles` | Read, Write | Memvalidasi NIS terdaftar dan mencatat profil resmi siswa. |
 | **2.0 Feed Komunitas** | `market_posts`, `profiles` | Read, Write | Menyimpan thread diskusi dan interaksi sosial. |
-| **3.0 Manajemen Produk** | `market_posts` | Read, Write | Menangani CRUD etalase karya siswa dan kuantitas stok. |
-| **4.0 Transaksi COD** | `orders`, `market_posts`, `school_meeting_points` | Read, Write | Menjalankan transaksi pemesanan aman dan pemotongan stok. |
+| **3.0 Manajemen Produk** | `market_posts` | Read, Write | Menangani CRUD etalase karya siswa dan kuantitas produk. |
+| **4.0 Transaksi COD** | `conversations`, `direct_messages`, `market_posts`, `school_meeting_points` | Read, Write | Menghubungkan pembeli-penjual via chat otomatis dan titik temu sekolah. |
 | **5.0 Moderasi & Admin** | `content_reports`, `student_registry`, `school_meeting_points` | Read, Write | Menjaga kepatuhan aturan sekolah dan data induk siswa. |

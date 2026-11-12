@@ -43,38 +43,31 @@ flowchart TD
     CheckAvailableStock -- Tersedia --> TapBuy[Tekan Tombol 'Beli Sekarang']
     
     TapBuy --> OpenCheckoutSheet[Sistem Membuka Lembar Checkout COD]
-    OpenCheckoutSheet --> LoadMeetingPoints[(Query Lokasi Aktif dari school_meeting_points)]
-    LoadMeetingPoints --> SelectPoint[Pembeli Memilih Titik Temu: Gazebo / Kantin / Lab]
-    SelectPoint --> InputBuyerNote[Pembeli Menulis Catatan Jam COD Istirahat]
+    OpenCheckoutSheet --> LoadMeetingPoints[(Query Daftar Spot dari school_meeting_points)]
+    LoadMeetingPoints --> SelectPoint[Pembeli Memilih Titik Temu via Dropdown / List: Gazebo / Kantin / Lab]
+    SelectPoint --> InputBuyerNote[Pembeli Menulis Catatan Jam Pertemuan COD]
     InputBuyerNote --> TapConfirmOrder[Tekan 'Konfirmasi Pesanan']
 
-    TapConfirmOrder --> AtomicTxBegin[(Mulai Transaksi Database Atomik)]
-    AtomicTxBegin --> LockStockRow{Kunci Baris & Validasi Stok Akhir}
-    LockStockRow -- Stok Habis Dibeli Siswa Lain --> RollbackTx[Batalkan Transaksi & Tampilkan Alert] --> BrowseMarket
-    LockStockRow -- Stok Valid --> InsertOrder[(Insert ke Tabel orders: Status PENDING)]
-    InsertOrder --> DeductStockDB[(Update: Kurangi Kuantitas Stok di market_posts)]
-    DeductStockDB --> AtomicTxCommit[(Commit Transaksi Database)]
-
-    AtomicTxCommit --> TriggerPushNotif[Kirim Push Notification Masuk ke HP Siswa Penjual]
-    TriggerPushNotif --> GenerateDigitalReceipt[Terbitkan Bukti Pesanan Digital dengan Kode Transaksi Unik]
-    GenerateDigitalReceipt --> ShowSuccessModal[Tampilkan Modal Sukses Checkout ke Pembeli]
+    TapConfirmOrder --> ConnectDirectChat[(Sistem Menghubungkan ke Percakapan: conversations & direct_messages)]
+    ConnectDirectChat --> SendAutoChatMsg[Sistem Mengirim Pesan Otomatis: Ringkasan Produk, Harga & Titik Temu COD]
+    SendAutoChatMsg --> TriggerPushNotif[Kirim Push Notifikasi Pesan Masuk ke HP Siswa Penjual]
+    TriggerPushNotif --> ShowSuccessModal[Tampilkan Modal Sukses Pesanan & Tombol 'Buka Obrolan']
     
-    ShowSuccessModal --> MeetPhysicalCOD[Kedua Siswa Bertemu di Titik Temu Sekolah Sesuai Catatan]
-    MeetPhysicalCOD --> CompleteVerification[Pembeli Memeriksa Barang & Membayar Tunai]
-    CompleteVerification --> TapOrderDone[Siswa Menekan 'Pesanan Selesai' di Aplikasi]
-    TapOrderDone --> UpdateOrderStatusDB[(Update Status Pesanan: COMPLETED di Tabel orders)]
-    UpdateOrderStatusDB --> EndFinish([Selesai: Transaksi Berhasil])
+    ShowSuccessModal --> OpenChatRoom[Buka Ruang Obrolan: Siswa Saling Mengonfirmasi Janjian COD]
+    OpenChatRoom --> MeetPhysicalCOD[Kedua Siswa Bertemu di Titik Temu Sekolah Sesuai Janjian]
+    MeetPhysicalCOD --> CompleteVerification[Pembeli Memeriksa Fisik Barang & Membayar Tunai]
+    CompleteVerification --> EndFinish([Selesai: Transaksi COD Berhasil])
 ```
 
 ---
 
 ## 3. Penjelasan Tahapan Krusial Sistem
 
-1. **Validasi NIS Dua Lapis (Two-Tier Auth)**:
-   Aplikasi memeriksa nomor induk ke `student_registry` sekolah sebelum menghubungkan ke data akun `profiles`.
-2. **Kalkulasi & Pengecekan Stok Atomik (*Concurrency-Safe*)**:
-   Sistem tidak mengizinkan dua pembeli memesan produk yang tersisa 1 buah secara bersamaan; transaksi database menerapkan penguncian baris (*row-level lock*) untuk mencegah data ganda.
-3. **Standarisasi Lokasi Titik Temu (*School Meeting Points*)**:
-   Sistem tidak menggunakan input teks bebas untuk lokasi, melainkan *dropdown master data* titik kumpul resmi yang terpetakan dengan jelas di lingkungan SMKN 8 Semarang.
-4. **Penerbitan Bukti Digital Instan**:
-   Setelah konfirmasi, nota digital otomatis tersimpan di riwayat transaksi kedua belah pihak sebagai tanda pengikat pesanan sah.
+1. **Validasi Akun Siswa Terpadu**:
+   Aplikasi memverifikasi identitas siswa terhadap database buku induk `student_registry` SMKN 8 Semarang dan menghubungkannya dengan profil autentikasi akun.
+2. **Standarisasi Lokasi Titik Temu (*School Meeting Points*)**:
+   Sistem menyajikan pilihan titik kumpul resmi sekolah melalui *dropdown / list selector* (seperti Gazebo PPLG, Kantin, Lobby) tanpa memerlukan peta denah 2D yang berat di perangkat siswa.
+3. **Koordinasi Otomatis via Direct Messaging**:
+   Setelah konfirmasi pesanan, sistem secara otomatis menerbitkan konteks transaksi ke ruang obrolan (*Direct Message*) penjual dengan format pesan rapi yang mencantumkan nama produk, harga, dan titik temu COD terpilih.
+4. **Verifikasi Transaksi Tunai Mandiri**:
+   Penyelesaian transaksi dilakukan langsung saat kedua siswa bertemu fisik di lokasi sekolah dengan memeriksa kondisi barang dan penyerahan uang tunai secara aman.
