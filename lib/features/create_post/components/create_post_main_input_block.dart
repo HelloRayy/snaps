@@ -230,35 +230,36 @@ class CreatePostMainInputBlock extends StatelessWidget {
                       onLocationSelected: onLocationSelected,
                     ),
                     onAudioTap: () {},
-                  ),
-                    CreatePostSellingToggle(
-                      isProductMode: postMode == PostMode.product,
-                      onToggle: onToggleMode,
-                    ),
-                    if (postMode == PostMode.product && images.isEmpty) ...[
-                      const SizedBox(height: 6.0),
-                      const Row(
-                        children: [
-                          Icon(
-                            LucideIcons.info,
-                            size: 13.0,
-                            color: Color(0xFFEF4444),
-                          ),
-                          SizedBox(width: 5.0),
-                          Text(
-                            'Wajib tambahkan minimal 1 foto barang jualan',
-                            style: TextStyle(
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xFFEF4444),
-                              letterSpacing: -0.1,
-                            ),
-                          ),
-                        ],
+                    if (AppConstants.enableCommerceMode) ...[
+                      const SizedBox(height: 8.0),
+                      CreatePostSellingToggle(
+                        isProductMode: postMode == PostMode.product,
+                        onToggle: onToggleMode,
                       ),
+                      if (postMode == PostMode.product && images.isEmpty) ...[
+                        const SizedBox(height: 6.0),
+                        const Row(
+                          children: [
+                            Icon(
+                              LucideIcons.info,
+                              size: 13.0,
+                              color: Color(0xFFEF4444),
+                            ),
+                            SizedBox(width: 5.0),
+                            Text(
+                              'Wajib tambahkan minimal 1 foto barang jualan',
+                              style: TextStyle(
+                                fontSize: 12.0,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFFEF4444),
+                                letterSpacing: -0.1,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ],
                   ],
-                ],
                 ),
               ),
             ],

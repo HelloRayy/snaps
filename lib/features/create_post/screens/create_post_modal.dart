@@ -206,7 +206,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
   Future<void> _handleSubmit() async {
     if (_postMode == PostMode.product && _images.isEmpty) {
       HapticFeedback.mediumImpact();
-      SnapsToast.warning(
+      SnapsToast.error(
         context,
         'Wajib tambahkan minimal 1 foto barang jualan.',
         hasBottomNav: false,
