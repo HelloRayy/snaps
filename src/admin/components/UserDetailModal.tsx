@@ -613,8 +613,8 @@ export function UserDetailModal({
               <div
                 style={{
                   padding: '14px 16px',
-                  background: user.is_suspended ? '#fff1f2' : '#f8fafc',
-                  border: user.is_suspended ? '1px solid #fecdd3' : '1px solid #e2e8f0',
+                  background: Boolean(user.is_suspended && (!user.suspended_until || new Date(user.suspended_until) > new Date())) ? '#fff1f2' : '#f8fafc',
+                  border: Boolean(user.is_suspended && (!user.suspended_until || new Date(user.suspended_until) > new Date())) ? '1px solid #fecdd3' : '1px solid #e2e8f0',
                   borderRadius: '8px',
                   display: 'flex',
                   flexDirection: 'column',
@@ -625,10 +625,10 @@ export function UserDetailModal({
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <i
                       className={`fa-solid ${
-                        user.is_suspended ? 'fa-triangle-exclamation' : 'fa-shield-halved'
+                        Boolean(user.is_suspended && (!user.suspended_until || new Date(user.suspended_until) > new Date())) ? 'fa-triangle-exclamation' : 'fa-shield-halved'
                       }`}
                       style={{
-                        color: user.is_suspended ? '#e11d48' : '#0284c7',
+                        color: Boolean(user.is_suspended && (!user.suspended_until || new Date(user.suspended_until) > new Date())) ? '#e11d48' : '#0284c7',
                         fontSize: '15px',
                       }}
                     ></i>
@@ -636,13 +636,13 @@ export function UserDetailModal({
                       style={{
                         fontSize: '13px',
                         fontWeight: 700,
-                        color: user.is_suspended ? '#be123c' : '#1e293b',
+                        color: Boolean(user.is_suspended && (!user.suspended_until || new Date(user.suspended_until) > new Date())) ? '#be123c' : '#1e293b',
                       }}
                     >
-                      {user.is_suspended ? 'Akun Ditangguhkan' : 'Status Akun Normal'}
+                      {Boolean(user.is_suspended && (!user.suspended_until || new Date(user.suspended_until) > new Date())) ? 'Akun Ditangguhkan' : 'Status Akun Normal'}
                     </span>
                   </div>
-                  {user.is_suspended && (
+                  {Boolean(user.is_suspended && (!user.suspended_until || new Date(user.suspended_until) > new Date())) && (
                     <span
                       style={{
                         fontSize: '10px',
@@ -658,7 +658,7 @@ export function UserDetailModal({
                   )}
                 </div>
 
-                {user.is_suspended ? (
+                {Boolean(user.is_suspended && (!user.suspended_until || new Date(user.suspended_until) > new Date())) ? (
                   <div style={{ fontSize: '11.5px', color: '#881337', lineHeight: 1.45 }}>
                     <p style={{ margin: '0 0 4px', fontWeight: 600 }}>
                       Alasan: <span style={{ fontWeight: 400 }}>{user.suspend_reason || 'Pelanggaran aturan transaksi'}</span>
@@ -681,7 +681,7 @@ export function UserDetailModal({
                   </p>
                 )}
 
-                {user.is_suspended ? (
+                {Boolean(user.is_suspended && (!user.suspended_until || new Date(user.suspended_until) > new Date())) ? (
                   <button
                     type="button"
                     disabled={isUpdating}

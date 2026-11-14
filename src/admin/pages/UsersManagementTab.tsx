@@ -647,7 +647,7 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
                       )}
                     </td>
                     <td>
-                      {u.is_suspended ? (
+                      {Boolean(u.is_suspended && (!u.suspended_until || new Date(u.suspended_until) > new Date())) ? (
                         <div
                           style={{
                             display: 'inline-flex',
@@ -757,19 +757,19 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
                           content={
                             u.role === 'admin'
                               ? 'Admin tidak dapat disuspend'
-                              : u.is_suspended
+                              : Boolean(u.is_suspended && (!u.suspended_until || new Date(u.suspended_until) > new Date()))
                               ? 'Pulihkan akun'
                               : 'Suspend akun'
                           }
                           placement="top"
-                          variant={u.is_suspended ? 'default' : 'danger'}
+                          variant={Boolean(u.is_suspended && (!u.suspended_until || new Date(u.suspended_until) > new Date())) ? 'default' : 'danger'}
                         >
                           <button
                             type="button"
                             className="item"
                             disabled={updatingId === u.id || u.role === 'admin'}
                             onClick={() => {
-                              if (u.is_suspended) {
+                              if (Boolean(u.is_suspended && (!u.suspended_until || new Date(u.suspended_until) > new Date()))) {
                                 setPendingUnsuspendTarget(u);
                               } else {
                                 setPendingSuspendTarget(u);
@@ -778,11 +778,11 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
                             style={{
                               border: 0,
                               cursor: u.role === 'admin' ? 'not-allowed' : 'pointer',
-                              color: u.is_suspended ? '#10b981' : '#ef4444',
+                              color: Boolean(u.is_suspended && (!u.suspended_until || new Date(u.suspended_until) > new Date())) ? '#10b981' : '#ef4444',
                               opacity: u.role === 'admin' ? 0.35 : 1,
                             }}
                           >
-                            <i className={`fa-solid ${u.is_suspended ? 'fa-lock-open' : 'fa-ban'}`}></i>
+                            <i className={`fa-solid ${Boolean(u.is_suspended && (!u.suspended_until || new Date(u.suspended_until) > new Date())) ? 'fa-lock-open' : 'fa-ban'}`}></i>
                           </button>
                         </AdminTooltip>
 
