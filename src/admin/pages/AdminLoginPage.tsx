@@ -3,6 +3,7 @@ import { Shield, Lock, Mail, Eye, EyeOff, AlertCircle, ArrowLeft, Loader2 } from
 import { supabase } from '@/services/api/supabase';
 import { adminService } from '../services/adminService';
 import { adminSecurityService } from '../services/adminSecurityService';
+import { SnapsLogoSvg } from '@/ui/components/brand/SnapsLogoSvg';
 
 interface AdminLoginPageProps {
   onSuccess: () => void;
@@ -85,16 +86,16 @@ export function AdminLoginPage({ onSuccess, onBackToApp }: AdminLoginPageProps) 
 
       <div className="w-full max-w-md !space-y-6">
         {/* Header Branding */}
-        <div className="text-center !space-y-2">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 text-white font-bold text-lg shadow-sm">
-            8
+        <div className="text-center !space-y-3">
+          <div className="flex justify-center">
+            <SnapsLogoSvg height={34} />
           </div>
           <div className="!space-y-1">
             <div className="flex items-center justify-center gap-2">
-              <h1 className="text-xl font-bold tracking-tight text-slate-900">
-                sNaps Admin Portal
+              <h1 className="text-lg font-bold tracking-tight text-slate-900">
+                Admin Portal
               </h1>
-              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold border border-indigo-200 text-indigo-600 bg-indigo-50">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border border-indigo-200 text-indigo-600 bg-indigo-50">
                 Internal
               </span>
             </div>
