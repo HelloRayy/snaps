@@ -46,6 +46,7 @@
 | **Pesan: Ruang Obrolan DM** | [`lib/features/messages/services/direct_messages_service.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/messages/services/direct_messages_service.dart) | [`lib/features/messages/screens/chat_conversation_screen.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/messages/screens/chat_conversation_screen.dart) |
 | **Aktivitas: Item Tile & Badge** | [`lib/features/activity/screens/activity_screen.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/activity/screens/activity_screen.dart) | [`lib/features/activity/components/activity_item_tile.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/activity/components/activity_item_tile.dart) |
 | **Share & Deep Link** | [`lib/core/services/deep_link_service.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/core/services/deep_link_service.dart) | [`lib/core/utils/share_helper.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/core/utils/share_helper.dart) |
+| **UI Kit & Design System** | [`lib/features/ui_kit/screens/ui_kit_screen.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/ui_kit/screens/ui_kit_screen.dart) | [`lib/features/ui_kit/components/m3_component_spec_card.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/ui_kit/components/m3_component_spec_card.dart) |
 
 ---
 

@@ -19,6 +19,7 @@ import 'package:snapan_market/features/messages/services/direct_messages_service
 import 'package:snapan_market/core/services/student_registry_service.dart';
 import 'package:snapan_market/core/services/mascot_feature_notice_service.dart';
 import 'package:snapan_market/core/services/deep_link_service.dart';
+import 'package:snapan_market/features/ui_kit/screens/ui_kit_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -91,6 +92,9 @@ class SnapanMarketApp extends StatelessWidget {
           theme: SnapsTheme.lightTheme,
           darkTheme: SnapsTheme.darkTheme,
           themeMode: ThemeService.instance.materialThemeMode,
+          routes: {
+            '/ui-kit': (_) => const UiKitScreen(),
+          },
           home: const AppRoot(),
         );
       },
