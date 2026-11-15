@@ -39,6 +39,9 @@ const AdminDashboard = lazy(() =>
 const AdminLoginPage = lazy(() =>
   import('@/admin/pages/AdminLoginPage').then((m) => ({ default: m.AdminLoginPage }))
 );
+const UiKitPage = lazy(() =>
+  import('@/ui/pages/UiKitPage').then((m) => ({ default: m.UiKitPage }))
+);
 
 import { AuthPromptPopover } from '@/ui/components/auth/AuthPromptPopover';
 import { AccountSuspendedScreen } from '@/ui/components/auth/AccountSuspendedScreen';
@@ -95,11 +98,13 @@ export function App() {
   const isMessagesRoute = currentRoute === '/messages' || currentRoute.startsWith('/direct') || (typeof window !== 'undefined' && window.location.hash === '#messages');
   const isProfileRoute = currentRoute.startsWith('/@') || currentRoute.startsWith('/profile');
   const isColorsRoute = currentRoute === '/colors' || (typeof window !== 'undefined' && window.location.hash === '#colors');
+  const isUiKitRoute = currentRoute === '/ui-kit' || (typeof window !== 'undefined' && (window.location.pathname === '/ui-kit' || window.location.hash === '#ui-kit'));
   const isMapRoute = currentRoute === '/map' || (typeof window !== 'undefined' && window.location.hash === '#map');
   const isPostRoute = currentRoute.startsWith('/post/') || Boolean(selectedPost);
   const isLandingRoute =
     !isAdminRoute &&
     !isPostRoute &&
+    !isUiKitRoute &&
     (currentRoute === '/' ||
       currentRoute === '/download' ||
       (typeof window !== 'undefined' &&
@@ -112,6 +117,7 @@ export function App() {
     !isMessagesRoute &&
     !isProfileRoute &&
     !isColorsRoute &&
+    !isUiKitRoute &&
     !isMapRoute &&
     !isPostRoute &&
     !isAdminRoute;
@@ -297,6 +303,15 @@ export function App() {
           {isColorsRoute && (
             <div className="fixed inset-0 z-50 bg-[#f8f9fa] overflow-y-auto">
               <ColorShowcasePage onBack={navigateToHome} />
+            </div>
+          )}
+
+          {/* Snaps UI Kit & M3 Catalog Showcase */}
+          {isUiKitRoute && (
+            <div className="fixed inset-0 z-50 bg-[#f8f9fa] overflow-y-auto">
+              <Suspense fallback={<div className="min-h-screen flex items-center justify-center font-mono text-xs text-slate-400">Loading UI Kit...</div>}>
+                <UiKitPage onBack={navigateToHome} />
+              </Suspense>
             </div>
           )}
 

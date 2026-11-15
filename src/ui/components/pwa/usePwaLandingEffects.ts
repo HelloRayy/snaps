@@ -499,9 +499,14 @@ export function usePwaLandingEffects({
           onOpenInstallModal();
         }
       } else if (text.includes('log in') || text.includes('masuk web') || text.includes('buka web') || text.includes('sign in')) {
-        if (onProceedToWeb) {
-          e.preventDefault();
-          onProceedToWeb();
+        e.preventDefault();
+        triggerHaptic('light');
+        // Web feed is disabled - direct users to download the mobile app
+        const downloadBtn = document.querySelector('.framer-1a7f052, [data-framer-name="Download Button"]') as HTMLElement | null;
+        if (downloadBtn) {
+          downloadBtn.click();
+        } else {
+          window.location.href = 'https://github.com/HelloRayy/snaps/releases/latest';
         }
       } else if (text.includes('fitur') || text === 'fitur') {
         e.preventDefault();
