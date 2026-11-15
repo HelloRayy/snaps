@@ -95,10 +95,17 @@ class HomeBottomNavBar extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(31.0),
               border: Border.all(
-                color: isDark ? const Color(0x26FFFFFF) : const Color(0x14000000),
-                width: 0.8,
+                color: isDark ? const Color(0x2EFFFFFF) : Colors.white.withValues(alpha: 0.80),
+                width: 1.0,
               ),
-              boxShadow: TactileShadows.adaptiveOverlay(context),
+              boxShadow: [
+                BoxShadow(
+                  color: isDark ? const Color(0x40000000) : const Color(0x0F000000),
+                  blurRadius: 24.0,
+                  spreadRadius: 0.0,
+                  offset: const Offset(0, 8),
+                ),
+              ],
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(31.0),
@@ -246,7 +253,6 @@ class _DockTabItemState extends State<_DockTabItem> {
       child: GestureDetector(
         onTapDown: (_) {
           setState(() => _isPressed = true);
-          HapticFeedback.selectionClick();
         },
         onTapUp: (_) => setState(() => _isPressed = false),
         onTapCancel: () => setState(() => _isPressed = false),

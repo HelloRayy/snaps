@@ -147,31 +147,32 @@ class _AuthInputFieldState extends State<AuthInputField> {
           minHeight: 20.0,
         ),
         filled: true,
-        fillColor: hasError
-            ? const Color(0xFFFFF1F2)
-            : _isFocused
-                ? Colors.white
-                : const Color(0xFFF1F5F9), // ink-3 Sunken Well
+        fillColor: Colors.white,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 15.5),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
-          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(12.0),
+          borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.0),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
-          borderSide: hasError
-              ? const BorderSide(color: Color(0xFFE11D48), width: 1.0)
-              : BorderSide.none,
+          borderRadius: BorderRadius.circular(12.0),
+          borderSide: BorderSide(
+            color: hasError
+                ? const Color(0xFFE11D48)
+                : widget.isValid
+                    ? const Color(0xFF16A34A)
+                    : const Color(0xFFE2E8F0),
+            width: 1.0,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(12.0),
           borderSide: BorderSide(
             color: hasError
                 ? const Color(0xFFE11D48)
                 : widget.isValid
                     ? const Color(0xFF16A34A)
                     : AppColors.primary,
-            width: 1.5,
+            width: 1.6,
           ),
         ),
         errorBorder: OutlineInputBorder(
