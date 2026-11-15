@@ -155,6 +155,29 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
     }
   };
 
+  const handleUpdateNis = async (userId: string, newNis: string | null, oldNis?: string | null) => {
+    setUpdatingId(userId);
+    try {
+      await adminService.updateStudentNis(userId, newNis, oldNis);
+      setUsers((prev) =>
+        prev.map((u) => (u.id === userId ? { ...u, nis: newNis } : u))
+      );
+      if (selectedStudent?.id === userId) {
+        setSelectedStudent((prev) => (prev ? { ...prev, nis: newNis } : null));
+      }
+      setFeedbackMsg({
+        type: 'success',
+        text: newNis ? `NIS siswa berhasil diperbarui ke ${newNis}.` : 'Tautan NIS siswa berhasil dilepas.',
+      });
+      setTimeout(() => setFeedbackMsg(null), 3500);
+    } catch (e: any) {
+      setFeedbackMsg({ type: 'error', text: `Gagal update NIS: ${e?.message || e}` });
+      throw e;
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   const handleToggleMascotAccess = async (userId: string, currentStatus: boolean) => {
     setUpdatingId(userId);
     const nextStatus = !currentStatus;
@@ -883,6 +906,7 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
         onRequestDelete={(user) => {
           setPendingDeleteTarget(user);
         }}
+        onUpdateNis={handleUpdateNis}
         isUpdating={updatingId === selectedStudent?.id}
         latestVersion={effectiveLatestVersion}
       />

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BadgeCheck, Sparkles } from 'lucide-react';
-import type { ProfileRow } from '../services/adminService';
+import { adminService, type ProfileRow } from '../services/adminService';
 import { UserAvatar } from './UserAvatar';
 import { AdminModalPortal } from './AdminModalPortal';
 import { RoleSelectDropdown, type UserRole } from './RoleSelectDropdown';
@@ -17,6 +17,7 @@ interface UserDetailModalProps {
   onRequestSuspend?: (user: ProfileRow) => void;
   onRequestUnsuspend?: (user: ProfileRow) => void;
   onRequestDelete?: (user: ProfileRow) => void;
+  onUpdateNis?: (userId: string, newNis: string | null, oldNis?: string | null) => Promise<void>;
   isUpdating: boolean;
   latestVersion?: string | null;
 }
@@ -31,10 +32,58 @@ export function UserDetailModal({
   onRequestSuspend,
   onRequestUnsuspend,
   onRequestDelete,
+  onUpdateNis,
   isUpdating,
   latestVersion,
 }: UserDetailModalProps) {
   const [copiedId, setCopiedId] = useState(false);
+  const [copiedNis, setCopiedNis] = useState(false);
+  const [copiedEmail, setCopiedEmail] = useState(false);
+
+  // State Edit NIS Inline
+  const [isEditingNis, setIsEditingNis] = useState(false);
+  const [inputNis, setInputNis] = useState('');
+  const [isSavingNis, setIsSavingNis] = useState(false);
+  const [nisErrorMsg, setNisErrorMsg] = useState<string | null>(null);
+
+  // State Registry Info
+  const [registryInfo, setRegistryInfo] = useState<any>(null);
+  const [isLoadingRegistry, setIsLoadingRegistry] = useState(false);
+
+  // Muat detail buku induk siswa setiap kali modal dibuka / berganti siswa
+  useEffect(() => {
+    if (!isOpen || !user) {
+      setRegistryInfo(null);
+      setIsEditingNis(false);
+      setInputNis('');
+      setNisErrorMsg(null);
+      return;
+    }
+
+    const currentUser = user;
+    setInputNis(currentUser.nis || '');
+    setIsEditingNis(false);
+    setNisErrorMsg(null);
+
+    let isMounted = true;
+    async function loadRegistry() {
+      setIsLoadingRegistry(true);
+      try {
+        const targetLookup = currentUser.nis || currentUser.id;
+        const info = await adminService.getStudentRegistryInfo(targetLookup);
+        if (isMounted) setRegistryInfo(info);
+      } catch (e) {
+        console.warn('Gagal memuat info buku induk:', e);
+      } finally {
+        if (isMounted) setIsLoadingRegistry(false);
+      }
+    }
+
+    loadRegistry();
+    return () => {
+      isMounted = false;
+    };
+  }, [isOpen, user]);
 
   if (!isOpen || !user) return null;
 
@@ -42,6 +91,38 @@ export function UserDetailModal({
     navigator.clipboard.writeText(user.id);
     setCopiedId(true);
     setTimeout(() => setCopiedId(false), 2000);
+  };
+
+  const handleCopyNis = () => {
+    if (!user.nis) return;
+    navigator.clipboard.writeText(user.nis);
+    setCopiedNis(true);
+    setTimeout(() => setCopiedNis(false), 2000);
+  };
+
+  const syntheticEmail = user.nis ? `${user.nis}@snapan.id` : `${user.username || user.id.slice(0, 8)}@snapan.id`;
+
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText(syntheticEmail);
+    setCopiedEmail(true);
+    setTimeout(() => setCopiedEmail(false), 2000);
+  };
+
+  const handleSaveNis = async () => {
+    if (!onUpdateNis) return;
+    setNisErrorMsg(null);
+    setIsSavingNis(true);
+    try {
+      await onUpdateNis(user.id, inputNis.trim() || null, user.nis);
+      setIsEditingNis(false);
+      // Refresh registry info
+      const updatedInfo = await adminService.getStudentRegistryInfo(inputNis.trim() || user.id);
+      setRegistryInfo(updatedInfo);
+    } catch (err: any) {
+      setNisErrorMsg(err?.message || 'Gagal memperbarui NIS.');
+    } finally {
+      setIsSavingNis(false);
+    }
   };
 
   return (
@@ -236,6 +317,298 @@ export function UserDetailModal({
                   overflow: 'hidden',
                 }}
               >
+                {/* 1. Baris Nomor Induk Siswa (NIS) dengan Tombol Salin & Edit Inline */}
+                <div
+                  style={{
+                    padding: '10px 14px',
+                    borderBottom: '1px solid #f1f3f5',
+                    fontSize: '12.5px',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <i className="fa-solid fa-id-card" style={{ width: '14px', color: '#94a3b8' }}></i>
+                      Nomor Induk Siswa (NIS)
+                    </span>
+
+                    {!isEditingNis ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span
+                          style={{
+                            fontWeight: 700,
+                            fontFamily: 'monospace',
+                            color: user.nis ? '#1f2937' : '#94a3b8',
+                            fontSize: '13px',
+                          }}
+                        >
+                          {user.nis || 'Belum Ditautkan'}
+                        </span>
+
+                        {user.nis && (
+                          <AdminTooltip content={copiedNis ? 'NIS Tersalin!' : 'Salin NIS'} placement="top">
+                            <button
+                              type="button"
+                              onClick={handleCopyNis}
+                              style={{
+                                background: '#f8fafc',
+                                border: '1px solid #e2e8f0',
+                                borderRadius: '4px',
+                                padding: '3px 6px',
+                                color: '#475569',
+                                cursor: 'pointer',
+                                fontSize: '11px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                              }}
+                            >
+                              <i className={`fa-solid ${copiedNis ? 'fa-check text-success' : 'fa-copy'}`}></i>
+                            </button>
+                          </AdminTooltip>
+                        )}
+
+                        {onUpdateNis && (
+                          <AdminTooltip content="Ubah NIS Siswa" placement="top">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setInputNis(user.nis || '');
+                                setIsEditingNis(true);
+                                setNisErrorMsg(null);
+                              }}
+                              style={{
+                                background: '#eff6ff',
+                                border: '1px solid #bfdbfe',
+                                borderRadius: '4px',
+                                padding: '3px 8px',
+                                color: '#2563eb',
+                                cursor: 'pointer',
+                                fontSize: '11px',
+                                fontWeight: 600,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                              }}
+                            >
+                              <i className="fa-solid fa-pen-to-square"></i>
+                              <span>Ubah</span>
+                            </button>
+                          </AdminTooltip>
+                        )}
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <input
+                          type="text"
+                          value={inputNis}
+                          onChange={(e) => setInputNis(e.target.value)}
+                          placeholder="Masukkan nomor NIS..."
+                          disabled={isSavingNis}
+                          style={{
+                            padding: '4px 8px',
+                            borderRadius: '4px',
+                            border: '1px solid #93c5fd',
+                            fontSize: '12px',
+                            fontFamily: 'monospace',
+                            width: '130px',
+                            outline: 'none',
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={handleSaveNis}
+                          disabled={isSavingNis}
+                          style={{
+                            background: '#2563eb',
+                            color: '#ffffff',
+                            border: 0,
+                            borderRadius: '4px',
+                            padding: '4px 8px',
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            cursor: isSavingNis ? 'not-allowed' : 'pointer',
+                          }}
+                        >
+                          {isSavingNis ? 'Menyimpan...' : 'Simpan'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsEditingNis(false);
+                            setInputNis(user.nis || '');
+                            setNisErrorMsg(null);
+                          }}
+                          disabled={isSavingNis}
+                          style={{
+                            background: '#f1f5f9',
+                            color: '#475569',
+                            border: '1px solid #cbd5e1',
+                            borderRadius: '4px',
+                            padding: '4px 8px',
+                            fontSize: '11px',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          Batal
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Pesan Error Validasi NIS jika ada */}
+                  {nisErrorMsg && (
+                    <div
+                      style={{
+                        marginTop: '6px',
+                        padding: '6px 8px',
+                        borderRadius: '4px',
+                        background: '#fef2f2',
+                        border: '1px solid #fecaca',
+                        color: '#b91c1c',
+                        fontSize: '11px',
+                      }}
+                    >
+                      <i className="fa-solid fa-circle-exclamation" style={{ marginRight: '4px' }}></i>
+                      {nisErrorMsg}
+                    </div>
+                  )}
+                </div>
+
+                {/* 2. Baris Status Klaim Buku Induk */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '10px 14px',
+                    borderBottom: '1px solid #f1f3f5',
+                    fontSize: '12.5px',
+                  }}
+                >
+                  <span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <i className="fa-solid fa-book-bookmark" style={{ width: '14px', color: '#94a3b8' }}></i>
+                    Status Buku Induk
+                  </span>
+                  <div>
+                    {isLoadingRegistry ? (
+                      <span style={{ color: '#94a3b8', fontSize: '11px' }}>Memeriksa...</span>
+                    ) : registryInfo ? (
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          padding: '1.5px 8px',
+                          borderRadius: '4px',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          background: '#ecfdf5',
+                          color: '#047857',
+                          border: '1px solid #a7f3d0',
+                        }}
+                      >
+                        <i className="fa-solid fa-circle-check" style={{ fontSize: '10px' }}></i>
+                        Terdaftar di Buku Induk ({registryInfo.class_group})
+                      </span>
+                    ) : (
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          padding: '1.5px 8px',
+                          borderRadius: '4px',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          background: '#fef3c7',
+                          color: '#b45309',
+                          border: '1px solid #fde68a',
+                        }}
+                      >
+                        <i className="fa-solid fa-triangle-exclamation" style={{ fontSize: '10px' }}></i>
+                        Akun Manual / NIS Belum Terindeks
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* 3. Baris Tanggal Sinkronisasi / Klaim NIS */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '10px 14px',
+                    borderBottom: '1px solid #f1f3f5',
+                    fontSize: '12.5px',
+                  }}
+                >
+                  <span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <i className="fa-solid fa-clock-rotate-left" style={{ width: '14px', color: '#94a3b8' }}></i>
+                    Waktu Klaim NIS
+                  </span>
+                  <span style={{ fontWeight: 600, color: '#334155', fontSize: '12px' }}>
+                    {registryInfo?.claimed_at
+                      ? new Date(registryInfo.claimed_at).toLocaleString('id-ID', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })
+                      : user.nis
+                      ? 'Terikat Langsung'
+                      : 'Belum Ada Klaim'}
+                  </span>
+                </div>
+
+                {/* 4. Baris Email Sintetis Sistem */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '10px 14px',
+                    borderBottom: '1px solid #f1f3f5',
+                    fontSize: '12.5px',
+                  }}
+                >
+                  <span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <i className="fa-solid fa-envelope" style={{ width: '14px', color: '#94a3b8' }}></i>
+                    Email Autentikasi Sintetis
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span
+                      style={{
+                        fontWeight: 600,
+                        fontFamily: 'monospace',
+                        color: '#2563eb',
+                        fontSize: '11.5px',
+                      }}
+                    >
+                      {syntheticEmail}
+                    </span>
+                    <AdminTooltip content={copiedEmail ? 'Email Tersalin!' : 'Salin Email'} placement="top">
+                      <button
+                        type="button"
+                        onClick={handleCopyEmail}
+                        style={{
+                          background: '#f8fafc',
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '4px',
+                          padding: '2px 6px',
+                          color: '#475569',
+                          cursor: 'pointer',
+                          fontSize: '10.5px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <i className={`fa-solid ${copiedEmail ? 'fa-check text-success' : 'fa-copy'}`}></i>
+                      </button>
+                    </AdminTooltip>
+                  </div>
+                </div>
+
                 <div
                   style={{
                     display: 'flex',

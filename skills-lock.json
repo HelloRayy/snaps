@@ -1,77 +1,83 @@
 {
-  "version": 1,
+  "version": 2,
   "skills": {
     "better-accessibility": {
       "source": "jakubkrehel/skills",
       "sourceType": "github",
       "skillPath": "skills/better-accessibility/SKILL.md",
-      "computedHash": "828416336ea982ac71add19e0998ce1dc560d28a912718693a01de7276594ac2"
+      "computedHash": "2336645a0dc0cb3d76f83e056d042f8280425705cf6a22bf934ed227c49fba5e"
     },
     "better-colors": {
       "source": "jakubkrehel/skills",
       "sourceType": "github",
       "skillPath": "skills/better-colors/SKILL.md",
-      "computedHash": "aee99741f731a9cbc0c2f3c782bdaaa39d4e4fedb657a7bdc80a6519f9a9a0da"
+      "computedHash": "0b60c24e6f568dcb7596f80024399047a95f4206af1f0e9f50cd333c38664320"
     },
     "better-interface": {
       "source": "jakubkrehel/skills",
       "sourceType": "github",
       "skillPath": "skills/better-interface/SKILL.md",
-      "computedHash": "3d974ecb37be195d400cf964164ef5ac84cccd995b41847a46e344488be47e93"
+      "computedHash": "ee151ab4244c8e8fb55094feb703c779c81bc650324fa1c58251acf87e0bf397"
     },
     "better-layout": {
       "source": "jakubkrehel/skills",
       "sourceType": "github",
       "skillPath": "skills/better-layout/SKILL.md",
-      "computedHash": "d166f32df548e6da2d45677d959d7020668316b036e8c495b76233b05f7a6c4e"
+      "computedHash": "b5c56079a1d309b212b0b0bd195222388bdd70eef11b5b931d4c137da09755e6"
     },
     "better-typography": {
       "source": "jakubkrehel/skills",
       "sourceType": "github",
       "skillPath": "skills/better-typography/SKILL.md",
-      "computedHash": "a43f293432e6df33b62553b67bc1c60e01f7ec66894da9d6bdb8fb95027f6d8d"
+      "computedHash": "26a64b8d0aaedb10c76e11162c0f40f541df2b2b592dfdf7a9c9c5647defd79a"
     },
     "better-ui": {
       "source": "jakubkrehel/skills",
       "sourceType": "github",
       "skillPath": "skills/better-ui/SKILL.md",
-      "computedHash": "d9924d70217ff33a659bafcf78b68189156c406c633e4e958c7d764b3b528517"
+      "computedHash": "a9956715ee6914449a6fa038c0ae1c8e4f936d028a781e6cae88459e6fda6a93"
     },
     "better-writing": {
       "source": "jakubkrehel/skills",
       "sourceType": "github",
       "skillPath": "skills/better-writing/SKILL.md",
-      "computedHash": "ea8e80fe5c72ff3b8c04956dc6c92fa86723f83c9d90674db9edba1cc621d344"
+      "computedHash": "6037e0e51d2fefa379a80c4e6492f551421a5250b633b20fef2ef2f421790842"
     },
     "design-taste-frontend": {
       "source": "Leonxlnx/taste-skill",
       "sourceType": "github",
       "skillPath": "skills/taste-skill/SKILL.md",
-      "computedHash": "6d838b246d0e35d0b53f4f23f98ba7a1dd561937e64f7d0c7553b0928e376c3e"
+      "computedHash": "44f5bbbf437a1d5d08f2540a3db55c2e930395cbdc029276819e942dc158217b"
     },
     "diagram-design": {
       "source": "cathrynlavery/diagram-design",
       "sourceType": "github",
       "skillPath": "skills/diagram-design/SKILL.md",
-      "computedHash": "115a126a5bff5abd547b125e9865269c4ad737e4cb134df153118e0ffd679f82"
+      "computedHash": "f3eef80894302db8d6f6a5e4dc2f9ddbb4b9291f2b81eaf05fc7306073f152a8"
     },
     "security": {
       "source": "./local",
       "sourceType": "local",
       "skillPath": ".agents/skills/security/SKILL.md",
-      "computedHash": "custom-security-skill"
+      "computedHash": ""
     },
     "supabase": {
       "source": "supabase/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/supabase/SKILL.md",
-      "computedHash": "c4cbf2d313f6afb1ff810623b732961752bb64638f648c7a355449eb6aac9530"
+      "computedHash": ""
     },
     "supabase-postgres-best-practices": {
       "source": "supabase/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/supabase-postgres-best-practices/SKILL.md",
-      "computedHash": "128fac78002d916c8ca908245d398e634f540d8bcf20915b2b2359aeb18eba59"
+      "computedHash": ""
+    },
+    "tactile-design": {
+      "source": "kosta4a/tactile-design",
+      "sourceType": "github",
+      "skillPath": "skills/tactile-design/SKILL.md",
+      "computedHash": "23c06c15c538283067534fa2d36d5338c500c4828e9e9615f9660d0fe98a2f13"
     }
   }
 }

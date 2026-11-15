@@ -1582,6 +1582,100 @@ export const adminService = {
   },
 
   /**
+   * Mengubah / Menautkan NIS siswa ke profil pengguna dan sinkronisasi buku induk
+   */
+  async updateStudentNis(userId: string, newNis: string | null, oldNis?: string | null): Promise<void> {
+    const cleanNewNis = newNis ? newNis.trim() : null;
+    const cleanOldNis = oldNis ? oldNis.trim() : null;
+
+    if (cleanNewNis && cleanNewNis === cleanOldNis) {
+      return;
+    }
+
+    // 1. Jika ada NIS baru, pastikan tidak sedang diklaim oleh pengguna lain
+    if (cleanNewNis) {
+      const { data: existingProfile, error: profileErr } = await supabase
+        .from('profiles')
+        .select('id, full_name, username')
+        .eq('nis', cleanNewNis)
+        .neq('id', userId)
+        .maybeSingle();
+
+      if (profileErr) throw profileErr;
+      if (existingProfile) {
+        throw new Error(
+          `NIS ${cleanNewNis} sudah digunakan oleh akun @${existingProfile.username || existingProfile.full_name} (${existingProfile.id.slice(0, 8)}...).`
+        );
+      }
+
+      // Periksa status di student_registry
+      const { data: registryRow } = await (supabase as any)
+        .from('student_registry')
+        .select('nis, is_claimed, claimed_by')
+        .eq('nis', cleanNewNis)
+        .maybeSingle();
+
+      if (registryRow && registryRow.is_claimed && registryRow.claimed_by && registryRow.claimed_by !== userId) {
+        throw new Error(
+          `NIS ${cleanNewNis} di buku induk sudah tercatat diklaim oleh akun lain.`
+        );
+      }
+    }
+
+    // 2. Update kolom nis pada tabel profiles
+    const { error: updateProfileErr } = await supabase
+      .from('profiles')
+      .update({ nis: cleanNewNis })
+      .eq('id', userId);
+
+    if (updateProfileErr) throw updateProfileErr;
+
+    // 3. Lepaskan klaim NIS lama di student_registry jika ada
+    if (cleanOldNis) {
+      await (supabase as any)
+        .from('student_registry')
+        .update({
+          is_claimed: false,
+          claimed_by: null,
+          claimed_at: null,
+        })
+        .eq('nis', cleanOldNis)
+        .eq('claimed_by', userId);
+    }
+
+    // 4. Tandai klaim NIS baru di student_registry jika ada
+    if (cleanNewNis) {
+      await (supabase as any)
+        .from('student_registry')
+        .update({
+          is_claimed: true,
+          claimed_by: userId,
+          claimed_at: new Date().toISOString(),
+        })
+        .eq('nis', cleanNewNis);
+    }
+  },
+
+  /**
+   * Mengambil detail klaim buku induk berdasarkan NIS atau User ID
+   */
+  async getStudentRegistryInfo(nisOrUserId: string): Promise<StudentRegistryRow | null> {
+    try {
+      let query = (supabase as any).from('student_registry').select('*');
+      if (nisOrUserId.includes('-') && nisOrUserId.length >= 32) {
+        query = query.eq('claimed_by', nisOrUserId);
+      } else {
+        query = query.eq('nis', nisOrUserId);
+      }
+      const { data, error } = await query.maybeSingle();
+      if (error || !data) return null;
+      return data as StudentRegistryRow;
+    } catch {
+      return null;
+    }
+  },
+
+  /**
    * Mengambil versi rilis aplikasi terbaru dari tabel app_versions
    */
   async getLatestAppVersion(): Promise<{ versionName: string; versionCode: number; raw: string } | null> {
