@@ -77,11 +77,11 @@ class HomeBottomNavBar extends StatelessWidget {
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    // High contrast liquid glass typography & icons (matching screenshot reference)
-    const activeColor = Colors.white;
+    // Adaptive Liquid Glass typography & icons
+    final activeColor = isDark ? Colors.white : const Color(0xFF0F172A);
     final inactiveColor = isDark
         ? const Color(0x99FFFFFF)
-        : const Color(0xB3FFFFFF); // 70% white on dark translucent glass
+        : const Color(0xFF64748B); // Slate-500 on light frost glass
 
     return Padding(
       padding: EdgeInsets.only(
@@ -101,27 +101,27 @@ class HomeBottomNavBar extends StatelessWidget {
               border: Border.all(
                 color: isDark
                     ? Colors.white.withValues(alpha: 0.22)
-                    : Colors.white.withValues(alpha: 0.85),
+                    : Colors.white.withValues(alpha: 0.90),
                 width: 1.2,
               ),
               boxShadow: [
-                // Deep liquid drop shadow for distinct separation against white or dark feed
+                // Liquid drop shadow for clean contrast against feed
                 BoxShadow(
                   color: isDark
                       ? Colors.black.withValues(alpha: 0.60)
-                      : const Color(0xFF0F172A).withValues(alpha: 0.16),
-                  blurRadius: 30.0,
-                  spreadRadius: -2.0,
-                  offset: const Offset(0, 10),
+                      : const Color(0xFF0F172A).withValues(alpha: 0.12),
+                  blurRadius: isDark ? 30.0 : 24.0,
+                  spreadRadius: isDark ? -2.0 : -4.0,
+                  offset: const Offset(0, 8),
                 ),
-                // Specular ambient ring
+                // Ambient specular highlight
                 BoxShadow(
                   color: isDark
                       ? Colors.white.withValues(alpha: 0.05)
-                      : Colors.black.withValues(alpha: 0.04),
-                  blurRadius: 8.0,
+                      : Colors.white.withValues(alpha: 0.60),
+                  blurRadius: 4.0,
                   spreadRadius: 0.0,
-                  offset: const Offset(0, 2),
+                  offset: const Offset(0, 1),
                 ),
               ],
             ),
@@ -134,7 +134,7 @@ class HomeBottomNavBar extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 4.0),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(32.0),
-                    // Translucent smoky liquid glass tint matching screenshot reference
+                    // Adaptive translucent liquid glass tint
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -144,8 +144,8 @@ class HomeBottomNavBar extends StatelessWidget {
                               const Color(0xFF141518).withValues(alpha: 0.82),
                             ]
                           : [
-                              const Color(0xFF23262B).withValues(alpha: 0.86), // Smoky dark glass on light feed
-                              const Color(0xFF191B1F).withValues(alpha: 0.92),
+                              Colors.white.withValues(alpha: 0.88), // Clean frosted glass for light theme
+                              const Color(0xFFF8FAFC).withValues(alpha: 0.78),
                             ],
                     ),
                   ),
@@ -154,7 +154,7 @@ class HomeBottomNavBar extends StatelessWidget {
                       final double tabWidth = constraints.maxWidth / 4.0;
                       return Stack(
                         children: [
-                          // Sliding Liquid Bubble Pill Indicator (from burakozyurt / Apple liquid glass)
+                          // Sliding Liquid Bubble Pill Indicator (Adaptive light/dark)
                           AnimatedPositioned(
                             duration: const Duration(milliseconds: 280),
                             curve: const Cubic(0.2, 0.9, 0.3, 1.0),
@@ -164,16 +164,22 @@ class HomeBottomNavBar extends StatelessWidget {
                             height: 52.0,
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.18),
+                                color: isDark
+                                    ? Colors.white.withValues(alpha: 0.18)
+                                    : const Color(0xFF0F172A).withValues(alpha: 0.07),
                                 borderRadius: BorderRadius.circular(26.0),
                                 border: Border.all(
-                                  color: Colors.white.withValues(alpha: 0.28),
+                                  color: isDark
+                                      ? Colors.white.withValues(alpha: 0.28)
+                                      : Colors.white.withValues(alpha: 0.80),
                                   width: 1.0,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.15),
-                                    blurRadius: 8.0,
+                                    color: isDark
+                                        ? Colors.black.withValues(alpha: 0.15)
+                                        : const Color(0xFF0F172A).withValues(alpha: 0.04),
+                                    blurRadius: 6.0,
                                     offset: const Offset(0, 2),
                                   ),
                                 ],
@@ -274,10 +280,10 @@ class _DockTabItemState extends State<_DockTabItem> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    const activeColor = Colors.white;
+    final activeColor = isDark ? Colors.white : const Color(0xFF0F172A);
     final inactiveColor = isDark
         ? const Color(0x99FFFFFF)
-        : const Color(0xB3FFFFFF);
+        : const Color(0xFF64748B);
 
     return Expanded(
       child: GestureDetector(

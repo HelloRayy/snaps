@@ -55,6 +55,12 @@
       "skillPath": "skills/diagram-design/SKILL.md",
       "computedHash": "f3eef80894302db8d6f6a5e4dc2f9ddbb4b9291f2b81eaf05fc7306073f152a8"
     },
+    "micro-interactions": {
+      "source": "solinkz/micro-interactions-skill",
+      "sourceType": "github",
+      "skillPath": "skills/micro-interactions/SKILL.md",
+      "computedHash": "2fac98169ea9c8105e2011d2e3dafdf6bfc7e0ad2492fa2ca86773de9f80a908"
+    },
     "security": {
       "source": "./local",
       "sourceType": "local",
