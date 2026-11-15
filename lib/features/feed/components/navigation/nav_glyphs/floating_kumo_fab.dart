@@ -47,21 +47,21 @@ class _FloatingKumoFabButtonState extends State<FloatingKumoFabButton> {
                   Color(0xFF00A3FF), // Electric Cyan
                 ],
               ),
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(
-                  color: const Color(0xFF00A3FF).withValues(alpha: 0.45),
-                  blurRadius: 14.0,
-                  offset: const Offset(0, 6),
+                  color: Color(0x1A000000),
+                  blurRadius: 4.0,
+                  offset: Offset(0, 2),
                 ),
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.20),
-                  blurRadius: 6.0,
-                  offset: const Offset(0, 2),
+                  color: Color(0x0F000000),
+                  blurRadius: 1.0,
+                  offset: Offset(0, 1),
                 ),
               ],
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.25),
-                width: 1.2,
+                color: Colors.white.withValues(alpha: 0.35),
+                width: 1.0,
               ),
             ),
             child: Stack(

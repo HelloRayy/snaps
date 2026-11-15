@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:snapan_market/core/components/snaps_logo.dart';
+import 'package:snapan_market/core/theme/tactile_shadows.dart';
 
 /// Authentic Threads Light UI Auth Popover Overlay
 ///
@@ -51,14 +52,7 @@ class AuthPromptOverlay extends StatelessWidget {
                       color: const Color(0xFFE5E7EB),
                       width: 1.0,
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.08),
-                        blurRadius: 36.0,
-                        offset: const Offset(0, 16),
-                        spreadRadius: 2.0,
-                      ),
-                    ],
+                    boxShadow: TactileShadows.lightOverlay,
                   ),
                   clipBehavior: Clip.antiAlias,
                   child: Padding(

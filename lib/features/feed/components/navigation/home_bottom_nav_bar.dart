@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
-import 'package:snapan_market/core/theme/tactile_shadows.dart';
 import 'package:snapan_market/features/feed/components/navigation/nav_glyphs/home_nav_glyph.dart';
 import 'package:snapan_market/features/feed/components/navigation/nav_glyphs/paper_plane_nav_glyph.dart';
 import 'package:snapan_market/features/feed/components/navigation/nav_glyphs/heart_nav_glyph.dart';
@@ -33,16 +32,15 @@ enum HomeNavTab {
   }
 }
 
-/// Center Bot Bar sliced from user layout sketch & pen.dev spec (`snaps-design.pen` node `HaFs1`)
-///
-/// Features:
-/// - Single centered floating pill dock (`height: 62px, cornerRadius: 296`)
-/// - Liquid frosted glass container (`Colors.white.withValues(alpha: 0.85)` + 20px blur)
-/// - Diffuse 35px drop shadow from pen.dev (`#0000001f`, y=8)
-/// - 4 symmetrical tabs (Home, Pesan, Aktivitas, Profil)
-/// - Active selection capsule (`#EDEDED` fill, cornerRadius 100) with `#008BFF` azure icon & label
-/// - Inactive tabs in `#1A1A1A` ink typography
-class HomeBottomNavBar extends StatelessWidget {
+/// Liquid Glass Bottom Nav Bar
+/// Inspired by burakozyurt/liquid-glass-bottom-nav-bar
+/// 
+/// Refined with sNaps Electric Indigo brand signature:
+/// - Active Tab: sNaps Electric Indigo (#3D38F5) with soft brand wash
+/// - Squash & Stretch fluid physics: sliding capsule organically stretches during tab changes
+/// - Frosted glass body with specular refraction perimeter edge
+/// - High contrast readability in both Light and Dark modes
+class HomeBottomNavBar extends StatefulWidget {
   final HomeNavTab currentTab;
   final ValueChanged<HomeNavTab> onTabSelected;
   final VoidCallback? onSearchTap;
@@ -67,21 +65,64 @@ class HomeBottomNavBar extends StatelessWidget {
   });
 
   @override
+  State<HomeBottomNavBar> createState() => _HomeBottomNavBarState();
+}
+
+class _HomeBottomNavBarState extends State<HomeBottomNavBar>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _morphController;
+  late Animation<double> _stretchAnim;
+  int _prevIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _prevIndex = widget.currentTab.index;
+    _morphController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 320),
+    );
+    // Squash & Stretch curve: indicator expands slightly then snaps into place
+    _stretchAnim = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.14), weight: 35),
+      TweenSequenceItem(tween: Tween(begin: 1.14, end: 0.96), weight: 35),
+      TweenSequenceItem(tween: Tween(begin: 0.96, end: 1.0), weight: 30),
+    ]).animate(CurvedAnimation(
+      parent: _morphController,
+      curve: Curves.easeOutCubic,
+    ));
+  }
+
+  @override
+  void didUpdateWidget(covariant HomeBottomNavBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.currentTab != widget.currentTab) {
+      _prevIndex = oldWidget.currentTab.index;
+      _morphController.forward(from: 0.0);
+    }
+  }
+
+  @override
+  void dispose() {
+    _morphController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Auto-detect virtual keyboard to prevent bottom nav from floating over inputs
     final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
     if (bottomInset > 0) {
       return const SizedBox.shrink();
     }
 
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
-
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    // Adaptive Liquid Glass typography & icons
-    final activeColor = isDark ? Colors.white : const Color(0xFF0F172A);
+
+    // Brand Signature: Electric Indigo (#3D38F5) when active
+    const activeBrandColor = AppColors.primary;
     final inactiveColor = isDark
         ? const Color(0x99FFFFFF)
-        : const Color(0xFF64748B); // Slate-500 on light frost glass
+        : const Color(0xFF64748B); // Slate-500
 
     return Padding(
       padding: EdgeInsets.only(
@@ -105,7 +146,7 @@ class HomeBottomNavBar extends StatelessWidget {
                 width: 1.2,
               ),
               boxShadow: [
-                // Liquid drop shadow for clean contrast against feed
+                // Deep liquid drop shadow for distinct contrast against feed
                 BoxShadow(
                   color: isDark
                       ? Colors.black.withValues(alpha: 0.60)
@@ -114,11 +155,11 @@ class HomeBottomNavBar extends StatelessWidget {
                   spreadRadius: isDark ? -2.0 : -4.0,
                   offset: const Offset(0, 8),
                 ),
-                // Ambient specular highlight
+                // Specular top highlight
                 BoxShadow(
                   color: isDark
                       ? Colors.white.withValues(alpha: 0.05)
-                      : Colors.white.withValues(alpha: 0.60),
+                      : Colors.white.withValues(alpha: 0.70),
                   blurRadius: 4.0,
                   spreadRadius: 0.0,
                   offset: const Offset(0, 1),
@@ -140,12 +181,12 @@ class HomeBottomNavBar extends StatelessWidget {
                       end: Alignment.bottomRight,
                       colors: isDark
                           ? [
-                              const Color(0xFF1E2024).withValues(alpha: 0.88),
-                              const Color(0xFF141518).withValues(alpha: 0.82),
+                              const Color(0xFF1E2024).withValues(alpha: 0.90),
+                              const Color(0xFF141518).withValues(alpha: 0.84),
                             ]
                           : [
-                              Colors.white.withValues(alpha: 0.88), // Clean frosted glass for light theme
-                              const Color(0xFFF8FAFC).withValues(alpha: 0.78),
+                              Colors.white.withValues(alpha: 0.90),
+                              const Color(0xFFF8FAFC).withValues(alpha: 0.82),
                             ],
                     ),
                   ),
@@ -154,91 +195,99 @@ class HomeBottomNavBar extends StatelessWidget {
                       final double tabWidth = constraints.maxWidth / 4.0;
                       return Stack(
                         children: [
-                          // Sliding Liquid Bubble Pill Indicator (Adaptive light/dark)
-                          AnimatedPositioned(
-                            duration: const Duration(milliseconds: 280),
-                            curve: const Cubic(0.2, 0.9, 0.3, 1.0),
-                            left: currentTab.index * tabWidth + 2.0,
-                            top: 2.0,
-                            width: tabWidth - 4.0,
-                            height: 52.0,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: isDark
-                                    ? Colors.white.withValues(alpha: 0.18)
-                                    : const Color(0xFF0F172A).withValues(alpha: 0.07),
-                                borderRadius: BorderRadius.circular(26.0),
-                                border: Border.all(
-                                  color: isDark
-                                      ? Colors.white.withValues(alpha: 0.28)
-                                      : Colors.white.withValues(alpha: 0.80),
-                                  width: 1.0,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
+                          // Sliding Liquid Bubble Pill Indicator with Squash & Stretch
+                          AnimatedBuilder(
+                            animation: _stretchAnim,
+                            builder: (context, child) {
+                              final stretchFactor = _stretchAnim.value;
+                              final width = (tabWidth - 6.0) * stretchFactor;
+                              final leftOffset = widget.currentTab.index * tabWidth + 3.0 - (width - (tabWidth - 6.0)) / 2;
+
+                              return AnimatedPositioned(
+                                duration: const Duration(milliseconds: 280),
+                                curve: const Cubic(0.2, 0.9, 0.3, 1.0),
+                                left: leftOffset,
+                                top: 2.0,
+                                width: width,
+                                height: 52.0,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    // Brand Indigo Wash in light mode / Crisp glow in dark mode
                                     color: isDark
-                                        ? Colors.black.withValues(alpha: 0.15)
-                                        : const Color(0xFF0F172A).withValues(alpha: 0.04),
-                                    blurRadius: 6.0,
-                                    offset: const Offset(0, 2),
+                                        ? AppColors.primary.withValues(alpha: 0.22)
+                                        : AppColors.primaryPastel,
+                                    borderRadius: BorderRadius.circular(26.0),
+                                    border: Border.all(
+                                      color: isDark
+                                          ? AppColors.primary.withValues(alpha: 0.45)
+                                          : AppColors.primaryBorder,
+                                      width: 1.0,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppColors.primary.withValues(alpha: isDark ? 0.25 : 0.08),
+                                        blurRadius: 8.0,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ),
+                                ),
+                              );
+                            },
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               // Tab 1: Home
                               _DockTabItem(
-                                isActive: currentTab == HomeNavTab.home,
+                                isActive: widget.currentTab == HomeNavTab.home,
                                 label: 'Home',
                                 glyph: HomeNavGlyph(
-                                  isActive: currentTab == HomeNavTab.home,
-                                  activeColor: activeColor,
+                                  isActive: widget.currentTab == HomeNavTab.home,
+                                  activeColor: activeBrandColor,
                                   inactiveColor: inactiveColor,
                                 ),
-                                onTap: () => onTabSelected(HomeNavTab.home),
+                                onTap: () => widget.onTabSelected(HomeNavTab.home),
                               ),
 
                               // Tab 2: Pesan (Chats)
                               _DockTabItem(
-                                isActive: currentTab == HomeNavTab.messages,
+                                isActive: widget.currentTab == HomeNavTab.messages,
                                 label: 'Pesan',
                                 glyph: PaperPlaneNavGlyph(
-                                  isActive: currentTab == HomeNavTab.messages,
-                                  hasBadge: hasUnreadMessages,
-                                  badgeCount: unreadMessagesCount,
-                                  activeColor: activeColor,
+                                  isActive: widget.currentTab == HomeNavTab.messages,
+                                  hasBadge: widget.hasUnreadMessages,
+                                  badgeCount: widget.unreadMessagesCount,
+                                  activeColor: activeBrandColor,
                                   inactiveColor: inactiveColor,
                                 ),
-                                onTap: () => onTabSelected(HomeNavTab.messages),
+                                onTap: () => widget.onTabSelected(HomeNavTab.messages),
                               ),
 
                               // Tab 3: Aktivitas
                               _DockTabItem(
-                                isActive: currentTab == HomeNavTab.activity,
+                                isActive: widget.currentTab == HomeNavTab.activity,
                                 label: 'Aktivitas',
                                 glyph: HeartNavGlyph(
-                                  isActive: currentTab == HomeNavTab.activity,
-                                  hasBadge: hasUnreadActivity,
-                                  activeColor: activeColor,
+                                  isActive: widget.currentTab == HomeNavTab.activity,
+                                  hasBadge: widget.hasUnreadActivity,
+                                  activeColor: activeBrandColor,
                                   inactiveColor: inactiveColor,
                                 ),
-                                onTap: () => onTabSelected(HomeNavTab.activity),
+                                onTap: () => widget.onTabSelected(HomeNavTab.activity),
                               ),
 
                               // Tab 4: Profil
                               _DockTabItem(
-                                isActive: currentTab == HomeNavTab.profile,
+                                isActive: widget.currentTab == HomeNavTab.profile,
                                 label: 'Profil',
                                 glyph: UserNavGlyph(
-                                  isActive: currentTab == HomeNavTab.profile,
-                                  userAvatar: userAvatar,
-                                  activeColor: activeColor,
+                                  isActive: widget.currentTab == HomeNavTab.profile,
+                                  userAvatar: widget.userAvatar,
+                                  activeColor: activeBrandColor,
                                   inactiveColor: inactiveColor,
                                 ),
-                                onTap: () => onTabSelected(HomeNavTab.profile),
+                                onTap: () => widget.onTabSelected(HomeNavTab.profile),
                               ),
                             ],
                           ),
@@ -256,7 +305,7 @@ class HomeBottomNavBar extends StatelessWidget {
   }
 }
 
-/// Dock Tab Item with Selection Capsule (#EDEDED fill, cornerRadius 100)
+/// Dock Tab Item with Liquid Spring Micro-Motion
 class _DockTabItem extends StatefulWidget {
   final bool isActive;
   final String label;
@@ -280,7 +329,7 @@ class _DockTabItemState extends State<_DockTabItem> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final activeColor = isDark ? Colors.white : const Color(0xFF0F172A);
+    const activeColor = AppColors.primary;
     final inactiveColor = isDark
         ? const Color(0x99FFFFFF)
         : const Color(0xFF64748B);
@@ -312,7 +361,7 @@ class _DockTabItemState extends State<_DockTabItem> {
                 // Icon / Glyph with spring pop micro-motion
                 AnimatedScale(
                   scale: widget.isActive ? 1.08 : 1.0,
-                  duration: const Duration(milliseconds: 220),
+                  duration: const Duration(milliseconds: 240),
                   curve: Curves.easeOutBack,
                   child: SizedBox(
                     width: 24.0,
@@ -323,7 +372,7 @@ class _DockTabItemState extends State<_DockTabItem> {
 
                 const SizedBox(height: 2.0),
 
-                // Label Text with smooth color transition
+                // Label Text with Brand Indigo color when active
                 AnimatedDefaultTextStyle(
                   duration: const Duration(milliseconds: 200),
                   curve: Curves.easeOutCubic,
