@@ -245,6 +245,10 @@ echo -e "\n${CYAN}${BOLD}[5/6] 📦 Persiapan GitHub Release & Upload Asset...${
 REMOTE_URL=$(git config remote.origin.url || true)
 GH_TOKEN=$(echo "$REMOTE_URL" | sed -n -E 's#.*((github_pat_|ghp_)[^@]+)@.*#\1#p')
 
+if [ -z "$GH_TOKEN" ] && [ -f ".env.local" ]; then
+  GH_TOKEN=$(grep -E "^GITHUB_TOKEN=" .env.local | cut -d '=' -f2- | tr -d '"'\'' ' || true)
+fi
+
 if [ -z "$GH_TOKEN" ] && [ -n "${GITHUB_TOKEN}" ]; then
   GH_TOKEN="${GITHUB_TOKEN}"
 fi
