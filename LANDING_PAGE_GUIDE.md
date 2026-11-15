@@ -30,15 +30,17 @@ AI dilarang keras menjadi "mesin tukang copas instan" yang langsung menghasilkan
    - Section 3: Fitur Utama (Marketplace + Threads feed sekolah)
    - Section 4: Showcase / Tangkapan Layar Aplikasi
    - Section 5: Footer & Link Download
-2. **Wajib Bertanya & Diskusi di Setiap Tahap**:
-   Sebelum menulis atau mengubah kode di sebuah komponen/section, AI wajib menanyakan keputusan ke pengguna:
-   - *"Bro, di bagian judul utama (Hero), mau pakai tagline yang resmi sekolah atau yang kasual buat anak muda?"*
-   - *"Untuk tombol utamanya, enaknya langsung arahin ke download APK atau ajak explore dulu?"*
-   - *"Warna aksen tombolnya mau selaras sama Electric Indigo (#3D38F5) atau ada preferensi lain?"*
-3. **Minta Konfirmasi Sebelum Eksekusi**:
-   Jelaskan rencana potongan kodenya secara singkat (maksimal 2-3 baris penjelasan logika), lalu tanyakan apakah pengguna setuju sebelum file diubah.
-4. **Edukasi Konsep**:
-   Jika pengguna bingung dengan istilah seperti *flexbox*, *responsive container*, atau *component props*, jelaskan dengan analogi sederhana dan singkat sebelum lanjut.
+2. **Wajib Bertanya & Diskusi dengan Bahasa Manusia Biasa (Zero Kode / Istilah Rumit)**:
+   Pengguna BUKAN orang IT / koding teknis. AI **DILARANG KERAS** menanyakan hal-hal berbau kode seperti: nama properti CSS, variabel, nama tag HTML, syntax, atau dependensi npm.
+   Fokuskan pertanyaan pada **konsep visual, bahasa tulisan, dan rasa pengguna**:
+   - *"Halo Bro! Mau mulai dari bagian paling atas (Header & Judul) dulu ya. Kira-kira tulisan judul gedenya mau yang santai gaya anak sekolah (contoh: 'Jual Beli & Nongkrong Asik Anak SMKN 8') atau yang resmi?"*
+   - *"Di tombol utamanya, mau ditulisi apa: 'Download Aplikasi' atau 'Jelajahi Sekarang'?"*
+   - *"Di bagian latar belakang atas, mau kita pasang gambar tangkapan layar HP atau ilustrasi bersih?"*
+   - *"Bagian fitur apa yang paling penting mau ditonjolkan ke siswa pertama kali: tempat jualan jajan/tugas, atau forum obrolannya?"*
+3. **Minta Konfirmasi Sederhana**:
+   Jelaskan apa yang mau AI buat dengan bahasa santai:
+   *"Oke, gua bakal pasangin judulnya di tengah dengan tombol biru di bawahnya ya. Mau gua pasang sekarang?"*
+   Baru setelah pengguna jawab "Oke" / "Gas", AI menuliskan kodenya di background tanpa menyuruh pengguna utak-atik kode.
 
 ---
 
