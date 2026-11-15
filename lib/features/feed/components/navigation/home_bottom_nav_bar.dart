@@ -77,8 +77,11 @@ class HomeBottomNavBar extends StatelessWidget {
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final activeColor = isDark ? Colors.white : AppColors.primary;
-    final inactiveColor = isDark ? const Color(0x99FFFFFF) : const Color(0xFF64748B);
+    // High contrast liquid glass typography & icons (matching screenshot reference)
+    const activeColor = Colors.white;
+    final inactiveColor = isDark
+        ? const Color(0x99FFFFFF)
+        : const Color(0xB3FFFFFF); // 70% white on dark translucent glass
 
     return Padding(
       padding: EdgeInsets.only(
@@ -91,42 +94,58 @@ class HomeBottomNavBar extends StatelessWidget {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 360.0),
           child: Container(
-            height: 62.0,
+            height: 64.0,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(31.0),
+              borderRadius: BorderRadius.circular(32.0),
+              // Specular light edge refraction (Liquid Glass perimeter)
               border: Border.all(
-                color: isDark ? const Color(0x2EFFFFFF) : Colors.white.withValues(alpha: 0.80),
-                width: 1.0,
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.22)
+                    : Colors.white.withValues(alpha: 0.85),
+                width: 1.2,
               ),
               boxShadow: [
+                // Deep liquid drop shadow for distinct separation against white or dark feed
                 BoxShadow(
-                  color: isDark ? const Color(0x40000000) : const Color(0x0F000000),
-                  blurRadius: 24.0,
+                  color: isDark
+                      ? Colors.black.withValues(alpha: 0.60)
+                      : const Color(0xFF0F172A).withValues(alpha: 0.16),
+                  blurRadius: 30.0,
+                  spreadRadius: -2.0,
+                  offset: const Offset(0, 10),
+                ),
+                // Specular ambient ring
+                BoxShadow(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.05)
+                      : Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 8.0,
                   spreadRadius: 0.0,
-                  offset: const Offset(0, 8),
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(31.0),
+              borderRadius: BorderRadius.circular(32.0),
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
+                filter: ImageFilter.blur(sigmaX: 28.0, sigmaY: 28.0),
                 child: Container(
-                  height: 62.0,
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 3.0),
+                  height: 64.0,
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 4.0),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(31.0),
+                    borderRadius: BorderRadius.circular(32.0),
+                    // Translucent smoky liquid glass tint matching screenshot reference
                     gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                       colors: isDark
                           ? [
-                              const Color(0xFF161717).withValues(alpha: 0.94),
-                              const Color(0xFF161717).withValues(alpha: 0.88),
+                              const Color(0xFF1E2024).withValues(alpha: 0.88),
+                              const Color(0xFF141518).withValues(alpha: 0.82),
                             ]
                           : [
-                              Colors.white.withValues(alpha: 0.90),
-                              Colors.white.withValues(alpha: 0.80),
+                              const Color(0xFF23262B).withValues(alpha: 0.86), // Smoky dark glass on light feed
+                              const Color(0xFF191B1F).withValues(alpha: 0.92),
                             ],
                     ),
                   ),
@@ -135,20 +154,29 @@ class HomeBottomNavBar extends StatelessWidget {
                       final double tabWidth = constraints.maxWidth / 4.0;
                       return Stack(
                         children: [
-                          // Sliding Selection Capsule - Clean borderless soft pill wash
+                          // Sliding Liquid Bubble Pill Indicator (from burakozyurt / Apple liquid glass)
                           AnimatedPositioned(
-                            duration: const Duration(milliseconds: 260),
+                            duration: const Duration(milliseconds: 280),
                             curve: const Cubic(0.2, 0.9, 0.3, 1.0),
-                            left: currentTab.index * tabWidth + 3.0,
-                            top: 3.0,
-                            width: tabWidth - 6.0,
-                            height: 50.0,
+                            left: currentTab.index * tabWidth + 2.0,
+                            top: 2.0,
+                            width: tabWidth - 4.0,
+                            height: 52.0,
                             child: Container(
                               decoration: BoxDecoration(
-                                color: isDark
-                                    ? Colors.white.withValues(alpha: 0.12)
-                                    : AppColors.primary.withValues(alpha: 0.08),
-                                borderRadius: BorderRadius.circular(25.0),
+                                color: Colors.white.withValues(alpha: 0.18),
+                                borderRadius: BorderRadius.circular(26.0),
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.28),
+                                  width: 1.0,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.15),
+                                    blurRadius: 8.0,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -246,8 +274,10 @@ class _DockTabItemState extends State<_DockTabItem> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final activeColor = isDark ? Colors.white : AppColors.primary;
-    final inactiveColor = isDark ? const Color(0x99FFFFFF) : const Color(0xFF64748B);
+    const activeColor = Colors.white;
+    final inactiveColor = isDark
+        ? const Color(0x99FFFFFF)
+        : const Color(0xB3FFFFFF);
 
     return Expanded(
       child: GestureDetector(
