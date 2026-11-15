@@ -254,3 +254,39 @@ body.app .section__content {
 body.app.admin-has-overlay .header-desktop {
   pointer-events: none !important;
 }
+
+/* 📋 Enable full text selection and copy across the entire Admin Dashboard */
+body.app,
+body.app * {
+  -webkit-user-select: text !important;
+  user-select: text !important;
+}
+
+/* Biarkan elemen tombol, menu navigasi, dan icon tetap non-selectable agar UX tetap solid */
+body.app button,
+body.app .m-btn,
+body.app .au-btn,
+body.app .menu-sidebar,
+body.app .header-desktop .header-wrap,
+body.app i,
+body.app svg {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Pastikan seluruh konten data di tabel, badge, detail modal, card, dan code blok bisa disalin bebas */
+body.app .table-responsive,
+body.app .table-responsive *,
+body.app .admin-modal-backdrop,
+body.app .admin-modal-backdrop *,
+body.app .card,
+body.app .card *,
+body.app pre,
+body.app code,
+body.app span,
+body.app p,
+body.app td,
+body.app th {
+  -webkit-user-select: text !important;
+  user-select: text !important;
+}
