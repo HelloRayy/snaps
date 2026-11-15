@@ -99,9 +99,9 @@ class HomeBottomNavBar extends StatelessWidget {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: isDark ? const Color(0x66000000) : const Color(0x0A000000),
-                  blurRadius: isDark ? 20.0 : 16.0,
-                  offset: const Offset(0, 4),
+                  color: isDark ? const Color(0x4D000000) : const Color(0x0F000000),
+                  blurRadius: isDark ? 12.0 : 10.0,
+                  offset: const Offset(0, 3),
                 ),
               ],
             ),

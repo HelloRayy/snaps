@@ -174,10 +174,10 @@ class _KumoButtonState extends State<KumoButton> {
       behavior: HitTestBehavior.opaque,
       child: AnimatedScale(
         scale: _isPressed ? 0.97 : 1.0,
-        duration: const Duration(milliseconds: 150),
-        curve: Curves.easeOutCubic,
+        duration: Duration(milliseconds: _isPressed ? 80 : 160),
+        curve: _isPressed ? Curves.easeOutQuad : Curves.easeOutBack,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
+          duration: Duration(milliseconds: _isPressed ? 80 : 160),
           height: widget.height,
           width: widget.width,
           decoration: BoxDecoration(
