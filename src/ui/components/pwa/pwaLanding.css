@@ -2,26 +2,35 @@
    Snaps PWA Landing Page Stylesheet (120 FPS GPU Optimized)
    ========================================================================== */
 
+/* 🚀 Pop.site Exact Framer Spring Physics Tokens:
+   stiffness: 500, damping: 60, mass: 1 -> cubic-bezier(0.175, 0.885, 0.32, 1.1) / cubic-bezier(0.16, 1, 0.3, 1) */
+:root {
+  --pop-spring-fast: 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  --pop-spring-bounce: 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.08);
+  --pop-spring-smooth: 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  --pop-spring-reveal: 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 /* 🚀 Hero Stagger Entrance */
 .pop-motion-hero {
-  animation: popHeroFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: popHeroFadeIn var(--pop-spring-reveal) both;
 }
 
 @keyframes popHeroFadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(24px) scale(0.99);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 @keyframes popBadgeEnterTop {
   from {
     opacity: 0;
-    transform: translate(-50%, 6px) scale(0.95);
+    transform: translate(-50%, 8px) scale(0.92);
   }
   to {
     opacity: 1;
@@ -30,11 +39,15 @@
 }
 
 @keyframes popAvailableBadge {
-  from {
+  0% {
     opacity: 0;
-    transform: translateY(-50%) scale(0.9);
+    transform: translateY(-50%) scale(0.85);
   }
-  to {
+  70% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.04);
+  }
+  100% {
     opacity: 1;
     transform: translateY(-50%) scale(1);
   }
@@ -42,15 +55,15 @@
 
 @keyframes capsuleShake {
   0%, 100% { transform: translateX(0); }
-  20%, 60% { transform: translateX(-6px); }
-  40%, 80% { transform: translateX(6px); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
 }
 
-/* 🌊 Viewport Entrance Motion System (Gradual & Noticeable) */
+/* 🌊 Viewport Entrance Motion System (Exact Framer Scroll Reveal) */
 .pop-reveal {
   opacity: 0;
-  transform: translateY(48px);
-  transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transform: translateY(32px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) !important;
   will-change: opacity, transform;
 }
 
@@ -292,21 +305,30 @@ input[name="username"]::placeholder {
   }
 }
 
+.framer-g63eua-container a,
+.framer-upoedb-container a,
+[data-framer-name="Button"], 
+.framer-192wfb0 {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), filter 0.22s ease !important;
+  will-change: transform, box-shadow;
+}
+
 .framer-g63eua-container a:hover,
 .framer-upoedb-container a:hover,
 [data-framer-name="Button"]:hover, 
 .framer-192wfb0:hover {
-  filter: brightness(1.05) !important;
-  transform: scale(0.985) !important;
+  filter: brightness(1.03) !important;
+  transform: translateY(-1px) scale(1.01) !important;
+  box-shadow: 0 6px 20px rgba(29, 100, 236, 0.25) !important;
 }
 
 .framer-g63eua-container a:active,
 .framer-upoedb-container a:active,
 [data-framer-name="Button"]:active, 
 .framer-192wfb0:active {
-  filter: brightness(0.95) !important;
-  transform: scale(0.96) !important;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(29, 100, 236, 0.2) !important;
+  filter: brightness(0.97) !important;
+  transform: translateY(1px) scale(0.97) !important;
+  box-shadow: 0 2px 8px rgba(29, 100, 236, 0.15) !important;
 }
 
 /* 🎠 Infinite Smooth Auto-Scrolling Marquee with Edge Fades */
@@ -347,30 +369,13 @@ input[name="username"]::placeholder {
   align-items: flex-start !important;
   margin: 0 !important;
   box-sizing: border-box !important;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease !important;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
   cursor: pointer !important;
 }
 
-.django-marquee-track .framer-49zkyx {
-  flex: none !important;
-  width: 112px !important;
-  height: 112px !important;
-  border-radius: 12px !important;
-  overflow: hidden !important;
-  align-self: flex-start !important;
-  margin-top: 2px !important;
-}
-
-.django-marquee-track .framer-1rvfl3v {
-  flex: 1 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: space-between !important;
-  gap: 12px !important;
-}
-
 .django-marquee-track > .framer-a910ey:hover {
-  transform: none !important;
+  transform: translateY(-3px) scale(1.008) !important;
+  box-shadow: 0 10px 24px -4px rgba(0, 0, 0, 0.08) !important;
 }
 
 /* 🧹 Remove Excessive Whitespace & Compact Collection / Team Section */
@@ -650,6 +655,17 @@ h3[data-styles-preset="wX3pidG6I"] *,
   justify-content: flex-start !important;
   flex: 1 1 0 !important;
   box-sizing: border-box !important;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s ease !important;
+  will-change: transform, box-shadow;
+}
+
+.framer-sdhxzw [data-framer-name="Feature Simple"]:hover,
+.framer-sdhxzw .framer-1p2c0r4:hover,
+.framer-sdhxzw .framer-1jz2pvg:hover,
+.framer-sdhxzw .framer-11kd95v:hover,
+.framer-sdhxzw .framer-xlz7uj:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.08), 0 4px 10px -2px rgba(0, 0, 0, 0.04) !important;
 }
 
 @media (max-width: 809.98px) {
@@ -1261,15 +1277,15 @@ footer.snapan-modern-footer {
   }
 }
 
-/* 🕹️ Interactive Button Springs */
+/* 🕹️ Interactive Button Springs (Pop.site Exact Tactile Behavior) */
 button, a, input[type="submit"] {
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease !important;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), filter 0.22s ease !important;
 }
 button:active, a:active {
-  transform: scale(0.96) !important;
+  transform: scale(0.975) !important;
 }
 button:hover, a:hover {
-  filter: brightness(1.05);
+  filter: brightness(1.03);
 }
 
 /* ♿ Accessibility Reduced Motion */
