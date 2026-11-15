@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:snapan_market/core/components/kumo_button.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
+import "package:snapan_market/core/theme/tactile_shadows.dart";
 import "package:snapan_market/features/locations/models/campus_location_spot.dart";
 
 class LocationSpotDetailSheet extends StatelessWidget {
@@ -35,7 +36,8 @@ class LocationSpotDetailSheet extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.adaptiveSurfaceElevated(context),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20.0)),
+        boxShadow: TactileShadows.adaptiveOverlay(context),
       ),
       padding: EdgeInsets.only(
         left: 20.0,

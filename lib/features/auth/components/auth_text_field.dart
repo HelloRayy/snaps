@@ -147,35 +147,31 @@ class _AuthInputFieldState extends State<AuthInputField> {
           minHeight: 20.0,
         ),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: hasError
+            ? const Color(0xFFFFF1F2)
+            : _isFocused
+                ? Colors.white
+                : const Color(0xFFF1F5F9), // ink-3 Sunken Well
         contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 15.5),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16.0),
-          borderSide: BorderSide(
-            color: widget.isValid ? const Color(0xFF16A34A) : const Color(0xFFE2E8F0),
-            width: widget.isValid ? 1.5 : 1.2,
-          ),
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16.0),
-          borderSide: BorderSide(
-            color: hasError
-                ? AppColors.error
-                : widget.isValid
-                    ? const Color(0xFF16A34A)
-                    : const Color(0xFFE2E8F0),
-            width: hasError
-                ? 1.4
-                : widget.isValid
-                    ? 1.5
-                    : 1.2,
-          ),
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: hasError
+              ? const BorderSide(color: Color(0xFFE11D48), width: 1.0)
+              : BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16.0),
+          borderRadius: BorderRadius.circular(10.0),
           borderSide: BorderSide(
-            color: widget.isValid ? const Color(0xFF16A34A) : AppColors.primary,
-            width: 1.8,
+            color: hasError
+                ? const Color(0xFFE11D48)
+                : widget.isValid
+                    ? const Color(0xFF16A34A)
+                    : AppColors.primary,
+            width: 1.5,
           ),
         ),
         errorBorder: OutlineInputBorder(

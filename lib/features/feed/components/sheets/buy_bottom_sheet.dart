@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/kumo_button.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/theme/tactile_shadows.dart';
 import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
 import 'package:snapan_market/features/feed/components/post_card/market_feed_icons.dart';
@@ -61,16 +62,10 @@ class _BuyBottomSheetState extends State<BuyBottomSheet> {
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
 
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
-        boxShadow: [
-          BoxShadow(
-            color: Color(0x0F000000),
-            blurRadius: 20.0,
-            offset: Offset(0, -4),
-          ),
-        ],
+      decoration: BoxDecoration(
+        color: AppColors.adaptiveSurfaceElevated(context),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20.0)),
+        boxShadow: TactileShadows.adaptiveOverlay(context),
       ),
       child: SafeArea(
         top: false,

@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
+import "package:snapan_market/core/theme/tactile_shadows.dart";
 import "package:snapan_market/features/locations/models/campus_location_spot.dart";
 
 class LocationSpotCard extends StatelessWidget {
@@ -44,15 +45,22 @@ class LocationSpotCard extends StatelessWidget {
             color: cardBorder,
             width: isSelected ? 1.5 : 1.0,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: isSelected
-                  ? const Color(0xFF3D38F5).withValues(alpha: 0.08)
-                  : Colors.black.withValues(alpha: 0.03),
-              blurRadius: 10.0,
-              offset: const Offset(0, 3),
-            ),
-          ],
+          boxShadow: isSelected
+              ? const [
+                  BoxShadow(
+                    color: Color(0x333D38F5),
+                    blurRadius: 0.0,
+                    spreadRadius: 1.0,
+                    offset: Offset(0, 0),
+                  ),
+                  BoxShadow(
+                    color: Color(0x1F3D38F5),
+                    blurRadius: 3.0,
+                    spreadRadius: 0.0,
+                    offset: Offset(0, 1),
+                  ),
+                ]
+              : (isDark ? TactileShadows.darkRaised : TactileShadows.lightRaised),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

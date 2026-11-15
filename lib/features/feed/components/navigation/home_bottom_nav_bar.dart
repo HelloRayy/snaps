@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/theme/tactile_shadows.dart';
 import 'package:snapan_market/features/feed/components/navigation/nav_glyphs/home_nav_glyph.dart';
 import 'package:snapan_market/features/feed/components/navigation/nav_glyphs/paper_plane_nav_glyph.dart';
 import 'package:snapan_market/features/feed/components/navigation/nav_glyphs/heart_nav_glyph.dart';
@@ -94,16 +95,10 @@ class HomeBottomNavBar extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(31.0),
               border: Border.all(
-                color: isDark ? const Color(0x1AFFFFFF) : const Color(0xFFE2E8F0),
+                color: isDark ? const Color(0x26FFFFFF) : const Color(0x14000000),
                 width: 0.8,
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: isDark ? const Color(0x66000000) : const Color(0x0A000000),
-                  blurRadius: isDark ? 20.0 : 16.0,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+              boxShadow: TactileShadows.adaptiveOverlay(context),
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(31.0),
