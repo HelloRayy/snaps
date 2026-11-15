@@ -73,8 +73,8 @@ class _PostBuyNowButtonState extends State<PostBuyNowButton> {
       behavior: HitTestBehavior.opaque,
       child: AnimatedScale(
         scale: _isPressed ? 0.94 : 1.0,
-        duration: const Duration(milliseconds: 90),
-        curve: Curves.easeOutCubic,
+        duration: Duration(milliseconds: _isPressed ? 80 : 160),
+        curve: _isPressed ? Curves.easeOutQuad : Curves.easeOutBack,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(100.0),
           child: BackdropFilter(

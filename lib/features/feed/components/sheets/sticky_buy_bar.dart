@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/theme/tactile_shadows.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
 
 /// Floating bottom dock bar for Marketplace Product Posts
@@ -37,18 +38,7 @@ class StickyBuyBar extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(32.0),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x1F000000),
-              blurRadius: 35.0,
-              offset: Offset(0, 8),
-            ),
-            BoxShadow(
-              color: Color(0x0A000000),
-              blurRadius: 10.0,
-              offset: Offset(0, 2),
-            ),
-          ],
+          boxShadow: TactileShadows.lightOverlay,
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(32.0),
@@ -152,11 +142,11 @@ class StickyBuyBar extends StatelessWidget {
                       ),
                       boxShadow: (stockCount != null && stockCount! <= 0)
                           ? null
-                          : [
+                          : const [
                               BoxShadow(
-                                color: const Color(0xFF1D64EC).withValues(alpha: 0.28),
-                                blurRadius: 10.0,
-                                offset: const Offset(0, 3),
+                                color: Color(0x2E1D64EC),
+                                blurRadius: 3.0,
+                                offset: Offset(0, 1),
                               ),
                             ],
                     ),

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/theme/tactile_shadows.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 /// Modern iOS/Kumo Squircle Bottom Sheet for Confirming Post Deletion
@@ -39,16 +40,12 @@ class DeletePostBottomSheet extends StatelessWidget {
     final snippet = post.caption.trim();
 
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
-        boxShadow: [
-          BoxShadow(
-            color: Color(0x18000000),
-            blurRadius: 24.0,
-            offset: Offset(0, -6),
-          ),
-        ],
+      decoration: BoxDecoration(
+        color: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF1E293B)
+            : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
+        boxShadow: TactileShadows.adaptiveOverlay(context),
       ),
       child: SafeArea(
         top: false,
