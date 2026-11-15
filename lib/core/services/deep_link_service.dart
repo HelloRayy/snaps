@@ -70,14 +70,6 @@ class DeepLinkService {
   }
 
   Future<void> _handleUri(Uri uri) async {
-    // Intercept UI Kit catalog route (e.g. snaps://ui-kit or https://snaps.web.id/ui-kit)
-    if ((uri.scheme == 'snaps' && uri.host == 'ui-kit') ||
-        uri.path.contains('/ui-kit') ||
-        uri.fragment.contains('ui-kit')) {
-      _navigateToUiKit();
-      return;
-    }
-
     final postId = extractPostId(uri);
     if (postId == null || postId.isEmpty) return;
 
@@ -92,19 +84,6 @@ class DeepLinkService {
     _lastHandledTime = now;
 
     await _navigateToPostDetail(postId);
-  }
-
-  Future<void> _navigateToUiKit() async {
-    int retries = 0;
-    while (NavigationService.navigatorKey.currentState == null && retries < 15) {
-      await Future.delayed(const Duration(milliseconds: 150));
-      retries++;
-    }
-
-    final navState = NavigationService.navigatorKey.currentState;
-    if (navState != null) {
-      navState.pushNamed('/ui-kit');
-    }
   }
 
   Future<void> _navigateToPostDetail(String postId) async {
