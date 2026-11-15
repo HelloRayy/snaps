@@ -94,7 +94,13 @@ class DeepLinkService {
     await _navigateToPostDetail(postId);
   }
 
-  void _navigateToUiKit() {
+  Future<void> _navigateToUiKit() async {
+    int retries = 0;
+    while (NavigationService.navigatorKey.currentState == null && retries < 15) {
+      await Future.delayed(const Duration(milliseconds: 150));
+      retries++;
+    }
+
     final navState = NavigationService.navigatorKey.currentState;
     if (navState != null) {
       navState.pushNamed('/ui-kit');

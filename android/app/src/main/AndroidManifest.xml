@@ -41,21 +41,24 @@
                 <data android:scheme="io.supabase.snapanmarket" android:host="login-callback" />
             </intent-filter>
 
-            <!-- Snaps Custom Scheme Deep Link (snaps://post/{id}) -->
+            <!-- Snaps Custom Scheme Deep Link (snaps://post/{id} & snaps://ui-kit) -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="snaps" android:host="post" />
+                <data android:scheme="snaps" android:host="ui-kit" />
             </intent-filter>
 
-            <!-- Snaps Universal Web App Link (https://snaps.web.id/post/{id}) -->
+            <!-- Snaps Universal Web App Link (https://snaps.web.id/post/{id} & /ui-kit) -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https" android:host="snaps.web.id" android:pathPrefix="/post/" />
                 <data android:scheme="http" android:host="snaps.web.id" android:pathPrefix="/post/" />
+                <data android:scheme="https" android:host="snaps.web.id" android:pathPrefix="/ui-kit" />
+                <data android:scheme="http" android:host="snaps.web.id" android:pathPrefix="/ui-kit" />
             </intent-filter>
         </activity>
         <!-- FileProvider required by ota_update plugin for installing downloaded APKs -->
