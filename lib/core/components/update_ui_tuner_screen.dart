@@ -13,13 +13,13 @@ class UpdateUiTunerScreen extends StatefulWidget {
 }
 
 class _UpdateUiTunerScreenState extends State<UpdateUiTunerScreen> {
-  double _horizontalPadding = 24.0;
-  double _verticalPadding = 24.0;
-  double _borderRadius = 16.0;
-  double _sectionSpacing = 16.0;
-  double _titleFontSize = 24.0;
-  bool _isMandatory = false;
-  bool _hudExpanded = true;
+  double _horizontalPadding = 24.8;
+  double _verticalPadding = 32.9;
+  double _borderRadius = 8.0;
+  double _sectionSpacing = 16.4;
+  double _titleFontSize = 24.4;
+  bool _isMandatory = true;
+  bool _hudExpanded = false;
 
   void _copyConfigForAi() {
     final configText = '''
@@ -66,16 +66,27 @@ Terapkan nilai ini ke UI In-App Update standalone screen.
                       vertical: _verticalPadding,
                     ),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        const SizedBox(height: 12),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(24),
+                          child: Image.asset(
+                            'assets/images/mascot_repair.jpg',
+                            width: 148,
+                            height: 148,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        SizedBox(height: _sectionSpacing * 1.25),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
                             color: AppColors.primary.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(999),
                           ),
                           child: const Text(
-                            'v1.0.18 • Pembaruan Tersedia',
+                            'v1.0.18 • Pembaruan Resmi',
                             style: TextStyle(
                               color: AppColors.primary,
                               fontSize: 12,
@@ -86,6 +97,7 @@ Terapkan nilai ini ke UI In-App Update standalone screen.
                         SizedBox(height: _sectionSpacing),
                         Text(
                           'Pembaruan Snaps v1.0.18',
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: _titleFontSize,
                             fontWeight: FontWeight.w800,
@@ -93,12 +105,14 @@ Terapkan nilai ini ke UI In-App Update standalone screen.
                             letterSpacing: -0.4,
                           ),
                         ),
-                        SizedBox(height: _sectionSpacing * 0.5),
+                        SizedBox(height: _sectionSpacing * 0.6),
                         Text(
+                          'Kami telah menyiapkan pembaruan penting untuk meningkatkan stabilitas, kecepatan, dan keamanan aplikasi Snaps:\n\n'
                           '• Perbaikan ganti & hapus foto profil\n'
                           '• Auto-sync avatar di feed tanpa refresh\n'
                           '• Loading gambar lebih cepat & hemat kuota\n'
                           '• Aksi balas, edit, dan hapus pesan DM',
+                          textAlign: TextAlign.left,
                           style: TextStyle(
                             fontSize: 14,
                             height: 1.6,

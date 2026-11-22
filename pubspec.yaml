@@ -79,6 +79,7 @@ flutter:
     - assets/logo/
     - assets/data/
     - assets/mascots/bear/
+    - assets/images/
     - assets/mascots/bunny/
     - assets/mascots/cat/
     - assets/mascots/deer/
