@@ -250,7 +250,9 @@ class HomeNavDrawer extends StatelessWidget {
                       label: 'Preview Update UI (HUD)',
                       inkColor: inkColor,
                       mutedColor: mutedColor,
-                      hoverColor: hoverColor,
+                      hoverColor: isDark
+                          ? const Color(0xFF1E1B4B)
+                          : const Color(0xFFEEF0FF),
                       onTap: () {
                         Navigator.push(
                           context,
