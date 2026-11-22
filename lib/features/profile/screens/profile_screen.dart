@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/components/update_ui_tuner_screen.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/avatar/avatar_viewer_dialog.dart';
 import 'package:snapan_market/core/components/snaps_skeleton.dart';
@@ -338,6 +340,24 @@ class ProfileScreenState extends State<ProfileScreen> {
                               onToggleFollow: () => FollowService.instance.toggleFollow(targetUserId: user.id, targetUsername: user.username),
                               onDirectMessage: _handleDirectMessage,
                             ),
+                            if (kDebugMode && _isOwnProfile) ...[
+                              const SizedBox(height: 8.0),
+                              SizedBox(
+                                width: double.infinity,
+                                child: OutlinedButton.icon(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => const UpdateUiTunerScreen(),
+                                      ),
+                                    );
+                                  },
+                                  icon: const Icon(Icons.tune_rounded, size: 16.0),
+                                  label: const Text('Preview Update UI (HUD)'),
+                                ),
+                              ),
+                            ],
                           ],
                         );
                       },
