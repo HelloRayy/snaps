@@ -168,10 +168,9 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                 _currentConversation = _currentConversation.copyWith(
                   productId: pid,
                   productContext: ProductContext(
-                    title: post.title,
-                    price: post.price,
+                    title: post.title ?? post.content,
+                    price: post.price != null ? 'Rp ${post.price}' : '',
                     image: post.images.isNotEmpty ? post.images.first : null,
-                    location: post.location,
                   ),
                 );
               });
