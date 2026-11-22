@@ -156,6 +156,7 @@ class PostThreadChainItem extends StatelessWidget {
                           )
                         : Image.network(
                             chain.images.first,
+                            cacheWidth: 800,
                             height: 180.0,
                             width: double.infinity,
                             fit: BoxFit.cover,

@@ -1,11 +1,9 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 /// Floating translucent overlay button "Beli Sekarang" with right icon (SNAPS-99 & SNAPS-100).
-/// Features an elegant frosted translucent pill surface over feed product images
-/// with crisp white text and a subtle backdrop blur.
+/// Uses a lightweight translucent pill surface without BackdropFilter to keep feed scrolling at 60/120 FPS.
 class PostBuyNowButton extends StatefulWidget {
   final VoidCallback onPressed;
   final bool isSoldOut;
@@ -26,37 +24,24 @@ class _PostBuyNowButtonState extends State<PostBuyNowButton> {
   @override
   Widget build(BuildContext context) {
     if (widget.isSoldOut) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(100.0),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 6.5),
-            decoration: BoxDecoration(
-              color: const Color(0x99334155), // Translucent muted slate
-              borderRadius: BorderRadius.circular(100.0),
-              border: Border.all(
-                color: const Color(0x26FFFFFF),
-                width: 0.8,
-              ),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x26000000),
-                  blurRadius: 6.0,
-                  offset: Offset(0, 1.5),
-                ),
-              ],
-            ),
-            child: const Text(
-              'Produk Habis',
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 12.0,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFFCBD5E1),
-                letterSpacing: -0.2,
-              ),
-            ),
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 6.5),
+        decoration: BoxDecoration(
+          color: const Color(0xCC334155),
+          borderRadius: BorderRadius.circular(100.0),
+          border: Border.all(
+            color: const Color(0x26FFFFFF),
+            width: 0.8,
+          ),
+        ),
+        child: const Text(
+          'Produk Habis',
+          style: TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 12.0,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFFCBD5E1),
+            letterSpacing: -0.2,
           ),
         ),
       );
@@ -75,23 +60,16 @@ class _PostBuyNowButtonState extends State<PostBuyNowButton> {
         scale: _isPressed ? 0.94 : 1.0,
         duration: Duration(milliseconds: _isPressed ? 80 : 160),
         curve: _isPressed ? Curves.easeOutQuad : Curves.easeOutBack,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(100.0),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 7.0),
-              decoration: BoxDecoration(
-                color: const Color(0x73000000), // ~45% soft translucent dark
-                borderRadius: BorderRadius.circular(100.0),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x1A000000),
-                    blurRadius: 4.0,
-                    offset: Offset(0, 1),
-                  ),
-                ],
-              ),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 7.0),
+          decoration: BoxDecoration(
+            color: const Color(0xB30F172A),
+            borderRadius: BorderRadius.circular(100.0),
+            border: Border.all(
+              color: const Color(0x26FFFFFF),
+              width: 0.8,
+            ),
+          ),
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -115,8 +93,6 @@ class _PostBuyNowButtonState extends State<PostBuyNowButton> {
                 ],
               ),
             ),
-          ),
-        ),
       ),
     );
   }
