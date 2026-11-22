@@ -155,6 +155,24 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
         setState(() {
           _messages = List.from(live);
         });
+        if (_currentConversation.productContext == null) {
+          final lastProductMsg = live.lastWhere(
+            (m) => m.productId != null && m.productId!.isNotEmpty,
+            orElse: () => live.first,
+          );
+          final pid = lastProductMsg.productId;
+          if (pid != null && pid.isNotEmpty) {
+            final post = await SupabaseService.instance.fetchPostById(pid);
+            if (post != null && mounted) {
+              setState(() {
+                _currentConversation = _currentConversation.copyWith(
+                  productId: pid,
+                  productContext: post,
+                );
+              });
+            }
+          }
+        }
         _scrollToBottom(50, true);
       }
     } finally {

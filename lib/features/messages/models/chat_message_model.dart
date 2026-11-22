@@ -63,6 +63,7 @@ class ChatMessageModel {
       timestamp: timeStr,
       isMe: senderId == currentUserId,
       status: json['is_read'] == true ? MessageStatus.read : MessageStatus.sent,
+      productId: json['product_id'] as String?,
     );
   }
 }
