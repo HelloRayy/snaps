@@ -170,7 +170,9 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                   productId: pid,
                   productContext: ProductContext(
                     title: post.title ?? 'Produk',
-                    price: post.price != null ? 'Rp ${post.price}' : '',
+                    price: (post.price != null && post.price! > 0)
+                        ? 'Rp ${post.price}'
+                        : 'Diskusi via DM',
                     image: post.images.isNotEmpty ? post.images.first : null,
                   ),
                 );
@@ -599,7 +601,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                                     child: ChatProductCard(
                                       product: _currentConversation.productContext!,
                                       location: _currentConversation.productContext?.location ??
-                                          "Kantin Belakang SMKN 8 Semarang",
+                                          "SMKN 8 Semarang",
                                       shape: msg.isMe
                                           ? ChatProductCardShape.sent
                                           : ChatProductCardShape.firstReceived,
