@@ -579,9 +579,43 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                       children: [
                         _buildChatHeader(isDark),
                         ..._messages.map(
-                          (msg) => ChatMessageBubble(
-                            message: msg,
-                            onLongPress: () {
+                          (msg) => Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              if (msg.productId != null &&
+                                  msg.productId!.isNotEmpty &&
+                                  _currentConversation.productContext != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4.0, bottom: 8.0),
+                                  child: Align(
+                                    alignment: msg.isMe
+                                        ? Alignment.centerRight
+                                        : Alignment.centerLeft,
+                                    child: ChatProductCard(
+                                      product: _currentConversation.productContext!,
+                                      location: _currentConversation.productContext?.location ??
+                                          "Kantin Belakang SMKN 8 Semarang",
+                                      shape: msg.isMe
+                                          ? ChatProductCardShape.sent
+                                          : ChatProductCardShape.firstReceived,
+                                      isMe: msg.isMe,
+                                      onViewProduct: _isLoadingProduct ? null : _handleViewProduct,
+                                      onCheckLocation: () {
+                                        Navigator.of(context).push(
+                                          AppSlidePageRoute(
+                                            builder: (_) => CampusMapScreen(
+                                              onBack: () => Navigator.pop(context),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ChatMessageBubble(
+                                message: msg,
+                                onLongPress: () {
                               HapticFeedback.mediumImpact();
                               showModalBottomSheet<void>(
                                 context: context,
@@ -662,33 +696,12 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                                   ),
                                 ),
                               );
-                            },
-                          ),
-                        ),
-                        if (_currentConversation.productContext != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4.0, bottom: 12.0),
-                            child: Align(
-                              alignment: isCardFromMe ? Alignment.centerRight : Alignment.centerLeft,
-                              child: ChatProductCard(
-                                product: _currentConversation.productContext!,
-                                location: _currentConversation.productContext?.location ?? "Kantin Belakang SMKN 8 Semarang",
-                                shape: isCardFromMe ? ChatProductCardShape.sent : ChatProductCardShape.firstReceived,
-                                isMe: isCardFromMe,
-                                onViewProduct: _isLoadingProduct ? null : _handleViewProduct,
-                                onCheckLocation: () {
-                                  Navigator.of(context).push(
-                                    AppSlidePageRoute(
-                                      builder: (_) => CampusMapScreen(
-                                        onBack: () => Navigator.pop(context),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
+                              },
                             ),
-                          ),
-                      ],
+                          ],
+                        ),
+                      ),
+                    ],
                     ),
             ),
             ChatComposerBar(

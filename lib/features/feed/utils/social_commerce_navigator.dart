@@ -87,7 +87,7 @@ class SocialCommerceNavigator {
       AppSlidePageRoute(
         builder: (_) => ChatConversationScreen(
           conversation: conv,
-          initialDraft: "Halo kak, saya tertarik mau beli $title.",
+          initialDraft: "Saya tertarik",
         ),
       ),
     );
