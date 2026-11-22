@@ -69,6 +69,17 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
     }
 
     _initRealtimeChat();
+
+    if (widget.conversation.productContext != null &&
+        widget.conversation.productId != null &&
+        widget.initialDraft != null &&
+        widget.initialDraft!.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && !_hasSentProductCard) {
+          _handleSendMessage(widget.initialDraft!);
+        }
+      });
+    }
   }
 
   void _onServiceChanged() {
@@ -714,7 +725,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                     ),
             ),
             ChatComposerBar(
-              initialText: _messages.isEmpty ? widget.initialDraft : null,
+              initialText: null,
               onSendMessage: _handleSendMessage,
               onSendMessageWithMedia: _handleSendMessageWithMedia,
               onTap: () {
