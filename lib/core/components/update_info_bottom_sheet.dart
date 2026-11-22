@@ -26,22 +26,27 @@ class UpdateInfoBottomSheet extends StatefulWidget {
     HapticFeedback.mediumImpact();
     AppUpdateService.instance.markPrompted();
 
-    return showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      isDismissible: !update.isMandatory,
-      enableDrag: !update.isMandatory,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => PopScope(
-        canPop: !update.isMandatory,
-        onPopInvokedWithResult: (didPop, result) {
-          if (didPop) {
-            AppUpdateService.instance.dismissUpdate(update.versionCode);
-          }
-        },
-        child: UpdateInfoBottomSheet(
-          update: update,
-          currentVersionName: currentVersionName,
+    return Navigator.of(context, rootNavigator: true).push<void>(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (ctx) => Scaffold(
+          backgroundColor: Theme.of(ctx).brightness == Brightness.dark
+              ? AppColors.darkSurface
+              : Colors.white,
+          body: SafeArea(
+            child: PopScope(
+              canPop: !update.isMandatory,
+              onPopInvokedWithResult: (didPop, result) {
+                if (didPop) {
+                  AppUpdateService.instance.dismissUpdate(update.versionCode);
+                }
+              },
+              child: UpdateInfoBottomSheet(
+                update: update,
+                currentVersionName: currentVersionName,
+              ),
+            ),
+          ),
         ),
       ),
     );
