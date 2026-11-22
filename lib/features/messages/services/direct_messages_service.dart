@@ -385,6 +385,7 @@ class DirectMessagesService extends ChangeNotifier {
     required String conversationId,
     required String text,
     ConversationModel? conversation,
+    bool includeProductId = true,
   }) async {
     final currentUser = SupabaseService.instance.currentUser;
     final now = DateTime.now();
@@ -426,7 +427,7 @@ class DirectMessagesService extends ChangeNotifier {
         final inserted = await SupabaseService.instance.sendDirectMessage(
           conversationId: targetConvId,
           text: text,
-          productId: conversation?.productId,
+          productId: includeProductId ? conversation?.productId : null,
         );
         if (inserted != null) {
           final serverMsg = ChatMessageModel.fromJson(inserted, currentUser.id);

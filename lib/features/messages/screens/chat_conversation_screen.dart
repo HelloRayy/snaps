@@ -43,6 +43,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
   late String _activeConvId;
   late ConversationModel _currentConversation;
   late List<ChatMessageModel> _messages;
+  bool _hasSentProductCard = false;
   final ScrollController _scrollController = ScrollController();
   RealtimeChannel? _messagesSubscription;
   bool _isLoadingProduct = false;
@@ -259,10 +260,13 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
   }
 
   void _handleSendMessage(String text) {
+    final shouldSendProduct = !_hasSentProductCard;
+    _hasSentProductCard = true;
     DirectMessagesService.instance.sendMessage(
       conversationId: _activeConvId,
       text: text,
       conversation: _currentConversation,
+      includeProductId: shouldSendProduct,
     );
     _scrollToBottom();
   }
