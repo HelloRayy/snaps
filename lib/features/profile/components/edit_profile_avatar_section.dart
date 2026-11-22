@@ -162,11 +162,18 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
 
     try {
       final bytes = await cropped.readAsBytes();
-      final uploadedUrl = await SupabaseService.instance.uploadImage(
+      var uploadedUrl = await SupabaseService.instance.uploadImage(
         bytes: bytes,
         fileName: 'avatar_${DateTime.now().millisecondsSinceEpoch}.jpg',
         bucket: 'avatars',
       );
+      if (uploadedUrl == null || uploadedUrl.isEmpty) {
+        uploadedUrl = await SupabaseService.instance.uploadImage(
+          bytes: bytes,
+          fileName: 'avatar_${DateTime.now().millisecondsSinceEpoch}.jpg',
+          bucket: 'market-media',
+        );
+      }
 
       if (mounted) {
         if (uploadedUrl != null && uploadedUrl.isNotEmpty) {

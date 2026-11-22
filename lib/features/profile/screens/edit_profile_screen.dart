@@ -234,11 +234,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         if (await file.exists()) {
           final bytes = await file.readAsBytes();
           final fileName = finalAvatarUrl.split(Platform.pathSeparator).last;
-          final uploaded = await SupabaseService.instance.uploadImage(
+          var uploaded = await SupabaseService.instance.uploadImage(
             bytes: bytes,
             fileName: fileName,
             bucket: 'avatars',
           );
+          if (uploaded == null || uploaded.isEmpty) {
+            uploaded = await SupabaseService.instance.uploadImage(
+              bytes: bytes,
+              fileName: fileName,
+              bucket: 'market-media',
+            );
+          }
           if (uploaded != null && uploaded.isNotEmpty) {
             finalAvatarUrl = uploaded;
           } else {
