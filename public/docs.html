@@ -1903,13 +1903,15 @@ flowchart TD
             <svg viewBox="0 0 1120 680" width="1120" height="680" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%; height: auto; font-family: 'Inter', system-ui, sans-serif;">
               <defs>
                 <style>
-                  .chen-line { stroke: #64748b; stroke-width: 1.6; fill: none; }
-                  .chen-entity { fill: #d9ead3; stroke: #38761d; stroke-width: 1.8; rx: 4; }
-                  .chen-rel { fill: #d9ead3; stroke: #38761d; stroke-width: 1.6; }
-                  .chen-attr { fill: #d9ead3; stroke: #38761d; stroke-width: 1.4; }
-                  .chen-text { fill: #0f172a; font-size: 13px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
-                  .chen-rel-text { fill: #0f172a; font-size: 11.5px; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
-                  .chen-attr-text { fill: #0f172a; font-size: 11.5px; font-weight: 500; text-anchor: middle; dominant-baseline: central; }
+                  .chen-line { stroke: #94a3b8; stroke-width: 1.6; fill: none; }
+                  .chen-entity { fill: #9333ea; stroke: #c084fc; stroke-width: 1.5; rx: 2; }
+                  .chen-rel { fill: #5b21b6; stroke: #8b5cf6; stroke-width: 1.5; }
+                  .chen-rel-mn-box { fill: #ea580c; stroke: #fb923c; stroke-width: 1.5; rx: 2; }
+                  .chen-rel-mn-diamond { fill: none; stroke: #ffffff; stroke-width: 1.5; }
+                  .chen-attr { fill: #22c55e; stroke: #86efac; stroke-width: 1.4; }
+                  .chen-text { fill: #ffffff; font-size: 13px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+                  .chen-rel-text { fill: #ffffff; font-size: 11.5px; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
+                  .chen-attr-text { fill: #ffffff; font-size: 11.5px; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
                   .chen-pk { text-decoration: underline; font-weight: 700; }
                   .chen-card-bg { fill: #0b1120; }
                   .chen-card { fill: #f8fafc; font-size: 12px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
@@ -2017,8 +2019,9 @@ flowchart TD
               <polygon points="630,150 680,175 630,200 580,175" class="chen-rel" />
               <text x="630" y="175" class="chen-rel-text">membuat</text>
 
-              <!-- berpartisipasi (Profile - Conversation) -->
-              <polygon points="455,270 510,295 455,320 400,295" class="chen-rel" />
+              <!-- berpartisipasi (Profile - Conversation M:N Associative) -->
+              <rect x="395" y="270" width="120" height="50" class="chen-rel-mn-box" />
+              <polygon points="455,273 511,295 455,317 399,295" class="chen-rel-mn-diamond" />
               <text x="455" y="295" class="chen-rel-text">berpartisipasi</text>
 
               <!-- melampirkan (Market Post - Conversation) -->
