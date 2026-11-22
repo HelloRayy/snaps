@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// Top header bar for the Activity Screen, containing title, mark-all-read action,
@@ -115,7 +116,10 @@ class _ActivityFilterChip extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 8.0),
       child: GestureDetector(
-        onTap: onTap,
+        onTap: () {
+          HapticFeedback.selectionClick();
+          onTap();
+        },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
           padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 7.0),

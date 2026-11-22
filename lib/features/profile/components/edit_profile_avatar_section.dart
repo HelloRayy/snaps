@@ -49,7 +49,10 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
     final itemSubColor = isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B);
     final handleColor = isDark ? AppColors.darkBorder : const Color(0xFFCBD5E1);
 
-    final ImageSource? source = await showModalBottomSheet<ImageSource>(
+    final hasCustomAvatar = widget.currentAvatar.trim().isNotEmpty &&
+        !widget.currentAvatar.startsWith('assets/');
+
+    final String? action = await showModalBottomSheet<String>(
       context: context,
       backgroundColor: sheetBg,
       shape: const RoundedRectangleBorder(
@@ -71,7 +74,7 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Ganti Foto Profil',
+                'Foto Profil',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -83,21 +86,59 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                 leading: const Icon(LucideIcons.image, color: AppColors.primary),
                 title: Text('Buka Galeri HP', style: TextStyle(fontWeight: FontWeight.w600, color: itemTitleColor)),
                 subtitle: Text('Pilih foto profil dari galeri (Kompres 1080p)', style: TextStyle(color: itemSubColor)),
-                onTap: () => Navigator.pop(ctx, ImageSource.gallery),
+                onTap: () => Navigator.pop(ctx, 'gallery'),
               ),
               ListTile(
                 leading: const Icon(LucideIcons.camera, color: AppColors.primary),
                 title: Text('Ambil Foto Kamera', style: TextStyle(fontWeight: FontWeight.w600, color: itemTitleColor)),
                 subtitle: Text('Ambil selfie atau foto baru langsung', style: TextStyle(color: itemSubColor)),
-                onTap: () => Navigator.pop(ctx, ImageSource.camera),
+                onTap: () => Navigator.pop(ctx, 'camera'),
               ),
+              if (hasCustomAvatar)
+                ListTile(
+                  leading: const Icon(LucideIcons.trash2, color: AppColors.danger),
+                  title: const Text(
+                    'Hapus Foto Profil',
+                    style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.danger),
+                  ),
+                  subtitle: Text('Kembali ke avatar default', style: TextStyle(color: itemSubColor)),
+                  onTap: () => Navigator.pop(ctx, 'delete'),
+                ),
             ],
           ),
         ),
       ),
     );
 
-    if (source == null || !mounted) return;
+    if (action == null || !mounted) return;
+
+    if (action == 'delete') {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Hapus Foto Profil?'),
+          content: const Text('Foto profil akan dihapus dan diganti dengan avatar default.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              style: TextButton.styleFrom(foregroundColor: AppColors.danger),
+              child: const Text('Hapus'),
+            ),
+          ],
+        ),
+      );
+      if (confirmed == true && mounted) {
+        HapticFeedback.mediumImpact();
+        widget.onAvatarChanged('');
+      }
+      return;
+    }
+
+    final source = action == 'camera' ? ImageSource.camera : ImageSource.gallery;
 
     XFile? picked;
     if (source == ImageSource.gallery) {
@@ -131,14 +172,23 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
         if (uploadedUrl != null && uploadedUrl.isNotEmpty) {
           widget.onAvatarChanged(uploadedUrl);
         } else {
-          // Fallback to local path if storage upload is not available
-          widget.onAvatarChanged(cropped.path);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Gagal mengunggah foto profil. Periksa koneksi internet dan coba lagi.'),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
         }
       }
     } catch (e) {
       debugPrint('Error uploading avatar: $e');
       if (mounted) {
-        widget.onAvatarChanged(cropped.path);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Gagal mengunggah foto profil. Coba lagi beberapa saat.'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
     } finally {
       if (mounted) {

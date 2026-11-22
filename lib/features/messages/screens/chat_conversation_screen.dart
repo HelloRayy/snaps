@@ -579,7 +579,99 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                               ),
                             ),
                           ),
-                        ..._messages.map((msg) => ChatMessageBubble(message: msg)),
+                        ..._messages.map(
+                          (msg) => ChatMessageBubble(
+                            message: msg,
+                            onLongPress: () {
+                              HapticFeedback.mediumImpact();
+                              showModalBottomSheet<void>(
+                                context: context,
+                                builder: (ctx) => SafeArea(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      if (msg.text.isNotEmpty)
+                                        ListTile(
+                                          leading: const Icon(Icons.copy_rounded),
+                                          title: const Text('Salin Pesan'),
+                                          onTap: () {
+                                            Clipboard.setData(ClipboardData(text: msg.text));
+                                            Navigator.pop(ctx);
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(
+                                                content: Text('Pesan disalin'),
+                                                behavior: SnackBarBehavior.floating,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      if (msg.text.isNotEmpty)
+                                        ListTile(
+                                          leading: const Icon(Icons.reply_rounded),
+                                          title: const Text('Balas Pesan'),
+                                          onTap: () {
+                                            Navigator.pop(ctx);
+                                            _handleSendMessage('Membalas "${msg.text}": ');
+                                          },
+                                        ),
+                                      if (msg.isMe && msg.text.isNotEmpty)
+                                        ListTile(
+                                          leading: const Icon(Icons.edit_rounded),
+                                          title: const Text('Edit Pesan'),
+                                          onTap: () async {
+                                            Navigator.pop(ctx);
+                                            final ctrl = TextEditingController(text: msg.text);
+                                            final updated = await showDialog<String>(
+                                              context: context,
+                                              builder: (dCtx) => AlertDialog(
+                                                title: const Text('Edit Pesan'),
+                                                content: TextField(controller: ctrl, autofocus: true),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () => Navigator.pop(dCtx),
+                                                    child: const Text('Batal'),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () => Navigator.pop(dCtx, ctrl.text.trim()),
+                                                    child: const Text('Simpan'),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                            if (updated != null && updated.isNotEmpty && mounted) {
+                                              setState(() {
+                                                final idx = _messages.indexWhere((m) => m.id == msg.id);
+                                                if (idx != -1) {
+                                                  _messages[idx] = ChatMessageModel(
+                                                    id: msg.id,
+                                                    text: updated,
+                                                    isMe: msg.isMe,
+                                                    time: msg.time,
+                                                    images: msg.images,
+                                                  );
+                                                }
+                                              });
+                                            }
+                                          },
+                                        ),
+                                      if (msg.isMe)
+                                        ListTile(
+                                          leading: const Icon(Icons.delete_outline_rounded, color: Colors.red),
+                                          title: const Text('Hapus Pesan', style: TextStyle(color: Colors.red)),
+                                          onTap: () {
+                                            Navigator.pop(ctx);
+                                            setState(() {
+                                              _messages.removeWhere((m) => m.id == msg.id);
+                                            });
+                                          },
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                       ],
                     ),
             ),

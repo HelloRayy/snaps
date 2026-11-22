@@ -66,6 +66,24 @@ class HomeFeedController extends ChangeNotifier {
     final p = SupabaseService.instance.currentUserProfileNotifier.value;
     if (p != null) {
       userProfile = p;
+      final uid = p['id'] as String?;
+      final newAvatar = (p['avatar_url'] as String?) ?? '';
+      final newName = (p['display_name'] as String?)?.trim().isNotEmpty == true
+          ? (p['display_name'] as String).trim()
+          : (p['full_name'] as String?)?.trim();
+      if (uid != null && uid.isNotEmpty && posts.isNotEmpty) {
+        posts = posts.map((post) {
+          if (post.seller.id == uid) {
+            return post.copyWith(
+              seller: post.seller.copyWith(
+                avatar: newAvatar,
+                name: newName ?? post.seller.name,
+              ),
+            );
+          }
+          return post;
+        }).toList();
+      }
       notifyListeners();
     }
   }

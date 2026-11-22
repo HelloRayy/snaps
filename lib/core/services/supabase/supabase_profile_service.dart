@@ -153,7 +153,7 @@ class SupabaseProfileService {
       'username': username,
       'class_group': cleanClassGroup,
       if (nis != null && nis.isNotEmpty) 'nis': nis,
-      if (avatarUrl != null && avatarUrl.isNotEmpty) 'avatar_url': avatarUrl,
+      if (avatarUrl != null) 'avatar_url': avatarUrl,
       if (bio != null) 'bio': bio,
       if (tags != null) 'interests': tags.join(','),
       if (link != null) 'link': link,
@@ -204,7 +204,7 @@ class SupabaseProfileService {
             'username': cleanUsername,
             'class_group': cleanClassGroup,
             if (nis != null && nis.isNotEmpty) 'nis': nis,
-            if (avatarUrl != null && avatarUrl.isNotEmpty) 'avatar_url': avatarUrl,
+            if (avatarUrl != null) 'avatar_url': avatarUrl.isEmpty ? null : avatarUrl,
             if (bio != null) 'bio': bio,
             if (tags != null) 'tags': tags,
             if (link != null) 'link': link,
@@ -223,7 +223,7 @@ class SupabaseProfileService {
       'username': username,
       'class_group': cleanClassGroup,
       if (nis != null && nis.isNotEmpty) 'nis': nis,
-      if (avatarUrl != null && avatarUrl.isNotEmpty) 'avatar_url': avatarUrl,
+      if (avatarUrl != null) 'avatar_url': avatarUrl.isEmpty ? null : avatarUrl,
       if (bio != null) 'bio': bio,
       if (link != null) 'link': link,
       if (tags != null) 'interests': tags.join(','),
@@ -236,7 +236,7 @@ class SupabaseProfileService {
       'username': username,
       'class_group': cleanClassGroup,
       if (nis != null && nis.isNotEmpty) 'nis': nis,
-      if (avatarUrl != null && avatarUrl.isNotEmpty) 'avatar_url': avatarUrl,
+      if (avatarUrl != null) 'avatar_url': avatarUrl.isEmpty ? null : avatarUrl,
       if (bio != null) 'bio': bio,
       if (link != null) 'link': link,
     };
@@ -246,7 +246,7 @@ class SupabaseProfileService {
       'username': username,
       'class_group': cleanClassGroup,
       if (nis != null && nis.isNotEmpty) 'nis': nis,
-      if (avatarUrl != null && avatarUrl.isNotEmpty) 'avatar_url': avatarUrl,
+      if (avatarUrl != null) 'avatar_url': avatarUrl.isEmpty ? null : avatarUrl,
     };
 
     // 3. Update public.profiles table (try full payload first, fallback to core/minimal payload)

@@ -226,7 +226,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
 
       String finalAvatarUrl = _avatar;
-      if (!finalAvatarUrl.startsWith('http://') &&
+      if (finalAvatarUrl.isNotEmpty &&
+          !finalAvatarUrl.startsWith('http://') &&
           !finalAvatarUrl.startsWith('https://') &&
           !finalAvatarUrl.startsWith('assets/')) {
         final file = File(finalAvatarUrl);
@@ -238,7 +239,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             fileName: fileName,
             bucket: 'avatars',
           );
-          if (uploaded != null) finalAvatarUrl = uploaded;
+          if (uploaded != null && uploaded.isNotEmpty) {
+            finalAvatarUrl = uploaded;
+          } else {
+            if (mounted) {
+              setState(() => _isSaving = false);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Gagal mengunggah foto profil. Coba pilih ulang foto.'),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
+            return;
+          }
         }
       }
 

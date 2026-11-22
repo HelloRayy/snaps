@@ -7,10 +7,12 @@ import 'package:snapan_market/features/messages/models/chat_message_model.dart';
 /// Single chat message bubble matching 1:1 chat-bubble.tsx specs.
 class ChatMessageBubble extends StatelessWidget {
   final ChatMessageModel message;
+  final VoidCallback? onLongPress;
 
   const ChatMessageBubble({
     super.key,
     required this.message,
+    this.onLongPress,
   });
 
   bool _isImageUrl(String text) {
@@ -84,7 +86,10 @@ class ChatMessageBubble extends StatelessWidget {
 
     if (message.isMe) {
       // Outgoing message (Me) - Kumo Blue #1D64EC
-      return Padding(
+      return GestureDetector(
+        onLongPress: onLongPress,
+        behavior: HitTestBehavior.opaque,
+        child: Padding(
         padding: const EdgeInsets.only(bottom: 8.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -156,10 +161,14 @@ class ChatMessageBubble extends StatelessWidget {
             ),
           ],
         ),
+      ),
       );
     } else {
       // Incoming message (Other user) - White compact card with subtle border
-      return Padding(
+      return GestureDetector(
+        onLongPress: onLongPress,
+        behavior: HitTestBehavior.opaque,
+        child: Padding(
         padding: const EdgeInsets.only(bottom: 8.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -240,6 +249,7 @@ class ChatMessageBubble extends StatelessWidget {
             ),
           ],
         ),
+      ),
       );
     }
   }
