@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/components/skeleton/snaps_shimmer.dart';
 /// Renders a feed image with dynamic aspect ratio bounded between
@@ -128,20 +127,30 @@ class _DynamicFeedImageState extends State<DynamicFeedImage> {
                             : const Color(0xFFF1F3F5),
                       ),
                     ),
-                  CachedNetworkImage(
-                    imageUrl: widget.imageUrl,
-                    memCacheWidth: 800,
-                    maxWidthDiskCache: 1080,
+                  Image.network(
+                    widget.imageUrl,
+                    cacheWidth: 800,
                     fit: BoxFit.cover,
-                    fadeInDuration: const Duration(milliseconds: 200),
-                    placeholder: (_, __) => SnapsShimmer(
-                      child: Container(
-                        color: isDark
-                            ? const Color(0xFF242626)
-                            : const Color(0xFFF1F3F5),
-                      ),
-                    ),
-                    errorWidget: (_, __, ___) => Container(
+                    frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+                      if (wasSynchronouslyLoaded) {
+                        return child;
+                      }
+                      final isLoaded = frame != null;
+                      if (isLoaded && !_isImageLoaded) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (mounted && !_isImageLoaded) {
+                            setState(() => _isImageLoaded = true);
+                          }
+                        });
+                      }
+                      return AnimatedOpacity(
+                        opacity: isLoaded ? 1.0 : 0.0,
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeOutCubic,
+                        child: child,
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) => Container(
                       color: placeholderColor,
                       child: Center(
                         child: Icon(

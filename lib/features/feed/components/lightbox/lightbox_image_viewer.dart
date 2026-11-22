@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -179,18 +178,24 @@ class _LightboxImageViewerState extends State<LightboxImageViewer>
               constraints: const BoxConstraints(minHeight: 200.0),
               child: ColoredBox(
                 color: Colors.transparent,
-                child: CachedNetworkImage(
-                  imageUrl: widget.imageUrl,
+                child: Image.network(
+                  widget.imageUrl,
                   width: widget.screenWidth,
                   fit: BoxFit.fitWidth,
-                  progressIndicatorBuilder: (context, url, progress) => Center(
-                    child: CircularProgressIndicator(
-                      value: progress.progress,
-                      strokeWidth: 2.0,
-                      color: const Color(0xFF008BFF),
-                    ),
-                  ),
-                  errorWidget: (_, __, ___) => const Center(
+                  loadingBuilder: (context, child, progress) {
+                    if (progress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: progress.expectedTotalBytes != null
+                            ? progress.cumulativeBytesLoaded /
+                                progress.expectedTotalBytes!
+                            : null,
+                        strokeWidth: 2.0,
+                        color: const Color(0xFF008BFF),
+                      ),
+                    );
+                  },
+                  errorBuilder: (_, _, _) => const Center(
                     child: Icon(
                       Icons.broken_image_outlined,
                       size: 48.0,

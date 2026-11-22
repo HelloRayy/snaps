@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/ui/default_profile_avatar.dart';
@@ -155,10 +154,9 @@ class PostThreadChainItem extends StatelessWidget {
                             width: double.infinity,
                             fit: BoxFit.cover,
                           )
-                        : CachedNetworkImage(
-                            imageUrl: chain.images.first,
-                            memCacheWidth: 800,
-                            maxWidthDiskCache: 1080,
+                        : Image.network(
+                            chain.images.first,
+                            cacheWidth: 800,
                             height: 180.0,
                             width: double.infinity,
                             fit: BoxFit.cover,

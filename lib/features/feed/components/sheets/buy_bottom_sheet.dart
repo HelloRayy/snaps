@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -170,12 +169,10 @@ class _BuyBottomSheetState extends State<BuyBottomSheet> {
                       height: 72.0,
                       color: const Color(0xFFF8FAFC),
                       child: widget.post.images.isNotEmpty
-                          ? CachedNetworkImage(
-                              imageUrl: widget.post.images.first,
-                              memCacheWidth: 240,
-                              maxWidthDiskCache: 400,
+                          ? Image.network(
+                              widget.post.images.first,
                               fit: BoxFit.cover,
-                              errorWidget: (_, __, ___) => const Icon(
+                              errorBuilder: (_, __, ___) => const Icon(
                                 CupertinoIcons.photo,
                                 color: AppColors.muted,
                               ),
