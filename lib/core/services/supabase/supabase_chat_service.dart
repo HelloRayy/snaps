@@ -354,4 +354,22 @@ class SupabaseChatService {
 
     return channel.subscribe();
   }
+
+  /// Delete all direct messages in a conversation from Supabase.
+  Future<bool> clearConversationMessages(String conversationId) async {
+    try {
+      await _client
+          .from('direct_messages')
+          .delete()
+          .eq('conversation_id', conversationId);
+      await _client
+          .from('conversations')
+          .update({'last_message': ''})
+          .eq('id', conversationId);
+      return true;
+    } catch (e) {
+      debugPrint('Error clearConversationMessages: $e');
+      return false;
+    }
+  }
 }

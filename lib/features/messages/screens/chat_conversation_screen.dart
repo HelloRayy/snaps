@@ -350,18 +350,21 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
     );
   }
 
-  void _handleClearChat() {
+  Future<void> _handleClearChat() async {
     HapticFeedback.mediumImpact();
     setState(() {
       _messages.clear();
     });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Obrolan telah dibersihkan."),
-        behavior: SnackBarBehavior.floating,
-        duration: Duration(seconds: 2),
-      ),
-    );
+    await SupabaseService.instance.clearConversationMessages(_activeConvId);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Obrolan telah dibersihkan."),
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   Future<void> _handleViewProduct() async {

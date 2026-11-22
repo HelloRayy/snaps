@@ -298,6 +298,9 @@ class SupabaseService {
   Future<void> markMessagesAsRead(String conversationId) =>
       chat.markMessagesAsRead(conversationId);
 
+  Future<bool> clearConversationMessages(String conversationId) =>
+      chat.clearConversationMessages(conversationId);
+
   RealtimeChannel subscribeToMessages(
     String conversationId,
     void Function(Map<String, dynamic> msg) onNewMessage, {
