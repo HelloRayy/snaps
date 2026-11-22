@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/components/update_ui_tuner_screen.dart';
 import 'package:snapan_market/core/services/app_update_service.dart';
 import 'package:snapan_market/core/services/student_registry_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
@@ -240,6 +242,23 @@ class HomeNavDrawer extends StatelessWidget {
                           ? const Color(0xFF450A0A)
                           : const Color(0xFFFEF2F2),
                       onTap: () => HomeDrawerLogoutDialog.show(context, onLogout),
+                      onClose: onClose,
+                    ),
+                  if (kDebugMode)
+                    HomeDrawerItem(
+                      icon: Icons.tune_rounded,
+                      label: 'Preview Update UI (HUD)',
+                      inkColor: inkColor,
+                      mutedColor: mutedColor,
+                      hoverColor: hoverColor,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const UpdateUiTunerScreen(),
+                          ),
+                        );
+                      },
                       onClose: onClose,
                     ),
                 ],
