@@ -1889,33 +1889,259 @@ flowchart TD
           </div>
           <div class="card-toolbar">
             <div class="tab-group">
-              <button class="tab-btn active" onclick="switchCardTab('diagram-3-7-1', 'diagram')">Diagram ERD</button>
+              <button class="tab-btn active" onclick="switchCardTab('diagram-3-7-1', 'diagram')">Diagram CDM (Chen)</button>
               <button class="tab-btn" onclick="switchCardTab('diagram-3-7-1', 'text')">Deskripsi Entitas</button>
               <button class="tab-btn" onclick="switchCardTab('diagram-3-7-1', 'code')">Kode</button>
             </div>
-            <button class="action-btn" onclick="openDiagramModal('mer-3-7-1', '3.7.1 ERD Relasional sNaps')">Perbesar</button>
+            <button class="action-btn" onclick="openDiagramModal('mer-3-7-1', '3.7.1 Conceptual Data Model (Chen Notation)')">Perbesar</button>
             <button class="action-btn" onclick="copyMermaid('src-3-7-1', this)">Salin</button>
           </div>
         </div>
 
         <div class="diagram-panel tab-content-diagram">
-          <pre class="mermaid" id="mer-3-7-1">
-erDiagram
-    %% 1. Verifikasi Buku Induk Siswa
-    STUDENT_REGISTRY ||--o| PROFILES : "terverifikasi NIS (1:1)"
+          <div id="mer-3-7-1" style="width: 100%; overflow-x: auto; display: flex; justify-content: center; padding: 8px 0;">
+            <svg viewBox="0 0 1120 680" width="1120" height="680" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%; height: auto; font-family: 'Inter', system-ui, sans-serif;">
+              <defs>
+                <style>
+                  .chen-line { stroke: #64748b; stroke-width: 1.6; fill: none; }
+                  .chen-entity { fill: #d9ead3; stroke: #38761d; stroke-width: 1.8; rx: 4; }
+                  .chen-rel { fill: #d9ead3; stroke: #38761d; stroke-width: 1.6; }
+                  .chen-attr { fill: #d9ead3; stroke: #38761d; stroke-width: 1.4; }
+                  .chen-text { fill: #0f172a; font-size: 13px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+                  .chen-rel-text { fill: #0f172a; font-size: 11.5px; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
+                  .chen-attr-text { fill: #0f172a; font-size: 11.5px; font-weight: 500; text-anchor: middle; dominant-baseline: central; }
+                  .chen-pk { text-decoration: underline; font-weight: 700; }
+                  .chen-card-bg { fill: #0b1120; }
+                  .chen-card { fill: #f8fafc; font-size: 12px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+                  body.light-mode .chen-card-bg { fill: #ffffff; }
+                  body.light-mode .chen-card { fill: #0f172a; }
+                </style>
+              </defs>
 
-    %% 2. Modul Postingan Produk & Thread Komunitas
-    PROFILES ||--o{ MARKET_POSTS : "membuat postingan"
+              <!-- ================= CONNECTING LINES ================= -->
+              <!-- Student Registry Attributes -->
+              <line x1="115" y1="150" x2="55" y2="75" class="chen-line" />
+              <line x1="145" y1="150" x2="145" y2="60" class="chen-line" />
+              <line x1="175" y1="150" x2="235" y2="75" class="chen-line" />
+              <line x1="115" y1="200" x2="55" y2="265" class="chen-line" />
 
-    %% 3. Modul Obrolan Transaksi Langsung (Direct-to-DM)
-    PROFILES ||--o{ CONVERSATIONS : "partisipan obrolan"
-    MARKET_POSTS ||--o{ CONVERSATIONS : "lampiran produk"
-    CONVERSATIONS ||--o{ DIRECT_MESSAGES : "berisi riwayat pesan"
+              <!-- Student Registry <-> Profile -->
+              <line x1="215" y1="175" x2="385" y2="175" class="chen-line" />
 
-    %% 4. Modul Moderasi & Keamanan Konten
-    PROFILES ||--o{ CONTENT_REPORTS : "mengajukan laporan"
-    MARKET_POSTS ||--o{ CONTENT_REPORTS : "konten dilaporkan"
-          </pre>
+              <!-- Profile Attributes -->
+              <line x1="425" y1="150" x2="365" y2="70" class="chen-line" />
+              <line x1="455" y1="150" x2="455" y2="55" class="chen-line" />
+              <line x1="485" y1="150" x2="545" y2="70" class="chen-line" />
+
+              <!-- Profile <-> Market Post -->
+              <line x1="525" y1="175" x2="735" y2="175" class="chen-line" />
+
+              <!-- Market Post Attributes -->
+              <line x1="775" y1="150" x2="715" y2="70" class="chen-line" />
+              <line x1="805" y1="150" x2="805" y2="55" class="chen-line" />
+              <line x1="835" y1="150" x2="895" y2="70" class="chen-line" />
+              <line x1="875" y1="175" x2="985" y2="175" class="chen-line" />
+
+              <!-- Profile <-> Conversation (Vertical Left-Center) -->
+              <line x1="455" y1="200" x2="455" y2="395" class="chen-line" />
+
+              <!-- Market Post <-> Conversation (Diagonal) -->
+              <line x1="755" y1="200" x2="515" y2="395" class="chen-line" />
+
+              <!-- Market Post <-> School Meeting Point (Vertical Right) -->
+              <line x1="805" y1="200" x2="805" y2="395" class="chen-line" />
+
+              <!-- Profile <-> Content Report (Diagonal Left) -->
+              <line x1="405" y1="200" x2="185" y2="395" class="chen-line" />
+
+              <!-- Market Post <-> Content Report (Curved/Angled Bottom-Left) -->
+              <polyline points="805,200 805,265 265,265 185,395" class="chen-line" />
+
+              <!-- Content Report Attributes -->
+              <line x1="125" y1="445" x2="65" y2="530" class="chen-line" />
+              <line x1="155" y1="445" x2="155" y2="545" class="chen-line" />
+              <line x1="185" y1="445" x2="245" y2="530" class="chen-line" />
+
+              <!-- Conversation Attributes -->
+              <line x1="425" y1="445" x2="385" y2="535" class="chen-line" />
+              <line x1="485" y1="445" x2="525" y2="535" class="chen-line" />
+
+              <!-- Conversation <-> Direct Message -->
+              <line x1="455" y1="445" x2="455" y2="600" class="chen-line" />
+
+              <!-- Direct Message Attributes -->
+              <line x1="385" y1="625" x2="295" y2="625" class="chen-line" />
+              <line x1="525" y1="625" x2="615" y2="625" class="chen-line" />
+              <line x1="455" y1="650" x2="455" y2="660" class="chen-line" />
+
+              <!-- School Meeting Point Attributes -->
+              <line x1="775" y1="445" x2="735" y2="535" class="chen-line" />
+              <line x1="805" y1="445" x2="805" y2="545" class="chen-line" />
+              <line x1="835" y1="445" x2="875" y2="535" class="chen-line" />
+
+              <!-- ================= ENTITIES (RECTANGLES) ================= -->
+              <!-- Student Registry -->
+              <rect x="75" y="150" width="140" height="50" class="chen-entity" />
+              <text x="145" y="175" class="chen-text">Student Registry</text>
+
+              <!-- Profile -->
+              <rect x="385" y="150" width="140" height="50" class="chen-entity" />
+              <text x="455" y="175" class="chen-text">Profile</text>
+
+              <!-- Market Post -->
+              <rect x="735" y="150" width="140" height="50" class="chen-entity" />
+              <text x="805" y="175" class="chen-text">Market Post</text>
+
+              <!-- Content Report -->
+              <rect x="85" y="395" width="140" height="50" class="chen-entity" />
+              <text x="155" y="420" class="chen-text">Content Report</text>
+
+              <!-- Conversation -->
+              <rect x="385" y="395" width="140" height="50" class="chen-entity" />
+              <text x="455" y="420" class="chen-text">Conversation</text>
+
+              <!-- School Meeting Point -->
+              <rect x="725" y="395" width="160" height="50" class="chen-entity" />
+              <text x="805" y="420" class="chen-text">School Meeting Point</text>
+
+              <!-- Direct Message -->
+              <rect x="385" y="600" width="140" height="50" class="chen-entity" />
+              <text x="455" y="625" class="chen-text">Direct Message</text>
+
+              <!-- ================= RELATIONSHIPS (DIAMONDS) ================= -->
+              <!-- terverifikasi (Student Registry - Profile) -->
+              <polygon points="300,150 350,175 300,200 250,175" class="chen-rel" />
+              <text x="300" y="175" class="chen-rel-text">terverifikasi</text>
+
+              <!-- membuat (Profile - Market Post) -->
+              <polygon points="630,150 680,175 630,200 580,175" class="chen-rel" />
+              <text x="630" y="175" class="chen-rel-text">membuat</text>
+
+              <!-- berpartisipasi (Profile - Conversation) -->
+              <polygon points="455,270 510,295 455,320 400,295" class="chen-rel" />
+              <text x="455" y="295" class="chen-rel-text">berpartisipasi</text>
+
+              <!-- melampirkan (Market Post - Conversation) -->
+              <polygon points="635,270 690,295 635,320 580,295" class="chen-rel" />
+              <text x="635" y="295" class="chen-rel-text">melampirkan</text>
+
+              <!-- berlokasi di (Market Post - School Meeting Point) -->
+              <polygon points="805,270 860,295 805,320 750,295" class="chen-rel" />
+              <text x="805" y="295" class="chen-rel-text">berlokasi di</text>
+
+              <!-- mengajukan (Profile - Content Report) -->
+              <polygon points="295,270 350,295 295,320 240,295" class="chen-rel" />
+              <text x="295" y="295" class="chen-rel-text">mengajukan</text>
+
+              <!-- dilaporkan (Market Post - Content Report) -->
+              <polygon points="225,305 275,330 225,355 175,330" class="chen-rel" />
+              <text x="225" y="330" class="chen-rel-text">dilaporkan</text>
+
+              <!-- berisi (Conversation - Direct Message) -->
+              <polygon points="455,495 505,520 455,545 405,520" class="chen-rel" />
+              <text x="455" y="520" class="chen-rel-text">berisi</text>
+
+              <!-- ================= CARDINALITIES ================= -->
+              <!-- Student Registry - Profile (1 : 1) -->
+              <rect x="225" y="165" width="16" height="20" class="chen-card-bg" />
+              <text x="233" y="175" class="chen-card">1</text>
+              <rect x="358" y="165" width="16" height="20" class="chen-card-bg" />
+              <text x="366" y="175" class="chen-card">1</text>
+
+              <!-- Profile - Market Post (1 : n) -->
+              <rect x="542" y="165" width="16" height="20" class="chen-card-bg" />
+              <text x="550" y="175" class="chen-card">1</text>
+              <rect x="700" y="165" width="16" height="20" class="chen-card-bg" />
+              <text x="708" y="175" class="chen-card">n</text>
+
+              <!-- Profile - Conversation (m : n) -->
+              <rect x="447" y="225" width="16" height="20" class="chen-card-bg" />
+              <text x="455" y="235" class="chen-card">m</text>
+              <rect x="447" y="348" width="16" height="20" class="chen-card-bg" />
+              <text x="455" y="358" class="chen-card">n</text>
+
+              <!-- Market Post - Conversation (1 : n) -->
+              <rect x="688" y="235" width="16" height="20" class="chen-card-bg" />
+              <text x="696" y="245" class="chen-card">1</text>
+              <rect x="555" y="340" width="16" height="20" class="chen-card-bg" />
+              <text x="563" y="350" class="chen-card">n</text>
+
+              <!-- Market Post - School Meeting Point (n : 1) -->
+              <rect x="797" y="225" width="16" height="20" class="chen-card-bg" />
+              <text x="805" y="235" class="chen-card">n</text>
+              <rect x="797" y="348" width="16" height="20" class="chen-card-bg" />
+              <text x="805" y="358" class="chen-card">1</text>
+
+              <!-- Profile - Content Report (1 : n) -->
+              <rect x="342" y="235" width="16" height="20" class="chen-card-bg" />
+              <text x="350" y="245" class="chen-card">1</text>
+              <rect x="220" y="342" width="16" height="20" class="chen-card-bg" />
+              <text x="228" y="352" class="chen-card">n</text>
+
+              <!-- Conversation - Direct Message (1 : n) -->
+              <rect x="447" y="462" width="16" height="20" class="chen-card-bg" />
+              <text x="455" y="472" class="chen-card">1</text>
+              <rect x="447" y="562" width="16" height="20" class="chen-card-bg" />
+              <text x="455" y="572" class="chen-card">n</text>
+
+              <!-- ================= ATTRIBUTES (OVALS) ================= -->
+              <!-- Student Registry -->
+              <ellipse cx="55" cy="65" rx="34" ry="18" class="chen-attr" />
+              <text x="55" y="65" class="chen-attr-text chen-pk">nis</text>
+              <ellipse cx="145" cy="50" rx="38" ry="18" class="chen-attr" />
+              <text x="145" y="50" class="chen-attr-text">nama</text>
+              <ellipse cx="235" cy="65" rx="36" ry="18" class="chen-attr" />
+              <text x="235" y="65" class="chen-attr-text">kelas</text>
+              <ellipse cx="55" cy="270" rx="40" ry="18" class="chen-attr" />
+              <text x="55" y="270" class="chen-attr-text">jurusan</text>
+
+              <!-- Profile -->
+              <ellipse cx="365" cy="60" rx="30" ry="18" class="chen-attr" />
+              <text x="365" y="60" class="chen-attr-text chen-pk">id</text>
+              <ellipse cx="455" cy="45" rx="44" ry="18" class="chen-attr" />
+              <text x="455" y="45" class="chen-attr-text">username</text>
+              <ellipse cx="545" cy="60" rx="34" ry="18" class="chen-attr" />
+              <text x="545" y="60" class="chen-attr-text">role</text>
+
+              <!-- Market Post -->
+              <ellipse cx="715" cy="60" rx="30" ry="18" class="chen-attr" />
+              <text x="715" y="60" class="chen-attr-text chen-pk">id</text>
+              <ellipse cx="805" cy="45" rx="36" ry="18" class="chen-attr" />
+              <text x="805" y="45" class="chen-attr-text">title</text>
+              <ellipse cx="895" cy="60" rx="36" ry="18" class="chen-attr" />
+              <text x="895" y="60" class="chen-attr-text">price</text>
+              <ellipse cx="1015" cy="175" rx="36" ry="18" class="chen-attr" />
+              <text x="1015" y="175" class="chen-attr-text">type</text>
+
+              <!-- Content Report -->
+              <ellipse cx="65" cy="540" rx="30" ry="18" class="chen-attr" />
+              <text x="65" y="540" class="chen-attr-text chen-pk">id</text>
+              <ellipse cx="155" cy="555" rx="38" ry="18" class="chen-attr" />
+              <text x="155" y="555" class="chen-attr-text">reason</text>
+              <ellipse cx="245" cy="540" rx="38" ry="18" class="chen-attr" />
+              <text x="245" y="540" class="chen-attr-text">status</text>
+
+              <!-- Conversation -->
+              <ellipse cx="375" cy="545" rx="30" ry="18" class="chen-attr" />
+              <text x="375" y="545" class="chen-attr-text chen-pk">id</text>
+              <ellipse cx="535" cy="545" rx="46" ry="18" class="chen-attr" />
+              <text x="535" y="545" class="chen-attr-text">created_at</text>
+
+              <!-- Direct Message -->
+              <ellipse cx="275" cy="625" rx="30" ry="18" class="chen-attr" />
+              <text x="275" y="625" class="chen-attr-text chen-pk">id</text>
+              <ellipse cx="635" cy="625" rx="42" ry="18" class="chen-attr" />
+              <text x="635" y="625" class="chen-attr-text">content</text>
+
+              <!-- School Meeting Point -->
+              <ellipse cx="725" cy="545" rx="30" ry="18" class="chen-attr" />
+              <text x="725" y="545" class="chen-attr-text chen-pk">id</text>
+              <ellipse cx="805" cy="555" rx="38" ry="18" class="chen-attr" />
+              <text x="805" y="555" class="chen-attr-text">name</text>
+              <ellipse cx="885" cy="545" rx="36" ry="18" class="chen-attr" />
+              <text x="885" y="545" class="chen-attr-text">zone</text>
+            </svg>
+          </div>
         </div>
 
         <div class="text-panel tab-content-text">
