@@ -151,17 +151,10 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
     }
     if (picked == null || !mounted) return;
 
-    // 1. In-App Pure Flutter Image Crop Modal (Pan, Pinch-to-Zoom, 1:1 Circle Mask)
-    final cropped = await MediaCropperService.instance.cropAvatar(
-      picked.path,
-      context: context,
-    );
-    if (cropped == null || !mounted) return; // User cancelled cropping
-
     setState(() => _isUploadingAvatar = true);
 
     try {
-      final bytes = await cropped.readAsBytes();
+      final bytes = await picked.readAsBytes();
       var uploadedUrl = await SupabaseService.instance.uploadImage(
         bytes: bytes,
         fileName: 'avatar_${DateTime.now().millisecondsSinceEpoch}.jpg',
