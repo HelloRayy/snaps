@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:snapan_market/core/components/snaps_logo.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// Full-screen standalone In-App Update UI with a floating HUD tuner overlay
@@ -68,16 +69,8 @@ Terapkan nilai ini ke UI In-App Update standalone screen.
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const SizedBox(height: 12),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(24),
-                          child: Image.asset(
-                            'assets/images/mascot_repair.jpg',
-                            width: 148,
-                            height: 148,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                        const SizedBox(height: 16),
+                        const SnapsLogo(height: 56.0),
                         SizedBox(height: _sectionSpacing * 1.25),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
