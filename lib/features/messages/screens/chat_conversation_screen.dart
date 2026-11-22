@@ -556,29 +556,6 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                       padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 14.0),
                       children: [
                         _buildChatHeader(isDark),
-                        if (_currentConversation.productContext != null)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 12.0),
-                            child: Align(
-                              alignment: isCardFromMe ? Alignment.centerRight : Alignment.centerLeft,
-                              child: ChatProductCard(
-                                product: _currentConversation.productContext!,
-                                location: _currentConversation.productContext?.location ?? "Kantin Belakang SMKN 8 Semarang",
-                                shape: isCardFromMe ? ChatProductCardShape.sent : ChatProductCardShape.firstReceived,
-                                isMe: isCardFromMe,
-                                onViewProduct: _isLoadingProduct ? null : _handleViewProduct,
-                                onCheckLocation: () {
-                                  Navigator.of(context).push(
-                                    AppSlidePageRoute(
-                                      builder: (_) => CampusMapScreen(
-                                        onBack: () => Navigator.pop(context),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
                         ..._messages.map(
                           (msg) => ChatMessageBubble(
                             message: msg,
@@ -666,6 +643,29 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                             },
                           ),
                         ),
+                        if (_currentConversation.productContext != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4.0, bottom: 12.0),
+                            child: Align(
+                              alignment: isCardFromMe ? Alignment.centerRight : Alignment.centerLeft,
+                              child: ChatProductCard(
+                                product: _currentConversation.productContext!,
+                                location: _currentConversation.productContext?.location ?? "Kantin Belakang SMKN 8 Semarang",
+                                shape: isCardFromMe ? ChatProductCardShape.sent : ChatProductCardShape.firstReceived,
+                                isMe: isCardFromMe,
+                                onViewProduct: _isLoadingProduct ? null : _handleViewProduct,
+                                onCheckLocation: () {
+                                  Navigator.of(context).push(
+                                    AppSlidePageRoute(
+                                      builder: (_) => CampusMapScreen(
+                                        onBack: () => Navigator.pop(context),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
                       ],
                     ),
             ),
