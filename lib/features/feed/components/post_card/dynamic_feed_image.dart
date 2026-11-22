@@ -129,7 +129,7 @@ class _DynamicFeedImageState extends State<DynamicFeedImage> {
                     ),
                   Image.network(
                     widget.imageUrl,
-                    cacheWidth: 800,
+                    cacheWidth: 600,
                     fit: BoxFit.cover,
                     frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
                       if (wasSynchronouslyLoaded) {

@@ -22,6 +22,7 @@ import 'package:snapan_market/core/services/deep_link_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  PaintingBinding.instance.imageCache.maximumSizeBytes = 200 << 20;
 
   try {
     await Firebase.initializeApp();
