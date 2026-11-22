@@ -240,7 +240,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
     DirectMessagesService.instance.sendMessage(
       conversationId: _activeConvId,
       text: text,
-      conversation: widget.conversation,
+      conversation: _currentConversation,
     );
     _scrollToBottom();
   }

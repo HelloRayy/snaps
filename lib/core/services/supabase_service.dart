@@ -287,10 +287,12 @@ class SupabaseService {
   Future<Map<String, dynamic>?> sendDirectMessage({
     required String conversationId,
     required String text,
+    String? productId,
   }) =>
       chat.sendDirectMessage(
         conversationId: conversationId,
         text: text,
+        productId: productId,
       );
 
   Future<void> markMessagesAsRead(String conversationId) =>

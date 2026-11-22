@@ -193,6 +193,7 @@ class SupabaseChatService {
   Future<Map<String, dynamic>?> sendDirectMessage({
     required String conversationId,
     required String text,
+    String? productId,
   }) async {
     final user = _currentUser;
     if (user == null) return null;
@@ -203,6 +204,7 @@ class SupabaseChatService {
         'sender_id': user.id,
         'message_text': text,
         'is_read': false,
+        if (productId != null && productId.isNotEmpty) 'product_id': productId,
       }).select('*, sender:profiles!direct_messages_sender_id_fkey(*)').single();
 
       // Update conversation snapshot (defense in depth alongside DB trigger)
