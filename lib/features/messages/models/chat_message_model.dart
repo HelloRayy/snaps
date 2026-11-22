@@ -9,6 +9,7 @@ class ChatMessageModel {
   final String timestamp;
   final bool isMe;
   final MessageStatus status;
+  final String? productId;
 
   const ChatMessageModel({
     required this.id,
@@ -18,6 +19,7 @@ class ChatMessageModel {
     required this.timestamp,
     required this.isMe,
     this.status = MessageStatus.read,
+    this.productId,
   });
 
   ChatMessageModel copyWith({
