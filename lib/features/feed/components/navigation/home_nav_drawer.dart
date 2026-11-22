@@ -244,25 +244,6 @@ class HomeNavDrawer extends StatelessWidget {
                       onTap: () => HomeDrawerLogoutDialog.show(context, onLogout),
                       onClose: onClose,
                     ),
-                  if (kDebugMode)
-                    HomeDrawerItem(
-                      icon: Icons.tune_rounded,
-                      label: 'Preview Update UI (HUD)',
-                      inkColor: inkColor,
-                      mutedColor: mutedColor,
-                      hoverColor: isDark
-                          ? const Color(0xFF1E1B4B)
-                          : const Color(0xFFEEF0FF),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const UpdateUiTunerScreen(),
-                          ),
-                        );
-                      },
-                      onClose: onClose,
-                    ),
                 ],
               ),
             ),

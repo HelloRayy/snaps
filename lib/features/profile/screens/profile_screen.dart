@@ -340,24 +340,6 @@ class ProfileScreenState extends State<ProfileScreen> {
                               onToggleFollow: () => FollowService.instance.toggleFollow(targetUserId: user.id, targetUsername: user.username),
                               onDirectMessage: _handleDirectMessage,
                             ),
-                            if (kDebugMode && _isOwnProfile) ...[
-                              const SizedBox(height: 8.0),
-                              SizedBox(
-                                width: double.infinity,
-                                child: OutlinedButton.icon(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => const UpdateUiTunerScreen(),
-                                      ),
-                                    );
-                                  },
-                                  icon: const Icon(Icons.tune_rounded, size: 16.0),
-                                  label: const Text('Preview Update UI (HUD)'),
-                                ),
-                              ),
-                            ],
                           ],
                         );
                       },
