@@ -642,13 +642,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                                               setState(() {
                                                 final idx = _messages.indexWhere((m) => m.id == msg.id);
                                                 if (idx != -1) {
-                                                  _messages[idx] = ChatMessageModel(
-                                                    id: msg.id,
-                                                    text: updated,
-                                                    isMe: msg.isMe,
-                                                    time: msg.time,
-                                                    images: msg.images,
-                                                  );
+                                                  _messages[idx] = msg.copyWith(text: updated);
                                                 }
                                               });
                                             }

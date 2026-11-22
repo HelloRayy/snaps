@@ -96,10 +96,10 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
               ),
               if (hasCustomAvatar)
                 ListTile(
-                  leading: const Icon(LucideIcons.trash2, color: AppColors.danger),
+                  leading: const Icon(LucideIcons.trash2, color: AppColors.error),
                   title: const Text(
                     'Hapus Foto Profil',
-                    style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.danger),
+                    style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.error),
                   ),
                   subtitle: Text('Kembali ke avatar default', style: TextStyle(color: itemSubColor)),
                   onTap: () => Navigator.pop(ctx, 'delete'),
@@ -125,7 +125,7 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
             ),
             TextButton(
               onPressed: () => Navigator.pop(ctx, true),
-              style: TextButton.styleFrom(foregroundColor: AppColors.danger),
+              style: TextButton.styleFrom(foregroundColor: AppColors.error),
               child: const Text('Hapus'),
             ),
           ],
