@@ -38,15 +38,18 @@ class ActivityHeaderBar extends StatelessWidget {
         children: [
           if (showAppBar) ...[
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Aktivitas & Notifikasi',
-                  style: TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.adaptiveText(context),
-                    letterSpacing: -0.3,
+                const SizedBox(width: 40.0),
+                Expanded(
+                  child: Text(
+                    'Aktivitas',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.adaptiveText(context),
+                      letterSpacing: -0.3,
+                    ),
                   ),
                 ),
                 IconButton(
@@ -60,7 +63,33 @@ class ActivityHeaderBar extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 10.0),
+            const SizedBox(height: 8.0),
+            Container(
+              height: 40.0,
+              padding: const EdgeInsets.symmetric(horizontal: 14.0),
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.darkSurfaceElevated : const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(999.0),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.search_rounded,
+                    size: 18.0,
+                    color: isDark ? AppColors.darkTextSecondary : const Color(0xFF94A3B8),
+                  ),
+                  const SizedBox(width: 8.0),
+                  Text(
+                    'Cari aktivitas...',
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      color: isDark ? AppColors.darkTextSecondary : const Color(0xFF94A3B8),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12.0),
           ],
 
           // Category Chips: 3 Focused Tabs
