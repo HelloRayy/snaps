@@ -117,24 +117,20 @@ class _DynamicFeedImageState extends State<DynamicFeedImage> {
             curve: Curves.easeOutCubic,
             child: AspectRatio(
               aspectRatio: ratio,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  if (!_isImageLoaded)
-                    SnapsShimmer(
-                      child: Container(
-                        color: isDark
-                            ? const Color(0xFF242626)
-                            : const Color(0xFFF1F3F5),
-                      ),
-                    ),
-                  CachedNetworkImage(
-                    imageUrl: widget.imageUrl,
-                    memCacheWidth: 800,
-                    maxWidthDiskCache: 1080,
-                    fit: BoxFit.cover,
-                    fadeInDuration: const Duration(milliseconds: 180),
-                    fadeInCurve: Curves.easeOutCubic,
+              child: CachedNetworkImage(
+                imageUrl: widget.imageUrl,
+                memCacheWidth: 800,
+                maxWidthDiskCache: 1080,
+                fit: BoxFit.cover,
+                fadeInDuration: const Duration(milliseconds: 180),
+                fadeInCurve: Curves.easeOutCubic,
+                placeholder: (context, url) => SnapsShimmer(
+                  child: Container(
+                    color: isDark
+                        ? const Color(0xFF242626)
+                        : const Color(0xFFF1F3F5),
+                  ),
+                ),
                     errorWidget: (context, url, error) => Container(
                       color: placeholderColor,
                       child: Center(
