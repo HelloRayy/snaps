@@ -30,7 +30,6 @@ class SuggestedAccountTile extends StatelessWidget {
         final following = isFollowing ?? FollowService.instance.isFollowing(account.id, account.username);
         return InkWell(
       onTap: () {
-        HapticFeedback.lightImpact();
         onTap?.call();
       },
       borderRadius: BorderRadius.circular(8.0),
@@ -110,7 +109,6 @@ class SuggestedAccountTile extends StatelessWidget {
               const SizedBox(width: 10.0),
               GestureDetector(
                 onTap: () {
-                  HapticFeedback.lightImpact();
                   if (onFollowTap != null) {
                     onFollowTap!();
                   } else {

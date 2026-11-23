@@ -86,7 +86,6 @@ class HomeMenuPopover extends StatelessWidget {
     Offset? anchorPosition,
   }) {
     dismiss();
-    HapticFeedback.lightImpact();
 
     final overlayState = Overlay.of(context, rootOverlay: true);
     final mediaQuery = MediaQuery.of(context);
@@ -283,7 +282,6 @@ class HomeMenuPopover extends StatelessWidget {
 
     return InkWell(
       onTap: () {
-        HapticFeedback.lightImpact();
         onTap?.call();
       },
       borderRadius: BorderRadius.circular(10.0),

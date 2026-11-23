@@ -21,7 +21,6 @@ class DeletePostBottomSheet extends StatelessWidget {
     required MarketPostModel post,
     bool isAdmin = false,
   }) {
-    HapticFeedback.lightImpact();
 
     return showModalBottomSheet<bool>(
       context: context,
@@ -196,7 +195,6 @@ class DeletePostBottomSheet extends StatelessWidget {
                 height: 48.0,
                 child: TextButton(
                   onPressed: () {
-                    HapticFeedback.selectionClick();
                     Navigator.of(context).pop(false);
                   },
                   style: TextButton.styleFrom(

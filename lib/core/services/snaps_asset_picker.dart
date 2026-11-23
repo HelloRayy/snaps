@@ -246,12 +246,10 @@ class SnapsInstaAssetPickerBuilderDelegate
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {
-          HapticFeedback.lightImpact();
           final bool isSelected = provider.selectedAssets.contains(asset);
           selectAsset(context, asset, index, isSelected);
         },
         onLongPress: () {
-          HapticFeedback.mediumImpact();
           viewAsset(context, index, asset);
         },
         child: Selector<DefaultAssetPickerProvider, String>(
@@ -403,7 +401,6 @@ class SnapsInstaAssetPickerBuilderDelegate
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () {
-              HapticFeedback.lightImpact();
               selectAsset(context, asset, index, isSelected);
             },
             child: innerSelector,
@@ -500,7 +497,6 @@ class SnapsAssetPicker {
           ) {
             return _CameraTile(
               onTap: () async {
-                HapticFeedback.lightImpact();
                 final picked = await MediaUploadService.instance.pickSingleImage(
                   source: ImageSource.camera,
                 );

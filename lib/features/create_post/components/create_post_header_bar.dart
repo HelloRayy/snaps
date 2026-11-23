@@ -37,7 +37,6 @@ class CreatePostHeaderBar extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: GestureDetector(
               onTap: () {
-                HapticFeedback.selectionClick();
                 onCancel();
               },
               behavior: HitTestBehavior.opaque,
@@ -75,7 +74,6 @@ class CreatePostHeaderBar extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    HapticFeedback.selectionClick();
                     onDraftsTap();
                   },
                   behavior: HitTestBehavior.opaque,
@@ -91,7 +89,6 @@ class CreatePostHeaderBar extends StatelessWidget {
                 const SizedBox(width: 8.0),
                 GestureDetector(
                   onTap: () {
-                    HapticFeedback.selectionClick();
                     onMoreOptionsTap();
                   },
                   behavior: HitTestBehavior.opaque,

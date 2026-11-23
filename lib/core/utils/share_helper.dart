@@ -24,7 +24,6 @@ class ShareHelper {
 
   /// Copies canonical link to clipboard and notifies user with a feedback toast
   static Future<void> sharePost(BuildContext context, MarketPostModel post) async {
-    HapticFeedback.lightImpact();
     final url = getPostShareUrl(post.id);
 
     try {

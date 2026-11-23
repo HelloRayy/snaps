@@ -55,7 +55,6 @@ class MascotFlairBadge extends StatelessWidget {
     if (onTap != null) {
       content = GestureDetector(
         onTap: () {
-          HapticFeedback.selectionClick();
           onTap?.call();
         },
         behavior: HitTestBehavior.opaque,

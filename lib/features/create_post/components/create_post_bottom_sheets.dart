@@ -18,7 +18,6 @@ class CreatePostBottomSheets {
     required GlobalKey triggerKey,
     required ValueChanged<TopicOption> onTopicSelected,
   }) {
-    HapticFeedback.selectionClick();
 
     final renderBox = triggerKey.currentContext?.findRenderObject() as RenderBox?;
     final offset = renderBox?.localToGlobal(Offset.zero) ?? const Offset(60, 110);
@@ -264,7 +263,6 @@ class CreatePostBottomSheets {
     required MascotFlairModel? currentFlair,
     required ValueChanged<MascotFlairModel?> onFlairSelected,
   }) {
-    HapticFeedback.selectionClick();
 
     final renderBox = triggerKey.currentContext?.findRenderObject() as RenderBox?;
     final offset = renderBox?.localToGlobal(Offset.zero) ?? const Offset(40, 110);
@@ -482,7 +480,6 @@ class _MascotPickerPopoverContentState extends State<_MascotPickerPopoverContent
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () {
-                        HapticFeedback.selectionClick();
                         widget.onFlairSelected(itemFlair);
                       },
                       borderRadius: BorderRadius.circular(10.0),
@@ -539,7 +536,6 @@ class _MascotPickerPopoverContentState extends State<_MascotPickerPopoverContent
                 const SizedBox(height: 3.0),
                 InkWell(
                   onTap: () {
-                    HapticFeedback.selectionClick();
                     widget.onFlairSelected(null);
                   },
                   borderRadius: BorderRadius.circular(8.0),
@@ -612,7 +608,6 @@ class _TopicPickerPopoverContentState extends State<_TopicPickerPopoverContent> 
   void _submitCustomTopic(String raw) {
     final clean = raw.trim().replaceAll('#', '');
     if (clean.isEmpty) return;
-    HapticFeedback.selectionClick();
     widget.onTopicSelected(
       TopicOption(
         id: 'custom_${DateTime.now().millisecondsSinceEpoch}',
@@ -714,7 +709,6 @@ class _TopicPickerPopoverContentState extends State<_TopicPickerPopoverContent> 
                       for (final topic in filteredTopics) ...[
                         InkWell(
                           onTap: () {
-                            HapticFeedback.selectionClick();
                             widget.onTopicSelected(topic);
                           },
                           borderRadius: BorderRadius.circular(10.0),

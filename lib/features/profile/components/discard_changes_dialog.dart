@@ -62,7 +62,6 @@ class DiscardChangesDialog extends StatelessWidget {
                 // Cancel Button ("Batal")
                 TextButton(
                   onPressed: () {
-                    HapticFeedback.lightImpact();
                     Navigator.of(context).pop(false);
                   },
                   style: TextButton.styleFrom(

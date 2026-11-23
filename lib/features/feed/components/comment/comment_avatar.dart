@@ -31,7 +31,6 @@ class CommentAvatar extends StatelessWidget {
       username: username,
       onTap: onUserClick != null
           ? () {
-              HapticFeedback.lightImpact();
               onUserClick!(effectiveUser);
             }
           : null,

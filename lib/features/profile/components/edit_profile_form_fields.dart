@@ -314,7 +314,6 @@ class EditProfileFormFields extends StatelessWidget {
               Text('Tampilkan statistik penjualan', style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w600, color: primaryTextColor, letterSpacing: -0.1)),
               GestureDetector(
                 onTap: () {
-                  HapticFeedback.lightImpact();
                   onToggleSalesStats(!showSalesStats);
                 },
                 child: AnimatedContainer(

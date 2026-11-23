@@ -17,7 +17,6 @@ class CreatePostSellingToggle extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        HapticFeedback.selectionClick();
         onToggle(!isProductMode);
       },
       behavior: HitTestBehavior.opaque,
@@ -33,7 +32,6 @@ class CreatePostSellingToggle extends StatelessWidget {
                 value: isProductMode,
                 activeTrackColor: AppColors.primary,
                 onChanged: (val) {
-                  HapticFeedback.selectionClick();
                   onToggle(val);
                 },
               ),

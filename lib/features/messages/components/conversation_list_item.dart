@@ -39,7 +39,6 @@ class ConversationListItem extends StatelessWidget {
       color: AppColors.adaptiveCanvas(context),
       child: InkWell(
         onTap: () {
-          HapticFeedback.selectionClick();
           onTap();
         },
         highlightColor: AppColors.adaptiveSurfaceElevated(context),

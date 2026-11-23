@@ -30,7 +30,6 @@ class _NotificationGuideBottomSheetState extends State<NotificationGuideBottomSh
   static const MethodChannel _settingsChannel = MethodChannel('com.snapan.market/settings');
 
   Future<void> _openNotificationSettings() async {
-    HapticFeedback.lightImpact();
     try {
       await _settingsChannel.invokeMethod('openNotificationSettings');
     } catch (e) {
@@ -39,11 +38,9 @@ class _NotificationGuideBottomSheetState extends State<NotificationGuideBottomSh
   }
 
   Future<void> _handleSyncToken() async {
-    HapticFeedback.mediumImpact();
 
     final user = Supabase.instance.client.auth.currentUser;
     if (user == null) {
-      HapticFeedback.heavyImpact();
       setState(() {
         _isSyncing = false;
         _syncStatus = 'Perhatian: Anda belum login. Silakan masuk ke akun Snaps Anda terlebih dahulu agar token tersambung ke profil.';

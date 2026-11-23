@@ -143,7 +143,6 @@ class ActivityItemTile extends StatelessWidget {
                     const SizedBox(height: 8.0),
                     GestureDetector(
                       onTap: () {
-                        HapticFeedback.lightImpact();
                         if (onActionTap != null) {
                           onActionTap!();
                         } else if (onTap != null) {

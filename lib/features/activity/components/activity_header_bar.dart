@@ -146,7 +146,6 @@ class _ActivityFilterChip extends StatelessWidget {
       padding: const EdgeInsets.only(right: 8.0),
       child: GestureDetector(
         onTap: () {
-          HapticFeedback.selectionClick();
           onTap();
         },
         child: AnimatedContainer(

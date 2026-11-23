@@ -251,7 +251,6 @@ class _ImageCropEditorModalState extends State<ImageCropEditorModal> {
   }
 
   void _rotateClockwise() {
-    HapticFeedback.selectionClick();
     setState(() {
       _quarterTurns = (_quarterTurns + 1) % 4;
       _centerImage(_currentCropBoxSize);
@@ -259,14 +258,12 @@ class _ImageCropEditorModalState extends State<ImageCropEditorModal> {
   }
 
   void _flipHorizontal() {
-    HapticFeedback.selectionClick();
     setState(() {
       _isFlippedHorizontally = !_isFlippedHorizontally;
     });
   }
 
   void _resetTransform() {
-    HapticFeedback.lightImpact();
     setState(() {
       _quarterTurns = 0;
       _isFlippedHorizontally = false;
@@ -277,7 +274,6 @@ class _ImageCropEditorModalState extends State<ImageCropEditorModal> {
   Future<void> _exportAndFinish() async {
     if (_isExporting) return;
     setState(() => _isExporting = true);
-    HapticFeedback.mediumImpact();
 
     try {
       final boundary = _repaintKey.currentContext?.findRenderObject()

@@ -767,7 +767,6 @@ class GlobalNotificationService {
         hasUnreadActivity.value = true;
 
         // Trigger system haptic feedback
-        HapticFeedback.vibrate();
 
         final title = record['title']?.toString() ?? 'Pengumuman Baru';
         final message = record['message']?.toString() ?? '';
@@ -971,7 +970,6 @@ class GlobalNotificationService {
     if (isDmRecentlyHandled(conversationId, messageText)) return;
     registerHandledDm(conversationId, messageText);
 
-    HapticFeedback.lightImpact();
 
     showTopBanner(
       title: senderName.isNotEmpty ? senderName : 'Pesan Masuk',

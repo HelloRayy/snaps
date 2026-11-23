@@ -81,7 +81,6 @@ class PostDetailCommentsHeader extends StatelessWidget {
             initialValue: selectedSort,
             tooltip: 'Urutkan Komentar',
             onSelected: (val) {
-              HapticFeedback.selectionClick();
               onSortChanged(val);
             },
             offset: const Offset(0, 26.0),

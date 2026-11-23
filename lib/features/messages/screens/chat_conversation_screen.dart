@@ -339,7 +339,6 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
   }
 
   void _handleViewProfile() {
-    HapticFeedback.selectionClick();
     Navigator.of(context).push(
       AppSlidePageRoute(
         builder: (_) => ProfileScreen(
@@ -351,7 +350,6 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
   }
 
   void _handleReportUser() {
-    HapticFeedback.mediumImpact();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text("Laporan terhadap @${widget.conversation.user.username} telah dikirim ke admin sekolah."),
@@ -362,7 +360,6 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
   }
 
   Future<void> _handleClearChat() async {
-    HapticFeedback.mediumImpact();
     setState(() {
       _messages.clear();
     });
@@ -540,7 +537,6 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
             icon: CupertinoIcons.ellipsis,
             tooltip: 'Menu lainnya',
             onTap: () {
-              HapticFeedback.lightImpact();
               ChatOptionsSheet.show(
                 context: context,
                 onViewProfile: _handleViewProfile,
@@ -636,7 +632,6 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                               ChatMessageBubble(
                                 message: msg,
                                 onLongPress: () {
-                              HapticFeedback.mediumImpact();
                               showModalBottomSheet<void>(
                                 context: context,
                                 builder: (ctx) => SafeArea(

@@ -198,7 +198,6 @@ class AuthRegisterTab extends StatelessWidget {
   Widget _buildRegisterTermsRow() {
     return GestureDetector(
       onTap: () {
-        HapticFeedback.selectionClick();
         onToggleAgreedTerms();
       },
       behavior: HitTestBehavior.opaque,

@@ -75,7 +75,6 @@ class _ReportContentBottomSheetState extends State<ReportContentBottomSheet> {
     }
 
     setState(() => _isSubmitting = true);
-    HapticFeedback.lightImpact();
 
     try {
       await SupabaseService.instance.reportPost(
@@ -194,7 +193,6 @@ class _ReportContentBottomSheetState extends State<ReportContentBottomSheet> {
             final isSelected = _selectedReason == r['label'];
             return GestureDetector(
               onTap: () {
-                HapticFeedback.selectionClick();
                 setState(() => _selectedReason = r['label'] as String);
               },
               child: AnimatedContainer(

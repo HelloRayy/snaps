@@ -10,7 +10,6 @@ class AppearanceBottomSheet extends StatelessWidget {
   const AppearanceBottomSheet({super.key});
 
   static Future<void> show(BuildContext context) {
-    HapticFeedback.lightImpact();
     return showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -196,7 +195,6 @@ class AppearanceBottomSheet extends StatelessWidget {
   }
 
   void _selectMode(BuildContext context, AppThemeMode mode) {
-    HapticFeedback.lightImpact();
     ThemeService.instance.setThemeMode(mode);
     Navigator.of(context).maybePop();
   }

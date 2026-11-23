@@ -76,7 +76,6 @@ class ProfileMediaGrid extends StatelessWidget {
           final item = mediaItems[index];
           return GestureDetector(
             onTap: () {
-              HapticFeedback.lightImpact();
               onMediaTap?.call(item.post);
             },
             child: ClipRRect(

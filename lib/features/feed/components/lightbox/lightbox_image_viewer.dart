@@ -93,7 +93,6 @@ class _LightboxImageViewerState extends State<LightboxImageViewer>
   }
 
   void _handleDoubleTap() {
-    HapticFeedback.lightImpact();
     final currentMatrix = _controller.value;
     final currentScale = currentMatrix.getMaxScaleOnAxis();
 

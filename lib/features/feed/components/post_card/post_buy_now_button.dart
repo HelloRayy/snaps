@@ -50,7 +50,6 @@ class _PostBuyNowButtonState extends State<PostBuyNowButton> {
     return GestureDetector(
       onTapDown: (_) {
         setState(() => _isPressed = true);
-        HapticFeedback.lightImpact();
       },
       onTapUp: (_) => setState(() => _isPressed = false),
       onTapCancel: () => setState(() => _isPressed = false),

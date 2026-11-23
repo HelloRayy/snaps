@@ -165,7 +165,6 @@ class _KumoButtonState extends State<KumoButton> {
       onTapDown: isEnabled
           ? (_) {
               setState(() => _isPressed = true);
-              HapticFeedback.lightImpact();
             }
           : null,
       onTapUp: isEnabled ? (_) => setState(() => _isPressed = false) : null,

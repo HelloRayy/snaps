@@ -68,7 +68,6 @@ class StickyBuyBar extends StatelessWidget {
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () {
-                        HapticFeedback.lightImpact();
                         onChatClick?.call();
                       },
                       borderRadius: BorderRadius.circular(22.0),

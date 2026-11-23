@@ -228,7 +228,6 @@ class _PrimaryAuthButtonState extends State<PrimaryAuthButton> {
       onTapCancel: canInteract ? () => setState(() => _isPressed = false) : null,
       onTap: () {
         if (!canInteract) return;
-        HapticFeedback.mediumImpact();
         widget.onPressed();
       },
       behavior: HitTestBehavior.opaque,

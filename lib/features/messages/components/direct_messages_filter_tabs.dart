@@ -53,7 +53,6 @@ class DirectMessagesFilterTabs extends StatelessWidget {
 
           return GestureDetector(
             onTap: () {
-              HapticFeedback.selectionClick();
               onSelectFilter(tab.key);
             },
             behavior: HitTestBehavior.opaque,

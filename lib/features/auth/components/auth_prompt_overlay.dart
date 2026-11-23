@@ -112,7 +112,6 @@ class AuthPromptOverlay extends StatelessWidget {
                         // 3. Threads-Style Interactive Action Capsule
                         _ThreadsActionCapsule(
                           onTap: () {
-                            HapticFeedback.mediumImpact();
                             onNavigateToAuth();
                           },
                         ),

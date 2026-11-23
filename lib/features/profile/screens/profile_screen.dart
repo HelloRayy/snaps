@@ -122,7 +122,6 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
     final user = _controller.user;
     if (user == null) return;
-    HapticFeedback.lightImpact();
     final updated = await Navigator.of(context).push<ProfileUserModel>(
       AppSlidePageRoute(
         builder: (_) => EditProfileScreen(
@@ -361,7 +360,6 @@ class ProfileScreenState extends State<ProfileScreen> {
           body: PageView(
             controller: _pageController,
             onPageChanged: (idx) {
-              HapticFeedback.selectionClick();
               setState(() => _activeTab = ProfileTab.values[idx]);
             },
             children: [

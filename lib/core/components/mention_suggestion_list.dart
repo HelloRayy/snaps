@@ -188,7 +188,6 @@ class _MentionSuggestionListState extends State<MentionSuggestionList> {
 
                   return InkWell(
                     onTap: () {
-                      HapticFeedback.lightImpact();
                       widget.onSelectUser(username);
                     },
                     child: Padding(

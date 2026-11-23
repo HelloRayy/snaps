@@ -173,7 +173,6 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
     return GestureDetector(
       onTap: () {
         if (onTitleTap != null) {
-          HapticFeedback.lightImpact();
           onTitleTap!();
         }
       },
@@ -286,7 +285,6 @@ class _GlassCapsuleButtonState extends State<_GlassCapsuleButton> {
         onTapUp: (_) => setState(() => _isPressed = false),
         onTapCancel: () => setState(() => _isPressed = false),
         onTap: () {
-          HapticFeedback.selectionClick();
           widget.onTap?.call();
         },
         child: AnimatedScale(
@@ -390,7 +388,6 @@ class _GlassActionButtonItemState extends State<_GlassActionButtonItem> {
         onTapUp: (_) => setState(() => _isPressed = false),
         onTapCancel: () => setState(() => _isPressed = false),
         onTap: () {
-          HapticFeedback.selectionClick();
           widget.action.onTap();
         },
         child: AnimatedScale(

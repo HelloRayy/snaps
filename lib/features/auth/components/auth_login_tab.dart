@@ -180,7 +180,6 @@ class AuthLoginTab extends StatelessWidget {
         Expanded(
           child: GestureDetector(
             onTap: () {
-              HapticFeedback.selectionClick();
               onToggleRememberMe();
             },
             behavior: HitTestBehavior.opaque,
@@ -223,7 +222,6 @@ class AuthLoginTab extends StatelessWidget {
         const SizedBox(width: 12.0),
         GestureDetector(
           onTap: () {
-            HapticFeedback.lightImpact();
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Silakan hubungi administrator sekolah untuk reset kata sandi'),

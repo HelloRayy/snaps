@@ -30,7 +30,6 @@ class DropdownColumnBox extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       onTap: () async {
         FocusManager.instance.primaryFocus?.unfocus();
-        HapticFeedback.selectionClick();
 
         final renderBox =
             boxKey.currentContext?.findRenderObject() as RenderBox?;
@@ -88,7 +87,6 @@ class DropdownColumnBox extends StatelessWidget {
         FocusManager.instance.primaryFocus?.unfocus();
 
         if (selected != null) {
-          HapticFeedback.selectionClick();
           onSelected(selected);
         }
       },

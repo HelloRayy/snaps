@@ -135,7 +135,6 @@ class _CommentInputBarState extends State<CommentInputBar> {
     _focusNode.requestFocus();
   }
   void _pickCommentImages() async {
-    HapticFeedback.selectionClick();
     final remaining = 3 - _attachedImages.length;
     if (remaining <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -171,7 +170,6 @@ class _CommentInputBarState extends State<CommentInputBar> {
       }
     }
     if (text.isEmpty && _attachedImages.isEmpty) return;
-    HapticFeedback.lightImpact();
 
     final imagesToSend = List<String>.from(_attachedImages);
     if (widget.onSubmitCommentWithMedia != null) {
@@ -293,7 +291,6 @@ class _CommentInputBarState extends State<CommentInputBar> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            HapticFeedback.lightImpact();
                             widget.onCancelReply?.call();
                           },
                           child: Padding(
@@ -377,7 +374,6 @@ class _CommentInputBarState extends State<CommentInputBar> {
                         right: -4.0,
                         child: GestureDetector(
                           onTap: () {
-                            HapticFeedback.lightImpact();
                             setState(() {
                               _attachedImages.removeAt(index);
                             });

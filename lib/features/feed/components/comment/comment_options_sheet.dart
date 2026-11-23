@@ -109,7 +109,6 @@ class CommentOptionsSheet {
   }
 
   static Future<bool?> _showDeleteConfirmation(BuildContext context) {
-    HapticFeedback.lightImpact();
 
     return showModalBottomSheet<bool>(
       context: context,

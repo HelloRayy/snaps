@@ -357,10 +357,10 @@ class _AuthScreenState extends State<AuthScreen> {
           'untilText': parts.length > 2 ? parts[2] : 'Permanen',
         };
       });
-      HapticFeedback.vibrate();
+      HapticFeedback.mediumImpact();
     } else {
       setState(() => _loginPasswordError = error);
-      HapticFeedback.vibrate();
+      HapticFeedback.mediumImpact();
     }
   }
 
@@ -438,7 +438,7 @@ class _AuthScreenState extends State<AuthScreen> {
     }
 
     if (!_agreedTerms) {
-      HapticFeedback.vibrate();
+      HapticFeedback.mediumImpact();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -467,7 +467,7 @@ class _AuthScreenState extends State<AuthScreen> {
       widget.onSuccess();
     } else {
       setState(() => _regPasswordError = error);
-      HapticFeedback.vibrate();
+      HapticFeedback.mediumImpact();
     }
   }
 

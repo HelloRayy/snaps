@@ -95,7 +95,6 @@ class CreatePostPollBuilder extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    HapticFeedback.selectionClick();
                     onRemoveOption(i);
                   },
                   behavior: HitTestBehavior.opaque,
@@ -136,7 +135,6 @@ class CreatePostPollBuilder extends StatelessWidget {
               final isSelected = deadlineDuration == d;
               return GestureDetector(
                 onTap: () {
-                  HapticFeedback.selectionClick();
                   onDurationChanged(d);
                 },
                 child: Container(
@@ -181,7 +179,6 @@ class CreatePostPollBuilder extends StatelessWidget {
                   Switch.adaptive(
                     value: allowChangeVote,
                     onChanged: (val) {
-                      HapticFeedback.selectionClick();
                       onAllowChangeVoteChanged(val);
                     },
                     activeTrackColor: AppColors.primary,
@@ -199,7 +196,6 @@ class CreatePostPollBuilder extends StatelessWidget {
           alignment: Alignment.centerRight,
           child: GestureDetector(
             onTap: () {
-              HapticFeedback.selectionClick();
               onDismissPoll();
             },
             behavior: HitTestBehavior.opaque,

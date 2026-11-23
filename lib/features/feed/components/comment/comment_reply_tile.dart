@@ -151,7 +151,6 @@ class _CommentReplyTileState extends State<CommentReplyTile> {
             behavior: HitTestBehavior.opaque,
             onTap: () {
               if (targetUserHandle.isNotEmpty) {
-                HapticFeedback.lightImpact();
                 widget.onUserClick?.call(targetUserHandle);
               }
             },
@@ -209,7 +208,6 @@ class _CommentReplyTileState extends State<CommentReplyTile> {
         // Three-dots menu
         GestureDetector(
           onTap: () {
-            HapticFeedback.lightImpact();
             CommentOptionsSheet.show(
               context: context,
               comment: widget.reply,
