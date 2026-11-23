@@ -541,7 +541,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
                               ),
                               child: const Center(
                                 child: Icon(
-                                  CupertinoIcons.arrow_up,
+                                  LucideIcons.arrowUp,
                                   size: 19.0,
                                   color: Colors.white,
                                 ),
@@ -555,7 +555,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
                           height: 36.0,
                           child: Center(
                             child: Icon(
-                              CupertinoIcons.smiley,
+                              LucideIcons.smile,
                               color: isDark ? AppColors.darkTextSecondary : const Color(0xFF94A3B8),
                               size: 22.0,
                             ),
