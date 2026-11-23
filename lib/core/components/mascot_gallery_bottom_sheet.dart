@@ -23,7 +23,6 @@ class MascotGalleryBottomSheet extends StatefulWidget {
     required MascotBundle selectedBundle,
     required ValueChanged<MascotBundle> onSelected,
   }) {
-    HapticFeedback.lightImpact();
     return showModalBottomSheet<MascotBundle>(
       context: context,
       isScrollControlled: true,
@@ -222,7 +221,6 @@ class _MascotGalleryBottomSheetState extends State<MascotGalleryBottomSheet> {
                   if (_searchQuery.isNotEmpty)
                     GestureDetector(
                       onTap: () {
-                        HapticFeedback.selectionClick();
                         _searchController.clear();
                       },
                       child: Padding(
@@ -260,7 +258,6 @@ class _MascotGalleryBottomSheetState extends State<MascotGalleryBottomSheet> {
                           color: Colors.transparent,
                           child: InkWell(
                             onTap: () {
-                              HapticFeedback.selectionClick();
                               setState(() => _currentSelected = bundle);
                               widget.onSelected(bundle);
                               Navigator.of(context).pop(bundle);

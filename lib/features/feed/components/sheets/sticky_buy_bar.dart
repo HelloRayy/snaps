@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -68,7 +69,6 @@ class StickyBuyBar extends StatelessWidget {
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () {
-                        HapticFeedback.lightImpact();
                         onChatClick?.call();
                       },
                       borderRadius: BorderRadius.circular(22.0),
@@ -91,7 +91,7 @@ class StickyBuyBar extends StatelessWidget {
                           ),
                         ),
                         child: const Icon(
-                          Icons.chat_bubble_outline_rounded,
+                          LucideIcons.messageCircle,
                           size: 20.0,
                           color: Color(0xFF0F172A),
                         ),

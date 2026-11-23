@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/constants/app_constants.dart';
 import 'package:snapan_market/core/components/snaps_skeleton.dart';
@@ -224,7 +225,7 @@ class HomeFeedScrollableListState extends State<HomeFeedScrollableList> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.wifi_off_rounded,
+            const Icon(LucideIcons.wifiOff,
                 size: 52, color: Color(0xFF94A3B8)),
             const SizedBox(height: 14),
             Text(
@@ -282,8 +283,8 @@ class HomeFeedScrollableListState extends State<HomeFeedScrollableList> {
               ),
               child: Icon(
                 isMarket
-                    ? Icons.storefront_outlined
-                    : Icons.dynamic_feed_rounded,
+                    ? LucideIcons.store
+                    : LucideIcons.layoutList,
                 size: 28.0,
                 color: isDark ? AppColors.darkTextSecondary : const Color(0xFF94A3B8),
               ),
@@ -344,7 +345,7 @@ class HomeFeedScrollableListState extends State<HomeFeedScrollableList> {
             TextButton.icon(
               onPressed: widget.onLogout,
               icon: Icon(
-                Icons.logout_rounded,
+                LucideIcons.logOut,
                 size: 16.0,
                 color: isDark ? AppColors.darkTextSecondary : AppColors.muted,
               ),

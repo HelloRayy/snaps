@@ -180,7 +180,6 @@ class AuthLoginTab extends StatelessWidget {
         Expanded(
           child: GestureDetector(
             onTap: () {
-              HapticFeedback.selectionClick();
               onToggleRememberMe();
             },
             behavior: HitTestBehavior.opaque,
@@ -200,7 +199,7 @@ class AuthLoginTab extends StatelessWidget {
                     ),
                   ),
                   child: rememberMe
-                      ? const Icon(Icons.check_rounded, size: 14.0, color: Colors.white)
+                      ? const Icon(LucideIcons.check, size: 14.0, color: Colors.white)
                       : null,
                 ),
                 const SizedBox(width: 8.0),
@@ -223,7 +222,6 @@ class AuthLoginTab extends StatelessWidget {
         const SizedBox(width: 12.0),
         GestureDetector(
           onTap: () {
-            HapticFeedback.lightImpact();
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Silakan hubungi administrator sekolah untuk reset kata sandi'),

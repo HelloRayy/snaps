@@ -133,7 +133,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   void _navigateToProfile(String username) {
     final cleanUsername = username.trim().replaceAll('@', '');
     if (cleanUsername.isEmpty) return;
-    HapticFeedback.lightImpact();
     Navigator.push(
       context,
       AppSlidePageRoute(

@@ -42,7 +42,6 @@ class HomeDrawerItem extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: () {
-          HapticFeedback.lightImpact();
           if (onClose != null) {
             onClose!();
           } else {

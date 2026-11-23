@@ -121,7 +121,6 @@ class ProfileTabBar extends StatelessWidget implements PreferredSizeWidget {
     return Expanded(
       child: GestureDetector(
         onTap: () {
-          HapticFeedback.selectionClick();
           if (pageController != null && pageController!.hasClients) {
             pageController!.animateToPage(
               tab.index,

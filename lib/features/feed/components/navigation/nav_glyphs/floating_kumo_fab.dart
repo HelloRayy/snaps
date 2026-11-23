@@ -23,7 +23,6 @@ class _FloatingKumoFabButtonState extends State<FloatingKumoFabButton> {
       child: GestureDetector(
         onTapDown: (_) {
           setState(() => _isPressed = true);
-          HapticFeedback.mediumImpact();
         },
         onTapUp: (_) => setState(() => _isPressed = false),
         onTapCancel: () => setState(() => _isPressed = false),

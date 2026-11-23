@@ -41,7 +41,6 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
   bool _isUploadingAvatar = false;
 
   Future<void> _handlePickAvatar() async {
-    HapticFeedback.lightImpact();
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final sheetBg = isDark ? AppColors.darkSurfaceElevated : Colors.white;
     final titleColor = isDark ? AppColors.darkTextPrimary : AppColors.ink;
@@ -132,7 +131,6 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
         ),
       );
       if (confirmed == true && mounted) {
-        HapticFeedback.mediumImpact();
         widget.onAvatarChanged('');
       }
       return;
@@ -397,7 +395,6 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
               if (widget.currentMascotFlair != null)
                 GestureDetector(
                   onTap: () {
-                    HapticFeedback.lightImpact();
                     widget.onMascotFlairChanged(null);
                   },
                   behavior: HitTestBehavior.opaque,
@@ -462,7 +459,6 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: () {
-                      HapticFeedback.selectionClick();
                       widget.onMascotFlairChanged(itemFlair);
                     },
                     borderRadius: BorderRadius.circular(12.0),

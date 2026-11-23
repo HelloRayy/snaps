@@ -23,7 +23,6 @@ class MascotBundlePickerButton extends StatelessWidget {
   });
 
   void _handleTap(BuildContext context) {
-    HapticFeedback.lightImpact();
     if (onOpenGallery != null) {
       onOpenGallery!();
     } else {

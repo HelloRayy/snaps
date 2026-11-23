@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/components/kumo_button.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
@@ -70,7 +71,7 @@ class CheckoutSuccessModal extends StatelessWidget {
               color: isDark ? const Color(0x3310B981) : const Color(0xFFDCFCE7),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.check_rounded, size: 36.0, color: Color(0xFF10B981)),
+            child: const Icon(LucideIcons.check, size: 36.0, color: Color(0xFF10B981)),
           ),
           const SizedBox(height: 16.0),
           Text(
@@ -96,7 +97,7 @@ class CheckoutSuccessModal extends StatelessWidget {
           const SizedBox(height: 24.0),
           KumoButton(
             text: "Kirim Pesan ke Penjual",
-            iconLeft: const Icon(Icons.chat_bubble_outline_rounded, size: 18.0, color: Colors.white),
+            iconLeft: const Icon(LucideIcons.messageCircle, size: 18.0, color: Colors.white),
             onPressed: () {
               Navigator.of(context).pop();
               final conv = ConversationModel(

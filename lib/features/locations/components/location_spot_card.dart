@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import "package:flutter/material.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
 import "package:snapan_market/core/theme/tactile_shadows.dart";
@@ -153,7 +154,7 @@ class LocationSpotCard extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.shield_outlined, size: 14.0, color: Color(0xFF10B981)),
+                  const Icon(LucideIcons.shield, size: 14.0, color: Color(0xFF10B981)),
                   const SizedBox(width: 6.0),
                   Expanded(
                     child: Text(

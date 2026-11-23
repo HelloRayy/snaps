@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -30,7 +31,6 @@ class DropdownColumnBox extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       onTap: () async {
         FocusManager.instance.primaryFocus?.unfocus();
-        HapticFeedback.selectionClick();
 
         final renderBox =
             boxKey.currentContext?.findRenderObject() as RenderBox?;
@@ -75,7 +75,7 @@ class DropdownColumnBox extends StatelessWidget {
                   ),
                   if (isItemActive)
                     const Icon(
-                      Icons.check_rounded,
+                      LucideIcons.check,
                       color: Color(0xFF1D64EC),
                       size: 18,
                     ),
@@ -88,7 +88,6 @@ class DropdownColumnBox extends StatelessWidget {
         FocusManager.instance.primaryFocus?.unfocus();
 
         if (selected != null) {
-          HapticFeedback.selectionClick();
           onSelected(selected);
         }
       },

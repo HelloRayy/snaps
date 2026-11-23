@@ -164,7 +164,6 @@ class _CreatePostModalState extends State<CreatePostModal> {
   }
 
   Future<void> _handlePickImage() async {
-    HapticFeedback.selectionClick();
     if (_images.length >= 5) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Maksimal 5 foto per postingan'), behavior: SnackBarBehavior.floating));
       return;
@@ -182,7 +181,6 @@ class _CreatePostModalState extends State<CreatePostModal> {
   }
 
   void _handleReorderImage(int oldIndex, int newIndex) {
-    HapticFeedback.selectionClick();
     setState(() {
       if (oldIndex < newIndex) {
         newIndex -= 1;
@@ -205,7 +203,6 @@ class _CreatePostModalState extends State<CreatePostModal> {
 
   Future<void> _handleSubmit() async {
     if (_postMode == PostMode.product && _images.isEmpty) {
-      HapticFeedback.mediumImpact();
       SnapsToast.error(
         context,
         'Wajib tambahkan minimal 1 foto barang jualan.',
@@ -214,7 +211,6 @@ class _CreatePostModalState extends State<CreatePostModal> {
       return;
     }
     if (!_canSubmit) return;
-    HapticFeedback.mediumImpact();
     setState(() {
       _isSubmitting = true;
       _uploadProgress = 0.0;

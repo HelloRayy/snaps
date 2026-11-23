@@ -157,7 +157,6 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
   void _dismissWithFlyOff(double targetY) {
     if (_isDismissing) return;
     _isDismissing = true;
-    HapticFeedback.lightImpact();
     _springBackAnimController.stop();
     final currentOffset = _dragOffsetNotifier.value;
     _springBackAnim = Tween<double>(begin: currentOffset, end: targetY).animate(
@@ -222,7 +221,6 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
   }
 
   void _handleLikeToggle() {
-    HapticFeedback.lightImpact();
     setState(() {
       if (_isLiked) {
         _isLiked = false;
@@ -244,7 +242,6 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
   }
 
   void _handleRepostToggle() {
-    HapticFeedback.lightImpact();
     setState(() {
       if (_isReposted) {
         _isReposted = false;
@@ -265,7 +262,6 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
   }
 
   void _handleShare() {
-    HapticFeedback.lightImpact();
     final postId = widget.post?.id ?? 'preview';
     Clipboard.setData(ClipboardData(text: ShareHelper.getPostShareUrl(postId)));
     SnapsToast.success(context, 'Tautan disalin ke papan klip', hasBottomNav: false);

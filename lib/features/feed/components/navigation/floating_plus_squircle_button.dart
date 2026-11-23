@@ -31,12 +31,10 @@ class _FloatingPlusSquircleButtonState extends State<FloatingPlusSquircleButton>
       child: GestureDetector(
         onTapDown: (_) {
           setState(() => _isPressed = true);
-          HapticFeedback.lightImpact();
         },
         onTapUp: (_) => setState(() => _isPressed = false),
         onTapCancel: () => setState(() => _isPressed = false),
         onTap: () {
-          HapticFeedback.mediumImpact();
           widget.onTap();
         },
         behavior: HitTestBehavior.opaque,

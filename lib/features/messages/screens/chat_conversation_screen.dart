@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -339,7 +340,6 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
   }
 
   void _handleViewProfile() {
-    HapticFeedback.selectionClick();
     Navigator.of(context).push(
       AppSlidePageRoute(
         builder: (_) => ProfileScreen(
@@ -351,7 +351,6 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
   }
 
   void _handleReportUser() {
-    HapticFeedback.mediumImpact();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text("Laporan terhadap @${widget.conversation.user.username} telah dikirim ke admin sekolah."),
@@ -362,7 +361,6 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
   }
 
   Future<void> _handleClearChat() async {
-    HapticFeedback.mediumImpact();
     setState(() {
       _messages.clear();
     });
@@ -540,7 +538,6 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
             icon: CupertinoIcons.ellipsis,
             tooltip: 'Menu lainnya',
             onTap: () {
-              HapticFeedback.lightImpact();
               ChatOptionsSheet.show(
                 context: context,
                 onViewProfile: _handleViewProfile,
@@ -636,7 +633,6 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                               ChatMessageBubble(
                                 message: msg,
                                 onLongPress: () {
-                              HapticFeedback.mediumImpact();
                               showModalBottomSheet<void>(
                                 context: context,
                                 builder: (ctx) => SafeArea(
@@ -645,7 +641,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                                     children: [
                                       if (msg.text.isNotEmpty)
                                         ListTile(
-                                          leading: const Icon(Icons.copy_rounded),
+                                          leading: const Icon(LucideIcons.copy),
                                           title: const Text('Salin Pesan'),
                                           onTap: () {
                                             Clipboard.setData(ClipboardData(text: msg.text));
@@ -660,7 +656,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                                         ),
                                       if (msg.text.isNotEmpty)
                                         ListTile(
-                                          leading: const Icon(Icons.reply_rounded),
+                                          leading: const Icon(LucideIcons.reply),
                                           title: const Text('Balas Pesan'),
                                           onTap: () {
                                             Navigator.pop(ctx);
@@ -669,7 +665,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                                         ),
                                       if (msg.isMe && msg.text.isNotEmpty)
                                         ListTile(
-                                          leading: const Icon(Icons.edit_rounded),
+                                          leading: const Icon(LucideIcons.pencil),
                                           title: const Text('Edit Pesan'),
                                           onTap: () async {
                                             Navigator.pop(ctx);
@@ -703,7 +699,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                                         ),
                                       if (msg.isMe)
                                         ListTile(
-                                          leading: const Icon(Icons.delete_outline_rounded, color: Colors.red),
+                                          leading: const Icon(LucideIcons.trash2, color: Colors.red),
                                           title: const Text('Hapus Pesan', style: TextStyle(color: Colors.red)),
                                           onTap: () {
                                             Navigator.pop(ctx);

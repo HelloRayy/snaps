@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import "package:flutter/material.dart";
 import "package:snapan_market/core/navigation/app_slide_page_route.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
@@ -103,7 +104,7 @@ class _CampusLocationsPickerScreenState extends State<CampusLocationsPickerScree
                 codSafetyHint: "Pastikan janjian pada jam istirahat agar mudah bertemu.",
                 bestTime: "Jam istirahat sekolah",
                 pinPosition: const Offset(500, 400),
-                iconData: Icons.place_rounded,
+                iconData: LucideIcons.mapPin,
                 themeColor: const Color(0xFF3D38F5),
               ),
             );
@@ -128,7 +129,7 @@ class _CampusLocationsPickerScreenState extends State<CampusLocationsPickerScree
         elevation: 0,
         scrolledUnderElevation: 0.5,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.adaptiveText(context)),
+          icon: Icon(LucideIcons.arrowLeft, color: AppColors.adaptiveText(context)),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Column(
@@ -158,7 +159,7 @@ class _CampusLocationsPickerScreenState extends State<CampusLocationsPickerScree
             padding: const EdgeInsets.only(right: 12.0),
             child: TextButton.icon(
               onPressed: _open2DMap,
-              icon: const Icon(Icons.map_outlined, size: 16.0, color: Color(0xFF3D38F5)),
+              icon: const Icon(LucideIcons.map, size: 16.0, color: Color(0xFF3D38F5)),
               label: const Text(
                 "Buka Peta",
                 style: TextStyle(
@@ -205,10 +206,10 @@ class _CampusLocationsPickerScreenState extends State<CampusLocationsPickerScree
                         fontSize: 13.0,
                         color: AppColors.adaptiveMuted(context),
                       ),
-                      prefixIcon: Icon(Icons.search, size: 18.0, color: AppColors.adaptiveMuted(context)),
+                      prefixIcon: Icon(LucideIcons.search, size: 18.0, color: AppColors.adaptiveMuted(context)),
                       suffixIcon: _searchController.text.isNotEmpty
                           ? IconButton(
-                              icon: Icon(Icons.clear, size: 16.0, color: AppColors.adaptiveMuted(context)),
+                              icon: Icon(LucideIcons.x, size: 16.0, color: AppColors.adaptiveMuted(context)),
                               onPressed: () {
                                 _searchController.clear();
                                 setState(() {});
@@ -252,7 +253,7 @@ class _CampusLocationsPickerScreenState extends State<CampusLocationsPickerScree
                             color: const Color(0xFFF1F5F9),
                             borderRadius: BorderRadius.circular(16.0),
                           ),
-                          child: const Icon(Icons.location_off_outlined, size: 28.0, color: Color(0xFF94A3B8)),
+                          child: const Icon(LucideIcons.mapPinOff, size: 28.0, color: Color(0xFF94A3B8)),
                         ),
                         const SizedBox(height: 12.0),
                         const Text(

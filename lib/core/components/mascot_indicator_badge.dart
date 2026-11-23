@@ -45,7 +45,6 @@ class MascotIndicatorBadge extends StatelessWidget {
     if (onTap != null) {
       badge = GestureDetector(
         onTap: () {
-          HapticFeedback.lightImpact();
           onTap!();
         },
         behavior: HitTestBehavior.opaque,

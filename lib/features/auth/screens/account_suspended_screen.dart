@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
@@ -107,7 +108,7 @@ class _AccountSuspendedScreenState extends State<AccountSuspendedScreen> {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.copy_rounded, size: 20, color: Color(0xFF4272D7)),
+                      icon: const Icon(LucideIcons.copy, size: 20, color: Color(0xFF4272D7)),
                       tooltip: 'Salin nomor',
                       onPressed: () {
                         Clipboard.setData(const ClipboardData(text: '+6281234567890'));
@@ -410,7 +411,7 @@ class _AccountSuspendedScreenState extends State<AccountSuspendedScreen> {
                                 ),
                               ),
                               onPressed: () => _showContactAdminDialog(context),
-                              icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
+                              icon: const Icon(LucideIcons.messageCircle, size: 18),
                               label: const Text(
                                 'Hubungi Pengurus / Admin',
                                 style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.bold),
@@ -438,7 +439,7 @@ class _AccountSuspendedScreenState extends State<AccountSuspendedScreen> {
                                       height: 16,
                                       child: CircularProgressIndicator(strokeWidth: 2),
                                     )
-                                  : const Icon(Icons.logout_rounded, size: 18),
+                                  : const Icon(LucideIcons.logOut, size: 18),
                               label: Text(
                                 _isSigningOut ? 'Mengeluarkan...' : 'Keluar dari Akun (Sign Out)',
                                 style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),

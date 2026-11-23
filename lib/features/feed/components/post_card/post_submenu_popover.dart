@@ -54,7 +54,6 @@ class PostSubmenuPopover extends StatefulWidget {
     VoidCallback? onToggleProductAvailability,
     Offset? position,
   }) {
-    HapticFeedback.lightImpact();
 
     return showGeneralDialog(
       context: context,

@@ -243,7 +243,6 @@ class _DragProxyCardState extends State<_DragProxyCard> {
   @override
   void initState() {
     super.initState();
-    HapticFeedback.mediumImpact();
   }
 
   @override

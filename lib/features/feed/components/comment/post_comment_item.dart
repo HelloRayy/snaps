@@ -317,7 +317,6 @@ class _PostCommentItemState extends State<PostCommentItem> {
             behavior: HitTestBehavior.opaque,
             onTap: () {
               if (targetUserHandle.isNotEmpty) {
-                HapticFeedback.lightImpact();
                 widget.onUserClick?.call(targetUserHandle);
               }
             },
@@ -375,7 +374,6 @@ class _PostCommentItemState extends State<PostCommentItem> {
         // Three-dots menu
         GestureDetector(
           onTap: () {
-            HapticFeedback.lightImpact();
             CommentOptionsSheet.show(
               context: context,
               comment: widget.comment,
@@ -431,7 +429,6 @@ class _PostCommentItemState extends State<PostCommentItem> {
         if (isLong)
           GestureDetector(
             onTap: () {
-              HapticFeedback.selectionClick();
               setState(() => _isTextExpanded = !_isTextExpanded);
             },
             behavior: HitTestBehavior.opaque,

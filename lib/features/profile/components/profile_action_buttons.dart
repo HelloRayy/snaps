@@ -40,7 +40,6 @@ class ProfileActionButtons extends StatelessWidget {
     if (!isLoggedIn) {
       return GestureDetector(
         onTap: () {
-          HapticFeedback.lightImpact();
           onAuthTap?.call();
         },
         behavior: HitTestBehavior.opaque,
@@ -67,7 +66,6 @@ class ProfileActionButtons extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        HapticFeedback.lightImpact();
         onEditProfile?.call();
       },
       behavior: HitTestBehavior.opaque,
@@ -147,7 +145,6 @@ class ProfileActionButtons extends StatelessWidget {
         Expanded(
           child: GestureDetector(
             onTap: () {
-              HapticFeedback.lightImpact();
               onToggleFollow?.call();
             },
             behavior: HitTestBehavior.opaque,
@@ -181,7 +178,6 @@ class ProfileActionButtons extends StatelessWidget {
         Expanded(
           child: GestureDetector(
             onTap: () {
-              HapticFeedback.lightImpact();
               onDirectMessage?.call();
             },
             behavior: HitTestBehavior.opaque,

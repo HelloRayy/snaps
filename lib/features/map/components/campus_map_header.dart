@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
@@ -43,7 +44,7 @@ class CampusMapHeader extends StatelessWidget {
                   ),
                   child: IconButton(
                     onPressed: onBack,
-                    icon: Icon(Icons.arrow_back, size: 20.0, color: AppColors.adaptiveText(context)),
+                    icon: Icon(LucideIcons.arrowLeft, size: 20.0, color: AppColors.adaptiveText(context)),
                     constraints: const BoxConstraints(minWidth: 40.0, minHeight: 40.0),
                   ),
                 ),
@@ -64,7 +65,7 @@ class CampusMapHeader extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.location_on, size: 14.0, color: Color(0xFF3D38F5)),
+                      const Icon(LucideIcons.mapPin, size: 14.0, color: Color(0xFF3D38F5)),
                       const SizedBox(width: 4.0),
                       Text(
                         "Denah 2D SMKN 8",

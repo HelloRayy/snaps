@@ -34,7 +34,6 @@ class _EditProfileChipsEditorState extends State<EditProfileChipsEditor> {
 
 
     if (widget.tags.any((t) => t.toLowerCase() == clean.toLowerCase())) {
-      HapticFeedback.lightImpact();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Minat "$clean" sudah ada di profil'),
@@ -45,14 +44,12 @@ class _EditProfileChipsEditorState extends State<EditProfileChipsEditor> {
       return;
     }
 
-    HapticFeedback.lightImpact();
     final updated = List<String>.from(widget.tags)..add(clean);
     widget.onTagsChanged(updated);
     _inputController.clear();
   }
 
   void _handleRemoveTag(String tagToRemove) {
-    HapticFeedback.lightImpact();
     final updated = widget.tags.where((t) => t != tagToRemove).toList();
     widget.onTagsChanged(updated);
   }

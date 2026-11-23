@@ -41,7 +41,6 @@ class CommentRepliesExpandRow extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        HapticFeedback.lightImpact();
         onToggle();
       },
       behavior: HitTestBehavior.opaque,

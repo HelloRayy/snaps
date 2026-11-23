@@ -107,7 +107,6 @@ class ChatProductCard extends StatelessWidget {
             // 1. Top Inset Summary Box
             InkWell(
               onTap: () {
-                HapticFeedback.lightImpact();
                 onViewProduct?.call();
               },
               borderRadius: BorderRadius.circular(12.0),
@@ -233,7 +232,6 @@ class ChatProductCard extends StatelessWidget {
             // 4. Full-Width "Cek Lokasi di Peta" Secondary Action Button (1:1 Web)
             GestureDetector(
               onTap: () {
-                HapticFeedback.mediumImpact();
                 onCheckLocation?.call();
               },
               child: Container(

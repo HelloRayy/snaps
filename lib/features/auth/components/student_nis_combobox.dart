@@ -67,7 +67,6 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
     if (clean.length == 5) {
       final exactMatch = StudentRegistryService.instance.findByNis(clean);
       if (exactMatch != null && !exactMatch.isClaimed) {
-        HapticFeedback.lightImpact();
         widget.onStudentSelected(exactMatch);
         _removeOverlay();
         return;
@@ -144,7 +143,6 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
                     return InkWell(
                       onTap: () {
                         if (student.isClaimed) {
-                          HapticFeedback.mediumImpact();
                           ScaffoldMessenger.of(context).hideCurrentSnackBar();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -154,7 +152,6 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
                           );
                           return;
                         }
-                        HapticFeedback.selectionClick();
                         widget.controller.text = student.nis;
                         widget.onStudentSelected(student);
                         _removeOverlay();

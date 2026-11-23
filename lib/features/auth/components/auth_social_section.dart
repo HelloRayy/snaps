@@ -37,7 +37,6 @@ class AuthSocialSection extends StatelessWidget {
                 ),
                 label: 'Apple',
                 onTap: () {
-                  HapticFeedback.lightImpact();
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Apple Sign-In hanya tersedia pada perangkat iOS'),

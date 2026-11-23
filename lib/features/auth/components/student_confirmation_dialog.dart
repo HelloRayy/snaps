@@ -29,7 +29,6 @@ class StudentConfirmationDialog extends StatelessWidget {
     BuildContext context, {
     required RegisteredStudent student,
   }) {
-    HapticFeedback.mediumImpact();
     return showGeneralDialog<bool>(
       context: context,
       barrierDismissible: true,
@@ -140,7 +139,6 @@ class StudentConfirmationDialog extends StatelessWidget {
                         const SizedBox(width: 8.0),
                         GestureDetector(
                           onTap: () {
-                            HapticFeedback.selectionClick();
                             onCancel();
                           },
                           behavior: HitTestBehavior.opaque,
@@ -185,7 +183,6 @@ class StudentConfirmationDialog extends StatelessWidget {
                     // 4. Cancel Action (Left-aligned, regular font weight)
                     GestureDetector(
                       onTap: () {
-                        HapticFeedback.selectionClick();
                         onCancel();
                       },
                       behavior: HitTestBehavior.opaque,
@@ -237,7 +234,6 @@ class _StudentConfirmationCapsuleState extends State<_StudentConfirmationCapsule
       onTapUp: (_) => setState(() => _isPressed = false),
       onTapCancel: () => setState(() => _isPressed = false),
       onTap: () {
-        HapticFeedback.mediumImpact();
         widget.onTap();
       },
       child: AnimatedScale(

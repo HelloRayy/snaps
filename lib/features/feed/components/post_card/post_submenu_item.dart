@@ -35,7 +35,6 @@ class _PostSubmenuItemState extends State<PostSubmenuItem> {
       onTapUp: (_) => setState(() => _isPressed = false),
       onTapCancel: () => setState(() => _isPressed = false),
       onTap: () {
-        HapticFeedback.selectionClick();
         widget.onTap();
       },
       behavior: HitTestBehavior.opaque,

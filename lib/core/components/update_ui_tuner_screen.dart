@@ -34,7 +34,6 @@ Update UI Config (hasil tuning HUD):
 Terapkan nilai ini ke UI In-App Update standalone screen.
 ''';
     Clipboard.setData(ClipboardData(text: configText.trim()));
-    HapticFeedback.mediumImpact();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Config HUD disalin! Tinggal paste ke AI Agent.'),

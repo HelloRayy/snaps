@@ -141,7 +141,6 @@ class _AvatarViewerDialogState extends State<AvatarViewerDialog>
   void _dismissWithFlyOff(double targetY) {
     if (_isDismissing) return;
     _isDismissing = true;
-    HapticFeedback.lightImpact();
     _springBackAnimController.stop();
     final currentOffset = _dragOffsetNotifier.value;
     _springBackAnim = Tween<double>(begin: currentOffset, end: targetY).animate(
@@ -524,7 +523,6 @@ class _AvatarViewerDialogState extends State<AvatarViewerDialog>
   }
 
   void _handleDoubleTap(double avatarSize) {
-    HapticFeedback.lightImpact();
     final currentMatrix = _transformController.value;
     final currentScale = currentMatrix.getMaxScaleOnAxis();
 

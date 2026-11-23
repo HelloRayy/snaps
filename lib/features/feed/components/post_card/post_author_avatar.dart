@@ -65,7 +65,6 @@ class PostAuthorAvatar extends StatelessWidget {
                       child: GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         onTap: () async {
-                          HapticFeedback.lightImpact();
                           if (!SupabaseService.instance.isAuthenticated) {
                             if (context.mounted) {
                               SnapsToast.info(context, 'Silakan masuk untuk mengikuti akun ini.', hasBottomNav: true);

@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/components/kumo_button.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -101,7 +102,7 @@ class CampusMapRoomCard extends StatelessWidget {
           const SizedBox(height: 14.0),
           KumoButton(
             text: "Pilih Titik COD Ini",
-            iconLeft: const Icon(Icons.check_circle_outline_rounded, size: 18.0, color: Colors.white),
+            iconLeft: const Icon(LucideIcons.circleCheck, size: 18.0, color: Colors.white),
             onPressed: onSelectLocation,
           ),
         ],

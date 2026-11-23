@@ -85,7 +85,6 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
   }
 
   void _pickImages() async {
-    HapticFeedback.selectionClick();
     if (widget.onAttachmentTap != null) {
       widget.onAttachmentTap!();
       return;
@@ -109,7 +108,6 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
     final text = _controller.text.trim();
     if (text.isEmpty && _attachedImages.isEmpty) return;
 
-    HapticFeedback.mediumImpact();
     final imagesToSend = List<String>.from(_attachedImages);
     if (imagesToSend.isNotEmpty && widget.onSendMessageWithMedia != null) {
       widget.onSendMessageWithMedia!(text, imagesToSend);
@@ -212,7 +210,6 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                         right: -4.0,
                         child: GestureDetector(
                           onTap: () {
-                            HapticFeedback.lightImpact();
                             setState(() {
                               _attachedImages.removeAt(index);
                               _canSend = _controller.text.trim().isNotEmpty || _attachedImages.isNotEmpty;

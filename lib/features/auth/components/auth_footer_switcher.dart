@@ -16,7 +16,6 @@ class AuthFooterSwitcher extends StatelessWidget {
     return Center(
       child: GestureDetector(
         onTap: () {
-          HapticFeedback.selectionClick();
           onSwitch();
         },
         behavior: HitTestBehavior.opaque,

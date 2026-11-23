@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -44,7 +45,7 @@ class CommentOptionsSheet {
                 ),
               ),
               ListTile(
-                leading: Icon(Icons.reply_rounded, color: AppColors.adaptiveMuted(context)),
+                leading: Icon(LucideIcons.reply, color: AppColors.adaptiveMuted(context)),
                 title: Text(
                   'Balas Komentar',
                   style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.adaptiveText(context)),
@@ -63,7 +64,7 @@ class CommentOptionsSheet {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.copy_rounded, color: AppColors.adaptiveMuted(context)),
+                leading: Icon(LucideIcons.copy, color: AppColors.adaptiveMuted(context)),
                 title: Text(
                   'Salin Teks Komentar',
                   style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.adaptiveText(context)),
@@ -109,7 +110,6 @@ class CommentOptionsSheet {
   }
 
   static Future<bool?> _showDeleteConfirmation(BuildContext context) {
-    HapticFeedback.lightImpact();
 
     return showModalBottomSheet<bool>(
       context: context,

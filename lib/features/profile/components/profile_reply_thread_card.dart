@@ -40,7 +40,6 @@ class _ProfileReplyThreadCardState extends State<ProfileReplyThreadCard> {
   }
 
   void _toggleParentLike() {
-    HapticFeedback.lightImpact();
     setState(() {
       _parentLiked = !_parentLiked;
       _parentLikesCount += _parentLiked ? 1 : -1;
@@ -48,7 +47,6 @@ class _ProfileReplyThreadCardState extends State<ProfileReplyThreadCard> {
   }
 
   void _toggleReplyLike() {
-    HapticFeedback.lightImpact();
     setState(() {
       _replyLiked = !_replyLiked;
       _replyLikesCount += _replyLiked ? 1 : -1;

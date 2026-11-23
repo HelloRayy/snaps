@@ -36,7 +36,6 @@ class ActivityFollowButton extends StatelessWidget {
 
         return GestureDetector(
           onTap: () {
-            HapticFeedback.lightImpact();
             FollowService.instance.toggleFollow(
               targetUserId: targetUserId,
               targetUsername: targetUsername,

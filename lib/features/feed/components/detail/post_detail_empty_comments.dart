@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter/material.dart';
 
 /// Empty state placeholder when a post has no comments or thread continuations.
@@ -18,7 +19,7 @@ class PostDetailEmptyComments extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Icon(
-            Icons.chat_bubble_outline_rounded,
+            LucideIcons.messageCircle,
             size: 40.0,
             color: Color(0xFFCBD5E1),
           ),

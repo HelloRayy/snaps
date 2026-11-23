@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/utils/mention_text_span_helper.dart';
@@ -60,7 +61,7 @@ class ChatMessageBubble extends StatelessWidget {
                         height: 120.0,
                         color: const Color(0x10000000),
                         child: const Center(
-                          child: Icon(Icons.broken_image_outlined, color: Colors.grey),
+                          child: Icon(LucideIcons.imageOff, color: Colors.grey),
                         ),
                       ),
                     )
@@ -257,7 +258,7 @@ class ChatMessageBubble extends StatelessWidget {
     switch (status) {
       case MessageStatus.sending:
         return Icon(
-          Icons.access_time_rounded,
+          LucideIcons.clock,
           size: 12.0,
           color: Colors.white.withValues(alpha: 0.65),
         );
@@ -265,14 +266,14 @@ class ChatMessageBubble extends StatelessWidget {
       case MessageStatus.delivered:
         // Centang 1 (Terkirim, belum dibaca / !read)
         return Icon(
-          Icons.done_rounded,
+          LucideIcons.check,
           size: 14.5,
           color: Colors.white.withValues(alpha: 0.75),
         );
       case MessageStatus.read:
         // Centang 2 (Sudah dibaca / read) - WhatsApp-style blue double check
         return const Icon(
-          Icons.done_all_rounded,
+          LucideIcons.checkCheck,
           size: 16.0,
           color: Color(0xFF67E8F9),
         );

@@ -67,78 +67,7 @@ class StudentRegistryService {
   /// Ensure students dataset is loaded into memory (prioritizes Supabase live data)
   Future<void> init({bool forceRefresh = false}) async {
     if (_isLoaded && !forceRefresh) return;
-
-    // 1. Prioritaskan fetch live master data dari tabel Supabase public.student_registry
-    try {
-      final response = await SupabaseService.instance.client
-          .from('student_registry')
-          .select('nis, full_name, class_group, is_claimed, claimed_by')
-          .order('nis', ascending: true);
-
-      if (response.isNotEmpty) {
-        final allRows = List<Map<String, dynamic>>.from(response);
-        if (response.length >= 1000) {
-          try {
-            final nextBatch = await SupabaseService.instance.client
-                .from('student_registry')
-                .select('nis, full_name, class_group, is_claimed, claimed_by')
-                .order('nis', ascending: true)
-                .range(1000, 2999);
-            if (nextBatch.isNotEmpty) {
-              allRows.addAll(nextBatch);
-            }
-          } catch (_) {}
-        }
-        _students = allRows.map(RegisteredStudent.fromJson).toList();
-
-        // Cross-check dengan tabel profiles untuk menandai NIS yang sudah memiliki akun aktif
-        try {
-          final claimedProfiles = await SupabaseService.instance.client
-              .from('profiles')
-              .select('nis, id')
-              .not('nis', 'is', null);
-          if (claimedProfiles.isNotEmpty) {
-            final claimedMap = <String, String>{};
-            for (final row in claimedProfiles) {
-              final n = (row['nis'] as String?)?.trim();
-              final uid = (row['id'] as String?)?.trim();
-              if (n != null && n.isNotEmpty && uid != null) {
-                claimedMap[n] = uid;
-              }
-            }
-            if (claimedMap.isNotEmpty) {
-              _students = _students.map((s) {
-                if (claimedMap.containsKey(s.nis) && !s.isClaimed) {
-                  return s.copyWith(isClaimed: true, claimedBy: claimedMap[s.nis]);
-                }
-                return s;
-              }).toList();
-            }
-          }
-        } catch (_) {}
-
-        _isLoaded = true;
-        return;
-      }
-    } catch (e) {
-      debugPrint('StudentRegistryService: Supabase fetch error ($e), fallback ke aset JSON demo');
-    }
-
-    // 2. Fallback aman ke aset JSON offline jika Supabase belum terhubung
-    try {
-      final jsonString =
-          await rootBundle.loadString('assets/data/students_demo_11_pplg_2.json');
-      final dynamic decoded = jsonDecode(jsonString);
-      if (decoded is List) {
-        _students = decoded
-            .whereType<Map<String, dynamic>>()
-            .map(RegisteredStudent.fromJson)
-            .toList();
-      }
-      _isLoaded = true;
-    } catch (_) {
-      _students = [];
-    }
+    _isLoaded = true;
   }
 
   /// Memaksa refresh dataset dari database Supabase
@@ -166,29 +95,20 @@ class StudentRegistryService {
     if (clean.isEmpty) return null;
 
     try {
-      final res = await SupabaseService.instance.client
-          .from('student_registry')
-          .select('nis, full_name, class_group, is_claimed, claimed_by')
-          .eq('nis', clean)
-          .maybeSingle();
+      final res = await SupabaseService.instance.client.rpc(
+        'lookup_student_by_nis',
+        params: {'p_nis': clean},
+      );
 
-      if (res != null) {
-        var student = RegisteredStudent.fromJson(res);
-        if (!student.isClaimed) {
-          try {
-            final prof = await SupabaseService.instance.client
-                .from('profiles')
-                .select('id')
-                .eq('nis', clean)
-                .maybeSingle();
-            if (prof != null) {
-              student = student.copyWith(
-                isClaimed: true,
-                claimedBy: prof['id']?.toString(),
-              );
-            }
-          } catch (_) {}
-        }
+      Map<String, dynamic>? row;
+      if (res is List && res.isNotEmpty && res.first is Map) {
+        row = Map<String, dynamic>.from(res.first as Map);
+      } else if (res is Map) {
+        row = Map<String, dynamic>.from(res);
+      }
+
+      if (row != null && row.isNotEmpty) {
+        final student = RegisteredStudent.fromJson(row);
         registerStudent(student);
         return student;
       }

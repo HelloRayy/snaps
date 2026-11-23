@@ -251,12 +251,10 @@ class _DockTabItemState extends State<_DockTabItem> {
       child: GestureDetector(
         onTapDown: (_) {
           setState(() => _isPressed = true);
-          HapticFeedback.selectionClick();
         },
         onTapUp: (_) => setState(() => _isPressed = false),
         onTapCancel: () => setState(() => _isPressed = false),
         onTap: () {
-          HapticFeedback.selectionClick();
           widget.onTap();
         },
         behavior: HitTestBehavior.opaque,

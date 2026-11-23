@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
@@ -31,7 +32,7 @@ class CheckoutBuyerNoteCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.edit_note_rounded, size: 18.0, color: secondaryTextColor),
+              Icon(LucideIcons.fileEdit, size: 18.0, color: secondaryTextColor),
               const SizedBox(width: 8.0),
               Text(
                 "Catatan untuk Penjual",

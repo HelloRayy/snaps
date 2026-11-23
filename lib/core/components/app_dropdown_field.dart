@@ -30,7 +30,6 @@ class _AppDropdownFieldState extends State<AppDropdownField> {
 
   Future<void> _handleTap() async {
     FocusManager.instance.primaryFocus?.unfocus();
-    HapticFeedback.lightImpact();
 
     final renderBox = context.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
@@ -109,7 +108,6 @@ class _AppDropdownFieldState extends State<AppDropdownField> {
     }
 
     if (selected != null && selected != widget.value) {
-      HapticFeedback.selectionClick();
       widget.onChanged(selected);
     }
   }

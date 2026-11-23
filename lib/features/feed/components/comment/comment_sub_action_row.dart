@@ -37,7 +37,6 @@ class CommentSubActionRow extends StatelessWidget {
           if (onLike != null)
             GestureDetector(
               onTap: () {
-                HapticFeedback.lightImpact();
                 onLike!();
               },
               behavior: HitTestBehavior.opaque,
@@ -96,7 +95,6 @@ class CommentSubActionRow extends StatelessWidget {
           // 2. Balas / Comment Icon Only
           GestureDetector(
             onTap: () {
-              HapticFeedback.lightImpact();
               onReply();
             },
             behavior: HitTestBehavior.opaque,

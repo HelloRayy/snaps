@@ -20,7 +20,6 @@ class BroadcastDetailModal extends StatelessWidget {
   const BroadcastDetailModal({super.key, required this.notification});
 
   static Future<void> show(BuildContext context, ActivityNotification notification) {
-    HapticFeedback.lightImpact();
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,

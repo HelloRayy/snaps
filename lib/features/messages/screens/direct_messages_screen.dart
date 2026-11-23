@@ -93,7 +93,6 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
   }
 
   void _handleNewChat() {
-    HapticFeedback.lightImpact();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -170,7 +169,6 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
                     } else if (widget.showBackButton) {
                       Navigator.of(context).pop();
                     } else {
-                      HapticFeedback.lightImpact();
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Mode edit obrolan aktif'),

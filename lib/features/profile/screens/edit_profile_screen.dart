@@ -121,13 +121,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _handleSave() async {
     if (_isSaving) return;
-    HapticFeedback.mediumImpact();
 
     final hasAnyClassSelected = _selectedGrade != null || _selectedMajor != null || _selectedClassNum != null;
     final isClassComplete = _selectedGrade != null && _selectedMajor != null && _selectedClassNum != null;
 
     if (hasAnyClassSelected && !isClassComplete) {
-      HapticFeedback.heavyImpact();
       setState(() => _showClassError = true);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -141,7 +139,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     final rawName = _nameController.text.trim();
     if (rawName.isNotEmpty && rawName.length < 3) {
-      HapticFeedback.heavyImpact();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Nama tampilan minimal 3 karakter (atau kosongkan)'),
@@ -152,7 +149,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       return;
     }
     if (rawName.isNotEmpty && AuthConstants.isProfane(rawName)) {
-      HapticFeedback.heavyImpact();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Nama mengandung kata yang tidak diperbolehkan'),
@@ -168,7 +164,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final cleanUsername = rawUsername.isEmpty ? widget.initialUser.username.replaceAll('@', '').toLowerCase() : rawUsername;
 
     if (cleanUsername.length < 3 || cleanUsername.length > 20) {
-      HapticFeedback.heavyImpact();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Username harus berupa 3-20 karakter alfanumerik'),
@@ -179,7 +174,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       return;
     }
     if (AuthConstants.isReservedUsername(cleanUsername)) {
-      HapticFeedback.heavyImpact();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Username ini dilindungi dan tidak dapat digunakan'),
@@ -190,7 +184,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       return;
     }
     if (AuthConstants.isProfane(cleanUsername)) {
-      HapticFeedback.heavyImpact();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Nama mengandung kata yang tidak diperbolehkan'),

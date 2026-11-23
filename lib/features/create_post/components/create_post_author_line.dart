@@ -67,7 +67,6 @@ class CreatePostAuthorLine extends StatelessWidget {
           GestureDetector(
             key: mascotTriggerKey,
             onTap: () {
-              HapticFeedback.selectionClick();
               onMascotTriggerTap?.call();
             },
             behavior: HitTestBehavior.opaque,
@@ -115,7 +114,6 @@ class CreatePostAuthorLine extends StatelessWidget {
         GestureDetector(
           key: topicTriggerKey,
           onTap: () {
-            HapticFeedback.selectionClick();
             onTopicTriggerTap();
           },
           behavior: HitTestBehavior.opaque,
@@ -146,7 +144,6 @@ class CreatePostAuthorLine extends StatelessWidget {
                 const SizedBox(width: 4.0),
                 GestureDetector(
                   onTap: () {
-                    HapticFeedback.selectionClick();
                     onTopicClear();
                   },
                   child: const Padding(

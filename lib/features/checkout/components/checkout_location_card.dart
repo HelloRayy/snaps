@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import "package:flutter/material.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
 import "package:snapan_market/features/locations/models/campus_location_spot.dart";
@@ -78,7 +79,7 @@ class CheckoutLocationCard extends StatelessWidget {
                     ),
                     child: Row(
                       children: const [
-                        Icon(Icons.map_outlined, size: 13.0, color: Color(0xFF334155)),
+                        Icon(LucideIcons.map, size: 13.0, color: Color(0xFF334155)),
                         SizedBox(width: 4.0),
                         Text(
                           "Denah",

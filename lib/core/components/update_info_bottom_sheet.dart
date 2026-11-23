@@ -23,7 +23,6 @@ class UpdateInfoBottomSheet extends StatefulWidget {
     required AppVersionModel update,
     required String currentVersionName,
   }) {
-    HapticFeedback.mediumImpact();
     AppUpdateService.instance.markPrompted();
 
     return Navigator.of(context, rootNavigator: true).push<void>(
@@ -64,7 +63,6 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
 
   void _startOtaUpdate() {
     if (_isDownloading) return;
-    HapticFeedback.lightImpact();
 
     setState(() {
       _isDownloading = true;
@@ -400,7 +398,6 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                           const SizedBox(width: 8.0),
                           IconButton(
                             onPressed: () {
-                              HapticFeedback.mediumImpact();
                               SystemNavigator.pop();
                             },
                             tooltip: 'Tutup Aplikasi',

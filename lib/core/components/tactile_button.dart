@@ -181,7 +181,6 @@ class _TactileButtonState extends State<TactileButton> {
       onTapDown: isEnabled
           ? (_) {
               setState(() => _isPressed = true);
-              HapticFeedback.lightImpact();
             }
           : null,
       onTapUp: isEnabled ? (_) => setState(() => _isPressed = false) : null,

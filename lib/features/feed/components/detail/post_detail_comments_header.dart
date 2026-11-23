@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -45,7 +46,7 @@ class PostDetailCommentsHeader extends StatelessWidget {
           const SizedBox(width: 14.0),
           if (isSelected)
             Icon(
-              Icons.check_rounded,
+              LucideIcons.check,
               size: 16.0,
               color: AppColors.adaptiveText(context),
             ),
@@ -81,7 +82,6 @@ class PostDetailCommentsHeader extends StatelessWidget {
             initialValue: selectedSort,
             tooltip: 'Urutkan Komentar',
             onSelected: (val) {
-              HapticFeedback.selectionClick();
               onSortChanged(val);
             },
             offset: const Offset(0, 26.0),

@@ -69,7 +69,6 @@ class CreatePostMediaToolbar extends StatelessWidget {
                           return _QuickEmojiPill(
                             emoji: emoji,
                             onTap: () {
-                              HapticFeedback.selectionClick();
                               onInsertEmoji(emoji);
                             },
                           );
@@ -255,7 +254,6 @@ class _MediaIconButtonState extends State<_MediaIconButton> {
     return GestureDetector(
       onTapDown: (_) {
         setState(() => _isPressed = true);
-        HapticFeedback.selectionClick();
       },
       onTapUp: (_) => setState(() => _isPressed = false),
       onTapCancel: () => setState(() => _isPressed = false),

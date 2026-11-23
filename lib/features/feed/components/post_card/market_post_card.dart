@@ -116,7 +116,6 @@ class _MarketPostCardState extends State<MarketPostCard>
   }
 
   void _handleLikeToggle() {
-    HapticFeedback.lightImpact();
     setState(() {
       if (_isLiked) {
         _isLiked = false;
@@ -135,7 +134,6 @@ class _MarketPostCardState extends State<MarketPostCard>
   }
 
   void _handleRepostToggle() {
-    HapticFeedback.lightImpact();
     setState(() {
       if (_isReposted) {
         _isReposted = false;

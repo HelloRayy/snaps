@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/components/kumo_button.dart';
 import 'package:snapan_market/features/auth/screens/auth_screen.dart';
@@ -148,7 +149,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               height: 50,
                               borderRadius: 16,
                               iconRight: const Icon(
-                                Icons.arrow_forward_rounded,
+                                LucideIcons.arrowRight,
                                 size: 18,
                                 color: Colors.white,
                               ),
@@ -165,7 +166,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         borderRadius: 16,
                         onPressed: _nextPage,
                         iconRight: const Icon(
-                          Icons.chevron_right_rounded,
+                          LucideIcons.chevronRight,
                           size: 22,
                           color: Colors.white,
                         ),

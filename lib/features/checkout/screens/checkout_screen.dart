@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -84,7 +85,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 codSafetyHint: "Janjian saat jam istirahat atau waktu luang.",
                 bestTime: "Jam istirahat sekolah",
                 pinPosition: const Offset(500, 400),
-                iconData: Icons.place_rounded,
+                iconData: LucideIcons.mapPin,
                 themeColor: const Color(0xFF3D38F5),
               ),
             );
@@ -177,7 +178,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               children: [
                 IconButton(
                   onPressed: widget.onBack ?? () => Navigator.of(context).pop(),
-                  icon: Icon(Icons.arrow_back, size: 20.0, color: AppColors.adaptiveText(context)),
+                  icon: Icon(LucideIcons.arrowLeft, size: 20.0, color: AppColors.adaptiveText(context)),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(minWidth: 36.0, minHeight: 36.0),
                   splashRadius: 20.0,
@@ -194,7 +195,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 IconButton(
                   onPressed: () => setState(() => _isLiked = !_isLiked),
                   icon: Icon(
-                    _isLiked ? Icons.favorite : Icons.favorite_border,
+                    _isLiked ? LucideIcons.heart : LucideIcons.heart,
                     size: 20.0,
                     color: _isLiked ? const Color(0xFFF43F5E) : AppColors.adaptiveText(context),
                   ),

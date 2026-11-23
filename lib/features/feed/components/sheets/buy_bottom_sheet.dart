@@ -316,7 +316,6 @@ class _BuyBottomSheetState extends State<BuyBottomSheet> {
                             visualDensity: VisualDensity.compact,
                             onPressed: _quantity > 1
                                 ? () {
-                                    HapticFeedback.lightImpact();
                                     setState(() => _quantity -= 1);
                                   }
                                 : null,
@@ -337,7 +336,6 @@ class _BuyBottomSheetState extends State<BuyBottomSheet> {
                             visualDensity: VisualDensity.compact,
                             onPressed: _quantity < _maxStock
                                 ? () {
-                                    HapticFeedback.lightImpact();
                                     setState(() => _quantity += 1);
                                   }
                                 : null,

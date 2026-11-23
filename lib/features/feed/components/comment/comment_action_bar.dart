@@ -70,7 +70,6 @@ class _CommentActionBarState extends State<CommentActionBar>
         // 1. Heart (Like) Slot
         GestureDetector(
           onTap: () {
-            HapticFeedback.lightImpact();
             _likeAnimController.forward(from: 0.0);
             widget.onLikeToggle();
           },
@@ -113,7 +112,6 @@ class _CommentActionBarState extends State<CommentActionBar>
         // 2. Balas (Comment/Reply) Slot
         GestureDetector(
           onTap: () {
-            HapticFeedback.lightImpact();
             widget.onReply();
           },
           behavior: HitTestBehavior.opaque,
@@ -132,7 +130,6 @@ class _CommentActionBarState extends State<CommentActionBar>
         // 3. Posting Ulang (Repost) Slot
         GestureDetector(
           onTap: () {
-            HapticFeedback.lightImpact();
             if (widget.onRepost != null) {
               widget.onRepost!();
             } else {
@@ -156,7 +153,6 @@ class _CommentActionBarState extends State<CommentActionBar>
         // 4. Bagikan (Share) Slot
         GestureDetector(
           onTap: () {
-            HapticFeedback.lightImpact();
             widget.onShare?.call();
           },
           behavior: HitTestBehavior.opaque,

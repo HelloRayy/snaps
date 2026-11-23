@@ -17,7 +17,6 @@ class BugReportBottomSheet extends StatefulWidget {
 
   /// Static helper to display the sheet
   static Future<void> show(BuildContext context) {
-    HapticFeedback.lightImpact();
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -69,7 +68,6 @@ class _BugReportBottomSheetState extends State<BugReportBottomSheet> {
   }
 
   Future<void> _handlePickScreenshot() async {
-    HapticFeedback.selectionClick();
     final picked = await SnapsAssetPicker.pickImages(
       context,
       maxImages: 1,
@@ -80,12 +78,10 @@ class _BugReportBottomSheetState extends State<BugReportBottomSheet> {
   }
 
   void _handleRemoveScreenshot() {
-    HapticFeedback.selectionClick();
     setState(() => _screenshotFile = null);
   }
 
   void _showCategoryPicker(BuildContext context, bool isDark) {
-    HapticFeedback.selectionClick();
     showModalBottomSheet(
       context: context,
       backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
@@ -151,7 +147,6 @@ class _BugReportBottomSheetState extends State<BugReportBottomSheet> {
                             )
                           : null,
                       onTap: () {
-                        HapticFeedback.selectionClick();
                         setState(() => _selectedCategory = item);
                         Navigator.of(pickerCtx).pop();
                       },
@@ -188,7 +183,6 @@ class _BugReportBottomSheetState extends State<BugReportBottomSheet> {
     }
 
     setState(() => _isSubmitting = true);
-    HapticFeedback.lightImpact();
 
     final isCustom = _selectedCategory == 'Lainnya / Masukan Khusus';
     final customTopic = isCustom ? _customTopicController.text.trim() : null;
@@ -204,7 +198,6 @@ class _BugReportBottomSheetState extends State<BugReportBottomSheet> {
     setState(() => _isSubmitting = false);
 
     if (success) {
-      HapticFeedback.mediumImpact();
       Navigator.of(context).pop();
       SnapsToast.show(
         context,
@@ -545,7 +538,6 @@ class _BugReportBottomSheetState extends State<BugReportBottomSheet> {
               Center(
                 child: GestureDetector(
                   onTap: () {
-                    HapticFeedback.selectionClick();
                     FeedbackService.instance.launchWhatsAppAdmin(
                       category: _selectedCategory,
                       customTopic: isCustomCategory ? _customTopicController.text.trim() : null,
