@@ -142,8 +142,6 @@ class _DynamicFeedImageState extends State<DynamicFeedImage> {
                       ),
                     ),
                   ),
-                ],
-              ),
             ),
           ),
         ),
