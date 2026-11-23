@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -640,7 +641,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                                     children: [
                                       if (msg.text.isNotEmpty)
                                         ListTile(
-                                          leading: const Icon(Icons.copy_rounded),
+                                          leading: const Icon(LucideIcons.copy),
                                           title: const Text('Salin Pesan'),
                                           onTap: () {
                                             Clipboard.setData(ClipboardData(text: msg.text));
@@ -655,7 +656,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                                         ),
                                       if (msg.text.isNotEmpty)
                                         ListTile(
-                                          leading: const Icon(Icons.reply_rounded),
+                                          leading: const Icon(LucideIcons.reply),
                                           title: const Text('Balas Pesan'),
                                           onTap: () {
                                             Navigator.pop(ctx);
@@ -664,7 +665,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                                         ),
                                       if (msg.isMe && msg.text.isNotEmpty)
                                         ListTile(
-                                          leading: const Icon(Icons.edit_rounded),
+                                          leading: const Icon(LucideIcons.pencil),
                                           title: const Text('Edit Pesan'),
                                           onTap: () async {
                                             Navigator.pop(ctx);
@@ -698,7 +699,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
                                         ),
                                       if (msg.isMe)
                                         ListTile(
-                                          leading: const Icon(Icons.delete_outline_rounded, color: Colors.red),
+                                          leading: const Icon(LucideIcons.trash2, color: Colors.red),
                                           title: const Text('Hapus Pesan', style: TextStyle(color: Colors.red)),
                                           onTap: () {
                                             Navigator.pop(ctx);

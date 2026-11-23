@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/components/mascot_flair_badge.dart';
@@ -174,7 +175,7 @@ class PostCardHeader extends StatelessWidget {
               if (item.topicTag != null) ...[
                 const SizedBox(width: 4.0),
                 Icon(
-                  Icons.chevron_right_rounded,
+                  LucideIcons.chevronRight,
                   size: 14.0,
                   color: mutedTextColor,
                 ),

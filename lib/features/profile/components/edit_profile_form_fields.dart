@@ -348,7 +348,7 @@ class EditProfileFormFields extends StatelessWidget {
                 children: [
                   Text('Publik', style: TextStyle(fontSize: 13.5, color: AppColors.lightMuted)),
                   SizedBox(width: 2.0),
-                  Icon(Icons.chevron_right_rounded, size: 16.0, color: AppColors.lightMuted),
+                  Icon(LucideIcons.chevronRight, size: 16.0, color: AppColors.lightMuted),
                 ],
               ),
             ],

@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import "package:flutter/material.dart";
 import "package:snapan_market/core/components/kumo_button.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
@@ -131,7 +132,7 @@ class LocationSpotDetailSheet extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.verified_user_rounded, size: 18.0, color: Color(0xFF16A34A)),
+                const Icon(LucideIcons.shieldCheck, size: 18.0, color: Color(0xFF16A34A)),
                 const SizedBox(width: 10.0),
                 Expanded(
                   child: Column(
@@ -173,7 +174,7 @@ class LocationSpotDetailSheet extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.access_time_rounded, size: 18.0, color: Color(0xFF64748B)),
+                const Icon(LucideIcons.clock, size: 18.0, color: Color(0xFF64748B)),
                 const SizedBox(width: 10.0),
                 Expanded(
                   child: Column(

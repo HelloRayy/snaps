@@ -199,7 +199,7 @@ class AuthLoginTab extends StatelessWidget {
                     ),
                   ),
                   child: rememberMe
-                      ? const Icon(Icons.check_rounded, size: 14.0, color: Colors.white)
+                      ? const Icon(LucideIcons.check, size: 14.0, color: Colors.white)
                       : null,
                 ),
                 const SizedBox(width: 8.0),

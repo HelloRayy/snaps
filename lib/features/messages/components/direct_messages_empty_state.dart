@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
@@ -28,7 +29,7 @@ class DirectMessagesEmptyState extends StatelessWidget {
                 borderRadius: BorderRadius.circular(18.0),
               ),
               child: const Icon(
-                Icons.search_off_rounded,
+                LucideIcons.searchX,
                 size: 28.0,
                 color: Color(0xFF94A3B8),
               ),

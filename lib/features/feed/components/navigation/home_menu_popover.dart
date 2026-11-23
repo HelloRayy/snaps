@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
@@ -307,7 +308,7 @@ class HomeMenuPopover extends StatelessWidget {
             ),
             if (hasChevron)
               const Icon(
-                Icons.chevron_right_rounded,
+                LucideIcons.chevronRight,
                 size: 17.5,
                 color: Color(0xFF94A3B8),
               ),

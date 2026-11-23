@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -55,7 +56,7 @@ class ActivityHeaderBar extends StatelessWidget {
                 IconButton(
                   onPressed: onMarkAllAsRead,
                   icon: Icon(
-                    Icons.done_all_rounded,
+                    LucideIcons.checkCheck,
                     size: 20.0,
                     color: isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B),
                   ),

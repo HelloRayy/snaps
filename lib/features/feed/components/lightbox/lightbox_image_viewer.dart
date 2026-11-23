@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -196,7 +197,7 @@ class _LightboxImageViewerState extends State<LightboxImageViewer>
                   },
                   errorBuilder: (_, _, _) => const Center(
                     child: Icon(
-                      Icons.broken_image_outlined,
+                      LucideIcons.imageOff,
                       size: 48.0,
                       color: Color(0xFF94A3B8),
                     ),

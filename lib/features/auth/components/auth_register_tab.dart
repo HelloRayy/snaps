@@ -217,7 +217,7 @@ class AuthRegisterTab extends StatelessWidget {
               ),
             ),
             child: agreedTerms
-                ? const Icon(Icons.check_rounded, size: 14.0, color: Colors.white)
+                ? const Icon(LucideIcons.check, size: 14.0, color: Colors.white)
                 : null,
           ),
           const SizedBox(width: 10.0),

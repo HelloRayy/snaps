@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -74,7 +75,7 @@ class DropdownColumnBox extends StatelessWidget {
                   ),
                   if (isItemActive)
                     const Icon(
-                      Icons.check_rounded,
+                      LucideIcons.check,
                       color: Color(0xFF1D64EC),
                       size: 18,
                     ),

@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -149,10 +150,10 @@ class ConversationListItem extends StatelessWidget {
                         if (conversation.isSender) ...[
                           Icon(
                             conversation.lastMessageStatus == MessageStatus.read
-                                ? Icons.done_all_rounded
+                                ? LucideIcons.checkCheck
                                 : (conversation.lastMessageStatus == MessageStatus.sending
-                                    ? Icons.access_time_rounded
-                                    : Icons.done_rounded),
+                                    ? LucideIcons.clock
+                                    : LucideIcons.check),
                             size: 15.0,
                             color: conversation.lastMessageStatus == MessageStatus.read
                                 ? azurePrimary

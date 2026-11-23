@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import "package:flutter/material.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
 import "package:snapan_market/core/ui/default_profile_avatar.dart";
@@ -92,7 +93,7 @@ class CheckoutSellerCard extends StatelessWidget {
           if (onChatTap != null)
             IconButton(
               onPressed: onChatTap,
-              icon: const Icon(Icons.chat_bubble_outline_rounded, size: 20.0, color: Color(0xFF3D38F5)),
+              icon: const Icon(LucideIcons.messageCircle, size: 20.0, color: Color(0xFF3D38F5)),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(minWidth: 36.0, minHeight: 36.0),
               splashRadius: 20.0,

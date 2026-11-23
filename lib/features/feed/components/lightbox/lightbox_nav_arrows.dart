@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
@@ -44,7 +45,7 @@ class LightboxNavArrows extends StatelessWidget {
             bottom: 0,
             child: Center(
               child: _buildArrowButton(
-                icon: Icons.chevron_right_rounded,
+                icon: LucideIcons.chevronRight,
                 onTap: onNext,
                 isDark: isDark,
               ),
