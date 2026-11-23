@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/components/skeleton/snaps_shimmer.dart';
 /// Renders a carousel card with dynamic width based on its natural aspect ratio
@@ -144,30 +145,14 @@ class _AdaptiveCarouselCardState extends State<AdaptiveCarouselCard> {
                                 : const Color(0xFFF1F3F5),
                           ),
                         ),
-                      Image.network(
-                        widget.imageUrl,
-                        cacheWidth: 600,
+                      CachedNetworkImage(
+                        imageUrl: widget.imageUrl,
+                        memCacheWidth: 800,
+                        maxWidthDiskCache: 1080,
                         fit: BoxFit.cover,
-                        frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                          if (wasSynchronouslyLoaded) {
-                            return child;
-                          }
-                          final isLoaded = frame != null;
-                          if (isLoaded && !_isImageLoaded) {
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (mounted && !_isImageLoaded) {
-                                setState(() => _isImageLoaded = true);
-                              }
-                            });
-                          }
-                          return AnimatedOpacity(
-                            opacity: isLoaded ? 1.0 : 0.0,
-                            duration: const Duration(milliseconds: 200),
-                            curve: Curves.easeOutCubic,
-                            child: child,
-                          );
-                        },
-                        errorBuilder: (_, _, _) => _errorPlaceholder(calculatedWidth, isDark),
+                        fadeInDuration: const Duration(milliseconds: 180),
+                        fadeInCurve: Curves.easeOutCubic,
+                        errorWidget: (_, _, _) => _errorPlaceholder(calculatedWidth, isDark),
                       ),
                     ],
                   )
