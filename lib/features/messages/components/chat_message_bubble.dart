@@ -257,10 +257,24 @@ class ChatMessageBubble extends StatelessWidget {
   Widget _buildStatusIcon(MessageStatus status) {
     switch (status) {
       case MessageStatus.sending:
-        return Icon(
-          LucideIcons.clock,
-          size: 12.0,
-          color: Colors.white.withValues(alpha: 0.65),
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              LucideIcons.clock,
+              size: 13.0,
+              color: Colors.white.withValues(alpha: 0.9),
+            ),
+            const SizedBox(width: 3.0),
+            Text(
+              'Mengirim',
+              style: TextStyle(
+                fontSize: 10.5,
+                color: Colors.white.withValues(alpha: 0.9),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         );
       case MessageStatus.sent:
       case MessageStatus.delivered:
