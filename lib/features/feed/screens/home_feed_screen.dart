@@ -66,18 +66,13 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       if (mounted) setState(() {});
     });
 
-    // Initialize global realtime notification banner & badge listener
-    GlobalNotificationService.instance.init();
-    DirectMessagesService.instance.loadConversations();
-
-    _requestPhotoPermission();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkForAppUpdate();
-    });
-  }
-  void _requestPhotoPermission() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    // Defer non-critical background work until after splash transition finishes
+    // to keep the startup animation locked at 60/120 FPS.
+    Future.delayed(const Duration(milliseconds: 2200), () {
+      if (!mounted) return;
+      DirectMessagesService.instance.loadConversations();
       PhotoManager.requestPermissionExtend();
+      _checkForAppUpdate();
     });
   }
 
