@@ -23,9 +23,9 @@ class ProfileReplyThreadCard extends StatelessWidget {
     final parent = thread.parentPost;
     final reply = thread.reply;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryText = isDark ? AppColors.darkTextPrimary : AppColors.textPrimary;
-    final mutedText = isDark ? AppColors.darkTextMuted : AppColors.textMuted;
-    final parentUsername = parent.seller.username.replaceAll('@', '');
+    final primaryText = isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A);
+    final mutedText = isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B);
+    final parentUsername = (parent.seller.username ?? parent.seller.name).replaceAll('@', '');
 
     return InkWell(
       onTap: () => onPostClick?.call(parent),
@@ -40,7 +40,7 @@ class ProfileReplyThreadCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildAvatar(reply.author.avatar, reply.author.name),
+            _buildAvatar(reply.user.avatar),
             const SizedBox(width: 12.0),
             Expanded(
               child: Column(
@@ -50,7 +50,7 @@ class ProfileReplyThreadCard extends StatelessWidget {
                     children: [
                       Flexible(
                         child: Text(
-                          reply.author.name,
+                          reply.user.name,
                           style: TextStyle(
                             fontSize: 14.5,
                             fontWeight: FontWeight.w700,
@@ -61,7 +61,7 @@ class ProfileReplyThreadCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      if (reply.author.isVerified) ...[
+                      if (reply.user.isVerified) ...[
                         const SizedBox(width: 4.0),
                         const Icon(
                           CupertinoIcons.checkmark_seal_fill,
@@ -101,9 +101,9 @@ class ProfileReplyThreadCard extends StatelessWidget {
     );
   }
 
-  Widget _buildAvatar(String avatarUrl, String name) {
+  Widget _buildAvatar(String avatarUrl) {
     if (avatarUrl.trim().isEmpty) {
-      return DefaultProfileAvatar(name: name, size: 38.0);
+      return const DefaultProfileAvatar(size: 38.0);
     }
     return ClipOval(
       child: Image.network(
@@ -111,7 +111,7 @@ class ProfileReplyThreadCard extends StatelessWidget {
         width: 38.0,
         height: 38.0,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => DefaultProfileAvatar(name: name, size: 38.0),
+        errorBuilder: (_, __, ___) => const DefaultProfileAvatar(size: 38.0),
       ),
     );
   }
