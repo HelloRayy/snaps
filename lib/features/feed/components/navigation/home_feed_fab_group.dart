@@ -8,6 +8,8 @@ class HomeFeedFabGroup extends StatelessWidget {
   final AnimationController fabAnimationController;
   final Animation<double>? fabAnimation;
   final double fabBottomVisible;
+  final double fabRight;
+  final double fabCollapsedBottom;
   final ValueChanged<PostMode> onCreatePost;
 
   const HomeFeedFabGroup({
@@ -16,13 +18,15 @@ class HomeFeedFabGroup extends StatelessWidget {
     required this.fabAnimationController,
     required this.fabAnimation,
     required this.fabBottomVisible,
+    this.fabRight = 16.0,
+    this.fabCollapsedBottom = 40.0,
     required this.onCreatePost,
   });
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      right: 32.0,
+      right: fabRight,
       bottom: fabBottomVisible,
       child: AnimatedBuilder(
         animation: fabAnimationController,
@@ -32,7 +36,7 @@ class HomeFeedFabGroup extends StatelessWidget {
             curve: Curves.easeOutCubic,
           ).value;
           final double bottomPadding = MediaQuery.paddingOf(context).bottom;
-          final double collapsedBottom = bottomPadding > 0 ? bottomPadding + 8.0 : 21.0;
+          final double collapsedBottom = bottomPadding > 0 ? bottomPadding + 8.0 : fabCollapsedBottom;
           final double travelDistance = (fabBottomVisible - collapsedBottom).clamp(0.0, 120.0);
           final double fabOffsetY = (1.0 - fabProgress) * travelDistance;
           final bool isHomeTab = currentNavTab == HomeNavTab.home;

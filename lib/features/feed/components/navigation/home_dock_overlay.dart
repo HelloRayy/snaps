@@ -43,7 +43,7 @@ class _HomeDockOverlayState extends State<HomeDockOverlay> {
           currentNavTab: widget.currentNavTab,
           fabAnimationController: widget.fabAnimationController,
           fabAnimation: widget.fabAnimation,
-          fabBottomVisible: widget.fabBottom,
+          fabBottomVisible: 100.0,
           onCreatePost: widget.onCreatePost,
         ),
         Positioned(

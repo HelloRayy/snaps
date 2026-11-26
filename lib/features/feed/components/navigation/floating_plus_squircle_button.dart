@@ -43,10 +43,10 @@ class _FloatingPlusSquircleButtonState extends State<FloatingPlusSquircleButton>
           duration: const Duration(milliseconds: 80),
           curve: Curves.easeOutCubic,
           child: Container(
-            width: 62.0,
-            height: 62.0,
+            width: 60.0,
+            height: 44.0,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(31.0),
+              borderRadius: BorderRadius.circular(16.0),
               gradient: const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,

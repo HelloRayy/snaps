@@ -75,14 +75,14 @@ class HomeBottomNavBar extends StatelessWidget {
     this.userAvatar,
     this.isCollapsed = false,
     this.onExpandTap,
-    this.motionDurationMs = 425,
-    this.motionCurve = Curves.fastOutSlowIn,
-    this.collapsedWidth = 88.0,
-    this.navHeight = 62.0,
-    this.horizontalPadding = 32.0,
-    this.bottomMargin = 21.0,
-    this.iconScale = 1.30,
-    this.iconGap = 0.0,
+    this.motionDurationMs = 501,
+    this.motionCurve = Curves.easeOutCubic,
+    this.collapsedWidth = 64.0,
+    this.navHeight = 64.0,
+    this.horizontalPadding = 16.0,
+    this.bottomMargin = 24.0,
+    this.iconScale = 1.48,
+    this.iconGap = 12.0,
   });
 
   @override
@@ -168,8 +168,13 @@ class HomeBottomNavBar extends StatelessWidget {
                         padding: EdgeInsets.only(
                           left: 0,
                         ),
-                        child: OverflowBox(
-                          maxWidth: innerWidth,
+                        child: Transform.translate(
+                          offset: Offset(
+                            isCollapsed ? -((innerWidth / 8.0) - (collapsedWidth / 2.0 - 4.0)) : 0.0,
+                            0.0,
+                          ),
+                          child: OverflowBox(
+                            maxWidth: innerWidth,
                           minWidth: innerWidth,
                           alignment: Alignment.centerLeft,
                           child: SizedBox(
@@ -269,6 +274,7 @@ class HomeBottomNavBar extends StatelessWidget {
       ),
       ),
       ),
+      ),
     );
   }
 }
@@ -288,7 +294,7 @@ class _DockTabItem extends StatefulWidget {
     required this.glyph,
     required this.onTap,
     this.showLabel = false,
-    this.iconScale = 1.30,
+    this.iconScale = 1.48,
   });
 
   @override
