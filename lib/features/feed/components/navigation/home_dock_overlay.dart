@@ -4,7 +4,6 @@ import 'package:snapan_market/features/create_post/models/create_post_types.dart
 import 'package:snapan_market/features/feed/components/navigation/home_bottom_nav_bar.dart';
 export 'package:snapan_market/features/feed/components/navigation/home_bottom_nav_bar.dart' show HomeNavTab, HomeBottomNavBar;
 import 'package:snapan_market/features/feed/components/navigation/home_feed_fab_group.dart';
-import 'package:snapan_market/features/feed/components/navigation/navbar_motion_tuner_hud.dart';
 import 'package:snapan_market/features/messages/services/direct_messages_service.dart';
 import 'package:snapan_market/features/search/screens/search_screen.dart';
 
@@ -36,9 +35,6 @@ class HomeDockOverlay extends StatefulWidget {
 }
 
 class _HomeDockOverlayState extends State<HomeDockOverlay> {
-  NavbarMotionConfig _motionConfig = const NavbarMotionConfig();
-  bool _showTunerHud = false;
-
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -67,8 +63,6 @@ class _HomeDockOverlayState extends State<HomeDockOverlay> {
                   hasUnreadActivity: widget.hasUnreadActivity,
                   userAvatar: widget.userAvatar,
                   isCollapsed: isCollapsed,
-                  motionDurationMs: _motionConfig.durationMs,
-                  motionCurve: _motionConfig.curve,
                   onExpandTap: () => widget.fabAnimationController.forward(),
                   onSearchTap: () => Navigator.push(
                     context,
@@ -81,8 +75,6 @@ class _HomeDockOverlayState extends State<HomeDockOverlay> {
             ),
           ),
         ),
-        if (_showTunerHud)
-          const SizedBox.shrink(),
       ],
     );
   }

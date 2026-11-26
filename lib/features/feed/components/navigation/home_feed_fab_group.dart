@@ -22,14 +22,17 @@ class HomeFeedFabGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      right: 20.0,
+      right: 32.0,
       bottom: fabBottomVisible,
       child: AnimatedBuilder(
         animation: fabAnimationController,
         builder: (context, _) {
-          final double fabProgress = fabAnimation?.value ?? 1.0;
+          final double fabProgress = CurvedAnimation(
+            parent: fabAnimationController,
+            curve: Curves.easeOutCubic,
+          ).value;
           final double bottomPadding = MediaQuery.paddingOf(context).bottom;
-          final double collapsedBottom = bottomPadding > 0 ? bottomPadding + 8.0 : 18.0;
+          final double collapsedBottom = bottomPadding > 0 ? bottomPadding + 8.0 : 21.0;
           final double travelDistance = (fabBottomVisible - collapsedBottom).clamp(0.0, 120.0);
           final double fabOffsetY = (1.0 - fabProgress) * travelDistance;
           final bool isHomeTab = currentNavTab == HomeNavTab.home;

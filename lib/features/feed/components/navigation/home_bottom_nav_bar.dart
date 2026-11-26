@@ -55,6 +55,12 @@ class HomeBottomNavBar extends StatelessWidget {
   final VoidCallback? onExpandTap;
   final int motionDurationMs;
   final Curve motionCurve;
+  final double collapsedWidth;
+  final double navHeight;
+  final double horizontalPadding;
+  final double bottomMargin;
+  final double iconScale;
+  final double iconGap;
 
   const HomeBottomNavBar({
     super.key,
@@ -71,6 +77,12 @@ class HomeBottomNavBar extends StatelessWidget {
     this.onExpandTap,
     this.motionDurationMs = 425,
     this.motionCurve = Curves.fastOutSlowIn,
+    this.collapsedWidth = 88.0,
+    this.navHeight = 62.0,
+    this.horizontalPadding = 32.0,
+    this.bottomMargin = 21.0,
+    this.iconScale = 1.30,
+    this.iconGap = 0.0,
   });
 
   @override
@@ -82,7 +94,7 @@ class HomeBottomNavBar extends StatelessWidget {
     }
 
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
-    final double expandedWidth = (MediaQuery.sizeOf(context).width - 40.0).clamp(0.0, 360.0);
+    final double expandedWidth = (MediaQuery.sizeOf(context).width - horizontalPadding * 2).clamp(0.0, 360.0);
     final double innerWidth = (expandedWidth - 8.0).clamp(0.0, 352.0);
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -91,9 +103,9 @@ class HomeBottomNavBar extends StatelessWidget {
 
     return Padding(
       padding: EdgeInsets.only(
-        left: 20.0,
-        right: 20.0,
-        bottom: bottomPadding > 0 ? bottomPadding + 8.0 : 18.0,
+        left: horizontalPadding,
+        right: horizontalPadding,
+        bottom: bottomPadding > 0 ? bottomPadding + 8.0 : bottomMargin,
       ),
       child: Align(
         alignment: Alignment.centerLeft,
@@ -101,8 +113,8 @@ class HomeBottomNavBar extends StatelessWidget {
         child: AnimatedContainer(
           duration: Duration(milliseconds: motionDurationMs),
           curve: Curves.easeOutCubic,
-          width: isCollapsed ? 88.0 : expandedWidth,
-          height: 62.0,
+          width: isCollapsed ? collapsedWidth : expandedWidth,
+          height: navHeight,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(31.0),
               border: Border.all(
@@ -171,10 +183,10 @@ class HomeBottomNavBar extends StatelessWidget {
                           AnimatedPositioned(
                             duration: const Duration(milliseconds: 260),
                             curve: const Cubic(0.2, 0.9, 0.3, 1.0),
-                            left: currentTab.index * tabWidth + 3.0,
+                            left: currentTab.index * tabWidth + 3.0 + (iconGap / 2),
                             top: 3.0,
-                            width: tabWidth - 6.0,
-                            height: 50.0,
+                            width: (tabWidth - 6.0 - iconGap).clamp(24.0, 120.0),
+                            height: (navHeight - 12.0).clamp(32.0, 60.0),
                             child: Container(
                               decoration: BoxDecoration(
                                 color: isCollapsed
@@ -193,6 +205,7 @@ class HomeBottomNavBar extends StatelessWidget {
                               _DockTabItem(
                                 isActive: currentTab == HomeNavTab.home,
                                 label: 'Home',
+                                iconScale: iconScale,
                                 glyph: HomeNavGlyph(
                                   isActive: currentTab == HomeNavTab.home,
                                   activeColor: activeColor,
@@ -267,6 +280,7 @@ class _DockTabItem extends StatefulWidget {
   final Widget glyph;
   final VoidCallback onTap;
   final bool showLabel;
+  final double iconScale;
 
   const _DockTabItem({
     required this.isActive,
@@ -274,6 +288,7 @@ class _DockTabItem extends StatefulWidget {
     required this.glyph,
     required this.onTap,
     this.showLabel = false,
+    this.iconScale = 1.30,
   });
 
   @override
@@ -314,7 +329,7 @@ class _DockTabItemState extends State<_DockTabItem> {
               children: [
                 // Icon / Glyph with spring pop micro-motion
                 Transform.scale(
-                  scale: 1.18,
+                  scale: widget.iconScale,
                   child: AnimatedScale(
                   scale: widget.isActive ? 1.08 : 1.0,
                   duration: const Duration(milliseconds: 220),
