@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/components/skeleton/snaps_shimmer.dart';
 /// Renders a feed image with dynamic aspect ratio bounded between
@@ -32,7 +33,8 @@ class _DynamicFeedImageState extends State<DynamicFeedImage> {
   ImageStream? _imageStream;
   ImageStreamListener? _listener;
   double? _resolvedRatio;
-  bool _isImageLoaded = false;
+  int _retryCount = 0;
+
   @override
   void initState() {
     super.initState();
@@ -44,7 +46,6 @@ class _DynamicFeedImageState extends State<DynamicFeedImage> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.imageUrl != widget.imageUrl) {
       _resolvedRatio = _ratioCache[widget.imageUrl];
-      _isImageLoaded = false;
       _resolveRatio();
     }
   }
@@ -56,7 +57,7 @@ class _DynamicFeedImageState extends State<DynamicFeedImage> {
       return;
     }
 
-    final provider = NetworkImage(widget.imageUrl);
+    final provider = CachedNetworkImageProvider(widget.imageUrl);
     _imageStream?.removeListener(_listener!);
     _imageStream = provider.resolve(const ImageConfiguration());
     _listener = ImageStreamListener(
@@ -116,52 +117,56 @@ class _DynamicFeedImageState extends State<DynamicFeedImage> {
             curve: Curves.easeOutCubic,
             child: AspectRatio(
               aspectRatio: ratio,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  if (!_isImageLoaded)
-                    SnapsShimmer(
-                      child: Container(
-                        color: isDark
-                            ? const Color(0xFF242626)
-                            : const Color(0xFFF1F3F5),
-                      ),
-                    ),
-                  Image.network(
-                    widget.imageUrl,
-                    cacheWidth: 600,
-                    fit: BoxFit.cover,
-                    frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                      if (wasSynchronouslyLoaded) {
-                        return child;
-                      }
-                      final isLoaded = frame != null;
-                      if (isLoaded && !_isImageLoaded) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          if (mounted && !_isImageLoaded) {
-                            setState(() => _isImageLoaded = true);
-                          }
-                        });
-                      }
-                      return AnimatedOpacity(
-                        opacity: isLoaded ? 1.0 : 0.0,
-                        duration: const Duration(milliseconds: 200),
-                        curve: Curves.easeOutCubic,
-                        child: child,
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      color: placeholderColor,
-                      child: Center(
-                        child: Icon(
-                          Icons.image_outlined,
-                          color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
-                          size: 40.0,
-                        ),
+              child: CachedNetworkImage(
+                key: ValueKey('${widget.imageUrl}#$_retryCount'),
+                imageUrl: widget.imageUrl,
+                memCacheWidth: 800,
+                fit: BoxFit.cover,
+                fadeInDuration: const Duration(milliseconds: 180),
+                fadeOutDuration: const Duration(milliseconds: 120),
+                placeholder: (_, __) => SnapsShimmer(
+                  child: Container(
+                    color: isDark
+                        ? const Color(0xFF242626)
+                        : const Color(0xFFF1F3F5),
+                  ),
+                ),
+                errorWidget: (_, __, ___) => GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    CachedNetworkImage.evictFromCache(widget.imageUrl);
+                    setState(() => _retryCount++);
+                    _resolveRatio();
+                  },
+                  child: Container(
+                    color: placeholderColor,
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.refresh_rounded,
+                            color: isDark
+                                ? const Color(0xFF64748B)
+                                : const Color(0xFF94A3B8),
+                            size: 34.0,
+                          ),
+                          const SizedBox(height: 6.0),
+                          Text(
+                            'Ketuk untuk muat ulang',
+                            style: TextStyle(
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.w500,
+                              color: isDark
+                                  ? const Color(0xFF64748B)
+                                  : const Color(0xFF94A3B8),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ],
+                ),
               ),
             ),
           ),

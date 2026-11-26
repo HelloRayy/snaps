@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/components/avatar/oreo_avatar_helper.dart';
@@ -152,22 +153,22 @@ class AppAvatar extends StatelessWidget {
         ),
       );
     } else {
-      content = Image.network(
-        cleanUrl,
+      final cachePx = (size * 3).round().clamp(96, 360);
+      content = CachedNetworkImage(
+        imageUrl: cleanUrl,
         width: size,
         height: size,
+        memCacheWidth: cachePx,
+        memCacheHeight: cachePx,
         fit: BoxFit.cover,
-        frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-          if (wasSynchronouslyLoaded || frame != null) {
-            return child;
-          }
-          return DefaultProfileAvatar(
-            size: size,
-            backgroundColor: backgroundColor,
-            iconColor: iconColor,
-          );
-        },
-        errorBuilder: (context, error, stackTrace) => DefaultProfileAvatar(
+        fadeInDuration: Duration.zero,
+        fadeOutDuration: Duration.zero,
+        placeholder: (_, __) => DefaultProfileAvatar(
+          size: size,
+          backgroundColor: backgroundColor,
+          iconColor: iconColor,
+        ),
+        errorWidget: (_, __, ___) => DefaultProfileAvatar(
           size: size,
           backgroundColor: backgroundColor,
           iconColor: iconColor,
