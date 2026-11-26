@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:snapan_market/core/components/snaps_logo.dart';
 import 'package:snapan_market/core/services/student_registry_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -208,20 +209,29 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.canvas,
-      appBar: AppBar(
-        backgroundColor: AppColors.canvas,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(CupertinoIcons.chevron_back, color: AppColors.ink),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: const Text(
-          'Reset Kata Sandi',
-          style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.w700, color: AppColors.ink),
-        ),
-      ),
       body: SafeArea(
-        child: _isWaitingView ? _buildWaitingState() : _buildFormState(),
+        child: Stack(
+          children: [
+            _isWaitingView ? _buildWaitingState() : _buildFormState(),
+            Positioned(
+              top: 12.0,
+              left: 16.0,
+              child: Material(
+                color: const Color(0xFFF1F5F9),
+                shape: const CircleBorder(),
+                child: InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: () => Navigator.of(context).pop(),
+                  child: const SizedBox(
+                    width: 42.0,
+                    height: 42.0,
+                    child: Icon(CupertinoIcons.chevron_back, color: AppColors.ink, size: 20.0),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -229,27 +239,32 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget _buildFormState() {
     return LayoutBuilder(
       builder: (context, constraints) => SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+        padding: const EdgeInsets.fromLTRB(20.0, 64.0, 20.0, 24.0),
         child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: constraints.maxHeight - 32.0),
+          constraints: BoxConstraints(minHeight: constraints.maxHeight - 88.0),
           child: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                const Center(child: SnapsLogo(height: 28.0)),
+                const SizedBox(height: 16.0),
                 const Text(
-                  'Ajukan Reset Sandi',
-                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w800, color: AppColors.ink),
+                  'Reset Kata Sandi',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w800, color: AppColors.ink),
                 ),
-                const SizedBox(height: 4.0),
+                const SizedBox(height: 6.0),
                 const Text(
-                  'Isi data diri sesuai absen sekolah.',
-                  style: TextStyle(fontSize: 13.5, color: AppColors.muted),
+                  'Masukkan NIS sekolahmu untuk mengajukan pemulihan kata sandi ke admin.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 13.5, color: AppColors.muted, height: 1.4),
                 ),
-                const SizedBox(height: 20.0),
+                const SizedBox(height: 24.0),
                 StudentNisCombobox(
                   controller: _nisController,
                   verifiedStudent: _verifiedStudent,
+                  allowClaimed: true,
                   onStudentSelected: (student) {
                     setState(() {
                       _verifiedStudent = student;
@@ -270,16 +285,36 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 const SizedBox(height: 14.0),
                 AuthInputField(
                   label: 'Kelas / Jurusan',
-                  hint: 'Contoh: XI PPLG 1',
+                  hint: 'Otomatis terisi dari NIS',
                   prefixIcon: LucideIcons.graduationCap,
                   controller: _classController,
+                  readOnly: true,
                 ),
                 const SizedBox(height: 14.0),
-                AuthInputField(
-                  label: 'Catatan (Opsional)',
-                  hint: 'Kendala tambahan jika ada',
-                  prefixIcon: LucideIcons.messageSquare,
+                const Text(
+                  'Alasan Lupa Kata Sandi',
+                  style: TextStyle(fontSize: 13.0, fontWeight: FontWeight.w600, color: AppColors.slateInk),
+                ),
+                const SizedBox(height: 6.0),
+                TextField(
                   controller: _notesController,
+                  minLines: 3,
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                    hintText: 'Ceritakan singkat kenapa lupa sandi...',
+                    hintStyle: const TextStyle(fontSize: 13.5, color: AppColors.lightMuted),
+                    filled: true,
+                    fillColor: AppColors.inputBg,
+                    contentPadding: const EdgeInsets.all(14.0),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14.0),
+                      borderSide: const BorderSide(color: AppColors.border),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14.0),
+                      borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 24.0),
                 SizedBox(
@@ -291,7 +326,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
                       elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.0)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999.0)),
                     ),
                     child: _isSubmitting
                         ? const SizedBox(width: 20.0, height: 20.0, child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white))

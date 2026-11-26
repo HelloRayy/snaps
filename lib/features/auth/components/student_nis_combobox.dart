@@ -12,6 +12,7 @@ class StudentNisCombobox extends StatefulWidget {
   final String? errorText;
   final RegisteredStudent? verifiedStudent;
   final ValueChanged<RegisteredStudent?> onStudentSelected;
+  final bool allowClaimed;
 
   const StudentNisCombobox({
     super.key,
@@ -19,6 +20,7 @@ class StudentNisCombobox extends StatefulWidget {
     this.errorText,
     this.verifiedStudent,
     required this.onStudentSelected,
+    this.allowClaimed = false,
   });
 
   @override
@@ -66,7 +68,7 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
     // Jika tepat 5 digit, cek instan apakah cocok langsung ke memori lokal
     if (clean.length == 5) {
       final exactMatch = StudentRegistryService.instance.findByNis(clean);
-      if (exactMatch != null && !exactMatch.isClaimed) {
+      if (exactMatch != null && (widget.allowClaimed || !exactMatch.isClaimed)) {
         widget.onStudentSelected(exactMatch);
         _removeOverlay();
         return;
@@ -142,7 +144,7 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
                     final student = _suggestions[index];
                     return InkWell(
                       onTap: () {
-                        if (student.isClaimed) {
+                        if (student.isClaimed && !widget.allowClaimed) {
                           ScaffoldMessenger.of(context).hideCurrentSnackBar();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
