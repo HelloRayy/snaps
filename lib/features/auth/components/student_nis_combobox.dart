@@ -68,7 +68,7 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
     // Jika tepat 5 digit, cek instan apakah cocok langsung ke memori lokal
     if (clean.length == 5) {
       final exactMatch = StudentRegistryService.instance.findByNis(clean);
-      if (exactMatch != null && (widget.allowClaimed || !exactMatch.isClaimed)) {
+      if (exactMatch != null && (widget.allowClaimed ? exactMatch.isClaimed : !exactMatch.isClaimed)) {
         widget.onStudentSelected(exactMatch);
         _removeOverlay();
         return;
@@ -142,14 +142,18 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
                   ),
                   itemBuilder: (context, index) {
                     final student = _suggestions[index];
-                    final isLocked = student.isClaimed && !widget.allowClaimed;
+                    final isLocked = widget.allowClaimed ? !student.isClaimed : student.isClaimed;
                     return InkWell(
                       onTap: () {
                         if (isLocked) {
                           ScaffoldMessenger.of(context).hideCurrentSnackBar();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('NIS ${student.nis} sudah memiliki akun aktif. Silakan masuk.'),
+                              content: Text(
+                                widget.allowClaimed
+                                    ? 'NIS ${student.nis} belum terdaftar. Silakan daftar akun baru.'
+                                    : 'NIS ${student.nis} sudah memiliki akun aktif. Silakan masuk.',
+                              ),
                               behavior: SnackBarBehavior.floating,
                             ),
                           );
@@ -227,9 +231,9 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
                                               color: const Color(0xFFFEF3C7),
                                               borderRadius: BorderRadius.circular(4.0),
                                             ),
-                                            child: const Text(
-                                              'Sudah Terdaftar',
-                                              style: TextStyle(
+                                            child: Text(
+                                              widget.allowClaimed ? 'Belum Terdaftar' : 'Sudah Terdaftar',
+                                              style: const TextStyle(
                                                 fontFamily: 'SFPro',
                                                 fontSize: 10.0,
                                                 fontWeight: FontWeight.w600,
@@ -244,9 +248,9 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
                                 ),
                               ),
                               Icon(
-                                student.isClaimed ? LucideIcons.lock : LucideIcons.arrowUpRight,
+                                isLocked ? LucideIcons.lock : LucideIcons.arrowUpRight,
                                 size: 15.0,
-                                color: student.isClaimed
+                                color: isLocked
                                     ? const Color(0xFFD97706)
                                     : const Color(0xFF94A3B8),
                               ),
