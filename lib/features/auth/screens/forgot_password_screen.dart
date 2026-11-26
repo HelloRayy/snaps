@@ -120,6 +120,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   bool _isSubmitting = false;
   bool _isLoadingStatus = false;
   bool _isWaitingView = false;
+  bool _agreedOwnership = false;
   String? _activeNis;
   String? _currentDeviceToken;
   RegisteredStudent? _verifiedStudent;
@@ -246,6 +247,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.canvas,
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Stack(
           children: [
@@ -274,107 +276,144 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   Widget _buildFormState() {
-    return LayoutBuilder(
-      builder: (context, constraints) => SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20.0, 64.0, 20.0, 24.0),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: constraints.maxHeight - 88.0),
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+    final canSubmit = _verifiedStudent != null && _agreedOwnership && !_isSubmitting;
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20.0, 68.0, 20.0, 24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Center(child: SnapsLogo(height: 28.0)),
+          const SizedBox(height: 16.0),
+          const Text(
+            'Reset Kata Sandi',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w800, color: AppColors.ink),
+          ),
+          const SizedBox(height: 6.0),
+          const Text(
+            'Masukkan NIS sekolahmu untuk mengajukan pemulihan kata sandi ke admin.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 13.5, color: AppColors.muted, height: 1.4),
+          ),
+          const SizedBox(height: 24.0),
+          StudentNisCombobox(
+            controller: _nisController,
+            verifiedStudent: _verifiedStudent,
+            allowClaimed: true,
+            onStudentSelected: (student) {
+              setState(() {
+                _verifiedStudent = student;
+                if (student != null) {
+                  _nameController.text = student.name;
+                  _classController.text = student.classGroup;
+                }
+              });
+            },
+          ),
+          if (_verifiedStudent != null) ...[
+            const SizedBox(height: 10.0),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
+              decoration: BoxDecoration(
+                color: AppColors.primaryPastel,
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              child: Row(
+                children: [
+                  const Icon(LucideIcons.userCheck, size: 16.0, color: AppColors.primary),
+                  const SizedBox(width: 8.0),
+                  Expanded(
+                    child: Text(
+                      '${_verifiedStudent!.name} • ${_verifiedStudent!.classGroup}',
+                      style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.primary),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+          const SizedBox(height: 16.0),
+          const Text(
+            'Alasan Lupa Kata Sandi (Opsional)',
+            style: TextStyle(fontSize: 13.0, fontWeight: FontWeight.w600, color: AppColors.slateInk),
+          ),
+          const SizedBox(height: 6.0),
+          TextField(
+            controller: _notesController,
+            minLines: 3,
+            maxLines: 4,
+            decoration: InputDecoration(
+              hintText: 'Ceritakan singkat kenapa lupa sandi...',
+              hintStyle: const TextStyle(fontSize: 13.5, color: AppColors.lightMuted),
+              filled: true,
+              fillColor: AppColors.inputBg,
+              contentPadding: const EdgeInsets.all(14.0),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14.0),
+                borderSide: const BorderSide(color: AppColors.border),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14.0),
+                borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+              ),
+            ),
+          ),
+          const SizedBox(height: 14.0),
+          GestureDetector(
+            onTap: () {
+              HapticFeedback.selectionClick();
+              setState(() => _agreedOwnership = !_agreedOwnership);
+            },
+            behavior: HitTestBehavior.opaque,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Center(child: SnapsLogo(height: 28.0)),
-                const SizedBox(height: 16.0),
-                const Text(
-                  'Reset Kata Sandi',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w800, color: AppColors.ink),
-                ),
-                const SizedBox(height: 6.0),
-                const Text(
-                  'Masukkan NIS sekolahmu untuk mengajukan pemulihan kata sandi ke admin.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 13.5, color: AppColors.muted, height: 1.4),
-                ),
-                const SizedBox(height: 24.0),
-                StudentNisCombobox(
-                  controller: _nisController,
-                  verifiedStudent: _verifiedStudent,
-                  allowClaimed: true,
-                  onStudentSelected: (student) {
-                    setState(() {
-                      _verifiedStudent = student;
-                      if (student != null) {
-                        _nameController.text = student.name;
-                        _classController.text = student.classGroup;
-                      }
-                    });
-                  },
-                ),
-                const SizedBox(height: 14.0),
-                AuthInputField(
-                  label: 'Nama Lengkap',
-                  hint: 'Nama sesuai absen sekolah',
-                  prefixIcon: LucideIcons.user,
-                  controller: _nameController,
-                ),
-                const SizedBox(height: 14.0),
-                IgnorePointer(
-                  child: AuthInputField(
-                    label: 'Kelas / Jurusan',
-                    hint: 'Otomatis terisi dari NIS',
-                    prefixIcon: LucideIcons.graduationCap,
-                    controller: _classController,
-                  ),
-                ),
-                const SizedBox(height: 14.0),
-                const Text(
-                  'Alasan Lupa Kata Sandi',
-                  style: TextStyle(fontSize: 13.0, fontWeight: FontWeight.w600, color: AppColors.slateInk),
-                ),
-                const SizedBox(height: 6.0),
-                TextField(
-                  controller: _notesController,
-                  minLines: 3,
-                  maxLines: 4,
-                  decoration: InputDecoration(
-                    hintText: 'Ceritakan singkat kenapa lupa sandi...',
-                    hintStyle: const TextStyle(fontSize: 13.5, color: AppColors.lightMuted),
-                    filled: true,
-                    fillColor: AppColors.inputBg,
-                    contentPadding: const EdgeInsets.all(14.0),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14.0),
-                      borderSide: const BorderSide(color: AppColors.border),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14.0),
-                      borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 140),
+                  width: 20.0,
+                  height: 20.0,
+                  margin: const EdgeInsets.only(top: 2.0),
+                  decoration: BoxDecoration(
+                    color: _agreedOwnership ? AppColors.primary : Colors.white,
+                    borderRadius: BorderRadius.circular(6.0),
+                    border: Border.all(
+                      color: _agreedOwnership ? AppColors.primary : AppColors.border,
+                      width: 1.5,
                     ),
                   ),
+                  child: _agreedOwnership
+                      ? const Icon(LucideIcons.check, size: 14.0, color: Colors.white)
+                      : null,
                 ),
-                const SizedBox(height: 24.0),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50.0,
-                  child: ElevatedButton(
-                    onPressed: _isSubmitting ? null : _submit,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999.0)),
-                    ),
-                    child: _isSubmitting
-                        ? const SizedBox(width: 20.0, height: 20.0, child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white))
-                        : const Text('Kirim Permintaan', style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700)),
+                const SizedBox(width: 10.0),
+                const Expanded(
+                  child: Text(
+                    'Saya menyatakan bahwa NIS ini adalah akun milik saya sendiri.',
+                    style: TextStyle(fontSize: 13.0, color: AppColors.slateInk, height: 1.4),
                   ),
                 ),
               ],
             ),
           ),
-        ),
+          const SizedBox(height: 24.0),
+          SizedBox(
+            width: double.infinity,
+            height: 50.0,
+            child: ElevatedButton(
+              onPressed: canSubmit ? _submit : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                disabledBackgroundColor: AppColors.border,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999.0)),
+              ),
+              child: _isSubmitting
+                  ? const SizedBox(width: 20.0, height: 20.0, child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white))
+                  : const Text('Kirim Permintaan', style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700)),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -409,8 +448,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           LucideIcons.clock,
           const Color(0xFFFFFBEB),
           const Color(0xFF92400E),
-          'Menunggu Verifikasi Admin',
-          'Permintaan reset untuk NIS ${_activeNis ?? ''} sedang diproses. Kami akan mengirim notifikasi setelah selesai.'
+          'Permintaan Sedang Ditinjau',
+          'Admin sekolah sedang memeriksa data kamu. Layar ini akan otomatis terbarui begitu disetujui.'
         ),
     };
 
