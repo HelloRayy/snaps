@@ -145,10 +145,10 @@ class HomeBottomNavBar extends StatelessWidget {
                           },
                           child: Center(
                             child: switch (currentTab) {
-                              HomeNavTab.home => HomeNavGlyph(isActive: true, color: activeColor),
-                              HomeNavTab.messages => PaperPlaneNavGlyph(isActive: true, color: activeColor),
-                              HomeNavTab.activity => HeartNavGlyph(isActive: true, color: activeColor),
-                              HomeNavTab.profile => UserNavGlyph(isActive: true, color: activeColor),
+                              HomeNavTab.home => const HomeNavGlyph(isActive: true),
+                              HomeNavTab.messages => const PaperPlaneNavGlyph(isActive: true),
+                              HomeNavTab.activity => const HeartNavGlyph(isActive: true),
+                              HomeNavTab.profile => const UserNavGlyph(isActive: true),
                             },
                           ),
                         )
