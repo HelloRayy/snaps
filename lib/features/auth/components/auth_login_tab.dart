@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/auth/components/auth_text_field.dart';
+import 'package:snapan_market/features/auth/components/forgot_password_sheet.dart';
 
 class AuthLoginTab extends StatelessWidget {
   final TextEditingController usernameController;
@@ -221,14 +222,7 @@ class AuthLoginTab extends StatelessWidget {
         ),
         const SizedBox(width: 12.0),
         GestureDetector(
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Silakan hubungi administrator sekolah untuk reset kata sandi'),
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          },
+          onTap: () => ForgotPasswordSheet.show(context),
           child: const Text(
             'Lupa kata sandi?',
             style: TextStyle(

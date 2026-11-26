@@ -140,4 +140,52 @@ class SupabaseAuthService {
       return null;
     }
   }
+
+  /// Ajukan permintaan reset password ke admin tanpa keluar dari aplikasi.
+  Future<void> submitPasswordResetRequest({
+    required String nis,
+    required String fullName,
+    required String classGroup,
+    String? notes,
+    String? deviceFcmToken,
+  }) async {
+    final cleanNis = nis.trim();
+    final existing = await client
+        .from('password_reset_requests')
+        .select('id')
+        .eq('nis', cleanNis)
+        .eq('status', 'pending')
+        .maybeSingle();
+
+    if (existing != null) {
+      throw Exception('Permintaan reset untuk NIS ini masih menunggu verifikasi admin.');
+    }
+
+    await client.from('password_reset_requests').insert({
+      'nis': cleanNis,
+      'full_name': fullName.trim(),
+      'class_group': classGroup.trim(),
+      if (notes != null && notes.trim().isNotEmpty) 'notes': notes.trim(),
+      if (deviceFcmToken != null && deviceFcmToken.isNotEmpty) 'device_fcm_token': deviceFcmToken,
+      'status': 'pending',
+    });
+  }
+
+  /// Cek status permintaan reset password terbaru berdasarkan NIS.
+  Future<Map<String, dynamic>?> getPasswordResetStatus(String nis) async {
+    final cleanNis = nis.trim();
+    if (cleanNis.isEmpty) return null;
+    return await client
+        .from('password_reset_requests')
+        .select('id, nis, full_name, class_group, status, temp_password, admin_note, created_at, updated_at')
+        .eq('nis', cleanNis)
+        .order('created_at', ascending: false)
+        .limit(1)
+        .maybeSingle();
+  }
+
+  /// Ubah kata sandi pengguna yang sedang login.
+  Future<void> updatePassword(String newPassword) async {
+    await client.auth.updateUser(UserAttributes(password: newPassword));
+  }
 }

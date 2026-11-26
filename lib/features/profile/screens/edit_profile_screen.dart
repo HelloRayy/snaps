@@ -8,6 +8,7 @@ import 'package:snapan_market/core/services/mascot_feature_notice_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/snaps_toast.dart';
 import 'package:snapan_market/features/auth/models/auth_constants.dart';
+import 'package:snapan_market/features/profile/components/change_password_sheet.dart';
 import 'package:snapan_market/features/profile/components/discard_changes_dialog.dart';
 import 'package:snapan_market/features/profile/components/edit_profile_avatar_section.dart';
 import 'package:snapan_market/features/profile/components/edit_profile_bottom_bar.dart';
@@ -379,6 +380,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       onTagsChanged: (t) => setState(() => _tags = t),
                       showSalesStats: _showSalesStats,
                       onToggleSalesStats: (v) => setState(() => _showSalesStats = v),
+                    ),
+                    const SizedBox(height: 20.0),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48.0,
+                      child: OutlinedButton(
+                        onPressed: () => ChangePasswordSheet.show(context),
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: AppColors.border),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.0)),
+                        ),
+                        child: Text(
+                          'Ubah Kata Sandi',
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.adaptiveText(context),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
