@@ -1,7 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/components/avatar/oreo_avatar_helper.dart';
+import 'package:snapan_market/core/services/snaps_disk_image_cache.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// Global flag to force default profile avatar across the entire app.
@@ -153,26 +154,11 @@ class AppAvatar extends StatelessWidget {
         ),
       );
     } else {
-      final cachePx = (size * 3).round().clamp(96, 360);
-      content = CachedNetworkImage(
-        imageUrl: cleanUrl,
-        width: size,
-        height: size,
-        memCacheWidth: cachePx,
-        memCacheHeight: cachePx,
-        fit: BoxFit.cover,
-        fadeInDuration: Duration.zero,
-        fadeOutDuration: Duration.zero,
-        placeholder: (_, __) => DefaultProfileAvatar(
-          size: size,
-          backgroundColor: backgroundColor,
-          iconColor: iconColor,
-        ),
-        errorWidget: (_, __, ___) => DefaultProfileAvatar(
-          size: size,
-          backgroundColor: backgroundColor,
-          iconColor: iconColor,
-        ),
+      content = _CachedAvatarImage(
+        url: cleanUrl,
+        size: size,
+        backgroundColor: backgroundColor,
+        iconColor: iconColor,
       );
     }
 
@@ -196,5 +182,77 @@ class AppAvatar extends StatelessWidget {
       );
     }
     return avatar;
+  }
+}
+
+class _CachedAvatarImage extends StatefulWidget {
+  final String url;
+  final double size;
+  final Color? backgroundColor;
+  final Color? iconColor;
+
+  const _CachedAvatarImage({
+    required this.url,
+    required this.size,
+    this.backgroundColor,
+    this.iconColor,
+  });
+
+  @override
+  State<_CachedAvatarImage> createState() => _CachedAvatarImageState();
+}
+
+class _CachedAvatarImageState extends State<_CachedAvatarImage> {
+  File? _file;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  @override
+  void didUpdateWidget(covariant _CachedAvatarImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.url != widget.url) {
+      _file = null;
+      _load();
+    }
+  }
+
+  Future<void> _load() async {
+    final sync = SnapsDiskImageCache.instance.getCachedFileSync(widget.url);
+    if (sync != null) {
+      _file = sync;
+      return;
+    }
+    final fetched = await SnapsDiskImageCache.instance.getOrFetch(widget.url);
+    if (mounted && fetched != null) {
+      setState(() => _file = fetched);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_file == null) {
+      return DefaultProfileAvatar(
+        size: widget.size,
+        backgroundColor: widget.backgroundColor,
+        iconColor: widget.iconColor,
+      );
+    }
+    final cachePx = (widget.size * 3).round().clamp(96, 360);
+    return Image.file(
+      _file!,
+      width: widget.size,
+      height: widget.size,
+      cacheWidth: cachePx,
+      fit: BoxFit.cover,
+      errorBuilder: (_, _, _) => DefaultProfileAvatar(
+        size: widget.size,
+        backgroundColor: widget.backgroundColor,
+        iconColor: widget.iconColor,
+      ),
+    );
   }
 }
