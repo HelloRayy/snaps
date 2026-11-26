@@ -181,7 +181,7 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
                     <td className="py-3.5 px-4 font-medium text-slate-800">{req.full_name}</td>
                     <td className="py-3.5 px-4 text-slate-600">{req.class_group}</td>
                     <td className="py-3.5 px-4 text-slate-500 max-w-[200px]">{req.notes || '-'}</td>
-                    <td className="py-3.5 px-4">
+                    <td className="py-3.5 px-4" style={{ position: 'relative' }}>
                       <div className="flex flex-col items-start gap-1.5">
                         <Badge
                           variant={
@@ -202,19 +202,48 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
                         <button
                           type="button"
                           onClick={() => setExpandedId(expandedId === req.id ? null : req.id)}
-                          className="text-[11px] font-semibold text-indigo-600 hover:underline"
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            color: '#4F46E5',
+                            background: 'none',
+                            border: 'none',
+                            padding: 0,
+                            cursor: 'pointer',
+                          }}
                         >
-                          {expandedId === req.id ? 'Tutup Detail' : 'Lihat Detail'}
+                          <span>{expandedId === req.id ? 'Tutup Detail' : 'Lihat Detail'}</span>
+                          <span style={{ fontSize: '10px' }}>{expandedId === req.id ? '▲' : '▼'}</span>
                         </button>
                       </div>
                       {expandedId === req.id && (
-                        <div className="mt-2 rounded-xl bg-slate-50 border border-slate-200 p-2.5 text-[11px] text-slate-600 space-y-1">
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: '100%',
+                            left: '16px',
+                            zIndex: 50,
+                            minWidth: '230px',
+                            marginTop: '4px',
+                            borderRadius: '12px',
+                            backgroundColor: '#FFFFFF',
+                            border: '1px solid #E2E8F0',
+                            boxShadow: '0 10px 25px -5px rgba(15, 23, 42, 0.15)',
+                            padding: '10px 12px',
+                            fontSize: '11px',
+                            color: '#475569',
+                            lineHeight: 1.6,
+                          }}
+                        >
                           <div>
-                            <span className="font-semibold">Device Awal:</span>{' '}
-                            <span className="font-mono">{req.knownTokenPreview || 'Belum ada riwayat'}</span>
+                            <strong>Device Awal:</strong>{' '}
+                            <span style={{ fontFamily: 'monospace' }}>{req.knownTokenPreview || 'Belum ada riwayat'}</span>
                           </div>
                           <div>
-                            <span className="font-semibold">Device Pengaju:</span>{' '}
+                            <strong>Device Pengaju:</strong>{' '}
                             <span>{req.device_name || (req.device_fcm_token ? `${req.device_fcm_token.slice(0, 12)}...` : 'Tidak tersedia')}</span>
                           </div>
                         </div>
