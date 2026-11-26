@@ -76,7 +76,10 @@ class ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     _pageController = PageController(initialPage: _activeTab.index);
     _controller.addListener(() { if (mounted) setState(() {}); });
-    reloadProfile();
+    // Let the 280ms slide transition finish smoothly on skeleton shimmer before fetching
+    Future.delayed(const Duration(milliseconds: 280), () {
+      if (mounted) reloadProfile();
+    });
   }
 
   void reloadProfile() {
