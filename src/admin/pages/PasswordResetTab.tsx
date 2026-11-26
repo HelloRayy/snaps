@@ -11,6 +11,7 @@ interface PasswordResetRequest {
   notes: string | null;
   status: 'pending' | 'approved' | 'rejected';
   device_fcm_token: string | null;
+  device_name: string | null;
   temp_password: string | null;
   admin_note: string | null;
   created_at: string;
@@ -217,9 +218,7 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
                           </div>
                           <div>
                             <span className="font-semibold">Device Pengaju:</span>{' '}
-                            <span className="font-mono">
-                              {req.device_fcm_token ? `${req.device_fcm_token.slice(0, 12)}...` : 'Tidak tersedia'}
-                            </span>
+                            <span>{req.device_name || (req.device_fcm_token ? `${req.device_fcm_token.slice(0, 12)}...` : 'Tidak tersedia')}</span>
                           </div>
                         </div>
                       )}

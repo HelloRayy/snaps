@@ -148,6 +148,7 @@ class SupabaseAuthService {
     required String classGroup,
     String? notes,
     String? deviceFcmToken,
+    String? deviceName,
   }) async {
     final cleanNis = nis.trim();
     final existing = await _client
@@ -167,6 +168,7 @@ class SupabaseAuthService {
       'class_group': classGroup.trim(),
       if (notes != null && notes.trim().isNotEmpty) 'notes': notes.trim(),
       if (deviceFcmToken != null && deviceFcmToken.isNotEmpty) 'device_fcm_token': deviceFcmToken,
+      if (deviceName != null && deviceName.isNotEmpty) 'device_name': deviceName,
       'status': 'pending',
     });
   }

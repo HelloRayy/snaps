@@ -6,6 +6,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:snapan_market/core/components/snaps_logo.dart';
+import 'package:snapan_market/core/services/device_security_service.dart';
 import 'package:snapan_market/core/services/student_registry_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -215,6 +216,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       try {
         fcmToken = await FirebaseMessaging.instance.getToken();
       } catch (_) {}
+      final deviceName = await DeviceSecurityService.instance.getDeviceName();
 
       await SupabaseService.instance.auth.submitPasswordResetRequest(
         nis: nis,
@@ -222,6 +224,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         classGroup: classGroup,
         notes: _notesController.text.trim(),
         deviceFcmToken: fcmToken,
+        deviceName: deviceName,
       );
 
       final prefs = await SharedPreferences.getInstance();

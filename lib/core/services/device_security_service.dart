@@ -32,6 +32,20 @@ class DeviceSecurityService {
   String? _cachedDeviceModel;
 
   /// Mengambil identitas unik perangkat yang persisten (Hardware + Local UUID)
+  /// Ambil nama/model HP yang mudah dibaca (contoh: SAMSUNG SM-A546E)
+  Future<String> getDeviceName() async {
+    try {
+      if (Platform.isAndroid) {
+        final info = await _deviceInfoPlugin.androidInfo;
+        return '${info.brand.toUpperCase()} ${info.model}'.trim();
+      } else if (Platform.isIOS) {
+        final info = await _deviceInfoPlugin.iosInfo;
+        return info.utsname.machine;
+      }
+    } catch (_) {}
+    return Platform.operatingSystem;
+  }
+
   Future<String> getDeviceId() async {
     if (_cachedDeviceId != null && _cachedDeviceId!.isNotEmpty) {
       return _cachedDeviceId!;
