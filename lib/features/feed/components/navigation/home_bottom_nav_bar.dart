@@ -51,6 +51,8 @@ class HomeBottomNavBar extends StatelessWidget {
   final int unreadMessagesCount;
   final bool hasUnreadActivity;
   final String? userAvatar;
+  final bool isCollapsed;
+  final VoidCallback? onExpandTap;
 
   const HomeBottomNavBar({
     super.key,
@@ -63,6 +65,8 @@ class HomeBottomNavBar extends StatelessWidget {
     this.unreadMessagesCount = 0,
     this.hasUnreadActivity = false,
     this.userAvatar,
+    this.isCollapsed = false,
+    this.onExpandTap,
   });
 
   @override
@@ -85,13 +89,17 @@ class HomeBottomNavBar extends StatelessWidget {
         right: 20.0,
         bottom: bottomPadding > 0 ? bottomPadding + 8.0 : 18.0,
       ),
-      child: Center(
+      child: AnimatedAlign(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOutCubic,
+        alignment: isCollapsed ? Alignment.centerLeft : Alignment.center,
         heightFactor: 1.0,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 360.0),
-          child: Container(
-            height: 62.0,
-            decoration: BoxDecoration(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOutCubic,
+          width: isCollapsed ? 62.0 : 360.0,
+          height: 62.0,
+          decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(31.0),
               border: Border.all(
                 color: isDark ? const Color(0x1AFFFFFF) : const Color(0xFFE2E8F0),
@@ -128,7 +136,23 @@ class HomeBottomNavBar extends StatelessWidget {
                             ],
                     ),
                   ),
-                  child: LayoutBuilder(
+                  child: isCollapsed
+                      ? InkWell(
+                          borderRadius: BorderRadius.circular(31.0),
+                          onTap: () {
+                            HapticFeedback.selectionClick();
+                            onExpandTap?.call();
+                          },
+                          child: Center(
+                            child: switch (currentTab) {
+                              HomeNavTab.home => HomeNavGlyph(isActive: true, color: activeColor),
+                              HomeNavTab.messages => PaperPlaneNavGlyph(isActive: true, color: activeColor),
+                              HomeNavTab.activity => HeartNavGlyph(isActive: true, color: activeColor),
+                              HomeNavTab.profile => UserNavGlyph(isActive: true, color: activeColor),
+                            },
+                          ),
+                        )
+                      : LayoutBuilder(
                     builder: (context, constraints) {
                       final double tabWidth = constraints.maxWidth / 4.0;
                       return Stack(

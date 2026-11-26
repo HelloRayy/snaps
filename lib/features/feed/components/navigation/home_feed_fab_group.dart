@@ -28,24 +28,25 @@ class HomeFeedFabGroup extends StatelessWidget {
         animation: fabAnimationController,
         builder: (context, _) {
           final double fabProgress = fabAnimation?.value ?? 1.0;
-          final double fabOffsetY = (1.0 - fabProgress) * 48.0;
-          final double fabScale = 0.6 + 0.4 * fabProgress;
-          final double fabOpacity = fabProgress.clamp(0.0, 1.0);
+          final double bottomPadding = MediaQuery.paddingOf(context).bottom;
+          final double collapsedBottom = bottomPadding > 0 ? bottomPadding + 8.0 : 18.0;
+          final double travelDistance = (fabBottomVisible - collapsedBottom).clamp(0.0, 120.0);
+          final double fabOffsetY = (1.0 - fabProgress) * travelDistance;
           final bool isHomeTab = currentNavTab == HomeNavTab.home;
 
           return AnimatedOpacity(
-            opacity: isHomeTab ? fabOpacity : 0.0,
+            opacity: isHomeTab ? 1.0 : 0.0,
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeOutCubic,
             child: AnimatedScale(
-              scale: isHomeTab ? fabScale : 0.6,
+              scale: isHomeTab ? 1.0 : 0.6,
               duration: const Duration(milliseconds: 200),
               curve: Curves.easeOutCubic,
               alignment: Alignment.bottomRight,
               child: Transform.translate(
                 offset: Offset(0, fabOffsetY),
                 child: IgnorePointer(
-                  ignoring: !isHomeTab || fabProgress < 0.2,
+                  ignoring: !isHomeTab,
                   child: FloatingPlusSquircleButton(
                     onTap: () => onCreatePost(PostMode.thread),
                   ),

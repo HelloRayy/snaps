@@ -47,15 +47,18 @@ class HomeDockOverlay extends StatelessWidget {
           bottom: 0,
           child: RepaintBoundary(
             child: AnimatedBuilder(
-              animation: DirectMessagesService.instance,
+              animation: Listenable.merge([DirectMessagesService.instance, fabAnimationController]),
               builder: (context, _) {
                 final unreadCount = DirectMessagesService.instance.totalUnreadCount;
+                final isCollapsed = (fabAnimation?.value ?? 1.0) < 0.5;
                 return HomeBottomNavBar(
                   currentTab: currentNavTab,
                   hasUnreadMessages: unreadCount > 0,
                   unreadMessagesCount: unreadCount,
                   hasUnreadActivity: hasUnreadActivity,
                   userAvatar: userAvatar,
+                  isCollapsed: isCollapsed,
+                  onExpandTap: () => fabAnimationController.forward(),
                   onSearchTap: () => Navigator.push(
                     context,
                     AppSlidePageRoute(builder: (context) => SearchScreen(onBack: () => Navigator.pop(context))),
