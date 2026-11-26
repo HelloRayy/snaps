@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../../services/api/supabase';
 import { Card } from '../components/tremor/Card';
 import { Badge } from '../components/tremor/Badge';
@@ -23,11 +23,14 @@ interface PasswordResetTabProps {
   isActive?: boolean;
 }
 
+type StatusFilter = 'all' | 'pending' | 'approved' | 'rejected';
+
 export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
   const [requests, setRequests] = useState<PasswordResetRequest[]>([]);
   const [loading, setLoading] = useState(false);
   const [processingId, setProcessingId] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<{ text: string; isError?: boolean } | null>(null);
+  const [filter, setFilter] = useState<StatusFilter>('all');
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [confirmModal, setConfirmModal] = useState<{
     req: PasswordResetRequest;
@@ -45,7 +48,7 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
     if (!error && data) {
       const rows = data as PasswordResetRequest[];
       const nisList = [...new Set(rows.map((r) => r.nis).filter(Boolean))];
-      let knownTokensByNis: Record<string, Set<string>> = {};
+      const knownTokensByNis: Record<string, Set<string>> = {};
 
       if (nisList.length > 0) {
         const { data: profiles } = await supabase
@@ -90,10 +93,25 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
   };
 
   useEffect(() => {
-    if (isActive) {
-      loadRequests();
-    }
+    if (isActive) loadRequests();
   }, [isActive]);
+
+  const counts = useMemo(() => {
+    let pending = 0;
+    let approved = 0;
+    let rejected = 0;
+    for (const r of requests) {
+      if (r.status === 'pending') pending++;
+      else if (r.status === 'approved') approved++;
+      else if (r.status === 'rejected') rejected++;
+    }
+    return { pending, approved, rejected };
+  }, [requests]);
+
+  const filteredRequests = useMemo(
+    () => (filter === 'all' ? requests : requests.filter((r) => r.status === filter)),
+    [requests, filter],
+  );
 
   const handleAction = async (requestId: string, action: 'approve' | 'reject', adminNote?: string) => {
     setProcessingId(requestId);
@@ -103,117 +121,170 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
     });
 
     if (error || data?.error) {
-      setMessage(`Gagal: ${error?.message || data?.error}`);
+      setMessage({ text: `Gagal: ${error?.message || data?.error}`, isError: true });
     } else {
-      setMessage(
-        action === 'approve'
-          ? `Disetujui! Sandi sementara: ${data.tempPassword}`
-          : 'Permintaan ditolak.',
-      );
+      setMessage({
+        text: action === 'approve' ? `Disetujui! Sandi sementara: ${data.tempPassword}` : 'Permintaan ditolak.',
+      });
       await loadRequests();
     }
     setProcessingId(null);
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between" style={{ marginBottom: '20px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <h2 className="text-lg font-bold text-slate-900" style={{ marginBottom: '4px' }}>Antrean Reset Kata Sandi</h2>
-          <p className="text-sm text-slate-500">Verifikasi NIS dan nama siswa sebelum menyetujui reset.</p>
+          <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#0F172A', margin: 0 }}>
+            Antrean Reset Kata Sandi
+          </h2>
+          <p style={{ fontSize: '13px', color: '#64748B', margin: '4px 0 0 0' }}>
+            Verifikasi NIS, nama siswa, dan perangkat sebelum menyetujui pemulihan sandi.
+          </p>
         </div>
         <button
+          type="button"
           onClick={loadRequests}
           style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
             padding: '8px 14px',
             fontSize: '13px',
             fontWeight: 600,
-            borderRadius: '8px',
+            borderRadius: '10px',
             border: '1px solid #E2E8F0',
             backgroundColor: '#FFFFFF',
             color: '#334155',
             cursor: 'pointer',
           }}
         >
+          <i className="fa-solid fa-rotate-right" style={{ fontSize: '12px' }}></i>
           Refresh
         </button>
       </div>
 
+      {/* KPI Summary Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+        <Card>
+          <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748B' }}>Menunggu Verifikasi</div>
+          <div style={{ fontSize: '24px', fontWeight: 800, color: '#D97706', marginTop: '4px' }}>{counts.pending}</div>
+        </Card>
+        <Card>
+          <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748B' }}>Disetujui</div>
+          <div style={{ fontSize: '24px', fontWeight: 800, color: '#059669', marginTop: '4px' }}>{counts.approved}</div>
+        </Card>
+        <Card>
+          <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748B' }}>Ditolak</div>
+          <div style={{ fontSize: '24px', fontWeight: 800, color: '#E11D48', marginTop: '4px' }}>{counts.rejected}</div>
+        </Card>
+      </div>
+
       {message && (
-        <div className="p-3 rounded-lg bg-indigo-50 text-indigo-800 text-sm font-medium">
-          {message}
+        <div
+          style={{
+            padding: '10px 14px',
+            borderRadius: '10px',
+            fontSize: '13px',
+            fontWeight: 600,
+            backgroundColor: message.isError ? '#FFF1F2' : '#EEF2FF',
+            color: message.isError ? '#BE123C' : '#3730A3',
+            border: `1px solid ${message.isError ? '#FECDD3' : '#C7D2FE'}`,
+          }}
+        >
+          {message.text}
         </div>
       )}
 
-      <div style={{ backgroundColor: '#FFFFFF', borderRadius: '10px', border: '1px solid #E4E7EC', padding: '4px 12px' }}>
+      {/* Filter Pills + Table */}
+      <Card>
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
+          {(
+            [
+              ['all', `Semua (${requests.length})`],
+              ['pending', `Menunggu (${counts.pending})`],
+              ['approved', `Disetujui (${counts.approved})`],
+              ['rejected', `Ditolak (${counts.rejected})`],
+            ] as [StatusFilter, string][]
+          ).map(([key, label]) => {
+            const active = filter === key;
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setFilter(key)}
+                style={{
+                  padding: '6px 12px',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  borderRadius: '999px',
+                  border: active ? 'none' : '1px solid #E2E8F0',
+                  backgroundColor: active ? '#3D38F5' : '#FFFFFF',
+                  color: active ? '#FFFFFF' : '#475569',
+                  cursor: 'pointer',
+                }}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+
         {loading ? (
-          <p className="text-sm text-slate-500 py-6 text-center">Memuat permintaan...</p>
-        ) : requests.length === 0 ? (
-          <p className="text-sm text-slate-500 py-6 text-center">Belum ada permintaan reset kata sandi.</p>
+          <p style={{ fontSize: '13px', color: '#64748B', padding: '24px 0', textAlign: 'center' }}>Memuat permintaan...</p>
+        ) : filteredRequests.length === 0 ? (
+          <p style={{ fontSize: '13px', color: '#64748B', padding: '24px 0', textAlign: 'center' }}>Tidak ada permintaan pada filter ini.</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
               <thead>
-                <tr className="border-b border-slate-200 text-slate-500">
-                  <th className="py-2 pr-4">NIS</th>
-                  <th className="py-2 pr-4">Nama Lengkap</th>
-                  <th className="py-2 pr-4">Kelas</th>
-                  <th className="py-2 pr-4">Catatan</th>
-                  <th className="py-2 pr-4">Status</th>
-                  <th className="py-2">Aksi</th>
+                <tr style={{ backgroundColor: '#F8FAFC', borderBottom: '1px solid #E2E8F0', color: '#64748B', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  <th style={{ padding: '10px 14px' }}>NIS</th>
+                  <th style={{ padding: '10px 14px' }}>Nama Lengkap</th>
+                  <th style={{ padding: '10px 14px' }}>Kelas</th>
+                  <th style={{ padding: '10px 14px' }}>Catatan</th>
+                  <th style={{ padding: '10px 14px' }}>Status</th>
+                  <th style={{ padding: '10px 14px' }}>Aksi</th>
                 </tr>
               </thead>
               <tbody>
-                {requests.map((req) => (
-                  <tr key={req.id} className="border-b border-slate-100 hover:bg-slate-50/60 transition-colors align-top">
-                    <td className="py-3.5 px-4">
-                      <div className="font-semibold text-slate-900 tabular-nums">{req.nis}</div>
+                {filteredRequests.map((req) => (
+                  <tr key={req.id} style={{ borderBottom: '1px solid #F1F5F9', verticalAlign: 'top' }}>
+                    <td style={{ padding: '14px' }}>
+                      <div style={{ fontWeight: 700, color: '#0F172A' }}>{req.nis}</div>
                       <span
-                        className={`inline-block mt-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-                          req.isKnownDevice
-                            ? 'bg-emerald-50 text-emerald-700'
-                            : 'bg-amber-50 text-amber-700'
-                        }`}
+                        style={{
+                          display: 'inline-block',
+                          marginTop: '6px',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          padding: '2px 8px',
+                          borderRadius: '999px',
+                          backgroundColor: req.isKnownDevice ? '#ECFDF5' : '#FFFBEB',
+                          color: req.isKnownDevice ? '#047857' : '#B45309',
+                        }}
                       >
                         {req.isKnownDevice ? 'Perangkat Dikenal' : 'Perangkat Baru'}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 font-medium text-slate-800">{req.full_name}</td>
-                    <td className="py-3.5 px-4 text-slate-600">{req.class_group}</td>
-                    <td className="py-3.5 px-4 text-slate-500 max-w-[200px]">{req.notes || '-'}</td>
-                    <td className="py-3.5 px-4" style={{ position: 'relative' }}>
-                      <div className="flex flex-col items-start gap-1.5">
-                        <Badge
-                          variant={
-                            req.status === 'approved'
-                              ? 'success'
-                              : req.status === 'rejected'
-                              ? 'error'
-                              : 'warning'
-                          }
-                        >
+                    <td style={{ padding: '14px', fontWeight: 600, color: '#1E293B' }}>{req.full_name}</td>
+                    <td style={{ padding: '14px', color: '#475569' }}>{req.class_group}</td>
+                    <td style={{ padding: '14px', color: '#64748B', maxWidth: '220px' }}>{req.notes || '-'}</td>
+                    <td style={{ padding: '14px', position: 'relative' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '6px' }}>
+                        <Badge variant={req.status === 'approved' ? 'success' : req.status === 'rejected' ? 'error' : 'warning'}>
                           {req.status}
                         </Badge>
                         {req.temp_password && (
-                          <span className="inline-block rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-mono font-semibold text-emerald-700">
+                          <span style={{ borderRadius: '6px', backgroundColor: '#ECFDF5', padding: '2px 8px', fontSize: '12px', fontFamily: 'monospace', fontWeight: 700, color: '#047857' }}>
                             {req.temp_password}
                           </span>
                         )}
                         <button
                           type="button"
                           onClick={() => setExpandedId(expandedId === req.id ? null : req.id)}
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            fontSize: '11px',
-                            fontWeight: 600,
-                            color: '#4F46E5',
-                            background: 'none',
-                            border: 'none',
-                            padding: 0,
-                            cursor: 'pointer',
-                          }}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 600, color: '#4F46E5', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
                         >
                           <span>{expandedId === req.id ? 'Tutup Detail' : 'Lihat Detail'}</span>
                           <span style={{ fontSize: '10px' }}>{expandedId === req.id ? '▲' : '▼'}</span>
@@ -224,9 +295,9 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
                           style={{
                             position: 'absolute',
                             top: '100%',
-                            left: '16px',
+                            left: '14px',
                             zIndex: 50,
-                            minWidth: '230px',
+                            minWidth: '240px',
                             marginTop: '4px',
                             borderRadius: '12px',
                             backgroundColor: '#FFFFFF',
@@ -249,46 +320,26 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
                         </div>
                       )}
                     </td>
-                    <td className="py-3.5 px-4">
+                    <td style={{ padding: '14px' }}>
                       {req.status === 'pending' ? (
                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                           <button
                             disabled={processingId === req.id}
                             onClick={() => setConfirmModal({ req, action: 'approve', note: '' })}
-                            style={{
-                              padding: '6px 12px',
-                              fontSize: '12px',
-                              fontWeight: 600,
-                              borderRadius: '8px',
-                              border: 'none',
-                              backgroundColor: '#3D38F5',
-                              color: '#FFFFFF',
-                              cursor: processingId === req.id ? 'not-allowed' : 'pointer',
-                              opacity: processingId === req.id ? 0.5 : 1,
-                            }}
+                            style={{ padding: '6px 12px', fontSize: '12px', fontWeight: 600, borderRadius: '8px', border: 'none', backgroundColor: '#3D38F5', color: '#FFFFFF', cursor: processingId === req.id ? 'not-allowed' : 'pointer', opacity: processingId === req.id ? 0.5 : 1 }}
                           >
                             Setujui
                           </button>
                           <button
                             disabled={processingId === req.id}
                             onClick={() => setConfirmModal({ req, action: 'reject', note: '' })}
-                            style={{
-                              padding: '6px 12px',
-                              fontSize: '12px',
-                              fontWeight: 600,
-                              borderRadius: '8px',
-                              border: '1px solid #FECDD3',
-                              backgroundColor: '#FFF1F2',
-                              color: '#BE123C',
-                              cursor: processingId === req.id ? 'not-allowed' : 'pointer',
-                              opacity: processingId === req.id ? 0.5 : 1,
-                            }}
+                            style={{ padding: '6px 12px', fontSize: '12px', fontWeight: 600, borderRadius: '8px', border: '1px solid #FECDD3', backgroundColor: '#FFF1F2', color: '#BE123C', cursor: processingId === req.id ? 'not-allowed' : 'pointer', opacity: processingId === req.id ? 0.5 : 1 }}
                           >
                             Tolak
                           </button>
                         </div>
                       ) : (
-                        <span className="text-xs text-slate-400">Selesai</span>
+                        <span style={{ fontSize: '12px', color: '#94A3B8' }}>Selesai</span>
                       )}
                     </td>
                   </tr>
@@ -297,50 +348,21 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
             </table>
           </div>
         )}
-      </div>
+      </Card>
 
       {confirmModal && (
         <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 9999,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'rgba(15, 23, 42, 0.45)',
-            padding: '16px',
-          }}
+          style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(15, 23, 42, 0.45)', padding: '16px' }}
           onClick={() => setConfirmModal(null)}
         >
           <div
-            style={{
-              width: '100%',
-              maxWidth: '440px',
-              borderRadius: '16px',
-              backgroundColor: '#FFFFFF',
-              padding: '24px',
-              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.12)',
-              border: '1px solid #E2E8F0',
-            }}
+            style={{ width: '100%', maxWidth: '440px', borderRadius: '16px', backgroundColor: '#FFFFFF', padding: '24px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.12)', border: '1px solid #E2E8F0' }}
             onClick={(e) => e.stopPropagation()}
           >
             <h3 style={{ fontSize: '17px', fontWeight: 700, color: '#0F172A', margin: '0 0 14px 0' }}>
-              {confirmModal.action === 'approve'
-                ? 'Konfirmasi Setujui Reset Sandi'
-                : 'Konfirmasi Tolak Permintaan'}
+              {confirmModal.action === 'approve' ? 'Konfirmasi Setujui Reset Sandi' : 'Konfirmasi Tolak Permintaan'}
             </h3>
-            <div
-              style={{
-                borderRadius: '12px',
-                backgroundColor: '#F8FAFC',
-                border: '1px solid #E2E8F0',
-                padding: '12px 14px',
-                fontSize: '13px',
-                lineHeight: 1.6,
-                marginBottom: '14px',
-              }}
-            >
+            <div style={{ borderRadius: '12px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', padding: '12px 14px', fontSize: '13px', lineHeight: 1.6, marginBottom: '14px' }}>
               <div><span style={{ color: '#64748B' }}>NIS:</span> <strong>{confirmModal.req.nis}</strong></div>
               <div><span style={{ color: '#64748B' }}>Nama:</span> <strong>{confirmModal.req.full_name}</strong></div>
               <div><span style={{ color: '#64748B' }}>Kelas:</span> <strong>{confirmModal.req.class_group}</strong></div>
@@ -363,31 +385,14 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
                 value={confirmModal.note}
                 onChange={(e) => setConfirmModal({ ...confirmModal, note: e.target.value })}
                 placeholder="Tulis catatan jika perlu..."
-                style={{
-                  width: '100%',
-                  borderRadius: '10px',
-                  border: '1px solid #CBD5E1',
-                  padding: '9px 12px',
-                  fontSize: '13px',
-                  outline: 'none',
-                  boxSizing: 'border-box',
-                }}
+                style={{ width: '100%', borderRadius: '10px', border: '1px solid #CBD5E1', padding: '9px 12px', fontSize: '13px', outline: 'none', boxSizing: 'border-box' }}
               />
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
               <button
                 type="button"
                 onClick={() => setConfirmModal(null)}
-                style={{
-                  padding: '8px 16px',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  borderRadius: '10px',
-                  border: '1px solid #E2E8F0',
-                  backgroundColor: '#FFFFFF',
-                  color: '#334155',
-                  cursor: 'pointer',
-                }}
+                style={{ padding: '8px 16px', fontSize: '13px', fontWeight: 600, borderRadius: '10px', border: '1px solid #E2E8F0', backgroundColor: '#FFFFFF', color: '#334155', cursor: 'pointer' }}
               >
                 Batal
               </button>
@@ -398,16 +403,7 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
                   setConfirmModal(null);
                   handleAction(req.id, action, note.trim() || undefined);
                 }}
-                style={{
-                  padding: '8px 16px',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  borderRadius: '10px',
-                  border: 'none',
-                  backgroundColor: confirmModal.action === 'approve' ? '#3D38F5' : '#E11D48',
-                  color: '#FFFFFF',
-                  cursor: 'pointer',
-                }}
+                style={{ padding: '8px 16px', fontSize: '13px', fontWeight: 600, borderRadius: '10px', border: 'none', backgroundColor: confirmModal.action === 'approve' ? '#3D38F5' : '#E11D48', color: '#FFFFFF', cursor: 'pointer' }}
               >
                 {confirmModal.action === 'approve' ? 'Ya, Setujui' : 'Ya, Tolak'}
               </button>
