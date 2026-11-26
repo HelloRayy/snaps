@@ -17,12 +17,8 @@ class SnapsDiskImageCache {
     ..idleTimeout = const Duration(seconds: 15)
     ..maxConnectionsPerHost = 10;
 
-  /// Synchronous lookup for already-indexed local files (zero-frame shimmer skip).
-  File? getCachedFileSync(String url) {
-    final file = _memIndex[url];
-    if (file != null && file.existsSync()) return file;
-    return null;
-  }
+  /// Synchronous lookup for already-indexed local files (zero disk I/O on UI thread).
+  File? getCachedFileSync(String url) => _memIndex[url];
 
   /// Evict a specific URL from both memory and disk (used by tap-to-reload).
   Future<void> evict(String url) async {
@@ -106,7 +102,7 @@ class SnapsDiskImageCache {
           if (bytes.isEmpty) return null;
 
           final tmp = File('${target.path}.tmp');
-          await tmp.writeAsBytes(bytes, flush: true);
+          await tmp.writeAsBytes(bytes);
           await tmp.rename(target.path);
 
           _memIndex[url] = target;

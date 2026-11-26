@@ -100,7 +100,8 @@ class _AdaptiveCarouselCardState extends State<AdaptiveCarouselCard> {
     if (_imageStream != null && _listener != null) {
       _imageStream!.removeListener(_listener!);
     }
-    _imageStream = FileImage(file).resolve(const ImageConfiguration());
+    _imageStream = ResizeImage(FileImage(file), width: 64)
+        .resolve(const ImageConfiguration());
     _listener = ImageStreamListener(
       (info, _) {
         if (!mounted) return;

@@ -81,7 +81,8 @@ class _DynamicFeedImageState extends State<DynamicFeedImage> {
     if (_listener != null && _imageStream != null) {
       _imageStream?.removeListener(_listener!);
     }
-    _imageStream = FileImage(file).resolve(const ImageConfiguration());
+    _imageStream = ResizeImage(FileImage(file), width: 64)
+        .resolve(const ImageConfiguration());
     _listener = ImageStreamListener(
       (info, _) {
         if (!mounted) return;
