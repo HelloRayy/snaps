@@ -34,6 +34,7 @@ class MediaCropperService {
     try {
       final cropped = await ImageCropper().cropImage(
         sourcePath: sourcePath,
+        compressFormat: ImageCompressFormat.jpg,
         compressQuality: 85,
         maxWidth: 720,
         maxHeight: 720,
@@ -84,6 +85,7 @@ class MediaCropperService {
     try {
       final cropped = await ImageCropper().cropImage(
         sourcePath: sourcePath,
+        compressFormat: ImageCompressFormat.jpg,
         compressQuality: 85,
         maxWidth: 1280,
         maxHeight: 1280,

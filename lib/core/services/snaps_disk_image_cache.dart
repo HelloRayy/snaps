@@ -9,6 +9,9 @@ class SnapsDiskImageCache {
   SnapsDiskImageCache._();
   static final SnapsDiskImageCache instance = SnapsDiskImageCache._();
 
+  static const int _maxCachedFiles = 180;
+  int _writesSinceLastPrune = 0;
+
   Directory? _cacheDir;
   final Map<String, File> _memIndex = {};
   final Map<String, Future<File?>> _inFlight = {};
@@ -106,6 +109,7 @@ class SnapsDiskImageCache {
           await tmp.rename(target.path);
 
           _memIndex[url] = target;
+          _maybePruneInBackground(dir);
           return target;
         } catch (e) {
           if (attempt == 1) rethrow;
@@ -117,5 +121,34 @@ class SnapsDiskImageCache {
       debugPrint('SnapsDiskImageCache fetch error for $url: $e');
       return null;
     }
+  }
+
+  void _maybePruneInBackground(Directory dir) {
+    _writesSinceLastPrune++;
+    if (_writesSinceLastPrune < 25) return;
+    _writesSinceLastPrune = 0;
+
+    Future<void>(() async {
+      try {
+        final entries = await dir
+            .list()
+            .where((e) => e is File && e.path.endsWith('.img'))
+            .cast<File>()
+            .toList();
+        if (entries.length <= _maxCachedFiles) return;
+
+        final withStats = await Future.wait(
+          entries.map((f) async => MapEntry(f, (await f.stat()).modified)),
+        );
+        withStats.sort((a, b) => a.value.compareTo(b.value));
+
+        final toDelete = withStats.length - _maxCachedFiles;
+        for (int i = 0; i < toDelete; i++) {
+          try {
+            await withStats[i].key.delete();
+          } catch (_) {}
+        }
+      } catch (_) {}
+    });
   }
 }
