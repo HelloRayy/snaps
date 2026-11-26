@@ -101,7 +101,7 @@ class HomeBottomNavBar extends StatelessWidget {
         child: AnimatedContainer(
           duration: Duration(milliseconds: motionDurationMs),
           curve: Curves.easeOutCubic,
-          width: isCollapsed ? 62.0 : expandedWidth,
+          width: isCollapsed ? 88.0 : expandedWidth,
           height: 62.0,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(31.0),
