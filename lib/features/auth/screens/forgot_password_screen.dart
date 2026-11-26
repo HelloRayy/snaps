@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:snapan_market/core/services/student_registry_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/snaps_toast.dart';
 import 'package:snapan_market/features/auth/components/auth_text_field.dart';
+import 'package:snapan_market/features/auth/components/student_nis_combobox.dart';
 
 /// Halaman tunggal Reset Kata Sandi dengan dialog pengantar & waiting state.
 class ForgotPasswordScreen extends StatefulWidget {
@@ -116,6 +118,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   bool _isLoadingStatus = false;
   bool _isWaitingView = false;
   String? _activeNis;
+  RegisteredStudent? _verifiedStudent;
   Map<String, dynamic>? _statusData;
 
   @override
@@ -244,12 +247,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   style: TextStyle(fontSize: 13.5, color: AppColors.muted),
                 ),
                 const SizedBox(height: 20.0),
-                AuthInputField(
-                  label: 'NIS',
-                  hint: 'Contoh: 23001',
-                  prefixIcon: LucideIcons.idCard,
+                StudentNisCombobox(
                   controller: _nisController,
-                  keyboardType: TextInputType.number,
+                  selectedStudent: _verifiedStudent,
+                  onStudentSelected: (student) {
+                    setState(() {
+                      _verifiedStudent = student;
+                      if (student != null) {
+                        _nameController.text = student.fullName;
+                        _classController.text = student.classGroup;
+                      }
+                    });
+                  },
                 ),
                 const SizedBox(height: 14.0),
                 AuthInputField(
