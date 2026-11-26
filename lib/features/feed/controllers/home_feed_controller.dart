@@ -26,13 +26,17 @@ class HomeFeedController extends ChangeNotifier {
     SupabaseService.instance.currentUserProfileNotifier.addListener(_handleProfileChange);
     _setupProfileSubscription();
 
-    // 1. Stale-While-Revalidate: load in-memory cache instantly (0ms)
+    // 1. Stale-While-Revalidate: load cache instantly (0ms) and defer silent
+    // network revalidation until splash transition finishes to prevent frame drops.
     if (SupabaseService.instance.hasCachedFeedPosts) {
       posts = List.from(SupabaseService.instance.cachedFeedPosts);
       isLoading = false;
       notifyListeners();
-      // Silently revalidate in background
-      fetchPosts(isSilent: true);
+      Future.delayed(const Duration(milliseconds: 2200), () {
+        if (_authSubscription != null) {
+          fetchPosts(isSilent: true);
+        }
+      });
     } else {
       fetchPosts();
     }

@@ -179,16 +179,20 @@ class _AppRootState extends State<AppRoot> with SingleTickerProviderStateMixin {
 
             return Stack(
               children: [
-                HomeFeedScreen(
-                  onLogout: () async {
-                    await SupabaseService.instance.signOut();
-                  },
+                RepaintBoundary(
+                  child: HomeFeedScreen(
+                    onLogout: () async {
+                      await SupabaseService.instance.signOut();
+                    },
+                  ),
                 ),
                 if (_showSplash)
-                  FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: SplashScreen(
-                      onCompleted: _handleSplashCompleted,
+                  RepaintBoundary(
+                    child: FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: SplashScreen(
+                        onCompleted: _handleSplashCompleted,
+                      ),
                     ),
                   ),
               ],
