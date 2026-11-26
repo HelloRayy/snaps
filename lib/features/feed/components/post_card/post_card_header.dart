@@ -133,101 +133,92 @@ class PostCardHeader extends StatelessWidget {
                 const SizedBox(width: 10.0),
               ],
 
-              // 1. Author Name + Verified/Flair + Topic Tag (auto-wraps cleanly)
+              // 1. Author Name + Verified/Flair + @username + Topic Tag (1-line prioritized Row)
               Expanded(
-                child: Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 4.0,
-                  runSpacing: 2.0,
+                child: Row(
                   children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Flexible(
-                          child: GestureDetector(
-                            onTap: () => onUserClick?.call(cleanUsername),
-                            child: Text(
-                              displayAuthor,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontFamily: 'SFPro',
-                                fontSize: 14.5,
-                                fontWeight: FontWeight.w600,
-                                color: primaryTextColor,
-                                letterSpacing: -0.2,
-                              ),
+                    Flexible(
+                      flex: 3,
+                      child: GestureDetector(
+                        onTap: () => onUserClick?.call(cleanUsername),
+                        child: Text(
+                          displayAuthor,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontFamily: 'SFPro',
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.w600,
+                            color: primaryTextColor,
+                            letterSpacing: -0.2,
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (item.seller.isVerified) ...[
+                      const SizedBox(width: 4.0),
+                      const Icon(
+                        Icons.verified_rounded,
+                        size: 15.0,
+                        color: AppColors.verifiedBlue,
+                      ),
+                    ],
+                    if (item.seller.mascotFlair != null) ...[
+                      const SizedBox(width: 4.0),
+                      MascotFlairBadge(
+                        flair: item.seller.mascotFlair!,
+                        size: 26.0,
+                      ),
+                    ],
+                    if (item.topicTag != null) ...[
+                      const SizedBox(width: 4.0),
+                      Icon(
+                        LucideIcons.chevronRight,
+                        size: 14.0,
+                        color: mutedTextColor,
+                      ),
+                      const SizedBox(width: 4.0),
+                      if (item.isOfficialTopic) ...[
+                        if (item.topicIcon == 'presentation')
+                          const PresentationTopicGlyph(size: 14.0)
+                        else
+                          const ThreadsTopicGlyph(size: 14.0),
+                        const SizedBox(width: 4.0),
+                      ],
+                      Flexible(
+                        flex: 2,
+                        child: GestureDetector(
+                          onTap: () => onTopicClick?.call(item.topicTag!),
+                          child: Text(
+                            item.topicTag!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.w600,
+                              color: item.isOfficialTopic
+                                  ? AppColors.primary
+                                  : primaryTextColor,
                             ),
                           ),
                         ),
-                        if (item.seller.isVerified) ...[
-                          const SizedBox(width: 4.0),
-                          const Icon(
-                            Icons.verified_rounded,
-                            size: 15.0,
-                            color: AppColors.verifiedBlue,
-                          ),
-                        ],
-                        if (item.seller.mascotFlair != null) ...[
-                          const SizedBox(width: 4.0),
-                          MascotFlairBadge(
-                            flair: item.seller.mascotFlair!,
-                            size: 26.0,
-                          ),
-                        ],
-                        if (cleanUsername.isNotEmpty) ...[
-                          const SizedBox(width: 5.0),
-                          Flexible(
-                            child: Text(
-                              '@$cleanUsername',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 13.5,
-                                fontWeight: FontWeight.w400,
-                                color: mutedTextColor,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                    if (item.topicTag != null)
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            LucideIcons.chevronRight,
-                            size: 14.0,
+                      ),
+                    ] else if (cleanUsername.isNotEmpty) ...[
+                      const SizedBox(width: 5.0),
+                      Flexible(
+                        flex: 1,
+                        child: Text(
+                          '@$cleanUsername',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w400,
                             color: mutedTextColor,
                           ),
-                          const SizedBox(width: 4.0),
-                          if (item.isOfficialTopic) ...[
-                            if (item.topicIcon == 'presentation')
-                              const PresentationTopicGlyph(size: 14.0)
-                            else
-                              const ThreadsTopicGlyph(size: 14.0),
-                            const SizedBox(width: 4.0),
-                          ],
-                          Flexible(
-                            child: GestureDetector(
-                              onTap: () => onTopicClick?.call(item.topicTag!),
-                              child: Text(
-                                item.topicTag!,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.w600,
-                                  color: item.isOfficialTopic
-                                      ? AppColors.primary
-                                      : primaryTextColor,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
+                    ],
                   ],
                 ),
               ),
