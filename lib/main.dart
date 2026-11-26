@@ -119,7 +119,7 @@ class _AppRootState extends State<AppRoot> with SingleTickerProviderStateMixin {
     super.initState();
     _fadeController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 240),
+      duration: const Duration(milliseconds: 350),
     );
     _fadeAnimation = Tween<double>(begin: 1.0, end: 0.0).animate(
       CurvedAnimation(
