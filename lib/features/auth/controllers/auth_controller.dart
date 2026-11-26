@@ -122,6 +122,9 @@ class AuthController {
       }
 
       if (response.user != null) {
+        // Reset cache profil akun sebelumnya agar tidak fallback ke akun lama
+        SupabaseService.instance.currentUserProfileNotifier.value = null;
+
         // [SNAPS-63] Rekam device login success per NIS
         final effectiveNis = candidateNis ?? response.user!.userMetadata?['nis'] as String?;
         if (effectiveNis != null && effectiveNis.isNotEmpty) {
