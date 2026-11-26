@@ -14,7 +14,7 @@
 
 set -e
 
-SUPABASE_URL="${SUPABASE_URL:-https://lcwsxldnoqjdfqxqcqja.supabase.co}"
+SUPABASE_URL="${SUPABASE_URL:-https://ipshbvtddafgwwrwstxx.supabase.co}"
 
 # Baca SERVICE_ROLE_KEY dari environment variable atau .env.local (jangan di-hardcode)
 SERVICE_ROLE_KEY="${SUPABASE_SERVICE_ROLE_KEY:-}"

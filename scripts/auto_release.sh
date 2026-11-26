@@ -326,7 +326,7 @@ if [ -f ".env.local" ]; then
 fi
 
 if [ -z "$SUPABASE_URL_VAL" ]; then
-  SUPABASE_URL_VAL="https://lcwsxldnoqjdfqxqcqja.supabase.co"
+  SUPABASE_URL_VAL="https://ipshbvtddafgwwrwstxx.supabase.co"
 fi
 if [ -z "$SUPABASE_KEY" ]; then
   SUPABASE_KEY="${SUPABASE_SERVICE_ROLE_KEY}"
