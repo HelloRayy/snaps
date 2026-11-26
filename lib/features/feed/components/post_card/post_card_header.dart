@@ -204,20 +204,6 @@ class PostCardHeader extends StatelessWidget {
                     ),
                   ),
                 ),
-              ] else if (displayAuthor.length <= 16 && item.seller.classGroup.isNotEmpty) ...[
-                const SizedBox(width: 4.0),
-                Flexible(
-                  child: Text(
-                    item.seller.classGroup,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 13.0,
-                      fontWeight: FontWeight.normal,
-                      color: mutedTextColor,
-                    ),
-                  ),
-                ),
               ],
             ],
           ),
