@@ -271,57 +271,114 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
       </div>
 
       {confirmModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl border border-slate-100 space-y-4">
-            <h3 className="text-base font-bold text-slate-900">
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(15, 23, 42, 0.45)',
+            padding: '16px',
+          }}
+          onClick={() => setConfirmModal(null)}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '440px',
+              borderRadius: '16px',
+              backgroundColor: '#FFFFFF',
+              padding: '24px',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.12)',
+              border: '1px solid #E2E8F0',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ fontSize: '17px', fontWeight: 700, color: '#0F172A', margin: '0 0 14px 0' }}>
               {confirmModal.action === 'approve'
                 ? 'Konfirmasi Setujui Reset Sandi'
                 : 'Konfirmasi Tolak Permintaan'}
             </h3>
-            <div className="rounded-xl bg-slate-50 p-3 text-sm space-y-1">
-              <div><span className="text-slate-500">NIS:</span> <span className="font-semibold">{confirmModal.req.nis}</span></div>
-              <div><span className="text-slate-500">Nama:</span> <span className="font-semibold">{confirmModal.req.full_name}</span></div>
-              <div><span className="text-slate-500">Kelas:</span> <span className="font-semibold">{confirmModal.req.class_group}</span></div>
+            <div
+              style={{
+                borderRadius: '12px',
+                backgroundColor: '#F8FAFC',
+                border: '1px solid #E2E8F0',
+                padding: '12px 14px',
+                fontSize: '13px',
+                lineHeight: 1.6,
+                marginBottom: '14px',
+              }}
+            >
+              <div><span style={{ color: '#64748B' }}>NIS:</span> <strong>{confirmModal.req.nis}</strong></div>
+              <div><span style={{ color: '#64748B' }}>Nama:</span> <strong>{confirmModal.req.full_name}</strong></div>
+              <div><span style={{ color: '#64748B' }}>Kelas:</span> <strong>{confirmModal.req.class_group}</strong></div>
               <div>
-                <span className="text-slate-500">Perangkat:</span>{' '}
-                <span className={confirmModal.req.isKnownDevice ? 'text-emerald-700 font-semibold' : 'text-amber-700 font-semibold'}>
+                <span style={{ color: '#64748B' }}>Perangkat:</span>{' '}
+                <strong style={{ color: confirmModal.req.isKnownDevice ? '#047857' : '#B45309' }}>
                   {confirmModal.req.isKnownDevice ? 'Perangkat Dikenal' : 'Perangkat Baru/Berbeda'}
-                </span>
+                </strong>
               </div>
-              {confirmModal.req.device_fcm_token && (
-                <div className="text-xs text-slate-400 font-mono">
-                  Token: {confirmModal.req.device_fcm_token.slice(0, 14)}...
-                </div>
+              {confirmModal.req.device_name && (
+                <div><span style={{ color: '#64748B' }}>Model HP:</span> <strong>{confirmModal.req.device_name}</strong></div>
               )}
             </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1">Catatan Admin (Opsional)</label>
+            <div style={{ marginBottom: '18px' }}>
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>
+                Catatan Admin (Opsional)
+              </label>
               <input
                 type="text"
                 value={confirmModal.note}
                 onChange={(e) => setConfirmModal({ ...confirmModal, note: e.target.value })}
                 placeholder="Tulis catatan jika perlu..."
-                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
+                style={{
+                  width: '100%',
+                  borderRadius: '10px',
+                  border: '1px solid #CBD5E1',
+                  padding: '9px 12px',
+                  fontSize: '13px',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                }}
               />
             </div>
-            <div className="flex justify-end gap-2 pt-2">
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
               <button
+                type="button"
                 onClick={() => setConfirmModal(null)}
-                className="px-4 py-2 text-sm font-semibold rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50"
+                style={{
+                  padding: '8px 16px',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  borderRadius: '10px',
+                  border: '1px solid #E2E8F0',
+                  backgroundColor: '#FFFFFF',
+                  color: '#334155',
+                  cursor: 'pointer',
+                }}
               >
                 Batal
               </button>
               <button
+                type="button"
                 onClick={() => {
                   const { req, action, note } = confirmModal;
                   setConfirmModal(null);
                   handleAction(req.id, action, note.trim() || undefined);
                 }}
-                className={`px-4 py-2 text-sm font-semibold rounded-xl text-white ${
-                  confirmModal.action === 'approve'
-                    ? 'bg-indigo-600 hover:bg-indigo-700'
-                    : 'bg-rose-600 hover:bg-rose-700'
-                }`}
+                style={{
+                  padding: '8px 16px',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  borderRadius: '10px',
+                  border: 'none',
+                  backgroundColor: confirmModal.action === 'approve' ? '#3D38F5' : '#E11D48',
+                  color: '#FFFFFF',
+                  cursor: 'pointer',
+                }}
               >
                 {confirmModal.action === 'approve' ? 'Ya, Setujui' : 'Ya, Tolak'}
               </button>
