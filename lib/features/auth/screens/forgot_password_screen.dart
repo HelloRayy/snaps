@@ -248,7 +248,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Scaffold(
       backgroundColor: AppColors.canvas,
       resizeToAvoidBottomInset: true,
-      body: SafeArea(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.translucent,
+        child: SafeArea(
         child: Stack(
           children: [
             _isWaitingView ? _buildWaitingState() : _buildFormState(),
@@ -271,6 +274,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             ),
           ],
         ),
+      ),
       ),
     );
   }
