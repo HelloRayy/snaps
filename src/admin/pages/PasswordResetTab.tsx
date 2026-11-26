@@ -10,9 +10,11 @@ interface PasswordResetRequest {
   class_group: string;
   notes: string | null;
   status: 'pending' | 'approved' | 'rejected';
+  device_fcm_token: string | null;
   temp_password: string | null;
   admin_note: string | null;
   created_at: string;
+  isKnownDevice?: boolean;
 }
 
 interface PasswordResetTabProps {
@@ -33,7 +35,45 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
       .order('created_at', { ascending: false });
 
     if (!error && data) {
-      setRequests(data as PasswordResetRequest[]);
+      const rows = data as PasswordResetRequest[];
+      const nisList = [...new Set(rows.map((r) => r.nis).filter(Boolean))];
+      let knownTokensByNis: Record<string, Set<string>> = {};
+
+      if (nisList.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, nis')
+          .in('nis', nisList);
+
+        if (profiles && profiles.length > 0) {
+          const userIds = profiles.map((p: { id: string }) => p.id);
+          const { data: tokens } = await supabase
+            .from('user_fcm_tokens')
+            .select('user_id, fcm_token')
+            .in('user_id', userIds);
+
+          const nisByUserId: Record<string, string> = {};
+          for (const p of profiles as { id: string; nis: string }[]) {
+            nisByUserId[p.id] = p.nis;
+          }
+          for (const t of (tokens || []) as { user_id: string; fcm_token: string }[]) {
+            const nis = nisByUserId[t.user_id];
+            if (nis) {
+              knownTokensByNis[nis] ??= new Set<string>();
+              knownTokensByNis[nis].add(t.fcm_token);
+            }
+          }
+        }
+      }
+
+      setRequests(
+        rows.map((r) => ({
+          ...r,
+          isKnownDevice: Boolean(
+            r.device_fcm_token && knownTokensByNis[r.nis]?.has(r.device_fcm_token),
+          ),
+        })),
+      );
     }
     setLoading(false);
   };
@@ -66,14 +106,23 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between" style={{ marginBottom: '20px' }}>
         <div>
-          <h2 className="text-lg font-bold text-slate-900">Antrean Reset Kata Sandi</h2>
+          <h2 className="text-lg font-bold text-slate-900" style={{ marginBottom: '4px' }}>Antrean Reset Kata Sandi</h2>
           <p className="text-sm text-slate-500">Verifikasi NIS dan nama siswa sebelum menyetujui reset.</p>
         </div>
         <button
           onClick={loadRequests}
-          className="px-3 py-1.5 text-sm font-semibold rounded-lg border border-slate-200 bg-white hover:bg-slate-50"
+          style={{
+            padding: '8px 14px',
+            fontSize: '13px',
+            fontWeight: 600,
+            borderRadius: '8px',
+            border: '1px solid #E2E8F0',
+            backgroundColor: '#FFFFFF',
+            color: '#334155',
+            cursor: 'pointer',
+          }}
         >
           Refresh
         </button>
@@ -85,7 +134,7 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
         </div>
       )}
 
-      <Card>
+      <div style={{ backgroundColor: '#FFFFFF', borderRadius: '10px', border: '1px solid #E4E7EC', padding: '4px 12px' }}>
         {loading ? (
           <p className="text-sm text-slate-500 py-6 text-center">Memuat permintaan...</p>
         ) : requests.length === 0 ? (
@@ -106,7 +155,18 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
               <tbody>
                 {requests.map((req) => (
                   <tr key={req.id} className="border-b border-slate-100">
-                    <td className="py-3 pr-4 font-semibold">{req.nis}</td>
+                    <td className="py-3 pr-4 font-semibold">
+                      <div>{req.nis}</div>
+                      <span
+                        className={`inline-block mt-1 text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                          req.isKnownDevice
+                            ? 'bg-emerald-50 text-emerald-700'
+                            : 'bg-amber-50 text-amber-700'
+                        }`}
+                      >
+                        {req.isKnownDevice ? 'Perangkat Dikenal' : 'Perangkat Baru/Berbeda'}
+                      </span>
+                    </td>
                     <td className="py-3 pr-4">{req.full_name}</td>
                     <td className="py-3 pr-4">{req.class_group}</td>
                     <td className="py-3 pr-4 text-slate-500">{req.notes || '-'}</td>
@@ -130,18 +190,38 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
                     </td>
                     <td className="py-3">
                       {req.status === 'pending' ? (
-                        <div className="flex gap-2">
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                           <button
                             disabled={processingId === req.id}
                             onClick={() => handleAction(req.id, 'approve')}
-                            className="px-2.5 py-1 text-xs font-semibold rounded bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50"
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '12px',
+                              fontWeight: 600,
+                              borderRadius: '8px',
+                              border: 'none',
+                              backgroundColor: '#3D38F5',
+                              color: '#FFFFFF',
+                              cursor: processingId === req.id ? 'not-allowed' : 'pointer',
+                              opacity: processingId === req.id ? 0.5 : 1,
+                            }}
                           >
                             Setujui
                           </button>
                           <button
                             disabled={processingId === req.id}
                             onClick={() => handleAction(req.id, 'reject')}
-                            className="px-2.5 py-1 text-xs font-semibold rounded bg-rose-50 text-rose-700 hover:bg-rose-100 disabled:opacity-50"
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '12px',
+                              fontWeight: 600,
+                              borderRadius: '8px',
+                              border: '1px solid #FECDD3',
+                              backgroundColor: '#FFF1F2',
+                              color: '#BE123C',
+                              cursor: processingId === req.id ? 'not-allowed' : 'pointer',
+                              opacity: processingId === req.id ? 0.5 : 1,
+                            }}
                           >
                             Tolak
                           </button>
@@ -156,7 +236,7 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
             </table>
           </div>
         )}
-      </Card>
+      </div>
     </div>
   );
 }
