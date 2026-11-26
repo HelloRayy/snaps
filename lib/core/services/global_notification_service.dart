@@ -761,47 +761,28 @@ class GlobalNotificationService {
       }
 
       _realtimeChannel?.unsubscribe();
-      _realtimeChannel = SupabaseService.instance.subscribeToNotifications((record) {
+      _realtimeChannel = SupabaseService.instance.subscribeToNotifications((record) async {
         // Increment unread count & turn on unread badge dot
         unreadCount.value += 1;
         hasUnreadActivity.value = true;
 
-        // Trigger system haptic feedback
-
         final title = record['title']?.toString() ?? 'Pengumuman Baru';
         final message = record['message']?.toString() ?? '';
-        final type = record['type']?.toString() ?? 'system';
         final actorId = record['actor_id']?.toString();
         String? actorAvatar;
         if (actorId != null && actorId.isNotEmpty) {
           try {
-            SupabaseService.instance.getProfile(actorId).then((prof) {
-              actorAvatar = (prof?['avatar_url'] as String?)?.trim();
-            });
+            final prof = await SupabaseService.instance.getProfile(actorId);
+            actorAvatar = (prof?['avatar_url'] as String?)?.trim();
           } catch (_) {}
         }
 
-        // 1. Post notification to Android OS Status Bar with BigTextStyle
+        // Post notification to Android OS Status Bar (100% OS Heads-Up, no overlay banner)
         _showOsNotification(
           title: title,
           message: message,
           payloadJson: jsonEncode(record),
           avatarUrl: actorAvatar,
-        );
-
-        // 2. Show floating in-app banner with direct tap action
-        showTopBanner(
-          title: title,
-          message: message,
-          type: type,
-          avatarUrl: actorAvatar,
-          onTap: () {
-            final ctx = NavigationService.currentContext;
-            if (ctx != null) {
-              final notif = ActivityNotification.fromJson(record);
-              executeNotificationAction(ctx, notif);
-            }
-          },
         );
       });
     } catch (e) {
@@ -970,18 +951,14 @@ class GlobalNotificationService {
     if (isDmRecentlyHandled(conversationId, messageText)) return;
     registerHandledDm(conversationId, messageText);
 
-
-    showTopBanner(
+    _showOsNotification(
       title: senderName.isNotEmpty ? senderName : 'Pesan Masuk',
       message: messageText,
-      type: 'dm',
+      payloadJson: jsonEncode({
+        'type': 'dm',
+        'conversation_id': conversationId,
+      }),
       avatarUrl: senderAvatar,
-      onTap: () {
-        final ctx = NavigationService.currentContext;
-        if (ctx != null && conversationId.isNotEmpty) {
-          navigateToChatConversation(ctx, conversationId);
-        }
-      },
     );
   }
 
