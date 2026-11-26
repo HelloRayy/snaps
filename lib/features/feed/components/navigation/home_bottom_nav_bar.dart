@@ -53,6 +53,8 @@ class HomeBottomNavBar extends StatelessWidget {
   final String? userAvatar;
   final bool isCollapsed;
   final VoidCallback? onExpandTap;
+  final int motionDurationMs;
+  final Curve motionCurve;
 
   const HomeBottomNavBar({
     super.key,
@@ -67,6 +69,8 @@ class HomeBottomNavBar extends StatelessWidget {
     this.userAvatar,
     this.isCollapsed = false,
     this.onExpandTap,
+    this.motionDurationMs = 380,
+    this.motionCurve = Curves.easeOutCubic,
   });
 
   @override
@@ -90,13 +94,13 @@ class HomeBottomNavBar extends StatelessWidget {
         bottom: bottomPadding > 0 ? bottomPadding + 8.0 : 18.0,
       ),
       child: AnimatedAlign(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOutCubic,
+        duration: Duration(milliseconds: motionDurationMs),
+        curve: motionCurve,
         alignment: isCollapsed ? Alignment.centerLeft : Alignment.center,
         heightFactor: 1.0,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOutCubic,
+          duration: Duration(milliseconds: motionDurationMs),
+          curve: motionCurve,
           width: isCollapsed ? 62.0 : 360.0,
           height: 62.0,
           decoration: BoxDecoration(
@@ -136,23 +140,34 @@ class HomeBottomNavBar extends StatelessWidget {
                             ],
                     ),
                   ),
-                  child: isCollapsed
-                      ? InkWell(
-                          borderRadius: BorderRadius.circular(31.0),
-                          onTap: () {
-                            HapticFeedback.selectionClick();
-                            onExpandTap?.call();
-                          },
-                          child: Center(
-                            child: switch (currentTab) {
-                              HomeNavTab.home => const HomeNavGlyph(isActive: true),
-                              HomeNavTab.messages => const PaperPlaneNavGlyph(isActive: true),
-                              HomeNavTab.activity => const HeartNavGlyph(isActive: true),
-                              HomeNavTab.profile => const UserNavGlyph(isActive: true),
+                  child: AnimatedSwitcher(
+                    duration: Duration(milliseconds: (motionDurationMs * 0.65).round()),
+                    switchInCurve: Curves.easeOut,
+                    switchOutCurve: Curves.easeIn,
+                    child: isCollapsed
+                        ? InkWell(
+                            key: const ValueKey('collapsed_nav'),
+                            borderRadius: BorderRadius.circular(31.0),
+                            onTap: () {
+                              HapticFeedback.selectionClick();
+                              onExpandTap?.call();
                             },
-                          ),
-                        )
-                      : LayoutBuilder(
+                            child: Center(
+                              child: switch (currentTab) {
+                                HomeNavTab.home => const HomeNavGlyph(isActive: true),
+                                HomeNavTab.messages => const PaperPlaneNavGlyph(isActive: true),
+                                HomeNavTab.activity => const HeartNavGlyph(isActive: true),
+                                HomeNavTab.profile => const UserNavGlyph(isActive: true),
+                              },
+                            ),
+                          )
+                        : SingleChildScrollView(
+                            key: const ValueKey('expanded_nav'),
+                            scrollDirection: Axis.horizontal,
+                            physics: const NeverScrollableScrollPhysics(),
+                            child: SizedBox(
+                              width: 352.0,
+                              child: LayoutBuilder(
                     builder: (context, constraints) {
                       final double tabWidth = constraints.maxWidth / 4.0;
                       return Stack(
@@ -239,6 +254,7 @@ class HomeBottomNavBar extends StatelessWidget {
             ),
           ),
         ),
+      ),
     );
   }
 }

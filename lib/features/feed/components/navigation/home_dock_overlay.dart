@@ -4,11 +4,12 @@ import 'package:snapan_market/features/create_post/models/create_post_types.dart
 import 'package:snapan_market/features/feed/components/navigation/home_bottom_nav_bar.dart';
 export 'package:snapan_market/features/feed/components/navigation/home_bottom_nav_bar.dart' show HomeNavTab, HomeBottomNavBar;
 import 'package:snapan_market/features/feed/components/navigation/home_feed_fab_group.dart';
+import 'package:snapan_market/features/feed/components/navigation/navbar_motion_tuner_hud.dart';
 import 'package:snapan_market/features/messages/services/direct_messages_service.dart';
 import 'package:snapan_market/features/search/screens/search_screen.dart';
 
-/// Overlay widget combining FAB Group and HomeBottomNavBar (<60 lines).
-class HomeDockOverlay extends StatelessWidget {
+/// Overlay widget combining FAB Group, HomeBottomNavBar, and Motion Tuner HUD.
+class HomeDockOverlay extends StatefulWidget {
   final HomeNavTab currentNavTab;
   final AnimationController fabAnimationController;
   final Animation<double>? fabAnimation;
@@ -31,15 +32,23 @@ class HomeDockOverlay extends StatelessWidget {
   });
 
   @override
+  State<HomeDockOverlay> createState() => _HomeDockOverlayState();
+}
+
+class _HomeDockOverlayState extends State<HomeDockOverlay> {
+  NavbarMotionConfig _motionConfig = const NavbarMotionConfig();
+  bool _showTunerHud = false;
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         HomeFeedFabGroup(
-          currentNavTab: currentNavTab,
-          fabAnimationController: fabAnimationController,
-          fabAnimation: fabAnimation,
-          fabBottomVisible: fabBottom,
-          onCreatePost: onCreatePost,
+          currentNavTab: widget.currentNavTab,
+          fabAnimationController: widget.fabAnimationController,
+          fabAnimation: widget.fabAnimation,
+          fabBottomVisible: widget.fabBottom,
+          onCreatePost: widget.onCreatePost,
         ),
         Positioned(
           left: 0,
@@ -47,29 +56,64 @@ class HomeDockOverlay extends StatelessWidget {
           bottom: 0,
           child: RepaintBoundary(
             child: AnimatedBuilder(
-              animation: Listenable.merge([DirectMessagesService.instance, fabAnimationController]),
+              animation: Listenable.merge([DirectMessagesService.instance, widget.fabAnimationController]),
               builder: (context, _) {
                 final unreadCount = DirectMessagesService.instance.totalUnreadCount;
-                final isCollapsed = (fabAnimation?.value ?? 1.0) < 0.5;
+                final isCollapsed = (widget.fabAnimation?.value ?? 1.0) < 0.5;
                 return HomeBottomNavBar(
-                  currentTab: currentNavTab,
+                  currentTab: widget.currentNavTab,
                   hasUnreadMessages: unreadCount > 0,
                   unreadMessagesCount: unreadCount,
-                  hasUnreadActivity: hasUnreadActivity,
-                  userAvatar: userAvatar,
+                  hasUnreadActivity: widget.hasUnreadActivity,
+                  userAvatar: widget.userAvatar,
                   isCollapsed: isCollapsed,
-                  onExpandTap: () => fabAnimationController.forward(),
+                  motionDurationMs: _motionConfig.durationMs,
+                  motionCurve: _motionConfig.curve,
+                  onExpandTap: () => widget.fabAnimationController.forward(),
                   onSearchTap: () => Navigator.push(
                     context,
                     AppSlidePageRoute(builder: (context) => SearchScreen(onBack: () => Navigator.pop(context))),
                   ),
-                  onPostTap: onCreatePost,
-                  onTabSelected: onTabSelected,
+                  onPostTap: widget.onCreatePost,
+                  onTabSelected: widget.onTabSelected,
                 );
               },
             ),
           ),
         ),
+        if (_showTunerHud)
+          NavbarMotionTunerHud(
+            config: _motionConfig,
+            onChanged: (c) => setState(() => _motionConfig = c),
+            onToggleCollapse: () {
+              if (widget.fabAnimationController.value < 0.5) {
+                widget.fabAnimationController.forward();
+              } else {
+                widget.fabAnimationController.reverse();
+              }
+            },
+            onClose: () => setState(() => _showTunerHud = false),
+          )
+        else
+          Positioned(
+            right: 16,
+            top: MediaQuery.paddingOf(context).top + 56,
+            child: Material(
+              color: Colors.black.withValues(alpha: 0.65),
+              borderRadius: BorderRadius.circular(20),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: () => setState(() => _showTunerHud = true),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  child: Text(
+                    'Motion HUD',
+                    style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+            ),
+          ),
       ],
     );
   }
