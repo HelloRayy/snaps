@@ -50,6 +50,11 @@ dependencies:
   provider: ^6.1.5
   app_links: ^7.2.1
   cached_network_image: ^4.0.7
+
+dependency_overrides:
+  # Avoid JNI ClassNotFoundException (android/content/Context) in path_provider_android 2.3.x
+  path_provider_android: 2.2.15
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

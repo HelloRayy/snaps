@@ -14,7 +14,8 @@ class SnapsDiskImageCache {
   final Map<String, Future<File?>> _inFlight = {};
   final HttpClient _http = HttpClient()
     ..connectionTimeout = const Duration(seconds: 12)
-    ..idleTimeout = const Duration(seconds: 15);
+    ..idleTimeout = const Duration(seconds: 15)
+    ..maxConnectionsPerHost = 10;
 
   /// Synchronous lookup for already-indexed local files (zero-frame shimmer skip).
   File? getCachedFileSync(String url) {
@@ -92,22 +93,30 @@ class SnapsDiskImageCache {
         return null;
       }
 
-      final req = await _http.getUrl(uri);
-      final resp = await req.close().timeout(const Duration(seconds: 15));
-      if (resp.statusCode != 200) {
-        await resp.drain<void>();
-        return null;
+      for (int attempt = 0; attempt < 2; attempt++) {
+        try {
+          final req = await _http.getUrl(uri);
+          final resp = await req.close().timeout(const Duration(seconds: 15));
+          if (resp.statusCode != 200) {
+            await resp.drain<void>();
+            return null;
+          }
+
+          final bytes = await consolidateHttpClientResponseBytes(resp);
+          if (bytes.isEmpty) return null;
+
+          final tmp = File('${target.path}.tmp');
+          await tmp.writeAsBytes(bytes, flush: true);
+          await tmp.rename(target.path);
+
+          _memIndex[url] = target;
+          return target;
+        } catch (e) {
+          if (attempt == 1) rethrow;
+          await Future.delayed(const Duration(milliseconds: 400));
+        }
       }
-
-      final bytes = await consolidateHttpClientResponseBytes(resp);
-      if (bytes.isEmpty) return null;
-
-      final tmp = File('${target.path}.tmp');
-      await tmp.writeAsBytes(bytes, flush: true);
-      await tmp.rename(target.path);
-
-      _memIndex[url] = target;
-      return target;
+      return null;
     } catch (e) {
       debugPrint('SnapsDiskImageCache fetch error for $url: $e');
       return null;
