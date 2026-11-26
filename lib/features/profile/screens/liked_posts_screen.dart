@@ -3,7 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
-import 'package:snapan_market/features/feed/components/media/media_lightbox_dialog.dart';
+import 'package:snapan_market/features/feed/components/lightbox/media_lightbox_dialog.dart';
 import 'package:snapan_market/features/feed/components/post_card/market_post_card.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/feed/screens/post_detail_screen.dart';
@@ -68,7 +68,7 @@ class _LikedPostsScreenState extends State<LikedPostsScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: AppColors.adaptiveBackground(context),
+      backgroundColor: AppColors.adaptiveSurface(context),
       appBar: AppBar(
         backgroundColor: AppColors.adaptiveSurface(context),
         elevation: 0,
