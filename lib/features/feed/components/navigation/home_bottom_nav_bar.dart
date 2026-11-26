@@ -156,18 +156,13 @@ class HomeBottomNavBar extends StatelessWidget {
                         padding: EdgeInsets.only(
                           left: 0,
                         ),
-                        child: Transform.translate(
-                          offset: Offset(
-                            isCollapsed ? -((innerWidth / 8.0) - 27.0) : 0.0,
-                            0.0,
-                          ),
-                          child: OverflowBox(
-                            maxWidth: innerWidth,
-                            minWidth: innerWidth,
-                            alignment: Alignment.centerLeft,
-                            child: SizedBox(
-                              width: innerWidth,
-                              child: LayoutBuilder(
+                        child: OverflowBox(
+                          maxWidth: innerWidth,
+                          minWidth: innerWidth,
+                          alignment: Alignment.centerLeft,
+                          child: SizedBox(
+                            width: innerWidth,
+                            child: LayoutBuilder(
                     builder: (context, constraints) {
                       final double tabWidth = constraints.maxWidth / 4.0;
                       return Stack(
@@ -256,7 +251,6 @@ class HomeBottomNavBar extends StatelessWidget {
             ),
           ),
         ),
-      ),
       ),
       ),
       ),
