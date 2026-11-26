@@ -101,6 +101,7 @@ class AuthController {
           );
           if (authRes.user != null) {
             response = authRes;
+            SharedPreferences.getInstance().then((p) => p.setString('last_login_password', password));
             break;
           }
         } catch (authErr) {

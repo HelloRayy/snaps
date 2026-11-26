@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/services/mascot_feature_notice_service.dart';
@@ -35,6 +36,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late final TextEditingController _passwordController;
   late final TextEditingController _bioController;
   late final TextEditingController _linkController;
+  String _initialPassword = '';
   bool _showPassword = false;
 
   String? _selectedGrade;
@@ -55,6 +57,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _nameController = TextEditingController(text: widget.initialUser.name);
     _usernameController = TextEditingController(text: widget.initialUser.username.replaceAll('@', ''));
     _passwordController = TextEditingController();
+    _loadInitialPassword();
     _bioController = TextEditingController(text: widget.initialUser.bio);
     _linkController = TextEditingController(text: widget.initialUser.link ?? '');
 
@@ -67,6 +70,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _mascotFlair = widget.initialUser.mascotFlair;
     _tags = List<String>.from(widget.initialUser.tags);
     _showSalesStats = widget.initialUser.showSalesStats;
+  }
+
+  Future<void> _loadInitialPassword() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getString('last_login_password') ?? '';
+    if (saved.isNotEmpty && mounted) {
+      setState(() {
+        _initialPassword = saved;
+        _passwordController.text = saved;
+      });
+    }
   }
 
   @override
@@ -111,7 +125,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _mascotFlair?.toJson().toString() != widget.initialUser.mascotFlair?.toJson().toString() ||
         _showSalesStats != widget.initialUser.showSalesStats ||
         _tags.join(',') != widget.initialUser.tags.join(',') ||
-        _passwordController.text.isNotEmpty;
+        (_passwordController.text.isNotEmpty && _passwordController.text != _initialPassword);
   }
 
   Future<void> _handleAttemptExit() async {
@@ -289,13 +303,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         mascotFlair: _mascotFlair,
       );
 
-      if (_passwordController.text.isNotEmpty) {
+      if (_passwordController.text.isNotEmpty && _passwordController.text != _initialPassword) {
         if (_passwordController.text.length < 6) {
           setState(() => _isSaving = false);
           SnapsToast.error(context, 'Kata sandi minimal 6 karakter', hasBottomNav: false);
           return;
         }
         await SupabaseService.instance.auth.updatePassword(_passwordController.text);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('last_login_password', _passwordController.text);
       }
 
       widget.onSave(updated);
