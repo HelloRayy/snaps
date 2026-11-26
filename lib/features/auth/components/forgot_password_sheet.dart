@@ -2,7 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:snapan_market/core/services/supabase/supabase_auth_service.dart';
+import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/snaps_toast.dart';
 import 'package:snapan_market/features/auth/components/auth_text_field.dart';
@@ -68,7 +68,7 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
         fcmToken = await FirebaseMessaging.instance.getToken();
       } catch (_) {}
 
-      await SupabaseAuthService.instance.submitPasswordResetRequest(
+      await SupabaseService.instance.auth.submitPasswordResetRequest(
         nis: nis,
         fullName: name,
         classGroup: classGroup,
@@ -104,7 +104,7 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
       _hasChecked = false;
     });
     try {
-      final res = await SupabaseAuthService.instance.getPasswordResetStatus(nis);
+      final res = await SupabaseService.instance.auth.getPasswordResetStatus(nis);
       if (!mounted) return;
       setState(() {
         _statusResult = res;
@@ -141,12 +141,12 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
             const SizedBox(height: 16.0),
             const Text(
               'Bantuan Reset Kata Sandi',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w800, color: AppColors.ink),
             ),
             const SizedBox(height: 4.0),
             const Text(
               'Verifikasi data siswa untuk reset sandi oleh admin sekolah.',
-              style: TextStyle(fontSize: 13.0, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 13.0, color: AppColors.muted),
             ),
             const SizedBox(height: 16.0),
             _buildTabSwitcher(),
@@ -194,7 +194,7 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
             style: TextStyle(
               fontSize: 13.0,
               fontWeight: active ? FontWeight.w700 : FontWeight.w500,
-              color: active ? AppColors.textPrimary : AppColors.textSecondary,
+              color: active ? AppColors.ink : AppColors.muted,
             ),
           ),
         ),
@@ -301,7 +301,7 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
         ),
         child: const Text(
           'Belum ada permintaan reset untuk NIS ini.',
-          style: TextStyle(fontSize: 13.0, color: AppColors.textSecondary),
+          style: TextStyle(fontSize: 13.0, color: AppColors.muted),
         ),
       );
     }

@@ -150,7 +150,7 @@ class SupabaseAuthService {
     String? deviceFcmToken,
   }) async {
     final cleanNis = nis.trim();
-    final existing = await client
+    final existing = await _client
         .from('password_reset_requests')
         .select('id')
         .eq('nis', cleanNis)
@@ -161,7 +161,7 @@ class SupabaseAuthService {
       throw Exception('Permintaan reset untuk NIS ini masih menunggu verifikasi admin.');
     }
 
-    await client.from('password_reset_requests').insert({
+    await _client.from('password_reset_requests').insert({
       'nis': cleanNis,
       'full_name': fullName.trim(),
       'class_group': classGroup.trim(),
@@ -175,7 +175,7 @@ class SupabaseAuthService {
   Future<Map<String, dynamic>?> getPasswordResetStatus(String nis) async {
     final cleanNis = nis.trim();
     if (cleanNis.isEmpty) return null;
-    return await client
+    return await _client
         .from('password_reset_requests')
         .select('id, nis, full_name, class_group, status, temp_password, admin_note, created_at, updated_at')
         .eq('nis', cleanNis)
@@ -186,6 +186,6 @@ class SupabaseAuthService {
 
   /// Ubah kata sandi pengguna yang sedang login.
   Future<void> updatePassword(String newPassword) async {
-    await client.auth.updateUser(UserAttributes(password: newPassword));
+    await _client.auth.updateUser(UserAttributes(password: newPassword));
   }
 }

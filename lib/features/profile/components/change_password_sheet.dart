@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:snapan_market/core/services/supabase/supabase_auth_service.dart';
+import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/snaps_toast.dart';
 import 'package:snapan_market/features/auth/components/auth_text_field.dart';
@@ -56,7 +56,7 @@ class _ChangePasswordSheetState extends State<ChangePasswordSheet> {
 
     setState(() => _isSaving = true);
     try {
-      await SupabaseAuthService.instance.updatePassword(newPass);
+      await SupabaseService.instance.auth.updatePassword(newPass);
       if (!mounted) return;
       HapticFeedback.mediumImpact();
       Navigator.of(context).pop();
@@ -91,12 +91,12 @@ class _ChangePasswordSheetState extends State<ChangePasswordSheet> {
             const SizedBox(height: 16.0),
             const Text(
               'Ubah Kata Sandi',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w800, color: AppColors.ink),
             ),
             const SizedBox(height: 4.0),
             const Text(
               'Gunakan minimal 6 karakter agar akun tetap aman.',
-              style: TextStyle(fontSize: 13.0, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 13.0, color: AppColors.muted),
             ),
             const SizedBox(height: 16.0),
             AuthInputField(
