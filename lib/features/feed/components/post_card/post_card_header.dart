@@ -143,7 +143,8 @@ class PostCardHeader extends StatelessWidget {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Flexible(
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 180.0),
                           child: GestureDetector(
                             onTap: () => onUserClick?.call(cleanUsername),
                             child: Text(
@@ -208,7 +209,8 @@ class PostCardHeader extends StatelessWidget {
                               const ThreadsTopicGlyph(size: 14.0),
                             const SizedBox(width: 4.0),
                           ],
-                          Flexible(
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 200.0),
                             child: GestureDetector(
                               onTap: () => onTopicClick?.call(item.topicTag!),
                               child: Text(
