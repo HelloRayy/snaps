@@ -26,6 +26,11 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
   const [loading, setLoading] = useState(false);
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [confirmModal, setConfirmModal] = useState<{
+    req: PasswordResetRequest;
+    action: 'approve' | 'reject';
+    note: string;
+  } | null>(null);
 
   const loadRequests = async () => {
     setLoading(true);
@@ -84,11 +89,11 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
     }
   }, [isActive]);
 
-  const handleAction = async (requestId: string, action: 'approve' | 'reject') => {
+  const handleAction = async (requestId: string, action: 'approve' | 'reject', adminNote?: string) => {
     setProcessingId(requestId);
     setMessage(null);
     const { data, error } = await supabase.functions.invoke('admin-reset-password', {
-      body: { requestId, action },
+      body: { requestId, action, adminNote },
     });
 
     if (error || data?.error) {
@@ -166,6 +171,11 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
                       >
                         {req.isKnownDevice ? 'Perangkat Dikenal' : 'Perangkat Baru/Berbeda'}
                       </span>
+                      {req.device_fcm_token && (
+                        <div className="text-[10px] text-slate-400 font-mono mt-0.5">
+                          Token: {req.device_fcm_token.slice(0, 10)}...
+                        </div>
+                      )}
                     </td>
                     <td className="py-3 pr-4">{req.full_name}</td>
                     <td className="py-3 pr-4">{req.class_group}</td>
