@@ -182,9 +182,11 @@ class HomeBottomNavBar extends StatelessWidget {
                             height: 50.0,
                             child: Container(
                               decoration: BoxDecoration(
-                                color: isDark
-                                    ? Colors.white.withValues(alpha: 0.12)
-                                    : AppColors.primary.withValues(alpha: 0.08),
+                                color: isCollapsed
+                                    ? Colors.transparent
+                                    : (isDark
+                                        ? Colors.white.withValues(alpha: 0.12)
+                                        : AppColors.primary.withValues(alpha: 0.08)),
                                 borderRadius: BorderRadius.circular(25.0),
                               ),
                             ),
