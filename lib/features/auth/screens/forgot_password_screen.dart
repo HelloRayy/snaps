@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:snapan_market/core/components/snaps_logo.dart';
 import 'package:snapan_market/core/services/student_registry_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
@@ -122,6 +123,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   String? _currentDeviceToken;
   RegisteredStudent? _verifiedStudent;
   Map<String, dynamic>? _statusData;
+  RealtimeChannel? _realtimeChannel;
 
   @override
   void initState() {
@@ -131,6 +133,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   void dispose() {
+    _realtimeChannel?.unsubscribe();
     _nisController.dispose();
     _nameController.dispose();
     _classController.dispose();
@@ -162,11 +165,38 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         _statusData = res;
         _isLoadingStatus = false;
       });
+      if ((res?['status'] as String?) == 'pending') {
+        _subscribeRealtime(nis);
+      }
     } catch (_) {
       if (!mounted) return;
       setState(() => _isLoadingStatus = false);
       SnapsToast.error(context, 'Gagal memuat status permintaan.', hasBottomNav: false);
     }
+  }
+
+  void _subscribeRealtime(String nis) {
+    _realtimeChannel?.unsubscribe();
+    _realtimeChannel = Supabase.instance.client
+        .channel('password_reset_$nis')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.update,
+          schema: 'public',
+          table: 'password_reset_requests',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'nis',
+            value: nis,
+          ),
+          callback: (payload) {
+            if (!mounted) return;
+            HapticFeedback.mediumImpact();
+            setState(() {
+              _statusData = payload.newRecord;
+            });
+          },
+        )
+        .subscribe();
   }
 
   Future<void> _submit() async {
