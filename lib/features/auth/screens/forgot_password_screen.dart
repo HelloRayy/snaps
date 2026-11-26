@@ -22,6 +22,7 @@ class ForgotPasswordScreen extends StatefulWidget {
       context: context,
       builder: (ctx) => Dialog(
         backgroundColor: Colors.white,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24.0),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.0)),
         child: Padding(
           padding: const EdgeInsets.all(22.0),
@@ -44,7 +45,7 @@ class ForgotPasswordScreen extends StatefulWidget {
               ),
               const SizedBox(height: 8.0),
               const Text(
-                'Permintaan reset sandi akan diverifikasi oleh admin sekolah. Siapkan NIS, nama lengkap, dan kelas kamu.',
+                'Siapkan NIS, nama lengkap, dan kelas untuk verifikasi admin sekolah.',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 13.5, color: AppColors.muted, height: 1.45),
               ),
@@ -59,7 +60,12 @@ class ForgotPasswordScreen extends StatefulWidget {
                         side: const BorderSide(color: AppColors.border),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.0)),
                       ),
-                      child: const Text('Batal', style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.slateInk)),
+                      child: const Text(
+                        'Batal',
+                        maxLines: 1,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.slateInk),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 10.0),
@@ -73,7 +79,12 @@ class ForgotPasswordScreen extends StatefulWidget {
                         elevation: 0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.0)),
                       ),
-                      child: const Text('Ajukan Reset', style: TextStyle(fontWeight: FontWeight.w700)),
+                      child: const Text(
+                        'Lanjut',
+                        maxLines: 1,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontWeight: FontWeight.w700),
+                      ),
                     ),
                   ),
                 ],
@@ -213,67 +224,75 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   Widget _buildFormState() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20.0, 8.0, 20.0, 24.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Ajukan Verifikasi Admin',
-            style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w800, color: AppColors.ink),
-          ),
-          const SizedBox(height: 4.0),
-          const Text(
-            'Isi data diri siswa sesuai absen sekolah.',
-            style: TextStyle(fontSize: 13.5, color: AppColors.muted),
-          ),
-          const SizedBox(height: 20.0),
-          AuthInputField(
-            label: 'NIS',
-            hint: 'Contoh: 23001',
-            prefixIcon: LucideIcons.idCard,
-            controller: _nisController,
-            keyboardType: TextInputType.number,
-          ),
-          const SizedBox(height: 14.0),
-          AuthInputField(
-            label: 'Nama Lengkap',
-            hint: 'Nama sesuai absen sekolah',
-            prefixIcon: LucideIcons.user,
-            controller: _nameController,
-          ),
-          const SizedBox(height: 14.0),
-          AuthInputField(
-            label: 'Kelas / Jurusan',
-            hint: 'Contoh: XI PPLG 1',
-            prefixIcon: LucideIcons.graduationCap,
-            controller: _classController,
-          ),
-          const SizedBox(height: 14.0),
-          AuthInputField(
-            label: 'Catatan (Opsional)',
-            hint: 'Kendala tambahan jika ada',
-            prefixIcon: LucideIcons.messageSquare,
-            controller: _notesController,
-          ),
-          const SizedBox(height: 24.0),
-          SizedBox(
-            width: double.infinity,
-            height: 50.0,
-            child: ElevatedButton(
-              onPressed: _isSubmitting ? null : _submit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.0)),
-              ),
-              child: _isSubmitting
-                  ? const SizedBox(width: 20.0, height: 20.0, child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white))
-                  : const Text('Ajukan Reset Sandi ke Admin', style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700)),
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight - 32.0),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Ajukan Reset Sandi',
+                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w800, color: AppColors.ink),
+                ),
+                const SizedBox(height: 4.0),
+                const Text(
+                  'Isi data diri sesuai absen sekolah.',
+                  style: TextStyle(fontSize: 13.5, color: AppColors.muted),
+                ),
+                const SizedBox(height: 20.0),
+                AuthInputField(
+                  label: 'NIS',
+                  hint: 'Contoh: 23001',
+                  prefixIcon: LucideIcons.idCard,
+                  controller: _nisController,
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 14.0),
+                AuthInputField(
+                  label: 'Nama Lengkap',
+                  hint: 'Nama sesuai absen sekolah',
+                  prefixIcon: LucideIcons.user,
+                  controller: _nameController,
+                ),
+                const SizedBox(height: 14.0),
+                AuthInputField(
+                  label: 'Kelas / Jurusan',
+                  hint: 'Contoh: XI PPLG 1',
+                  prefixIcon: LucideIcons.graduationCap,
+                  controller: _classController,
+                ),
+                const SizedBox(height: 14.0),
+                AuthInputField(
+                  label: 'Catatan (Opsional)',
+                  hint: 'Kendala tambahan jika ada',
+                  prefixIcon: LucideIcons.messageSquare,
+                  controller: _notesController,
+                ),
+                const SizedBox(height: 24.0),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50.0,
+                  child: ElevatedButton(
+                    onPressed: _isSubmitting ? null : _submit,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.0)),
+                    ),
+                    child: _isSubmitting
+                        ? const SizedBox(width: 20.0, height: 20.0, child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white))
+                        : const Text('Kirim Permintaan', style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700)),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
