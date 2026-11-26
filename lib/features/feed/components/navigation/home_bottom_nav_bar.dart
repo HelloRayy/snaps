@@ -329,6 +329,7 @@ class _DockTabItemState extends State<_DockTabItem> {
                     child: Center(child: widget.glyph),
                   ),
                 ),
+                ),
 
                 if (widget.showLabel) ...[
                   const SizedBox(height: 2.0),
