@@ -26,6 +26,8 @@ class ProfileReplyThreadCard extends StatelessWidget {
     final primaryText = isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A);
     final mutedText = isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B);
     final parentUsername = (parent.seller.username ?? parent.seller.name).replaceAll('@', '');
+    final trimmedContent = reply.content.trim();
+    final alreadyHasMention = trimmedContent.toLowerCase().startsWith('@${parentUsername.toLowerCase()}');
 
     return InkWell(
       onTap: () => onPostClick?.call(parent),
@@ -69,27 +71,38 @@ class ProfileReplyThreadCard extends StatelessWidget {
                           color: AppColors.verifiedBlue,
                         ),
                       ],
-                      const SizedBox(width: 6.0),
+                      const Spacer(),
                       Text(
                         reply.timestamp,
                         style: TextStyle(fontSize: 12.5, color: mutedText),
                       ),
+                      const SizedBox(width: 8.0),
+                      Icon(
+                        CupertinoIcons.ellipsis,
+                        size: 16.0,
+                        color: mutedText,
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 2.0),
-                  Text(
-                    'Membalas @$parentUsername',
-                    style: TextStyle(fontSize: 12.5, color: mutedText),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 6.0),
-                  Text(
-                    reply.content,
-                    style: TextStyle(
-                      fontSize: 14.5,
-                      height: 1.4,
-                      color: primaryText,
+                  const SizedBox(height: 4.0),
+                  RichText(
+                    text: TextSpan(
+                      style: TextStyle(
+                        fontSize: 14.5,
+                        height: 1.4,
+                        color: primaryText,
+                      ),
+                      children: [
+                        if (!alreadyHasMention)
+                          TextSpan(
+                            text: '@$parentUsername ',
+                            style: const TextStyle(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        TextSpan(text: trimmedContent),
+                      ],
                     ),
                   ),
                 ],
