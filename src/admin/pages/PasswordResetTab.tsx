@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../../services/api/supabase';
-import { Card } from '../components/tremor/Card';
 import { Badge } from '../components/tremor/Badge';
 
 interface PasswordResetRequest {
@@ -167,18 +166,18 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
 
       {/* KPI Summary Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
-        <Card style={{ padding: '14px 18px' }}>
+        <div style={{ backgroundColor: '#FFFFFF', borderRadius: '14px', border: '1px solid #E2E8F0', padding: '14px 18px' }}>
           <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748B' }}>Menunggu Verifikasi</div>
           <div style={{ fontSize: '22px', fontWeight: 800, color: '#D97706', marginTop: '2px' }}>{counts.pending}</div>
-        </Card>
-        <Card style={{ padding: '14px 18px' }}>
+        </div>
+        <div style={{ backgroundColor: '#FFFFFF', borderRadius: '14px', border: '1px solid #E2E8F0', padding: '14px 18px' }}>
           <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748B' }}>Disetujui</div>
           <div style={{ fontSize: '22px', fontWeight: 800, color: '#059669', marginTop: '2px' }}>{counts.approved}</div>
-        </Card>
-        <Card style={{ padding: '14px 18px' }}>
+        </div>
+        <div style={{ backgroundColor: '#FFFFFF', borderRadius: '14px', border: '1px solid #E2E8F0', padding: '14px 18px' }}>
           <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748B' }}>Ditolak</div>
           <div style={{ fontSize: '22px', fontWeight: 800, color: '#E11D48', marginTop: '2px' }}>{counts.rejected}</div>
-        </Card>
+        </div>
       </div>
 
       {message && (
@@ -198,7 +197,7 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
       )}
 
       {/* Filter Pills + Table */}
-      <Card style={{ padding: '16px' }}>
+      <div style={{ backgroundColor: '#FFFFFF', borderRadius: '14px', border: '1px solid #E2E8F0', padding: '16px' }}>
         <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
           {(
             [
@@ -348,7 +347,7 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
             </table>
           </div>
         )}
-      </Card>
+      </div>
 
       {confirmModal && (
         <div
