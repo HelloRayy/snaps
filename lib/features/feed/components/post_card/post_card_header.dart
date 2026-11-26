@@ -213,8 +213,6 @@ class PostCardHeader extends StatelessWidget {
                               onTap: () => onTopicClick?.call(item.topicTag!),
                               child: Text(
                                 item.topicTag!,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontSize: 14.0,
                                   fontWeight: FontWeight.w600,
