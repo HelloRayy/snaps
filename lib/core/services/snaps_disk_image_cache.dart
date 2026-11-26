@@ -52,7 +52,13 @@ class SnapsDiskImageCache {
 
   Future<Directory> _ensureCacheDir() async {
     if (_cacheDir != null) return _cacheDir!;
-    final base = await getTemporaryDirectory();
+    Directory base;
+    try {
+      base = await getTemporaryDirectory();
+    } catch (e) {
+      debugPrint('getTemporaryDirectory fallback to systemTemp: $e');
+      base = Directory.systemTemp;
+    }
     final dir = Directory('${base.path}/snaps_img_cache');
     if (!await dir.exists()) {
       await dir.create(recursive: true);
