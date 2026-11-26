@@ -56,7 +56,7 @@ class SnapsDiskImageCache {
       debugPrint('getTemporaryDirectory fallback to systemTemp: $e');
       base = Directory.systemTemp;
     }
-    final dir = Directory('${base.path}/snaps_img_cache_v2');
+    final dir = Directory('${base.path}/snaps_img_cache_v3');
     if (!await dir.exists()) {
       await dir.create(recursive: true);
     }
