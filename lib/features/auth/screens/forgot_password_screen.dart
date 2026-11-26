@@ -277,6 +277,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   Widget _buildFormState() {
     final canSubmit = _verifiedStudent != null && _agreedOwnership && !_isSubmitting;
+    final isKeyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
     return Column(
       children: [
         Expanded(
@@ -420,8 +421,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20.0, 8.0, 20.0, 16.0),
+        if (!isKeyboardOpen)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20.0, 8.0, 20.0, 16.0),
           child: SizedBox(
             width: double.infinity,
             height: 50.0,
