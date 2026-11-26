@@ -203,7 +203,7 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                           <button
                             disabled={processingId === req.id}
-                            onClick={() => handleAction(req.id, 'approve')}
+                            onClick={() => setConfirmModal({ req, action: 'approve', note: '' })}
                             style={{
                               padding: '6px 12px',
                               fontSize: '12px',
@@ -220,7 +220,7 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
                           </button>
                           <button
                             disabled={processingId === req.id}
-                            onClick={() => handleAction(req.id, 'reject')}
+                            onClick={() => setConfirmModal({ req, action: 'reject', note: '' })}
                             style={{
                               padding: '6px 12px',
                               fontSize: '12px',
