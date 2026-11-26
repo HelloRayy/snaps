@@ -238,26 +238,31 @@ else
 fi
 
 # ------------------------------------------------------------------------------
-# 5. GITHUB RELEASE & ASSET UPLOAD (MIRROR HOSTING)
+# 5. GITHUB PUBLIC RELEASE & ASSET UPLOAD (ZERO SUPABASE EGRESS CDN)
 # ------------------------------------------------------------------------------
-echo -e "\n${CYAN}${BOLD}[5/6] 📦 Persiapan GitHub Release & Upload Asset...${NC}"
+echo -e "\n${CYAN}${BOLD}[5/6] 📦 Persiapan GitHub Public Release (HelloRayy/snaps-download)...${NC}"
 
-REMOTE_URL=$(git config remote.origin.url || true)
-GH_TOKEN=$(echo "$REMOTE_URL" | sed -n -E 's#.*((github_pat_|ghp_)[^@]+)@.*#\1#p')
-
+RELEASE_REPO="HelloRayy/snaps-download"
+GH_TOKEN=""
+if [ -f ".env.local" ]; then
+  GH_TOKEN=$(grep -E "^GITHUB_RELEASES_TOKEN=" .env.local | cut -d '=' -f2- | tr -d '"'\'' ' || true)
+fi
+if [ -z "$GH_TOKEN" ] && [ -n "${GITHUB_RELEASES_TOKEN}" ]; then
+  GH_TOKEN="${GITHUB_RELEASES_TOKEN}"
+fi
 if [ -z "$GH_TOKEN" ] && [ -f ".env.local" ]; then
   GH_TOKEN=$(grep -E "^GITHUB_TOKEN=" .env.local | cut -d '=' -f2- | tr -d '"'\'' ' || true)
 fi
-
 if [ -z "$GH_TOKEN" ] && [ -n "${GITHUB_TOKEN}" ]; then
   GH_TOKEN="${GITHUB_TOKEN}"
 fi
 
-DOWNLOAD_URL="https://github.com/HelloRayy/snaps/releases/download/v${VERSION_NAME}/app-release.apk"
+DOWNLOAD_URL="https://github.com/${RELEASE_REPO}/releases/download/v${VERSION_NAME}/app-release.apk"
 
 if [ "$DRY_RUN" = "true" ]; then
   echo -e "${YELLOW}[DRY-RUN] Melewati pembuatan GitHub Release dan upload asset APK${NC}"
-  echo -e "• GitHub Token terdeteksi: $([ -n "$GH_TOKEN" ] && echo -e "${GREEN}Ya${NC}" || echo -e "${RED}Tidak${NC}")"
+  echo -e "• Target Repo Publik: ${RELEASE_REPO}"
+  echo -e "• GitHub Releases Token terdeteksi: $([ -n "$GH_TOKEN" ] && echo -e "${GREEN}Ya${NC}" || echo -e "${RED}Tidak${NC}")"
 elif [ -n "$GH_TOKEN" ]; then
   RELEASE_PAYLOAD=$(python3 -c "
 import json
@@ -270,47 +275,59 @@ print(json.dumps({
 }))
 ")
 
-  EXISTING_RELEASE_ID=$(curl -s -H "Authorization: token ${GH_TOKEN}" \
-    "https://api.github.com/repos/HelloRayy/snaps/releases/tags/v${VERSION_NAME}" \
+  EXISTING_RELEASE_ID=$(curl -s -H "Authorization: Bearer ${GH_TOKEN}" \
+    -H "Accept: application/vnd.github+json" \
+    "https://api.github.com/repos/${RELEASE_REPO}/releases/tags/v${VERSION_NAME}" \
     | grep -m 1 '"id":' | awk '{print $2}' | tr -d ',' || true)
 
   if [ -n "$EXISTING_RELEASE_ID" ] && [ "$EXISTING_RELEASE_ID" != "null" ]; then
     echo "• Release v${VERSION_NAME} sudah ada (ID: $EXISTING_RELEASE_ID). Menggunakan release tersebut..."
     RELEASE_ID=$EXISTING_RELEASE_ID
   else
-    echo "• Membuat release baru di GitHub..."
-    CREATE_RESP=$(curl -s -X POST -H "Authorization: token ${GH_TOKEN}" \
+    echo "• Membuat release baru di GitHub (${RELEASE_REPO})..."
+    CREATE_RESP=$(curl -s -X POST -H "Authorization: Bearer ${GH_TOKEN}" \
+      -H "Accept: application/vnd.github+json" \
       -H "Content-Type: application/json" \
       -d "$RELEASE_PAYLOAD" \
-      "https://api.github.com/repos/HelloRayy/snaps/releases")
+      "https://api.github.com/repos/${RELEASE_REPO}/releases")
     RELEASE_ID=$(echo "$CREATE_RESP" | grep -m 1 '"id":' | awk '{print $2}' | tr -d ',' || true)
   fi
 
   if [ -n "$RELEASE_ID" ] && [ "$RELEASE_ID" != "null" ]; then
-    echo "• Mengunggah biner APK ke release assets (ID: $RELEASE_ID)..."
+    echo "• Mengunggah biner APK ke release assets publik (ID: $RELEASE_ID)..."
 
-    EXISTING_ASSET_ID=$(curl -s -H "Authorization: token ${GH_TOKEN}" \
-      "https://api.github.com/repos/HelloRayy/snaps/releases/${RELEASE_ID}/assets" \
+    EXISTING_ASSET_ID=$(curl -s -H "Authorization: Bearer ${GH_TOKEN}" \
+      -H "Accept: application/vnd.github+json" \
+      "https://api.github.com/repos/${RELEASE_REPO}/releases/${RELEASE_ID}/assets" \
       | grep -m 1 '"id":' | awk '{print $2}' | tr -d ',' || true)
 
     if [ -n "$EXISTING_ASSET_ID" ] && [ "$EXISTING_ASSET_ID" != "null" ]; then
-      curl -s -X DELETE -H "Authorization: token ${GH_TOKEN}" \
-        "https://api.github.com/repos/HelloRayy/snaps/releases/assets/${EXISTING_ASSET_ID}" > /dev/null || true
+      curl -s -X DELETE -H "Authorization: Bearer ${GH_TOKEN}" \
+        -H "Accept: application/vnd.github+json" \
+        "https://api.github.com/repos/${RELEASE_REPO}/releases/assets/${EXISTING_ASSET_ID}" > /dev/null || true
     fi
 
     UPLOAD_RESP=$(curl -s -X POST \
-      -H "Authorization: token ${GH_TOKEN}" \
+      -H "Authorization: Bearer ${GH_TOKEN}" \
+      -H "Accept: application/vnd.github+json" \
       -H "Content-Type: application/vnd.android.package-archive" \
       --data-binary @"$APK_PATH" \
-      "https://uploads.github.com/repos/HelloRayy/snaps/releases/${RELEASE_ID}/assets?name=app-release.apk")
+      "https://uploads.github.com/repos/${RELEASE_REPO}/releases/${RELEASE_ID}/assets?name=app-release.apk")
 
     UPLOAD_STATE=$(echo "$UPLOAD_RESP" | grep -m 1 '"state":' | awk '{print $2}' | tr -d '",')
-    echo -e "${GREEN}✓ Asset APK terunggah ke GitHub: ${UPLOAD_STATE:-uploaded}!${NC}"
+    if [ "$UPLOAD_STATE" = "uploaded" ]; then
+      echo -e "${GREEN}✓ Asset APK terunggah ke GitHub Publik (0 egress Supabase)!${NC}"
+    else
+      echo -e "${RED}❌ Gagal upload APK ke GitHub Publik: $UPLOAD_RESP${NC}"
+      exit 1
+    fi
   else
-    echo -e "${YELLOW}⚠️ Tidak dapat membuat release via GitHub API.${NC}"
+    echo -e "${RED}❌ Tidak dapat membuat release via GitHub API di ${RELEASE_REPO}.${NC}"
+    exit 1
   fi
 else
-  echo -e "${YELLOW}⚠️ GitHub Token tidak terdeteksi.${NC}"
+  echo -e "${RED}❌ GITHUB_RELEASES_TOKEN tidak terdeteksi di .env.local.${NC}"
+  exit 1
 fi
 
 # ------------------------------------------------------------------------------
@@ -338,29 +355,8 @@ if [ "$DRY_RUN" = "true" ]; then
   echo -e "• Service Role Key terdeteksi: $([ -n "$SUPABASE_KEY" ] && echo -e "${GREEN}Ya${NC}" || echo -e "${RED}Tidak${NC}")"
   echo "• Version Code Supabase: ${REAL_VERSION_CODE}"
 elif [ -n "$SUPABASE_KEY" ]; then
-  # 1. Upload APK ke Supabase Storage (Public CDN langsung anti-404)
-  echo "• Mengunggah APK ke Supabase Storage CDN (bucket app_releases)..."
-  curl -s -X POST "${SUPABASE_URL_VAL}/storage/v1/bucket" \
-    -H "apikey: ${SUPABASE_KEY}" \
-    -H "Authorization: Bearer ${SUPABASE_KEY}" \
-    -H "Content-Type: application/json" \
-    -d '{"id": "app_releases", "name": "app_releases", "public": true}' > /dev/null || true
-
-  UPLOAD_STORAGE_RESP=$(curl -s -X POST "${SUPABASE_URL_VAL}/storage/v1/object/app_releases/v${VERSION_NAME}/app-release.apk" \
-    -H "apikey: ${SUPABASE_KEY}" \
-    -H "Authorization: Bearer ${SUPABASE_KEY}" \
-    -H "Content-Type: application/vnd.android.package-archive" \
-    -H "x-upsert: true" \
-    --data-binary @"$APK_PATH")
-
-  if echo "$UPLOAD_STORAGE_RESP" | grep -q "Key"; then
-    echo -e "${GREEN}✓ APK berhasil diunggah ke Supabase Storage CDN!${NC}"
-    DOWNLOAD_URL="${SUPABASE_URL_VAL}/storage/v1/object/public/app_releases/v${VERSION_NAME}/app-release.apk"
-  else
-    echo -e "${RED}❌ Upload ke Supabase Storage Gagal: $UPLOAD_STORAGE_RESP${NC}"
-    echo -e "${YELLOW}⚠️ PERINGATAN: Repositori GitHub bersifat privat sehingga URL aset GitHub Release tidak dapat diunduh tanpa otentikasi. Batalkan registrasi Supabase.${NC}"
-    exit 1
-  fi
+  # 1. Menggunakan URL GitHub Public Releases (0 egress Supabase Storage!)
+  echo "• Menggunakan URL download publik GitHub Releases: ${DOWNLOAD_URL}"
 
   # 2. Nonaktifkan versi sebelumnya agar rilis ini menjadi satu-satunya yang aktif
   echo "• Menonaktifkan versi aplikasi sebelumnya..."
