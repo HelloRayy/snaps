@@ -283,12 +283,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   controller: _nameController,
                 ),
                 const SizedBox(height: 14.0),
-                AuthInputField(
-                  label: 'Kelas / Jurusan',
-                  hint: 'Otomatis terisi dari NIS',
-                  prefixIcon: LucideIcons.graduationCap,
-                  controller: _classController,
-                  readOnly: true,
+                IgnorePointer(
+                  child: AuthInputField(
+                    label: 'Kelas / Jurusan',
+                    hint: 'Otomatis terisi dari NIS',
+                    prefixIcon: LucideIcons.graduationCap,
+                    controller: _classController,
+                  ),
                 ),
                 const SizedBox(height: 14.0),
                 const Text(
