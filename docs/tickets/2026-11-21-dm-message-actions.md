@@ -2,7 +2,7 @@
 
 **Tanggal**: 2026-11-21
 **Domain**: Direct Messages (`lib/features/messages/`)
-**Status**: Terkunci (Siap Dikerjakan)
+**Status**: Selesai
 
 ---
 

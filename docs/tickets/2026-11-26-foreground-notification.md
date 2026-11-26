@@ -2,7 +2,7 @@
 
 **Tanggal**: 2026-11-26
 **Domain**: Global Notification (`lib/core/services/global_notification_service.dart`)
-**Status**: Siap Dikerjakan (Menunggu Persetujuan Approach)
+**Status**: Selesai
 
 ---
 
