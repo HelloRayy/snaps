@@ -175,6 +175,21 @@ class PostCardHeader extends StatelessWidget {
                             size: 26.0,
                           ),
                         ],
+                        if (cleanUsername.isNotEmpty) ...[
+                          const SizedBox(width: 5.0),
+                          Flexible(
+                            child: Text(
+                              '@$cleanUsername',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 13.5,
+                                fontWeight: FontWeight.w400,
+                                color: mutedTextColor,
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                     if (item.topicTag != null)
