@@ -287,7 +287,7 @@ class SupabaseFeedService {
       final response = await _client
           .from('post_comments')
           .select(
-            '*, user:profiles(*), post:market_posts!post_comments_post_id_fkey(*, seller:profiles!market_posts_seller_id_fkey(*), post_likes(count), post_comments(count))',
+            '*, post:market_posts!post_comments_post_id_fkey(*, seller:profiles!market_posts_seller_id_fkey(*), post_likes(count), post_comments(count))',
           )
           .eq('user_id', userId)
           .order('created_at', ascending: false);
