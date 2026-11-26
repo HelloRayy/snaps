@@ -42,6 +42,6 @@ CREATE POLICY "Admins can update password reset requests"
     EXISTS (
       SELECT 1 FROM public.profiles
       WHERE profiles.id = auth.uid()
-        AND (profiles.role = 'admin' OR profiles.is_admin = true)
+        AND profiles.role = 'admin'
     )
   );
