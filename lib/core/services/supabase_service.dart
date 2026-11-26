@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
+import 'package:snapan_market/features/profile/models/profile_user_model.dart';
 import 'package:snapan_market/core/services/supabase/supabase_auth_service.dart';
 import 'package:snapan_market/core/services/supabase/supabase_profile_service.dart';
 import 'package:snapan_market/core/services/supabase/supabase_feed_service.dart';
@@ -217,6 +218,9 @@ class SupabaseService {
 
   Future<List<MarketPostModel>> fetchUserPosts(String userId) =>
       feed.fetchUserPosts(userId);
+
+  Future<List<ProfileReplyThreadModel>> fetchUserReplies(String userId) =>
+      feed.fetchUserReplies(userId);
 
   Future<bool> togglePostLike(String postId, bool isCurrentlyLiked) =>
       feed.togglePostLike(postId, isCurrentlyLiked);

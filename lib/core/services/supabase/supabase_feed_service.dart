@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/core/services/poll_sync_service.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
+import 'package:snapan_market/features/profile/models/profile_user_model.dart';
 
 class SupabaseFeedService {
   SupabaseFeedService(this._client);
@@ -276,6 +277,39 @@ class SupabaseFeedService {
       );
     } catch (e) {
       debugPrint('Error fetchUserPosts: $e');
+      return [];
+    }
+  }
+
+  /// Fetch all comments and replies created by a specific user with their parent post
+  Future<List<ProfileReplyThreadModel>> fetchUserReplies(String userId) async {
+    try {
+      final response = await _client
+          .from('post_comments')
+          .select(
+            '*, author:profiles!post_comments_user_id_fkey(*), post:market_posts!post_comments_post_id_fkey(*, seller:profiles!market_posts_seller_id_fkey(*), post_likes(count), post_comments(count))',
+          )
+          .eq('user_id', userId)
+          .order('created_at', ascending: false);
+
+      final List<ProfileReplyThreadModel> results = [];
+      for (final item in (response as List<dynamic>).whereType<Map<String, dynamic>>()) {
+        final rawPost = item['post'];
+        if (rawPost is! Map<String, dynamic>) continue;
+        final parentPost = MarketPostModel.fromJson(rawPost);
+        if (parentPost.isDeleted) continue;
+        final reply = PostCommentModel.fromJson(item);
+        results.add(
+          ProfileReplyThreadModel(
+            id: reply.id,
+            parentPost: parentPost,
+            reply: reply,
+          ),
+        );
+      }
+      return results;
+    } catch (e) {
+      debugPrint('Error fetchUserReplies: $e');
       return [];
     }
   }

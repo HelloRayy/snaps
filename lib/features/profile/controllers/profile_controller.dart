@@ -92,11 +92,13 @@ class ProfileController extends ChangeNotifier {
             currentUserId: currentUser.id,
             limit: 3,
           ),
+          SupabaseService.instance.fetchUserReplies(currentUser.id),
         ]);
         final profile = results[0] as Map<String, dynamic>?;
         final livePosts = results[1] as List<MarketPostModel>;
         final ownFollowers = results[2] as int;
         final rawAvatars = results[3] as List<Map<String, dynamic>>;
+        final liveReplies = results[4] as List<ProfileReplyThreadModel>;
         final followerAvatars = rawAvatars.map((m) => FollowerAvatarPreview.fromMap(m)).toList();
 
         user = _buildUserModel(
@@ -130,6 +132,7 @@ class ProfileController extends ChangeNotifier {
         }
 
         allUserPosts = await _enrichPosts(livePosts);
+        allUserReplies = liveReplies;
         isLoading = false;
         isNotFound = false;
         notifyListeners();
@@ -158,14 +161,21 @@ class ProfileController extends ChangeNotifier {
 
         if (p != null) {
           final targetId = p['id'] as String? ?? '';
-          final targetPosts = await SupabaseService.instance.fetchUserPosts(targetId);
-          final followers = await FollowService.instance.loadFollowerCount(targetId);
           final currentUserId = SupabaseService.instance.currentUser?.id;
-          final rawAvatars = await SupabaseService.instance.fetchProfileFollowerAvatars(
-            targetUserId: targetId,
-            currentUserId: currentUserId,
-            limit: 3,
-          );
+          final targetResults = await Future.wait([
+            SupabaseService.instance.fetchUserPosts(targetId),
+            FollowService.instance.loadFollowerCount(targetId),
+            SupabaseService.instance.fetchProfileFollowerAvatars(
+              targetUserId: targetId,
+              currentUserId: currentUserId,
+              limit: 3,
+            ),
+            SupabaseService.instance.fetchUserReplies(targetId),
+          ]);
+          final targetPosts = targetResults[0] as List<MarketPostModel>;
+          final followers = targetResults[1] as int;
+          final rawAvatars = targetResults[2] as List<Map<String, dynamic>>;
+          final targetReplies = targetResults[3] as List<ProfileReplyThreadModel>;
           final followerAvatars = rawAvatars.map((m) => FollowerAvatarPreview.fromMap(m)).toList();
 
           user = _buildUserModel(
@@ -176,6 +186,7 @@ class ProfileController extends ChangeNotifier {
             followerAvatars: followerAvatars,
           );
           allUserPosts = await _enrichPosts(targetPosts);
+          allUserReplies = targetReplies;
           isLoading = false;
           isNotFound = false;
           notifyListeners();
