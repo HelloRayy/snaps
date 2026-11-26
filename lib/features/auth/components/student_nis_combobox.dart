@@ -142,9 +142,10 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
                   ),
                   itemBuilder: (context, index) {
                     final student = _suggestions[index];
+                    final isLocked = student.isClaimed && !widget.allowClaimed;
                     return InkWell(
                       onTap: () {
-                        if (student.isClaimed && !widget.allowClaimed) {
+                        if (isLocked) {
                           ScaffoldMessenger.of(context).hideCurrentSnackBar();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -160,7 +161,7 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
                         _focusNode.unfocus();
                       },
                       child: Opacity(
-                        opacity: student.isClaimed ? 0.55 : 1.0,
+                        opacity: isLocked ? 0.55 : 1.0,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
                           child: Row(
@@ -168,7 +169,7 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 3.5),
                                 decoration: BoxDecoration(
-                                  color: student.isClaimed
+                                  color: isLocked
                                       ? const Color(0xFFE2E8F0)
                                       : const Color(0xFFF1F5F9),
                                   borderRadius: BorderRadius.circular(6.0),
@@ -179,7 +180,7 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
                                     fontFamily: 'SFPro',
                                     fontSize: 12.0,
                                     fontWeight: FontWeight.w700,
-                                    color: student.isClaimed
+                                    color: isLocked
                                         ? const Color(0xFF64748B)
                                         : const Color(0xFF334155),
                                   ),
@@ -197,7 +198,7 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
                                         fontFamily: 'SFPro',
                                         fontSize: 13.0,
                                         fontWeight: FontWeight.w600,
-                                        color: student.isClaimed
+                                        color: isLocked
                                             ? const Color(0xFF64748B)
                                             : const Color(0xFF0F172A),
                                       ),
@@ -215,7 +216,7 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
                                             color: Color(0xFF64748B),
                                           ),
                                         ),
-                                        if (student.isClaimed) ...[
+                                        if (isLocked) ...[
                                           const SizedBox(width: 6.0),
                                           Container(
                                             padding: const EdgeInsets.symmetric(
