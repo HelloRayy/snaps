@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/components/skeleton/snaps_shimmer.dart';
 /// Renders a carousel card with dynamic width based on its natural aspect ratio
@@ -40,8 +41,8 @@ class _AdaptiveCarouselCardState extends State<AdaptiveCarouselCard> {
   ImageStream? _imageStream;
   ImageStreamListener? _listener;
   double? _resolvedRatio;
-  bool _isImageLoaded = false;
   int _retryCount = 0;
+
   @override
   void initState() {
     super.initState();
@@ -53,7 +54,6 @@ class _AdaptiveCarouselCardState extends State<AdaptiveCarouselCard> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.imageUrl != widget.imageUrl) {
       _resolvedRatio = AdaptiveCarouselCard.ratioCache[widget.imageUrl];
-      _isImageLoaded = false;
       _resolveRatio();
     }
   }
@@ -67,7 +67,7 @@ class _AdaptiveCarouselCardState extends State<AdaptiveCarouselCard> {
 
     final isNetwork = widget.imageUrl.startsWith('http://') || widget.imageUrl.startsWith('https://');
     final ImageProvider provider = isNetwork
-        ? NetworkImage(widget.imageUrl)
+        ? CachedNetworkImageProvider(widget.imageUrl)
         : FileImage(File(widget.imageUrl)) as ImageProvider;
 
     if (_imageStream != null && _listener != null) {
@@ -134,44 +134,22 @@ class _AdaptiveCarouselCardState extends State<AdaptiveCarouselCard> {
         ),
         child: widget.child ??
             (isNetwork
-                ? Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      if (!_isImageLoaded)
-                        SnapsShimmer(
-                          child: Container(
-                            color: isDark
-                                ? const Color(0xFF242626)
-                                : const Color(0xFFF1F3F5),
-                          ),
-                        ),
-                      Image.network(
-                        widget.imageUrl,
-                        key: ValueKey('${widget.imageUrl}#$_retryCount'),
-                        cacheWidth: 600,
-                        fit: BoxFit.cover,
-                        frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                          if (wasSynchronouslyLoaded) {
-                            return child;
-                          }
-                          final isLoaded = frame != null;
-                          if (isLoaded && !_isImageLoaded) {
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (mounted && !_isImageLoaded) {
-                                setState(() => _isImageLoaded = true);
-                              }
-                            });
-                          }
-                          return AnimatedOpacity(
-                            opacity: isLoaded ? 1.0 : 0.0,
-                            duration: const Duration(milliseconds: 200),
-                            curve: Curves.easeOutCubic,
-                            child: child,
-                          );
-                        },
-                        errorBuilder: (_, _, _) => _errorPlaceholder(calculatedWidth, isDark),
+                ? CachedNetworkImage(
+                    key: ValueKey('${widget.imageUrl}#$_retryCount'),
+                    imageUrl: widget.imageUrl,
+                    memCacheWidth: 600,
+                    fit: BoxFit.cover,
+                    fadeInDuration: const Duration(milliseconds: 180),
+                    fadeOutDuration: const Duration(milliseconds: 120),
+                    placeholder: (_, __) => SnapsShimmer(
+                      child: Container(
+                        color: isDark
+                            ? const Color(0xFF242626)
+                            : const Color(0xFFF1F3F5),
                       ),
-                    ],
+                    ),
+                    errorWidget: (_, __, ___) =>
+                        _errorPlaceholder(calculatedWidth, isDark),
                   )
                 : Image.file(
                     File(widget.imageUrl),
@@ -198,8 +176,8 @@ class _AdaptiveCarouselCardState extends State<AdaptiveCarouselCard> {
       behavior: HitTestBehavior.opaque,
       onTap: isNetwork
           ? () {
+              CachedNetworkImage.evictFromCache(widget.imageUrl);
               setState(() {
-                _isImageLoaded = false;
                 _retryCount++;
               });
               _resolveRatio();
