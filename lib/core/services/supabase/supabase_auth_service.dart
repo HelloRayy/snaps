@@ -151,6 +151,19 @@ class SupabaseAuthService {
     String? deviceName,
   }) async {
     final cleanNis = nis.trim();
+
+    // 1. Pastikan NIS memang sudah terdaftar di tabel profiles
+    final registeredProfile = await _client
+        .from('profiles')
+        .select('id')
+        .eq('nis', cleanNis)
+        .maybeSingle();
+
+    if (registeredProfile == null) {
+      throw Exception('NIS ini belum terdaftar. Silakan daftar akun baru terlebih dahulu.');
+    }
+
+    // 2. Anti-spam: 1 tiket pending per NIS
     final existing = await _client
         .from('password_reset_requests')
         .select('id')
@@ -160,6 +173,20 @@ class SupabaseAuthService {
 
     if (existing != null) {
       throw Exception('Permintaan reset untuk NIS ini masih menunggu verifikasi admin.');
+    }
+
+    // 3. Anti-spam per perangkat (hanya jika token tersedia)
+    if (deviceFcmToken != null && deviceFcmToken.isNotEmpty) {
+      final existingDevice = await _client
+          .from('password_reset_requests')
+          .select('id')
+          .eq('device_fcm_token', deviceFcmToken)
+          .eq('status', 'pending')
+          .maybeSingle();
+
+      if (existingDevice != null) {
+        throw Exception('Perangkat ini masih memiliki permintaan reset yang menunggu verifikasi.');
+      }
     }
 
     await _client.from('password_reset_requests').insert({

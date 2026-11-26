@@ -211,6 +211,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       return;
     }
 
+    if (_verifiedStudent != null && !_verifiedStudent!.isClaimed) {
+      SnapsToast.error(context, 'NIS ini belum terdaftar. Silakan daftar akun baru terlebih dahulu.', hasBottomNav: false);
+      return;
+    }
+
     setState(() => _isSubmitting = true);
     try {
       String? fcmToken;
