@@ -130,6 +130,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   void initState() {
     super.initState();
+    _notesController.addListener(() {
+      if (mounted) setState(() {});
+    });
     _restoreLastNis();
   }
 
@@ -285,7 +288,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   Widget _buildFormState() {
-    final canSubmit = _verifiedStudent != null && _agreedOwnership && !_isSubmitting;
+    final canSubmit = _verifiedStudent != null &&
+        _agreedOwnership &&
+        _notesController.text.trim().isNotEmpty &&
+        !_isSubmitting;
     final isKeyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
     return Column(
       children: [
@@ -364,9 +370,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                 ],
                 const SizedBox(height: 16.0),
-                const Text(
-                  'Alasan Lupa Kata Sandi (Opsional)',
-                  style: TextStyle(fontSize: 13.0, fontWeight: FontWeight.w600, color: AppColors.slateInk),
+                const Text.rich(
+                  TextSpan(
+                    text: 'Alasan Lupa Kata Sandi ',
+                    style: TextStyle(fontSize: 13.0, fontWeight: FontWeight.w600, color: AppColors.slateInk),
+                    children: [
+                      TextSpan(text: '*', style: TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.w800)),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 6.0),
                 TextField(

@@ -22,6 +22,7 @@ interface AdminSidebarProps {
   adminEmail?: string;
   stats?: AdminStats | null;
   securityAlertsCount?: number;
+  pendingResetCount?: number;
 }
 
 export function AdminSidebar({
@@ -33,6 +34,7 @@ export function AdminSidebar({
   adminEmail = 'admin@snapan.id',
   stats,
   securityAlertsCount,
+  pendingResetCount,
 }: AdminSidebarProps) {
   const displayName = adminProfile?.full_name || adminEmail.split('@')[0] || 'Administrator';
   const displayUsername = adminProfile?.username ? `@${adminProfile.username}` : adminEmail;
@@ -249,6 +251,14 @@ export function AdminSidebar({
               >
                 <i className="fa-solid fa-key"></i>
                 <span style={{ flex: 1, whiteSpace: 'nowrap' }}>Reset Sandi</span>
+                {pendingResetCount != null && pendingResetCount > 0 && (
+                  <span
+                    className="ads-lozenge ads-lozenge-danger"
+                    style={{ fontSize: '10px', padding: '1px 5px' }}
+                  >
+                    {pendingResetCount}
+                  </span>
+                )}
               </a>
             </li>
 

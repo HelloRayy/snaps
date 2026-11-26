@@ -28,6 +28,7 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
   const [isLoadingStats, setIsLoadingStats] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [securityAlertsCount, setSecurityAlertsCount] = useState<number>(0);
+  const [pendingResetCount, setPendingResetCount] = useState<number>(0);
   const [adminEmail, setAdminEmail] = useState<string>('admin@snapan.id');
   const [adminRole, setAdminRole] = useState<string>('admin');
   const [adminProfile, setAdminProfile] = useState<ProfileRow | null>(null);
@@ -193,6 +194,7 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
         adminEmail={adminEmail}
         stats={stats}
         securityAlertsCount={securityAlertsCount}
+        pendingResetCount={pendingResetCount}
       />
 
       {/* CoolAdmin Page Container */}
@@ -255,7 +257,10 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
               </div>
 
               <div className={activeTab === 'password-resets' ? 'block' : 'hidden'}>
-                <PasswordResetTab isActive={activeTab === 'password-resets'} />
+                <PasswordResetTab
+                  isActive={activeTab === 'password-resets'}
+                  onPendingCountChange={setPendingResetCount}
+                />
               </div>
             </div>
           </div>

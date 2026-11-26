@@ -95,6 +95,23 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
     if (isActive) loadRequests();
   }, [isActive]);
 
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin_password_reset_requests')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'password_reset_requests' },
+        () => {
+          loadRequests();
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const counts = useMemo(() => {
     let pending = 0;
     let approved = 0;
@@ -106,6 +123,10 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
     }
     return { pending, approved, rejected };
   }, [requests]);
+
+  useEffect(() => {
+    onPendingCountChange?.(counts.pending);
+  }, [counts.pending, onPendingCountChange]);
 
   const filteredRequests = useMemo(
     () => (filter === 'all' ? requests : requests.filter((r) => r.status === filter)),
