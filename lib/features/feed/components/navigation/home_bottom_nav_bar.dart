@@ -168,13 +168,8 @@ class HomeBottomNavBar extends StatelessWidget {
                         padding: EdgeInsets.only(
                           left: 0,
                         ),
-                        child: Transform.translate(
-                          offset: Offset(
-                            isCollapsed ? -((innerWidth / 8.0) - (collapsedWidth / 2.0 - 4.0)) : 0.0,
-                            0.0,
-                          ),
-                          child: OverflowBox(
-                            maxWidth: innerWidth,
+                        child: OverflowBox(
+                          maxWidth: innerWidth,
                           minWidth: innerWidth,
                           alignment: Alignment.centerLeft,
                           child: SizedBox(
