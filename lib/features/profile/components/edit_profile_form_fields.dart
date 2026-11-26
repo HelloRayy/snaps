@@ -36,6 +36,9 @@ typedef ProfileDropdownField = AppDropdownField;
 
 class EditProfileFormFields extends StatelessWidget {
   final TextEditingController usernameController;
+  final TextEditingController passwordController;
+  final bool showPassword;
+  final VoidCallback onTogglePassword;
   final TextEditingController bioController;
   final TextEditingController linkController;
   final String? selectedGrade, selectedMajor, selectedClassNum;
@@ -51,6 +54,9 @@ class EditProfileFormFields extends StatelessWidget {
   const EditProfileFormFields({
     super.key,
     required this.usernameController,
+    required this.passwordController,
+    required this.showPassword,
+    required this.onTogglePassword,
     required this.bioController,
     required this.linkController,
     required this.selectedGrade,

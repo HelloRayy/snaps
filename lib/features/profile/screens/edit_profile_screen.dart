@@ -8,7 +8,6 @@ import 'package:snapan_market/core/services/mascot_feature_notice_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/snaps_toast.dart';
 import 'package:snapan_market/features/auth/models/auth_constants.dart';
-import 'package:snapan_market/features/profile/components/change_password_sheet.dart';
 import 'package:snapan_market/features/profile/components/discard_changes_dialog.dart';
 import 'package:snapan_market/features/profile/components/edit_profile_avatar_section.dart';
 import 'package:snapan_market/features/profile/components/edit_profile_bottom_bar.dart';
@@ -33,8 +32,10 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   late final TextEditingController _nameController;
   late final TextEditingController _usernameController;
+  late final TextEditingController _passwordController;
   late final TextEditingController _bioController;
   late final TextEditingController _linkController;
+  bool _showPassword = false;
 
   String? _selectedGrade;
   String? _selectedMajor;
@@ -53,6 +54,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     MascotFeatureNoticeService.instance.markSeen();
     _nameController = TextEditingController(text: widget.initialUser.name);
     _usernameController = TextEditingController(text: widget.initialUser.username.replaceAll('@', ''));
+    _passwordController = TextEditingController();
     _bioController = TextEditingController(text: widget.initialUser.bio);
     _linkController = TextEditingController(text: widget.initialUser.link ?? '');
 
@@ -71,6 +73,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void dispose() {
     _nameController.dispose();
     _usernameController.dispose();
+    _passwordController.dispose();
     _bioController.dispose();
     _linkController.dispose();
     super.dispose();
@@ -107,7 +110,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _avatar != widget.initialUser.avatar ||
         _mascotFlair?.toJson().toString() != widget.initialUser.mascotFlair?.toJson().toString() ||
         _showSalesStats != widget.initialUser.showSalesStats ||
-        _tags.join(',') != widget.initialUser.tags.join(',');
+        _tags.join(',') != widget.initialUser.tags.join(',') ||
+        _passwordController.text.isNotEmpty;
   }
 
   Future<void> _handleAttemptExit() async {
@@ -285,6 +289,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         mascotFlair: _mascotFlair,
       );
 
+      if (_passwordController.text.isNotEmpty) {
+        if (_passwordController.text.length < 6) {
+          setState(() => _isSaving = false);
+          SnapsToast.error(context, 'Kata sandi minimal 6 karakter', hasBottomNav: false);
+          return;
+        }
+        await SupabaseService.instance.auth.updatePassword(_passwordController.text);
+      }
+
       widget.onSave(updated);
 
       if (mounted) {
@@ -365,6 +378,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     EditProfileFormFields(
                       usernameController: _usernameController,
+                      passwordController: _passwordController,
+                      showPassword: _showPassword,
+                      onTogglePassword: () => setState(() => _showPassword = !_showPassword),
                       bioController: _bioController,
                       linkController: _linkController,
                       selectedGrade: _selectedGrade,
@@ -380,26 +396,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       onTagsChanged: (t) => setState(() => _tags = t),
                       showSalesStats: _showSalesStats,
                       onToggleSalesStats: (v) => setState(() => _showSalesStats = v),
-                    ),
-                    const SizedBox(height: 20.0),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48.0,
-                      child: OutlinedButton(
-                        onPressed: () => ChangePasswordSheet.show(context),
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: AppColors.border),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.0)),
-                        ),
-                        child: Text(
-                          'Ubah Kata Sandi',
-                          style: TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.adaptiveText(context),
-                          ),
-                        ),
-                      ),
                     ),
                   ],
                 ),
