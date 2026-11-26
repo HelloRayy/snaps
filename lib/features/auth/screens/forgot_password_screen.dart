@@ -121,6 +121,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   bool _isLoadingStatus = false;
   bool _isWaitingView = false;
   bool _agreedOwnership = false;
+  String? _nisError;
+  String? _notesError;
+  String? _ownershipError;
   String? _activeNis;
   String? _currentDeviceToken;
   RegisteredStudent? _verifiedStudent;
@@ -208,18 +211,40 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     final nis = _nisController.text.trim();
     final name = _nameController.text.trim();
     final classGroup = _classController.text.trim();
+    final notes = _notesController.text.trim();
 
-    if (nis.isEmpty || name.isEmpty || classGroup.isEmpty) {
-      SnapsToast.error(context, 'NIS, Nama Lengkap, dan Kelas wajib diisi.', hasBottomNav: false);
+    String? nisErr;
+    String? notesErr;
+    String? ownerErr;
+
+    if (nis.isEmpty || _verifiedStudent == null) {
+      nisErr = 'Pilih NIS 5 digit dari daftar terlebih dahulu.';
+    } else if (!_verifiedStudent!.isClaimed) {
+      nisErr = 'NIS ini belum terdaftar. Silakan daftar akun baru.';
+    }
+    if (notes.isEmpty) {
+      notesErr = 'Alasan lupa kata sandi wajib diisi.';
+    }
+    if (!_agreedOwnership) {
+      ownerErr = 'Centang pernyataan kepemilikan akun terlebih dahulu.';
+    }
+
+    if (nisErr != null || notesErr != null || ownerErr != null) {
+      HapticFeedback.lightImpact();
+      setState(() {
+        _nisError = nisErr;
+        _notesError = notesErr;
+        _ownershipError = ownerErr;
+      });
       return;
     }
 
-    if (_verifiedStudent != null && !_verifiedStudent!.isClaimed) {
-      SnapsToast.error(context, 'NIS ini belum terdaftar. Silakan daftar akun baru terlebih dahulu.', hasBottomNav: false);
-      return;
-    }
-
-    setState(() => _isSubmitting = true);
+    setState(() {
+      _nisError = null;
+      _notesError = null;
+      _ownershipError = null;
+      _isSubmitting = true;
+    });
     try {
       String? fcmToken;
       try {
@@ -318,10 +343,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 StudentNisCombobox(
                   controller: _nisController,
                   verifiedStudent: _verifiedStudent,
+                  errorText: _nisError,
                   allowClaimed: true,
                   onStudentSelected: (student) {
                     setState(() {
                       _verifiedStudent = student;
+                      _nisError = null;
                       if (student != null) {
                         _nameController.text = student.name;
                         _classController.text = student.classGroup;
@@ -384,6 +411,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   controller: _notesController,
                   minLines: 3,
                   maxLines: 4,
+                  onChanged: (_) {
+                    if (_notesError != null) setState(() => _notesError = null);
+                  },
                   decoration: InputDecoration(
                     hintText: 'Ceritakan singkat kenapa lupa sandi...',
                     hintStyle: const TextStyle(fontSize: 13.5, color: AppColors.lightMuted),
@@ -392,19 +422,26 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     contentPadding: const EdgeInsets.all(14.0),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14.0),
-                      borderSide: const BorderSide(color: AppColors.border),
+                      borderSide: BorderSide(color: _notesError != null ? const Color(0xFFEF4444) : AppColors.border),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14.0),
-                      borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                      borderSide: BorderSide(color: _notesError != null ? const Color(0xFFEF4444) : AppColors.primary, width: 1.5),
                     ),
                   ),
                 ),
+                if (_notesError != null) ...[
+                  const SizedBox(height: 6.0),
+                  Text(_notesError!, style: const TextStyle(fontSize: 12.0, color: Color(0xFFEF4444), fontWeight: FontWeight.w500)),
+                ],
                 const SizedBox(height: 14.0),
                 GestureDetector(
                   onTap: () {
                     HapticFeedback.selectionClick();
-                    setState(() => _agreedOwnership = !_agreedOwnership);
+                    setState(() {
+                      _agreedOwnership = !_agreedOwnership;
+                      if (_agreedOwnership) _ownershipError = null;
+                    });
                   },
                   behavior: HitTestBehavior.opaque,
                   child: Row(
@@ -419,7 +456,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           color: _agreedOwnership ? AppColors.primary : Colors.white,
                           borderRadius: BorderRadius.circular(6.0),
                           border: Border.all(
-                            color: _agreedOwnership ? AppColors.primary : AppColors.border,
+                            color: _agreedOwnership
+                                ? AppColors.primary
+                                : (_ownershipError != null ? const Color(0xFFEF4444) : AppColors.border),
                             width: 1.5,
                           ),
                         ),
@@ -437,6 +476,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ],
                   ),
                 ),
+                if (_ownershipError != null) ...[
+                  const SizedBox(height: 6.0),
+                  Text(_ownershipError!, style: const TextStyle(fontSize: 12.0, color: Color(0xFFEF4444), fontWeight: FontWeight.w500)),
+                ],
               ],
             ),
           ),
@@ -448,7 +491,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             width: double.infinity,
             height: 50.0,
             child: ElevatedButton(
-              onPressed: canSubmit ? _submit : null,
+              onPressed: _isSubmitting ? null : _submit,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 disabledBackgroundColor: AppColors.border,
