@@ -1,9 +1,11 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import 'package:snapan_market/core/services/media_upload_service.dart';
@@ -530,7 +532,27 @@ class SnapsAssetPicker {
     }
 
     final List<XFile> xFiles = [];
-    for (final entity in result) {
+    final tempDir = await getTemporaryDirectory();
+    final batchTs = DateTime.now().millisecondsSinceEpoch;
+    for (int i = 0; i < result.length; i++) {
+      final entity = result[i];
+      try {
+        // Compress & normalize to JPEG (max 1280px, quality 80) to strip hidden
+        // Android Motion Photo video payloads and prevent OOM / upload timeouts.
+        final thumbBytes = await entity.thumbnailDataWithSize(
+          const ThumbnailSize(1280, 1280),
+          format: ThumbnailFormat.jpeg,
+          quality: 80,
+        );
+        if (thumbBytes != null && thumbBytes.isNotEmpty) {
+          final tempFile = File('${tempDir.path}/snaps_${batchTs}_$i.jpg');
+          await tempFile.writeAsBytes(thumbBytes, flush: true);
+          xFiles.add(XFile(tempFile.path));
+          continue;
+        }
+      } catch (e) {
+        debugPrint('Thumbnail compression fallback for asset $i: $e');
+      }
       final file = await entity.file;
       if (file != null) {
         xFiles.add(XFile(file.path));

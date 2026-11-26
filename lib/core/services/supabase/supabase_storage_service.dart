@@ -1,9 +1,11 @@
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseStorageService {
   SupabaseStorageService(this._client);
   final SupabaseClient _client;
+  static final Random _random = Random();
 
   /// Upload an image to Supabase Storage and return its public URL.
   Future<String?> uploadImage({
@@ -19,7 +21,7 @@ class SupabaseStorageService {
               ? 'image/webp'
               : 'image/jpeg';
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final random = (1000 + (DateTime.now().microsecond % 9000)).toString();
+      final random = (100000 + _random.nextInt(900000)).toString();
       final path = '$timestamp-$random.$ext';
 
       await _client.storage.from(bucket).uploadBinary(

@@ -41,6 +41,7 @@ class _AdaptiveCarouselCardState extends State<AdaptiveCarouselCard> {
   ImageStreamListener? _listener;
   double? _resolvedRatio;
   bool _isImageLoaded = false;
+  int _retryCount = 0;
   @override
   void initState() {
     super.initState();
@@ -146,6 +147,7 @@ class _AdaptiveCarouselCardState extends State<AdaptiveCarouselCard> {
                         ),
                       Image.network(
                         widget.imageUrl,
+                        key: ValueKey('${widget.imageUrl}#$_retryCount'),
                         cacheWidth: 600,
                         fit: BoxFit.cover,
                         frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
@@ -191,15 +193,44 @@ class _AdaptiveCarouselCardState extends State<AdaptiveCarouselCard> {
   }
 
   Widget _errorPlaceholder(double width, bool isDark) {
-    return Container(
-      width: width,
-      height: widget.height,
-      color: isDark ? const Color(0xFF1E2021) : const Color(0xFFF1F5F9),
-      child: Center(
-        child: Icon(
-          Icons.image_outlined,
-          color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
-          size: 36.0,
+    final isNetwork = widget.imageUrl.startsWith('http://') || widget.imageUrl.startsWith('https://');
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: isNetwork
+          ? () {
+              setState(() {
+                _isImageLoaded = false;
+                _retryCount++;
+              });
+              _resolveRatio();
+            }
+          : null,
+      child: Container(
+        width: width,
+        height: widget.height,
+        color: isDark ? const Color(0xFF1E2021) : const Color(0xFFF1F5F9),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                isNetwork ? Icons.refresh_rounded : Icons.image_outlined,
+                color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+                size: 32.0,
+              ),
+              if (isNetwork) ...[
+                const SizedBox(height: 6.0),
+                Text(
+                  'Ketuk untuk muat ulang',
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w500,
+                    color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
       ),
     );

@@ -217,7 +217,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
       _uploadStatusText = _images.isNotEmpty ? 'Menyiapkan media...' : 'Mempublikasikan...';
     });
 
-    final uploadedImages = await CreatePostImageHelper.uploadAllImages(
+    final uploadResult = await CreatePostImageHelper.uploadAllImages(
       _images,
       onProgress: (completed, total, progress) {
         if (mounted) {
@@ -228,7 +228,52 @@ class _CreatePostModalState extends State<CreatePostModal> {
         }
       },
     );
+
+    if (uploadResult.hasFailures) {
+      if (mounted) {
+        setState(() {
+          _images
+            ..clear()
+            ..addAll(uploadResult.resolvedItems);
+          _isSubmitting = false;
+        });
+        SnapsToast.error(
+          context,
+          '${uploadResult.failedCount} foto gagal diunggah. Cek koneksi lalu ketuk Posting lagi.',
+          hasBottomNav: false,
+        );
+      }
+      return;
+    }
+
+    final uploadedImages = uploadResult.uploadedUrls;
     final isProduct = _postMode == PostMode.product;
+
+    final List<Map<String, dynamic>> uploadedSubThreads = [];
+    if (!isProduct) {
+      for (final s in _subThreads) {
+        if (s.images.isEmpty) {
+          uploadedSubThreads.add({'caption': s.caption, 'images': <String>[]});
+          continue;
+        }
+        final subResult = await CreatePostImageHelper.uploadAllImages(s.images);
+        if (subResult.hasFailures) {
+          if (mounted) {
+            setState(() => _isSubmitting = false);
+            SnapsToast.error(
+              context,
+              '${subResult.failedCount} foto di utas lanjutan gagal diunggah. Coba lagi.',
+              hasBottomNav: false,
+            );
+          }
+          return;
+        }
+        uploadedSubThreads.add({
+          'caption': s.caption,
+          'images': subResult.uploadedUrls,
+        });
+      }
+    }
 
     Map<String, dynamic>? pollData;
     if (_showPoll && !isProduct) {
@@ -270,7 +315,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
       'topicTag': _selectedTopic?.name,
       'subThreads': isProduct
           ? <Map<String, dynamic>>[]
-          : _subThreads.map((s) => {'caption': s.caption, 'images': s.images}).toList(),
+          : uploadedSubThreads,
       'poll': isProduct ? null : pollData,
       'mascotFlair': _selectedMascotFlair?.toJson(),
       'createdAt': DateTime.now().toIso8601String(),
