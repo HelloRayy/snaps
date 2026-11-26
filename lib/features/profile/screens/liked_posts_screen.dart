@@ -44,17 +44,15 @@ class _LikedPostsScreenState extends State<LikedPostsScreen> {
   }
 
   Future<void> _handleLikeToggle(MarketPostModel post) async {
-    final nextLiked = !post.isLiked;
-    setState(() {
-      _posts = _posts.map((p) {
-        if (p.id != post.id) return p;
-        return p.copyWith(
-          isLiked: nextLiked,
-          likesCount: (p.likesCount + (nextLiked ? 1 : -1)).clamp(0, 999999),
-        );
-      }).toList();
-    });
-    await SupabaseService.instance.togglePostLike(post.id, post.isLiked);
+    final wasLiked = post.isLiked;
+    _posts = _posts.map((p) {
+      if (p.id != post.id) return p;
+      return p.copyWith(
+        isLiked: !wasLiked,
+        likesCount: (p.likesCount + (wasLiked ? -1 : 1)).clamp(0, 999999),
+      );
+    }).toList();
+    await SupabaseService.instance.togglePostLike(post.id, wasLiked);
   }
 
   void _openPostDetail(MarketPostModel post) {
