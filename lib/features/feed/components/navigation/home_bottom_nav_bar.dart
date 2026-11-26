@@ -196,7 +196,6 @@ class HomeBottomNavBar extends StatelessWidget {
                               _DockTabItem(
                                 isActive: currentTab == HomeNavTab.home,
                                 label: 'Home',
-                                showLabel: !isCollapsed,
                                 glyph: HomeNavGlyph(
                                   isActive: currentTab == HomeNavTab.home,
                                   activeColor: activeColor,
@@ -318,7 +317,9 @@ class _DockTabItemState extends State<_DockTabItem> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // Icon / Glyph with spring pop micro-motion
-                AnimatedScale(
+                Transform.scale(
+                  scale: 1.18,
+                  child: AnimatedScale(
                   scale: widget.isActive ? 1.08 : 1.0,
                   duration: const Duration(milliseconds: 220),
                   curve: Curves.easeOutBack,
