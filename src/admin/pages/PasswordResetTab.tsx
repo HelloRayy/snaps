@@ -15,6 +15,7 @@ interface PasswordResetRequest {
   admin_note: string | null;
   created_at: string;
   isKnownDevice?: boolean;
+  knownTokenPreview?: string | null;
 }
 
 interface PasswordResetTabProps {
@@ -26,6 +27,7 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
   const [loading, setLoading] = useState(false);
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [confirmModal, setConfirmModal] = useState<{
     req: PasswordResetRequest;
     action: 'approve' | 'reject';
@@ -72,12 +74,15 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
       }
 
       setRequests(
-        rows.map((r) => ({
-          ...r,
-          isKnownDevice: Boolean(
-            r.device_fcm_token && knownTokensByNis[r.nis]?.has(r.device_fcm_token),
-          ),
-        })),
+        rows.map((r) => {
+          const knownSet = knownTokensByNis[r.nis];
+          const firstKnown = knownSet ? Array.from(knownSet)[0] : null;
+          return {
+            ...r,
+            isKnownDevice: Boolean(r.device_fcm_token && knownSet?.has(r.device_fcm_token)),
+            knownTokenPreview: firstKnown ? `${firstKnown.slice(0, 12)}...` : null,
+          };
+        }),
       );
     }
     setLoading(false);
@@ -195,6 +200,27 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
                       {req.temp_password && (
                         <div className="text-xs text-emerald-700 font-mono mt-1">
                           Sandi: {req.temp_password}
+                        </div>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setExpandedId(expandedId === req.id ? null : req.id)}
+                        className="block mt-1 text-[11px] font-semibold text-indigo-600 hover:underline"
+                      >
+                        {expandedId === req.id ? 'Tutup Detail' : 'Lihat Detail'}
+                      </button>
+                      {expandedId === req.id && (
+                        <div className="mt-2 rounded-lg bg-slate-50 border border-slate-200 p-2 text-[11px] text-slate-600 space-y-1">
+                          <div>
+                            <span className="font-semibold">Device Awal:</span>{' '}
+                            <span className="font-mono">{req.knownTokenPreview || 'Belum ada riwayat'}</span>
+                          </div>
+                          <div>
+                            <span className="font-semibold">Device Pengaju:</span>{' '}
+                            <span className="font-mono">
+                              {req.device_fcm_token ? `${req.device_fcm_token.slice(0, 12)}...` : 'Tidak tersedia'}
+                            </span>
+                          </div>
                         </div>
                       )}
                     </td>
