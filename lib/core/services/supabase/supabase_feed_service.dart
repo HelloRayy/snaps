@@ -1,4 +1,7 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/core/services/poll_sync_service.dart';
@@ -8,11 +11,45 @@ class SupabaseFeedService {
   SupabaseFeedService(this._client);
   final SupabaseClient _client;
 
+  static const String _diskCacheKey = 'snaps_feed_disk_cache_v1';
+
   User? get _currentUser => _client.auth.currentUser;
 
-  // --- IN-MEMORY CACHE (Stale-While-Revalidate) ---
+  // --- IN-MEMORY + PERSISTENT DISK CACHE (Stale-While-Revalidate) ---
   static List<MarketPostModel> _cachedFeedPosts = [];
   static DateTime? _lastFeedFetchTime;
+
+  /// Pre-warms in-memory feed cache from SharedPreferences during app bootstrap
+  /// so the home timeline renders instantly (0ms) on cold start (Threads-style).
+  static Future<void> warmDiskCache() async {
+    if (_cachedFeedPosts.isNotEmpty) return;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_diskCacheKey);
+      if (raw == null || raw.isEmpty) return;
+      final decoded = jsonDecode(raw) as List<dynamic>;
+      final restored = decoded
+          .whereType<Map<String, dynamic>>()
+          .map((json) => MarketPostModel.fromJson(json))
+          .where((post) => !post.isDeleted)
+          .toList();
+      if (restored.isNotEmpty) {
+        _cachedFeedPosts = restored;
+      }
+    } catch (e) {
+      debugPrint('warmDiskCache warning: $e');
+    }
+  }
+
+  static Future<void> _saveRawDiskCache(List<Map<String, dynamic>> rawMaps) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final trimmed = rawMaps.take(15).toList();
+      await prefs.setString(_diskCacheKey, jsonEncode(trimmed));
+    } catch (e) {
+      debugPrint('_saveRawDiskCache warning: $e');
+    }
+  }
 
   /// In-memory cached feed posts available instantly (0ms)
   List<MarketPostModel> get cachedFeedPosts => List.unmodifiable(_cachedFeedPosts);
@@ -35,10 +72,11 @@ class SupabaseFeedService {
     _cachedFeedPosts.removeWhere((p) => p.id == postId);
   }
 
-  /// Clear in-memory feed cache on logout
+  /// Clear in-memory and disk feed cache on logout
   void clearCache() {
     _cachedFeedPosts.clear();
     _lastFeedFetchTime = null;
+    unawaited(SharedPreferences.getInstance().then((p) => p.remove(_diskCacheKey)));
   }
 
   /// Fetch live feed posts joined with profiles (supports keyset cursor pagination or offset fallback)
@@ -68,8 +106,11 @@ class SupabaseFeedService {
             .range(offset, offset + limit - 1);
       }
 
-      final rawList = (response as List<dynamic>)
+      final rawMaps = (response as List<dynamic>)
           .whereType<Map<String, dynamic>>()
+          .toList();
+
+      final rawList = rawMaps
           .map((json) => MarketPostModel.fromJson(json))
           .where((post) => !post.isDeleted)
           .toList();
@@ -86,6 +127,7 @@ class SupabaseFeedService {
       if (offset == 0 && beforeCreatedAt == null) {
         _cachedFeedPosts = List.from(hydratedList);
         _lastFeedFetchTime = DateTime.now();
+        unawaited(_saveRawDiskCache(rawMaps));
       }
 
       return hydratedList;

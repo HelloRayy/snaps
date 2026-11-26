@@ -24,12 +24,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   PaintingBinding.instance.imageCache.maximumSizeBytes = 200 << 20;
 
-  try {
-    await Firebase.initializeApp();
-  } catch (e) {
-    debugPrint('Firebase.initializeApp warning: $e');
-  }
-
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.dark,
@@ -37,13 +31,25 @@ Future<void> main() async {
     systemNavigationBarIconBrightness: Brightness.dark,
   ));
 
-  await Supabase.initialize(
-    url: SupabaseConstants.supabaseUrl,
-    anonKey: SupabaseConstants.supabaseAnonKey,
-    authOptions: const FlutterAuthClientOptions(
-      authFlowType: AuthFlowType.pkce,
+  // Parallel bootstrap: Firebase, Supabase, Theme, and local feed cache run simultaneously
+  await Future.wait([
+    () async {
+      try {
+        await Firebase.initializeApp();
+      } catch (e) {
+        debugPrint('Firebase.initializeApp warning: $e');
+      }
+    }(),
+    Supabase.initialize(
+      url: SupabaseConstants.supabaseUrl,
+      anonKey: SupabaseConstants.supabaseAnonKey,
+      authOptions: const FlutterAuthClientOptions(
+        authFlowType: AuthFlowType.pkce,
+      ),
     ),
-  );
+    ThemeService.instance.init(),
+    SupabaseFeedService.warmDiskCache(),
+  ]);
 
   if (Supabase.instance.client.auth.currentUser != null) {
     FollowService.instance.loadFollowings();
@@ -70,9 +76,6 @@ Future<void> main() async {
 
   // Initialize mascot feature announcement state & notice listener
   unawaited(MascotFeatureNoticeService.instance.init());
-
-  // Initialize theme service from persistent storage
-  await ThemeService.instance.init();
 
   runApp(const SnapanMarketApp());
 }
