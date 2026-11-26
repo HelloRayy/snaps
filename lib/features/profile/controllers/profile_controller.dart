@@ -17,6 +17,7 @@ class ProfileController extends ChangeNotifier {
   List<MarketPostModel> allUserPosts = [];
   List<ProfileReplyThreadModel> allUserReplies = [];
   bool isLoading = true;
+  bool _isFetching = false;
 
   RealtimeChannel? _profileSubscription;
   RealtimeChannel? _followRealtimeSubscription;
@@ -55,11 +56,23 @@ class ProfileController extends ChangeNotifier {
   }
 
   Future<void> loadProfile({required bool isOwnProfile, String? username}) async {
-    isLoading = true;
-    isNotFound = false;
-    user = null;
-    notifyListeners();
+    if (_isFetching) return;
+    _isFetching = true;
+    final isFirstLoad = user == null;
+    if (isFirstLoad) {
+      isLoading = true;
+      isNotFound = false;
+      notifyListeners();
+    }
 
+    try {
+      await _loadProfileInternal(isOwnProfile: isOwnProfile, username: username);
+    } finally {
+      _isFetching = false;
+    }
+  }
+
+  Future<void> _loadProfileInternal({required bool isOwnProfile, String? username}) async {
     if (isOwnProfile) {
       final currentUser = SupabaseService.instance.currentUser;
       if (currentUser == null) {
@@ -70,14 +83,20 @@ class ProfileController extends ChangeNotifier {
       }
 
       try {
-        final profile = await SupabaseService.instance.getProfile(currentUser.id);
-        final livePosts = await SupabaseService.instance.fetchUserPosts(currentUser.id);
-        final ownFollowers = await FollowService.instance.loadFollowerCount(currentUser.id);
-        final rawAvatars = await SupabaseService.instance.fetchProfileFollowerAvatars(
-          targetUserId: currentUser.id,
-          currentUserId: currentUser.id,
-          limit: 3,
-        );
+        final results = await Future.wait([
+          SupabaseService.instance.getProfile(currentUser.id),
+          SupabaseService.instance.fetchUserPosts(currentUser.id),
+          FollowService.instance.loadFollowerCount(currentUser.id),
+          SupabaseService.instance.fetchProfileFollowerAvatars(
+            targetUserId: currentUser.id,
+            currentUserId: currentUser.id,
+            limit: 3,
+          ),
+        ]);
+        final profile = results[0] as Map<String, dynamic>?;
+        final livePosts = results[1] as List<MarketPostModel>;
+        final ownFollowers = results[2] as int;
+        final rawAvatars = results[3] as List<Map<String, dynamic>>;
         final followerAvatars = rawAvatars.map((m) => FollowerAvatarPreview.fromMap(m)).toList();
 
         user = _buildUserModel(

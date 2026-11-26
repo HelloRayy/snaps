@@ -112,7 +112,19 @@ class PostDetailController extends ChangeNotifier {
     List<String> uploadedImages = [];
     try {
       if (images.isNotEmpty) {
-        uploadedImages = await CreatePostImageHelper.uploadAllImages(images);
+        final uploadResult = await CreatePostImageHelper.uploadAllImages(images);
+        if (uploadResult.hasFailures) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('${uploadResult.failedCount} foto komentar gagal diunggah. Cek koneksi lalu coba lagi.'),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
+          return false;
+        }
+        uploadedImages = uploadResult.uploadedUrls;
       }
 
       final liveComment = await SupabaseService.instance.addComment(

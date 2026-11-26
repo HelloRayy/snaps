@@ -76,7 +76,10 @@ class ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     _pageController = PageController(initialPage: _activeTab.index);
     _controller.addListener(() { if (mounted) setState(() {}); });
-    reloadProfile();
+    // Let the 280ms slide transition finish smoothly on skeleton shimmer before fetching
+    Future.delayed(const Duration(milliseconds: 280), () {
+      if (mounted) reloadProfile();
+    });
   }
 
   void reloadProfile() {
@@ -189,9 +192,9 @@ class ProfileScreenState extends State<ProfileScreen> {
 
     if (_controller.isLoading && _controller.user == null) {
       // 1. Shimmer Skeleton state while fetching live profile
+      // Do NOT attach _scrollController here so NestedScrollView owns it cleanly.
       body = CustomScrollView(
-        controller: _scrollController,
-        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        physics: const NeverScrollableScrollPhysics(),
         slivers: [
           const SliverToBoxAdapter(child: ProfileHeaderSkeleton()),
           SliverToBoxAdapter(

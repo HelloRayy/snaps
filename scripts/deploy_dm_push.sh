@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-PROJECT_REF="lcwsxldnoqjdfqxqcqja"
+PROJECT_REF="ipshbvtddafgwwrwstxx"
 
 if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then
   echo "=========================================================="

@@ -1,9 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/components/skeleton/snaps_shimmer.dart';
+import 'package:snapan_market/core/services/snaps_disk_image_cache.dart';
+
 /// Renders a carousel card with dynamic width based on its natural aspect ratio
-/// and a fixed height, preventing unwanted cropping and achieving WYSIWYG
-/// consistency between create-post preview and the home feed (SNAPS-79).
+/// and a fixed height, backed by [SnapsDiskImageCache] for zero repeat egress.
 class AdaptiveCarouselCard extends StatefulWidget {
   final String imageUrl;
   final double height;
@@ -40,11 +41,17 @@ class _AdaptiveCarouselCardState extends State<AdaptiveCarouselCard> {
   ImageStream? _imageStream;
   ImageStreamListener? _listener;
   double? _resolvedRatio;
-  bool _isImageLoaded = false;
+  File? _localFile;
+  bool _hasError = false;
+  int _retryCount = 0;
+
+  bool get _isNetwork =>
+      widget.imageUrl.startsWith('http://') || widget.imageUrl.startsWith('https://');
+
   @override
   void initState() {
     super.initState();
-    _resolveRatio();
+    _initImage();
   }
 
   @override
@@ -52,27 +59,52 @@ class _AdaptiveCarouselCardState extends State<AdaptiveCarouselCard> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.imageUrl != widget.imageUrl) {
       _resolvedRatio = AdaptiveCarouselCard.ratioCache[widget.imageUrl];
-      _isImageLoaded = false;
-      _resolveRatio();
+      _localFile = null;
+      _hasError = false;
+      _initImage();
     }
   }
 
-  void _resolveRatio() {
-    final cached = AdaptiveCarouselCard.ratioCache[widget.imageUrl];
-    if (cached != null) {
-      _resolvedRatio = cached;
+  Future<void> _initImage() async {
+    _resolvedRatio = AdaptiveCarouselCard.ratioCache[widget.imageUrl];
+
+    if (!_isNetwork) {
+      final f = File(widget.imageUrl);
+      _localFile = f;
+      _resolveRatioFromFile(f);
       return;
     }
 
-    final isNetwork = widget.imageUrl.startsWith('http://') || widget.imageUrl.startsWith('https://');
-    final ImageProvider provider = isNetwork
-        ? NetworkImage(widget.imageUrl)
-        : FileImage(File(widget.imageUrl)) as ImageProvider;
+    final syncFile = SnapsDiskImageCache.instance.getCachedFileSync(widget.imageUrl);
+    if (syncFile != null) {
+      _localFile = syncFile;
+      _resolveRatioFromFile(syncFile);
+      return;
+    }
 
+    final fetched = await SnapsDiskImageCache.instance.getOrFetch(widget.imageUrl);
+    if (!mounted) return;
+    if (fetched != null) {
+      setState(() {
+        _localFile = fetched;
+        _hasError = false;
+      });
+      _resolveRatioFromFile(fetched);
+    } else {
+      setState(() => _hasError = true);
+    }
+  }
+
+  ImageProvider _providerFor(File file) =>
+      ResizeImage(FileImage(file), width: 600);
+
+  void _resolveRatioFromFile(File file) {
+    if (AdaptiveCarouselCard.ratioCache.containsKey(widget.imageUrl)) return;
     if (_imageStream != null && _listener != null) {
       _imageStream!.removeListener(_listener!);
     }
-    _imageStream = provider.resolve(const ImageConfiguration());
+    // Share exact same ResizeImage key as the Image widget so Flutter decodes ONCE, never twice
+    _imageStream = _providerFor(file).resolve(const ImageConfiguration());
     _listener = ImageStreamListener(
       (info, _) {
         if (!mounted) return;
@@ -81,15 +113,11 @@ class _AdaptiveCarouselCardState extends State<AdaptiveCarouselCard> {
         if (w > 0 && h > 0) {
           final naturalRatio = w / h;
           AdaptiveCarouselCard.ratioCache[widget.imageUrl] = naturalRatio;
-          setState(() {
-            _resolvedRatio = naturalRatio;
-          });
+          setState(() => _resolvedRatio = naturalRatio);
           widget.onRatioResolved?.call(naturalRatio);
         }
       },
-      onError: (_, _) {
-        // Fallback silently without throwing unhandled exceptions
-      },
+      onError: (_, _) {},
     );
     _imageStream!.addListener(_listener!);
   }
@@ -104,17 +132,31 @@ class _AdaptiveCarouselCardState extends State<AdaptiveCarouselCard> {
 
   @override
   Widget build(BuildContext context) {
-    // Default fallback to 4:3 if aspect ratio is not yet resolved
     final ratio = _resolvedRatio ?? (4 / 3);
     final calculatedWidth = widget.customWidth ??
-        (widget.height * ratio).clamp(
-          widget.minCardWidth,
-          widget.maxCardWidth,
-        );
-
-    final isNetwork = widget.imageUrl.startsWith('http://') || widget.imageUrl.startsWith('https://');
-
+        (widget.height * ratio).clamp(widget.minCardWidth, widget.maxCardWidth);
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    Widget imageBody;
+    if (widget.child != null) {
+      imageBody = widget.child!;
+    } else if (_hasError) {
+      imageBody = _errorPlaceholder(calculatedWidth, isDark);
+    } else if (_localFile != null) {
+      imageBody = Image(
+        image: _providerFor(_localFile!),
+        key: ValueKey('${widget.imageUrl}#$_retryCount'),
+        fit: BoxFit.cover,
+        gaplessPlayback: true,
+        errorBuilder: (_, _, _) => _errorPlaceholder(calculatedWidth, isDark),
+      );
+    } else {
+      imageBody = SnapsShimmer(
+        child: Container(
+          color: isDark ? const Color(0xFF242626) : const Color(0xFFF1F3F5),
+        ),
+      );
+    }
 
     final content = ClipRRect(
       borderRadius: BorderRadius.circular(widget.borderRadius),
@@ -131,75 +173,61 @@ class _AdaptiveCarouselCardState extends State<AdaptiveCarouselCard> {
             width: 0.8,
           ),
         ),
-        child: widget.child ??
-            (isNetwork
-                ? Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      if (!_isImageLoaded)
-                        SnapsShimmer(
-                          child: Container(
-                            color: isDark
-                                ? const Color(0xFF242626)
-                                : const Color(0xFFF1F3F5),
-                          ),
-                        ),
-                      Image.network(
-                        widget.imageUrl,
-                        cacheWidth: 600,
-                        fit: BoxFit.cover,
-                        frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                          if (wasSynchronouslyLoaded) {
-                            return child;
-                          }
-                          final isLoaded = frame != null;
-                          if (isLoaded && !_isImageLoaded) {
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (mounted && !_isImageLoaded) {
-                                setState(() => _isImageLoaded = true);
-                              }
-                            });
-                          }
-                          return AnimatedOpacity(
-                            opacity: isLoaded ? 1.0 : 0.0,
-                            duration: const Duration(milliseconds: 200),
-                            curve: Curves.easeOutCubic,
-                            child: child,
-                          );
-                        },
-                        errorBuilder: (_, _, _) => _errorPlaceholder(calculatedWidth, isDark),
-                      ),
-                    ],
-                  )
-                : Image.file(
-                    File(widget.imageUrl),
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => _errorPlaceholder(calculatedWidth, isDark),
-                  )),
+        child: imageBody,
       ),
     );
 
-    if (widget.onTap != null) {
+    if (widget.onTap != null && !_hasError) {
       return GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: widget.onTap,
         child: content,
       );
     }
-
     return content;
   }
 
   Widget _errorPlaceholder(double width, bool isDark) {
-    return Container(
-      width: width,
-      height: widget.height,
-      color: isDark ? const Color(0xFF1E2021) : const Color(0xFFF1F5F9),
-      child: Center(
-        child: Icon(
-          Icons.image_outlined,
-          color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
-          size: 36.0,
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: _isNetwork
+          ? () async {
+              await SnapsDiskImageCache.instance.evict(widget.imageUrl);
+              if (!mounted) return;
+              setState(() {
+                _localFile = null;
+                _hasError = false;
+                _retryCount++;
+              });
+              _initImage();
+            }
+          : null,
+      child: Container(
+        width: width,
+        height: widget.height,
+        color: isDark ? const Color(0xFF1E2021) : const Color(0xFFF1F5F9),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                _isNetwork ? Icons.refresh_rounded : Icons.image_outlined,
+                color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+                size: 32.0,
+              ),
+              if (_isNetwork) ...[
+                const SizedBox(height: 6.0),
+                Text(
+                  'Ketuk untuk muat ulang',
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w500,
+                    color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
       ),
     );

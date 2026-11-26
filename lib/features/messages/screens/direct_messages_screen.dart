@@ -37,12 +37,20 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
   String _searchQuery = '';
   String _activeFilter = 'inbox'; // 'inbox' | 'requests' | 'unread'
   bool _showSearchBar = false;
+  bool _isInitialLoading = true;
 
   @override
   void initState() {
     super.initState();
+    _isInitialLoading = DirectMessagesService.instance.conversations.isEmpty;
     DirectMessagesService.instance.addListener(_onServiceUpdate);
-    DirectMessagesService.instance.loadConversations();
+    Future.delayed(const Duration(milliseconds: 280), () async {
+      if (!mounted) return;
+      await DirectMessagesService.instance.loadConversations();
+      if (mounted && _isInitialLoading) {
+        setState(() => _isInitialLoading = false);
+      }
+    });
     _searchController.addListener(() {
       setState(() {
         _searchQuery = _searchController.text.trim();
@@ -266,7 +274,7 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
                     );
                   },
                 )
-              : DirectMessagesService.instance.isFetchingConversations
+              : (_isInitialLoading || DirectMessagesService.instance.isFetchingConversations)
                   ? const SingleChildScrollView(
                       child: ConversationListSkeleton(itemCount: 6),
                     )
