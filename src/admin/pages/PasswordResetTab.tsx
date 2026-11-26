@@ -165,53 +165,50 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
               </thead>
               <tbody>
                 {requests.map((req) => (
-                  <tr key={req.id} className="border-b border-slate-100">
-                    <td className="py-3 pr-4 font-semibold">
-                      <div>{req.nis}</div>
+                  <tr key={req.id} className="border-b border-slate-100 hover:bg-slate-50/60 transition-colors align-top">
+                    <td className="py-3.5 px-4">
+                      <div className="font-semibold text-slate-900 tabular-nums">{req.nis}</div>
                       <span
-                        className={`inline-block mt-1 text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                        className={`inline-block mt-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full ${
                           req.isKnownDevice
                             ? 'bg-emerald-50 text-emerald-700'
                             : 'bg-amber-50 text-amber-700'
                         }`}
                       >
-                        {req.isKnownDevice ? 'Perangkat Dikenal' : 'Perangkat Baru/Berbeda'}
+                        {req.isKnownDevice ? 'Perangkat Dikenal' : 'Perangkat Baru'}
                       </span>
-                      {req.device_fcm_token && (
-                        <div className="text-[10px] text-slate-400 font-mono mt-0.5">
-                          Token: {req.device_fcm_token.slice(0, 10)}...
-                        </div>
-                      )}
                     </td>
-                    <td className="py-3 pr-4">{req.full_name}</td>
-                    <td className="py-3 pr-4">{req.class_group}</td>
-                    <td className="py-3 pr-4 text-slate-500">{req.notes || '-'}</td>
-                    <td className="py-3 pr-4">
-                      <Badge
-                        variant={
-                          req.status === 'approved'
-                            ? 'success'
-                            : req.status === 'rejected'
-                            ? 'error'
-                            : 'warning'
-                        }
-                      >
-                        {req.status}
-                      </Badge>
-                      {req.temp_password && (
-                        <div className="text-xs text-emerald-700 font-mono mt-1">
-                          Sandi: {req.temp_password}
-                        </div>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => setExpandedId(expandedId === req.id ? null : req.id)}
-                        className="block mt-1 text-[11px] font-semibold text-indigo-600 hover:underline"
-                      >
-                        {expandedId === req.id ? 'Tutup Detail' : 'Lihat Detail'}
-                      </button>
+                    <td className="py-3.5 px-4 font-medium text-slate-800">{req.full_name}</td>
+                    <td className="py-3.5 px-4 text-slate-600">{req.class_group}</td>
+                    <td className="py-3.5 px-4 text-slate-500 max-w-[200px]">{req.notes || '-'}</td>
+                    <td className="py-3.5 px-4">
+                      <div className="flex flex-col items-start gap-1.5">
+                        <Badge
+                          variant={
+                            req.status === 'approved'
+                              ? 'success'
+                              : req.status === 'rejected'
+                              ? 'error'
+                              : 'warning'
+                          }
+                        >
+                          {req.status}
+                        </Badge>
+                        {req.temp_password && (
+                          <span className="inline-block rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-mono font-semibold text-emerald-700">
+                            {req.temp_password}
+                          </span>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => setExpandedId(expandedId === req.id ? null : req.id)}
+                          className="text-[11px] font-semibold text-indigo-600 hover:underline"
+                        >
+                          {expandedId === req.id ? 'Tutup Detail' : 'Lihat Detail'}
+                        </button>
+                      </div>
                       {expandedId === req.id && (
-                        <div className="mt-2 rounded-lg bg-slate-50 border border-slate-200 p-2 text-[11px] text-slate-600 space-y-1">
+                        <div className="mt-2 rounded-xl bg-slate-50 border border-slate-200 p-2.5 text-[11px] text-slate-600 space-y-1">
                           <div>
                             <span className="font-semibold">Device Awal:</span>{' '}
                             <span className="font-mono">{req.knownTokenPreview || 'Belum ada riwayat'}</span>
@@ -223,7 +220,7 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
                         </div>
                       )}
                     </td>
-                    <td className="py-3">
+                    <td className="py-3.5 px-4">
                       {req.status === 'pending' ? (
                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                           <button
