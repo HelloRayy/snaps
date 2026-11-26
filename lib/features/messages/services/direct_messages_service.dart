@@ -361,6 +361,7 @@ class DirectMessagesService extends ChangeNotifier {
         ));
       }
     }
+    notifyListeners();
   }
 
   void updateMessage(String conversationId, ChatMessageModel updatedMsg) {
