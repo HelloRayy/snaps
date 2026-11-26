@@ -192,9 +192,9 @@ class ProfileScreenState extends State<ProfileScreen> {
 
     if (_controller.isLoading && _controller.user == null) {
       // 1. Shimmer Skeleton state while fetching live profile
+      // Do NOT attach _scrollController here so NestedScrollView owns it cleanly.
       body = CustomScrollView(
-        controller: _scrollController,
-        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        physics: const NeverScrollableScrollPhysics(),
         slivers: [
           const SliverToBoxAdapter(child: ProfileHeaderSkeleton()),
           SliverToBoxAdapter(
@@ -286,7 +286,6 @@ class ProfileScreenState extends State<ProfileScreen> {
           .toList();
 
       body = RefreshIndicator(
-        notificationPredicate: (notification) => notification.depth == 2,
         onRefresh: () => _controller.loadProfile(isOwnProfile: _isOwnProfile, username: widget.username),
         child: NestedScrollView(
           controller: _scrollController,
@@ -369,6 +368,7 @@ class ProfileScreenState extends State<ProfileScreen> {
             children: [
               CustomScrollView(
                 key: const PageStorageKey('profile_threads_tab'),
+                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                 slivers: [
                   ProfileContentTabs(
                     activeTab: ProfileTab.threads,
@@ -391,6 +391,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               ),
               CustomScrollView(
                 key: const PageStorageKey('profile_replies_tab'),
+                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                 slivers: [
                   ProfileContentTabs(
                     activeTab: ProfileTab.replies,
@@ -413,6 +414,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               ),
               CustomScrollView(
                 key: const PageStorageKey('profile_media_tab'),
+                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                 slivers: [
                   ProfileContentTabs(
                     activeTab: ProfileTab.media,
