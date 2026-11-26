@@ -19,12 +19,17 @@ class HomeFeedController extends ChangeNotifier {
   Map<String, dynamic>? userProfile;
   StreamSubscription<AuthState>? _authSubscription;
   RealtimeChannel? _profileChannel;
+  RealtimeChannel? _feedChannel;
+  final List<String> _pendingNewPostIds = [];
+
+  int get pendingNewPostsCount => _pendingNewPostIds.length;
 
   void init() {
     FollowService.instance.loadFollowings();
     PollSyncService.instance.addListener(_handlePollSyncUpdate);
     SupabaseService.instance.currentUserProfileNotifier.addListener(_handleProfileChange);
     _setupProfileSubscription();
+    _setupFeedSubscription();
 
     // 1. Stale-While-Revalidate: load cache instantly (0ms) and defer silent
     // network revalidation until splash transition finishes to prevent frame drops.
@@ -52,6 +57,35 @@ class HomeFeedController extends ChangeNotifier {
       FollowService.instance.loadFollowings();
       fetchPosts(isRefresh: true);
     });
+  }
+
+  void _setupFeedSubscription() {
+    _feedChannel?.unsubscribe();
+    _feedChannel = SupabaseService.instance.client
+        .channel('public:market_posts_feed')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.insert,
+          schema: 'public',
+          table: 'market_posts',
+          callback: (payload) {
+            final newId = payload.newRecord['id']?.toString();
+            final sellerId = payload.newRecord['seller_id']?.toString();
+            final currentUid = SupabaseService.instance.currentUser?.id;
+            if (newId == null || newId.isEmpty) return;
+            if (sellerId != null && sellerId == currentUid) return;
+            if (posts.any((p) => p.id == newId)) return;
+            if (_pendingNewPostIds.contains(newId)) return;
+            _pendingNewPostIds.add(newId);
+            notifyListeners();
+          },
+        )
+        .subscribe();
+  }
+
+  Future<void> applyPendingNewPosts() async {
+    _pendingNewPostIds.clear();
+    notifyListeners();
+    await fetchPosts(isRefresh: true);
   }
 
   void _setupProfileSubscription() {
@@ -96,6 +130,7 @@ class HomeFeedController extends ChangeNotifier {
   void dispose() {
     SupabaseService.instance.currentUserProfileNotifier.removeListener(_handleProfileChange);
     _profileChannel?.unsubscribe();
+    _feedChannel?.unsubscribe();
     PollSyncService.instance.removeListener(_handlePollSyncUpdate);
     _authSubscription?.cancel();
     super.dispose();

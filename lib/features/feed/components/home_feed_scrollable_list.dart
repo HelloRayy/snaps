@@ -36,6 +36,8 @@ class HomeFeedScrollableList extends StatefulWidget {
   final void Function(MarketPostModel, List<String>)? onVotePoll;
   final ValueChanged<MarketPostModel>? onBuyNowClick;
   final VoidCallback? onLogout;
+  final int pendingNewPostsCount;
+  final VoidCallback? onShowNewPosts;
 
   const HomeFeedScrollableList({
     super.key,
@@ -62,6 +64,8 @@ class HomeFeedScrollableList extends StatefulWidget {
     this.onVotePoll,
     this.onBuyNowClick,
     this.onLogout,
+    this.pendingNewPostsCount = 0,
+    this.onShowNewPosts,
   });
 
   @override
@@ -169,6 +173,35 @@ class HomeFeedScrollableListState extends State<HomeFeedScrollableList> {
                 child: _buildEmptyState(isMarket: isMarket),
               )
             else ...[
+              if (widget.pendingNewPostsCount > 0)
+                SliverToBoxAdapter(
+                  child: InkWell(
+                    onTap: widget.onShowNewPosts,
+                    child: Container(
+                      width: double.infinity,
+                      constraints: const BoxConstraints(minHeight: 44.0),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.darkBorder
+                                : AppColors.border,
+                            width: 0.8,
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        'Tampilkan ${widget.pendingNewPostsCount} postingan',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               SliverList.builder(
                 itemCount: posts.length,
                 itemBuilder: (context, index) {

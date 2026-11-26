@@ -275,6 +275,11 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
               hasError: _feedController.hasError,
               errorMessage: _feedController.errorMessage,
               allPosts: _feedController.posts,
+              pendingNewPostsCount: _feedController.pendingNewPostsCount,
+              onShowNewPosts: () {
+                _feedController.applyPendingNewPosts();
+                _scrollToTop();
+              },
               onRefresh: () => _feedController.fetchPosts(isRefresh: true),
               onRetry: () => _feedController.fetchPosts(),
               onLoadMore: _feedController.fetchMorePosts,
