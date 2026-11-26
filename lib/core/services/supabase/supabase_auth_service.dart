@@ -177,15 +177,29 @@ class SupabaseAuthService {
     if (cleanNis.isEmpty) return null;
     return await _client
         .from('password_reset_requests')
-        .select('id, nis, full_name, class_group, status, temp_password, admin_note, created_at, updated_at')
+        .select('id, nis, full_name, class_group, status, temp_password, device_fcm_token, admin_note, created_at, updated_at')
         .eq('nis', cleanNis)
         .order('created_at', ascending: false)
         .limit(1)
         .maybeSingle();
   }
 
-  /// Ubah kata sandi pengguna yang sedang login.
+  /// Ubah kata sandi pengguna yang sedang login dan bersihkan temp_password.
   Future<void> updatePassword(String newPassword) async {
     await _client.auth.updateUser(UserAttributes(password: newPassword));
+    try {
+      final uid = currentUser?.id;
+      if (uid != null) {
+        final profile = await _client.from('profiles').select('nis').eq('id', uid).maybeSingle();
+        final nis = profile?['nis'] as String?;
+        if (nis != null && nis.isNotEmpty) {
+          await _client
+              .from('password_reset_requests')
+              .update({'temp_password': null})
+              .eq('nis', nis)
+              .eq('status', 'approved');
+        }
+      }
+    } catch (_) {}
   }
 }

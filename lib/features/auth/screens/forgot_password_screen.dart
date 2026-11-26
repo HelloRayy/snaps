@@ -119,6 +119,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   bool _isLoadingStatus = false;
   bool _isWaitingView = false;
   String? _activeNis;
+  String? _currentDeviceToken;
   RegisteredStudent? _verifiedStudent;
   Map<String, dynamic>? _statusData;
 
@@ -152,6 +153,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       _isWaitingView = true;
     });
     try {
+      try {
+        _currentDeviceToken ??= await FirebaseMessaging.instance.getToken();
+      } catch (_) {}
       final res = await SupabaseService.instance.auth.getPasswordResetStatus(nis);
       if (!mounted) return;
       setState(() {
@@ -349,6 +353,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     final status = _statusData?['status'] as String? ?? 'pending';
     final tempPassword = _statusData?['temp_password'] as String?;
+    final requestToken = _statusData?['device_fcm_token'] as String?;
+    final isSameDevice = requestToken == null || requestToken.isEmpty || requestToken == _currentDeviceToken;
     final adminNote = _statusData?['admin_note'] as String?;
 
     final (IconData icon, Color bg, Color fg, String title, String desc) = switch (status) {
@@ -397,9 +403,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               padding: const EdgeInsets.all(14.0),
               decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(14.0)),
               child: Text(
-                'Sandi sementara: $tempPassword',
+                isSameDevice
+                    ? 'Sandi sementara: $tempPassword'
+                    : 'Terdeteksi perangkat berbeda. Gunakan HP yang sama saat mengajukan atau hubungi admin.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w800, color: fg),
+                style: TextStyle(fontSize: isSameDevice ? 15.0 : 13.0, fontWeight: FontWeight.w700, color: fg),
               ),
             ),
           ],
