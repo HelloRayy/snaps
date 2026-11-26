@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../services/api/supabase';
 import { Card } from '../components/tremor/Card';
 import { Badge } from '../components/tremor/Badge';
 
