@@ -254,7 +254,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     setState(() {
                       _verifiedStudent = student;
                       if (student != null) {
-                        _nameController.text = student.fullName;
+                        _nameController.text = student.name;
                         _classController.text = student.classGroup;
                       }
                     });
