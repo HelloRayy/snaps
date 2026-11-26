@@ -53,16 +53,18 @@ class ProfileContentTabs extends StatelessWidget {
           itemCount: displayPosts.length,
           itemBuilder: (context, index) {
             final post = displayPosts[index];
-            return MarketPostCard(
-              key: ValueKey(post.id),
-              item: post,
-              onPostClick: onPostClick,
-              onLikeToggle: onLikeToggle,
-              onRepostToggle: onRepostToggle,
-              onImageClick: onImageClick,
-              onVotePoll: onVotePoll,
-              onDeletePost: onDeletePost,
-              onBuyNowClick: (item) => SocialCommerceNavigator.openDirectMessage(context, item),
+            return RepaintBoundary(
+              child: MarketPostCard(
+                key: ValueKey(post.id),
+                item: post,
+                onPostClick: onPostClick,
+                onLikeToggle: onLikeToggle,
+                onRepostToggle: onRepostToggle,
+                onImageClick: onImageClick,
+                onVotePoll: onVotePoll,
+                onDeletePost: onDeletePost,
+                onBuyNowClick: (item) => SocialCommerceNavigator.openDirectMessage(context, item),
+              ),
             );
           },
         );

@@ -286,6 +286,7 @@ class ProfileScreenState extends State<ProfileScreen> {
           .toList();
 
       body = RefreshIndicator(
+        notificationPredicate: (notification) => notification.depth == 2,
         onRefresh: () => _controller.loadProfile(isOwnProfile: _isOwnProfile, username: widget.username),
         child: NestedScrollView(
           controller: _scrollController,
@@ -368,7 +369,6 @@ class ProfileScreenState extends State<ProfileScreen> {
             children: [
               CustomScrollView(
                 key: const PageStorageKey('profile_threads_tab'),
-                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                 slivers: [
                   ProfileContentTabs(
                     activeTab: ProfileTab.threads,
@@ -391,7 +391,6 @@ class ProfileScreenState extends State<ProfileScreen> {
               ),
               CustomScrollView(
                 key: const PageStorageKey('profile_replies_tab'),
-                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                 slivers: [
                   ProfileContentTabs(
                     activeTab: ProfileTab.replies,
@@ -414,7 +413,6 @@ class ProfileScreenState extends State<ProfileScreen> {
               ),
               CustomScrollView(
                 key: const PageStorageKey('profile_media_tab'),
-                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                 slivers: [
                   ProfileContentTabs(
                     activeTab: ProfileTab.media,
