@@ -274,7 +274,6 @@ class HomeBottomNavBar extends StatelessWidget {
       ),
       ),
       ),
-      ),
     );
   }
 }
