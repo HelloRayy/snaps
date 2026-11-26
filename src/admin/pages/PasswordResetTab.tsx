@@ -167,17 +167,17 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
 
       {/* KPI Summary Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
-        <Card>
+        <Card style={{ padding: '14px 18px' }}>
           <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748B' }}>Menunggu Verifikasi</div>
-          <div style={{ fontSize: '24px', fontWeight: 800, color: '#D97706', marginTop: '4px' }}>{counts.pending}</div>
+          <div style={{ fontSize: '22px', fontWeight: 800, color: '#D97706', marginTop: '2px' }}>{counts.pending}</div>
         </Card>
-        <Card>
+        <Card style={{ padding: '14px 18px' }}>
           <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748B' }}>Disetujui</div>
-          <div style={{ fontSize: '24px', fontWeight: 800, color: '#059669', marginTop: '4px' }}>{counts.approved}</div>
+          <div style={{ fontSize: '22px', fontWeight: 800, color: '#059669', marginTop: '2px' }}>{counts.approved}</div>
         </Card>
-        <Card>
+        <Card style={{ padding: '14px 18px' }}>
           <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748B' }}>Ditolak</div>
-          <div style={{ fontSize: '24px', fontWeight: 800, color: '#E11D48', marginTop: '4px' }}>{counts.rejected}</div>
+          <div style={{ fontSize: '22px', fontWeight: 800, color: '#E11D48', marginTop: '2px' }}>{counts.rejected}</div>
         </Card>
       </div>
 
@@ -198,7 +198,7 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
       )}
 
       {/* Filter Pills + Table */}
-      <Card>
+      <Card style={{ padding: '16px' }}>
         <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
           {(
             [
@@ -251,7 +251,7 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
               <tbody>
                 {filteredRequests.map((req) => (
                   <tr key={req.id} style={{ borderBottom: '1px solid #F1F5F9', verticalAlign: 'top' }}>
-                    <td style={{ padding: '14px' }}>
+                    <td style={{ padding: '10px 12px' }}>
                       <div style={{ fontWeight: 700, color: '#0F172A' }}>{req.nis}</div>
                       <span
                         style={{
