@@ -2,7 +2,9 @@ import { supabase } from '@/services/api/supabase';
 import type { Database } from '@/types/supabase';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 
-export type ProfileRow = Database['public']['Tables']['profiles']['Row'];
+export type ProfileRow = Database['public']['Tables']['profiles']['Row'] & {
+  real_name?: string | null;
+};
 export type MarketPostRow = Database['public']['Tables']['market_posts']['Row'];
 export type SchoolMeetingPointRow = Database['public']['Tables']['school_meeting_points']['Row'];
 export type ContentReportRow = Database['public']['Tables']['content_reports']['Row'];
@@ -202,7 +204,7 @@ export const adminService = {
     let query = supabase.from('profiles').select('*', { count: 'exact' });
 
     if (search.trim()) {
-      query = query.or(`full_name.ilike.%${search}%,username.ilike.%${search}%,class_group.ilike.%${search}%`);
+      query = query.or(`full_name.ilike.%${search}%,username.ilike.%${search}%,class_group.ilike.%${search}%,nis.ilike.%${search}%`);
     }
 
     if (role && role !== 'all') {
@@ -230,8 +232,28 @@ export const adminService = {
     const { data, error, count } = await query;
     if (error) throw error;
 
+    const rows = (data as ProfileRow[]) || [];
+    const nisList = rows.map((r) => (r as any).nis).filter((n): n is string => Boolean(n && String(n).trim()));
+    if (nisList.length > 0) {
+      const { data: regData } = await (supabase as any)
+        .from('student_registry')
+        .select('nis, full_name')
+        .in('nis', nisList);
+      if (Array.isArray(regData)) {
+        const regMap = new Map<string, string>(
+          regData.map((item: { nis: string; full_name: string }) => [item.nis, item.full_name]),
+        );
+        for (const row of rows) {
+          const nis = (row as any).nis as string | undefined;
+          if (nis && regMap.has(nis)) {
+            row.real_name = regMap.get(nis);
+          }
+        }
+      }
+    }
+
     return {
-      data: (data as ProfileRow[]) || [],
+      data: rows,
       count: count ?? 0,
     };
   },

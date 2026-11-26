@@ -573,14 +573,14 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
                       <div className="row-product" style={{ cursor: 'pointer' }} onClick={() => handleRowClick(u)}>
                         <UserAvatar
                           avatarUrl={u.avatar_url}
-                          name={u.full_name}
+                          name={u.real_name || u.full_name}
                           size={36}
                           role={u.role}
                           style={{ marginRight: '10px' }}
                         />
                         <div>
                           <div style={{ fontWeight: 600, color: '#1f2937', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                            <span>{u.full_name || 'Siswa SMKN 8'}</span>
+                            <span>{u.real_name || u.full_name || 'Siswa SMKN 8'}</span>
                             {u.is_verified && (
                               <span title="Akun Terverifikasi" style={{ display: 'inline-flex' }}>
                                 <BadgeCheck
