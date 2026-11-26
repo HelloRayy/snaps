@@ -136,8 +136,8 @@ class EditProfileFormFields extends StatelessWidget {
                       obscureText: !showPassword,
                       style: TextStyle(fontFamily: 'SFPro', fontSize: 15.5, fontWeight: FontWeight.w500, color: primaryTextColor),
                       decoration: InputDecoration(
-                        hintText: '••••••••',
-                        hintStyle: TextStyle(fontFamily: 'SFPro', color: secondaryTextColor, letterSpacing: 2.0),
+                        hintText: 'Kata sandi baru (min. 6 karakter)',
+                        hintStyle: TextStyle(fontFamily: 'SFPro', color: secondaryTextColor),
                         border: InputBorder.none,
                         isDense: true,
                         contentPadding: EdgeInsets.zero,
@@ -419,8 +419,8 @@ class EditProfileFormFields extends StatelessWidget {
                       obscureText: !showPassword,
                       style: TextStyle(fontFamily: 'SFPro', fontSize: 15.5, fontWeight: FontWeight.w500, color: primaryTextColor),
                       decoration: InputDecoration(
-                        hintText: '••••••••',
-                        hintStyle: TextStyle(fontFamily: 'SFPro', color: secondaryTextColor, letterSpacing: 2.0),
+                        hintText: 'Kata sandi baru (min. 6 karakter)',
+                        hintStyle: TextStyle(fontFamily: 'SFPro', color: secondaryTextColor),
                         border: InputBorder.none,
                         isDense: true,
                         contentPadding: EdgeInsets.zero,
