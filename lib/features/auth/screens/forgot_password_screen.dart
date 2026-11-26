@@ -316,19 +316,37 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 if (_verifiedStudent != null) ...[
                   const SizedBox(height: 10.0),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryPastel,
-                      borderRadius: BorderRadius.circular(12.0),
+                      color: const Color(0xFFECFDF5),
+                      borderRadius: BorderRadius.circular(14.0),
+                      border: Border.all(color: const Color(0xFFA7F3D0)),
                     ),
                     child: Row(
                       children: [
-                        const Icon(LucideIcons.userCheck, size: 16.0, color: AppColors.primary),
-                        const SizedBox(width: 8.0),
+                        Container(
+                          width: 34.0,
+                          height: 34.0,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFD1FAE5),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: const Icon(LucideIcons.userCheck, size: 17.0, color: Color(0xFF059669)),
+                        ),
+                        const SizedBox(width: 10.0),
                         Expanded(
-                          child: Text(
-                            '${_verifiedStudent!.name} • ${_verifiedStudent!.classGroup}',
-                            style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.primary),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _verifiedStudent!.name,
+                                style: const TextStyle(fontSize: 13.0, fontWeight: FontWeight.w700, color: Color(0xFF065F46)),
+                              ),
+                              Text(
+                                '${_verifiedStudent!.classGroup} • NIS ${_verifiedStudent!.nis}',
+                                style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w500, color: Color(0xFF047857)),
+                              ),
+                            ],
                           ),
                         ),
                       ],
