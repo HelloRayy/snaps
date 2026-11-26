@@ -138,7 +138,6 @@ class PostCardHeader extends StatelessWidget {
                 child: Row(
                   children: [
                     Flexible(
-                      flex: 3,
                       child: GestureDetector(
                         onTap: () => onUserClick?.call(cleanUsername),
                         child: Text(
@@ -185,8 +184,7 @@ class PostCardHeader extends StatelessWidget {
                           const ThreadsTopicGlyph(size: 14.0),
                         const SizedBox(width: 4.0),
                       ],
-                      Flexible(
-                        flex: 2,
+                      Expanded(
                         child: GestureDetector(
                           onTap: () => onTopicClick?.call(item.topicTag!),
                           child: Text(
@@ -205,8 +203,7 @@ class PostCardHeader extends StatelessWidget {
                       ),
                     ] else if (cleanUsername.isNotEmpty) ...[
                       const SizedBox(width: 5.0),
-                      Flexible(
-                        flex: 1,
+                      Expanded(
                         child: Text(
                           '@$cleanUsername',
                           maxLines: 1,
