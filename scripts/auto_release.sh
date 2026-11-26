@@ -113,6 +113,12 @@ while [[ $# -gt 0 ]]; do
       ;;
     --mandatory)
       IS_MANDATORY=true
+      MANDATORY_SET=true
+      shift
+      ;;
+    --optional)
+      IS_MANDATORY=false
+      MANDATORY_SET=true
       shift
       ;;
     -m|--message|--changelog)
@@ -159,6 +165,15 @@ REAL_VERSION_CODE=$((VERSION_CODE < 2000 ? 2000 + VERSION_CODE : VERSION_CODE))
 echo -e "${BOLD}Versi Sebelumnya :${NC} ${YELLOW}v${CURRENT_NAME}+${CURRENT_BUILD}${NC}"
 echo -e "${BOLD}Versi Rilis Baru  :${NC} ${GREEN}v${VERSION_NAME}+${VERSION_CODE}${NC} (Supabase Code: ${PURPLE}${REAL_VERSION_CODE}${NC})"
 echo -e "${BOLD}Catatan Rilis     :${NC} ${CHANGELOG}"
+if [ -t 0 ] && [ "$AUTO_CONFIRM" != "true" ] && [ "${MANDATORY_SET:-false}" != "true" ]; then
+  read -p "Jadikan update ini wajib (is_mandatory)? (y/N): " MANDATORY_INPUT
+  if [[ "$MANDATORY_INPUT" =~ ^[Yy]$ ]]; then
+    IS_MANDATORY=true
+  else
+    IS_MANDATORY=false
+  fi
+fi
+echo -e "${BOLD}Status Mandatory  :${NC} $([ "$IS_MANDATORY" = "true" ] && echo -e "${RED}Wajib (true)${NC}" || echo -e "${GREEN}Opsional (false)${NC}")"
 if [ "$DRY_RUN" = "true" ]; then
   echo -e "${YELLOW}${BOLD}Mode Rilis        : DRY-RUN (SIMULASI - Tidak ada perubahan permanen)${NC}"
 fi
@@ -412,7 +427,7 @@ VALUES (
   '${DOWNLOAD_URL}',
   'Pembaruan Snaps v${VERSION_NAME}',
   '${CHANGELOG}',
-  true,
+  ${IS_MANDATORY},
   true
 );
 EOF
