@@ -51,16 +51,6 @@ class HomeBottomNavBar extends StatelessWidget {
   final int unreadMessagesCount;
   final bool hasUnreadActivity;
   final String? userAvatar;
-  final bool isCollapsed;
-  final VoidCallback? onExpandTap;
-  final int motionDurationMs;
-  final Curve motionCurve;
-  final double collapsedWidth;
-  final double navHeight;
-  final double horizontalPadding;
-  final double bottomMargin;
-  final double iconScale;
-  final double iconGap;
 
   const HomeBottomNavBar({
     super.key,
@@ -73,16 +63,6 @@ class HomeBottomNavBar extends StatelessWidget {
     this.unreadMessagesCount = 0,
     this.hasUnreadActivity = false,
     this.userAvatar,
-    this.isCollapsed = false,
-    this.onExpandTap,
-    this.motionDurationMs = 501,
-    this.motionCurve = Curves.easeOutCubic,
-    this.collapsedWidth = 64.0,
-    this.navHeight = 64.0,
-    this.horizontalPadding = 16.0,
-    this.bottomMargin = 24.0,
-    this.iconScale = 1.48,
-    this.iconGap = 12.0,
   });
 
   @override
@@ -94,8 +74,6 @@ class HomeBottomNavBar extends StatelessWidget {
     }
 
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
-    final double expandedWidth = (MediaQuery.sizeOf(context).width - horizontalPadding * 2).clamp(0.0, 360.0);
-    final double innerWidth = (expandedWidth - 8.0).clamp(0.0, 352.0);
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final activeColor = isDark ? Colors.white : AppColors.primary;
@@ -103,19 +81,17 @@ class HomeBottomNavBar extends StatelessWidget {
 
     return Padding(
       padding: EdgeInsets.only(
-        left: horizontalPadding,
-        right: horizontalPadding,
-        bottom: bottomPadding > 0 ? bottomPadding + 8.0 : bottomMargin,
+        left: 20.0,
+        right: 20.0,
+        bottom: bottomPadding > 0 ? bottomPadding + 8.0 : 18.0,
       ),
-      child: Align(
-        alignment: Alignment.centerLeft,
+      child: Center(
         heightFactor: 1.0,
-        child: AnimatedContainer(
-          duration: Duration(milliseconds: motionDurationMs),
-          curve: Curves.easeOutCubic,
-          width: isCollapsed ? collapsedWidth : expandedWidth,
-          height: navHeight,
-          decoration: BoxDecoration(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 360.0),
+          child: Container(
+            height: 62.0,
+            decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(31.0),
               border: Border.all(
                 color: isDark ? const Color(0x1AFFFFFF) : const Color(0xFFE2E8F0),
@@ -152,29 +128,7 @@ class HomeBottomNavBar extends StatelessWidget {
                             ],
                     ),
                   ),
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: isCollapsed
-                        ? () {
-                            HapticFeedback.selectionClick();
-                            onExpandTap?.call();
-                          }
-                        : null,
-                    child: IgnorePointer(
-                      ignoring: isCollapsed,
-                      child: AnimatedPadding(
-                        duration: Duration(milliseconds: motionDurationMs),
-                        curve: Curves.easeOutCubic,
-                        padding: EdgeInsets.only(
-                          left: 0,
-                        ),
-                        child: OverflowBox(
-                          maxWidth: innerWidth,
-                          minWidth: innerWidth,
-                          alignment: Alignment.centerLeft,
-                          child: SizedBox(
-                            width: innerWidth,
-                            child: LayoutBuilder(
+                  child: LayoutBuilder(
                     builder: (context, constraints) {
                       final double tabWidth = constraints.maxWidth / 4.0;
                       return Stack(
@@ -183,17 +137,15 @@ class HomeBottomNavBar extends StatelessWidget {
                           AnimatedPositioned(
                             duration: const Duration(milliseconds: 260),
                             curve: const Cubic(0.2, 0.9, 0.3, 1.0),
-                            left: currentTab.index * tabWidth + 3.0 + (iconGap / 2),
+                            left: currentTab.index * tabWidth + 3.0,
                             top: 3.0,
-                            width: (tabWidth - 6.0 - iconGap).clamp(24.0, 120.0),
-                            height: (navHeight - 12.0).clamp(32.0, 60.0),
+                            width: tabWidth - 6.0,
+                            height: 50.0,
                             child: Container(
                               decoration: BoxDecoration(
-                                color: isCollapsed
-                                    ? Colors.transparent
-                                    : (isDark
-                                        ? Colors.white.withValues(alpha: 0.12)
-                                        : AppColors.primary.withValues(alpha: 0.08)),
+                                color: isDark
+                                    ? Colors.white.withValues(alpha: 0.12)
+                                    : AppColors.primary.withValues(alpha: 0.08),
                                 borderRadius: BorderRadius.circular(25.0),
                               ),
                             ),
@@ -205,7 +157,6 @@ class HomeBottomNavBar extends StatelessWidget {
                               _DockTabItem(
                                 isActive: currentTab == HomeNavTab.home,
                                 label: 'Home',
-                                iconScale: iconScale,
                                 glyph: HomeNavGlyph(
                                   isActive: currentTab == HomeNavTab.home,
                                   activeColor: activeColor,
@@ -265,10 +216,6 @@ class HomeBottomNavBar extends StatelessWidget {
           ),
         ),
       ),
-      ),
-      ),
-      ),
-      ),
     );
   }
 }
@@ -279,16 +226,12 @@ class _DockTabItem extends StatefulWidget {
   final String label;
   final Widget glyph;
   final VoidCallback onTap;
-  final bool showLabel;
-  final double iconScale;
 
   const _DockTabItem({
     required this.isActive,
     required this.label,
     required this.glyph,
     required this.onTap,
-    this.showLabel = false,
-    this.iconScale = 1.48,
   });
 
   @override
@@ -328,9 +271,7 @@ class _DockTabItemState extends State<_DockTabItem> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // Icon / Glyph with spring pop micro-motion
-                Transform.scale(
-                  scale: widget.iconScale,
-                  child: AnimatedScale(
+                AnimatedScale(
                   scale: widget.isActive ? 1.08 : 1.0,
                   duration: const Duration(milliseconds: 220),
                   curve: Curves.easeOutBack,
@@ -340,29 +281,26 @@ class _DockTabItemState extends State<_DockTabItem> {
                     child: Center(child: widget.glyph),
                   ),
                 ),
-                ),
 
-                if (widget.showLabel) ...[
-                  const SizedBox(height: 2.0),
+                const SizedBox(height: 2.0),
 
-                  // Label Text with smooth color transition
-                  AnimatedDefaultTextStyle(
-                    duration: const Duration(milliseconds: 200),
-                    curve: Curves.easeOutCubic,
-                    style: TextStyle(
-                      fontSize: 10.0,
-                      fontWeight: widget.isActive ? FontWeight.w700 : FontWeight.w500,
-                      color: widget.isActive ? activeColor : inactiveColor,
-                      letterSpacing: -0.2,
-                      height: 1.2,
-                    ),
-                    child: Text(
-                      widget.label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                // Label Text with smooth color transition
+                AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeOutCubic,
+                  style: TextStyle(
+                    fontSize: 10.0,
+                    fontWeight: widget.isActive ? FontWeight.w700 : FontWeight.w500,
+                    color: widget.isActive ? activeColor : inactiveColor,
+                    letterSpacing: -0.2,
+                    height: 1.2,
                   ),
-                ],
+                  child: Text(
+                    widget.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               ],
             ),
           ),

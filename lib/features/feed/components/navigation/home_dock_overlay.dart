@@ -7,8 +7,8 @@ import 'package:snapan_market/features/feed/components/navigation/home_feed_fab_
 import 'package:snapan_market/features/messages/services/direct_messages_service.dart';
 import 'package:snapan_market/features/search/screens/search_screen.dart';
 
-/// Overlay widget combining FAB Group, HomeBottomNavBar, and Motion Tuner HUD.
-class HomeDockOverlay extends StatefulWidget {
+/// Overlay widget combining FAB Group and HomeBottomNavBar (<60 lines).
+class HomeDockOverlay extends StatelessWidget {
   final HomeNavTab currentNavTab;
   final AnimationController fabAnimationController;
   final Animation<double>? fabAnimation;
@@ -31,20 +31,15 @@ class HomeDockOverlay extends StatefulWidget {
   });
 
   @override
-  State<HomeDockOverlay> createState() => _HomeDockOverlayState();
-}
-
-class _HomeDockOverlayState extends State<HomeDockOverlay> {
-  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         HomeFeedFabGroup(
-          currentNavTab: widget.currentNavTab,
-          fabAnimationController: widget.fabAnimationController,
-          fabAnimation: widget.fabAnimation,
-          fabBottomVisible: 100.0,
-          onCreatePost: widget.onCreatePost,
+          currentNavTab: currentNavTab,
+          fabAnimationController: fabAnimationController,
+          fabAnimation: fabAnimation,
+          fabBottomVisible: fabBottom,
+          onCreatePost: onCreatePost,
         ),
         Positioned(
           left: 0,
@@ -52,24 +47,21 @@ class _HomeDockOverlayState extends State<HomeDockOverlay> {
           bottom: 0,
           child: RepaintBoundary(
             child: AnimatedBuilder(
-              animation: Listenable.merge([DirectMessagesService.instance, widget.fabAnimationController]),
+              animation: DirectMessagesService.instance,
               builder: (context, _) {
                 final unreadCount = DirectMessagesService.instance.totalUnreadCount;
-                final isCollapsed = (widget.fabAnimation?.value ?? 1.0) < 0.5;
                 return HomeBottomNavBar(
-                  currentTab: widget.currentNavTab,
+                  currentTab: currentNavTab,
                   hasUnreadMessages: unreadCount > 0,
                   unreadMessagesCount: unreadCount,
-                  hasUnreadActivity: widget.hasUnreadActivity,
-                  userAvatar: widget.userAvatar,
-                  isCollapsed: isCollapsed,
-                  onExpandTap: () => widget.fabAnimationController.forward(),
+                  hasUnreadActivity: hasUnreadActivity,
+                  userAvatar: userAvatar,
                   onSearchTap: () => Navigator.push(
                     context,
                     AppSlidePageRoute(builder: (context) => SearchScreen(onBack: () => Navigator.pop(context))),
                   ),
-                  onPostTap: widget.onCreatePost,
-                  onTabSelected: widget.onTabSelected,
+                  onPostTap: onCreatePost,
+                  onTabSelected: onTabSelected,
                 );
               },
             ),
