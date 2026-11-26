@@ -6,15 +6,10 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-function generateTempPassword(length = 8): string {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
-  let result = "";
-  const array = new Uint32Array(length);
-  crypto.getRandomValues(array);
-  for (let i = 0; i < length; i++) {
-    result += chars[array[i] % chars.length];
-  }
-  return result;
+function generateTempPassword(fullName: string): string {
+  const firstWord = (fullName || "siswa").trim().split(/\s+/)[0] || "siswa";
+  const cleanFirst = firstWord.toLowerCase().replace(/[^a-z0-9]/g, "") || "siswa";
+  return `${cleanFirst}123`;
 }
 
 Deno.serve(async (req) => {
@@ -113,7 +108,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const tempPassword = generateTempPassword(8);
+    const tempPassword = generateTempPassword(resetReq.full_name);
     const { error: updateAuthErr } = await adminClient.auth.admin.updateUserById(
       studentProfile.id,
       { password: tempPassword },
