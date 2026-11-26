@@ -402,48 +402,6 @@ class EditProfileFormFields extends StatelessWidget {
             ],
           ),
         ),
-        // Password (inline)
-        FormRow(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Kata Sandi', style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600, color: primaryTextColor, letterSpacing: -0.1)),
-              const SizedBox(height: 4.0),
-              Row(
-                children: [
-                  Icon(LucideIcons.lock, size: 16.0, color: secondaryTextColor),
-                  const SizedBox(width: 8.0),
-                  Expanded(
-                    child: TextField(
-                      controller: passwordController,
-                      obscureText: !showPassword,
-                      style: TextStyle(fontFamily: 'SFPro', fontSize: 15.5, fontWeight: FontWeight.w500, color: primaryTextColor),
-                      decoration: InputDecoration(
-                        hintText: 'Kata sandi baru (min. 6 karakter)',
-                        hintStyle: TextStyle(fontFamily: 'SFPro', color: secondaryTextColor),
-                        border: InputBorder.none,
-                        isDense: true,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: onTogglePassword,
-                    behavior: HitTestBehavior.opaque,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Icon(
-                        showPassword ? LucideIcons.eyeOff : LucideIcons.eye,
-                        size: 18.0,
-                        color: secondaryTextColor,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
       ],
     );
   }
