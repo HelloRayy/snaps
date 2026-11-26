@@ -20,11 +20,12 @@ interface PasswordResetRequest {
 
 interface PasswordResetTabProps {
   isActive?: boolean;
+  onPendingCountChange?: (count: number) => void;
 }
 
 type StatusFilter = 'all' | 'pending' | 'approved' | 'rejected';
 
-export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
+export function PasswordResetTab({ isActive = true, onPendingCountChange }: PasswordResetTabProps) {
   const [requests, setRequests] = useState<PasswordResetRequest[]>([]);
   const [loading, setLoading] = useState(false);
   const [processingId, setProcessingId] = useState<string | null>(null);
