@@ -124,7 +124,7 @@ begin
     )
   );
 
-  edge_function_url := 'https://lcwsxldnoqjdfqxqcqja.supabase.co/functions/v1/send-notification-push';
+  edge_function_url := 'https://ipshbvtddafgwwrwstxx.supabase.co/functions/v1/send-notification-push';
 
   perform net.http_post(
     url := edge_function_url,
