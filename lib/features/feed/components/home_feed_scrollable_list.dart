@@ -173,35 +173,6 @@ class HomeFeedScrollableListState extends State<HomeFeedScrollableList> {
                 child: _buildEmptyState(isMarket: isMarket),
               )
             else ...[
-              if (widget.pendingNewPostsCount > 0)
-                SliverToBoxAdapter(
-                  child: InkWell(
-                    onTap: widget.onShowNewPosts,
-                    child: Container(
-                      width: double.infinity,
-                      constraints: const BoxConstraints(minHeight: 44.0),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? AppColors.darkBorder
-                                : AppColors.border,
-                            width: 0.8,
-                          ),
-                        ),
-                      ),
-                      child: Text(
-                        'Tampilkan ${widget.pendingNewPostsCount} postingan',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
               SliverList.builder(
                 itemCount: posts.length,
                 itemBuilder: (context, index) {

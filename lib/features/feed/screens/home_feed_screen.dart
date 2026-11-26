@@ -264,7 +264,43 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       ),
       body: Stack(
         children: [
-          HomeNavTabSwitcher(
+          Column(
+            children: [
+              if (_currentNavTab == HomeNavTab.home && _feedController.pendingNewPostsCount > 0)
+                Material(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  child: InkWell(
+                    onTap: () {
+                      _feedController.applyPendingNewPosts();
+                      _scrollToTop();
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      constraints: const BoxConstraints(minHeight: 44.0),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.darkBorder
+                                : AppColors.border,
+                            width: 0.8,
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        'Tampilkan ${_feedController.pendingNewPostsCount} postingan',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              Expanded(
+                child: HomeNavTabSwitcher(
             currentNavTab: _currentNavTab,
             feedTab: HomeFeedScrollableList(
               key: _feedListKey,
@@ -313,6 +349,9 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
               onOpenMenu: () => _scaffoldKey.currentState?.openDrawer(),
               onLogout: widget.onLogout,
             ),
+          ),
+              ),
+            ],
           ),
           ValueListenableBuilder<bool>(
             valueListenable: GlobalNotificationService.instance.hasUnreadActivity,
