@@ -514,6 +514,11 @@ class SupabaseSocialService {
     }
 
     try {
+      // Remove any stale row holding this device's FCM token (e.g. after switching accounts)
+      try {
+        await _client.from('user_fcm_tokens').delete().eq('fcm_token', token);
+      } catch (_) {}
+
       await _client.from('user_fcm_tokens').upsert(
         {
           'user_id': user.id,
