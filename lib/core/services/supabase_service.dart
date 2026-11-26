@@ -222,6 +222,9 @@ class SupabaseService {
   Future<List<ProfileReplyThreadModel>> fetchUserReplies(String userId) =>
       feed.fetchUserReplies(userId);
 
+  Future<List<MarketPostModel>> fetchUserLikedPosts(String userId) =>
+      feed.fetchUserLikedPosts(userId);
+
   Future<bool> togglePostLike(String postId, bool isCurrentlyLiked) =>
       feed.togglePostLike(postId, isCurrentlyLiked);
 

@@ -314,6 +314,36 @@ class SupabaseFeedService {
     }
   }
 
+  /// Fetch posts liked by a specific user, ordered by most recently liked
+  Future<List<MarketPostModel>> fetchUserLikedPosts(String userId) async {
+    try {
+      final response = await _client
+          .from('post_likes')
+          .select(
+            'created_at, post:market_posts!post_likes_post_id_fkey(*, seller:profiles!market_posts_seller_id_fkey(*), post_likes(count), post_comments(count))',
+          )
+          .eq('user_id', userId)
+          .order('created_at', ascending: false);
+
+      final rawList = <MarketPostModel>[];
+      for (final item in (response as List<dynamic>).whereType<Map<String, dynamic>>()) {
+        final rawPost = item['post'];
+        if (rawPost is! Map<String, dynamic>) continue;
+        final post = MarketPostModel.fromJson(rawPost);
+        if (post.isDeleted) continue;
+        rawList.add(post.copyWith(isLiked: true));
+      }
+
+      return await PollSyncService.instance.hydrateAndSyncPosts(
+        client: _client,
+        posts: rawList,
+      );
+    } catch (e) {
+      debugPrint('Error fetchUserLikedPosts: $e');
+      return [];
+    }
+  }
+
   /// Toggle like on post in public.post_likes
   Future<bool> togglePostLike(String postId, bool isCurrentlyLiked) async {
     final user = _currentUser;

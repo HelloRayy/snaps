@@ -30,6 +30,7 @@ import 'package:snapan_market/features/feed/screens/post_detail_screen.dart';
 import 'package:snapan_market/features/feed/utils/social_commerce_navigator.dart';
 import 'package:snapan_market/features/messages/screens/direct_messages_screen.dart';
 import 'package:snapan_market/features/messages/services/direct_messages_service.dart';
+import 'package:snapan_market/features/profile/screens/liked_posts_screen.dart';
 import 'package:snapan_market/features/profile/screens/profile_screen.dart';
 import 'package:snapan_market/features/search/screens/search_screen.dart';
 
@@ -234,7 +235,10 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
         },
         onLikedTap: () {
           Navigator.of(context).maybePop();
-          setState(() => _currentNavTab = HomeNavTab.activity);
+          Navigator.push(
+            context,
+            AppSlidePageRoute(builder: (_) => const LikedPostsScreen()),
+          );
         },
         onArchiveTap: () {},
         onReportTap: () {
