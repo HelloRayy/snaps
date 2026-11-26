@@ -8,8 +8,8 @@ class NavbarMotionConfig {
   final double collapsedWidth;
 
   const NavbarMotionConfig({
-    this.durationMs = 380,
-    this.curveName = 'easeOutCubic',
+    this.durationMs = 425,
+    this.curveName = 'fastOutSlowIn',
     this.collapsedWidth = 62.0,
   });
 

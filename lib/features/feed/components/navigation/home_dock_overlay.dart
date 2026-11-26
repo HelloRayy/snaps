@@ -82,38 +82,7 @@ class _HomeDockOverlayState extends State<HomeDockOverlay> {
           ),
         ),
         if (_showTunerHud)
-          NavbarMotionTunerHud(
-            config: _motionConfig,
-            onChanged: (c) => setState(() => _motionConfig = c),
-            onToggleCollapse: () {
-              if (widget.fabAnimationController.value < 0.5) {
-                widget.fabAnimationController.forward();
-              } else {
-                widget.fabAnimationController.reverse();
-              }
-            },
-            onClose: () => setState(() => _showTunerHud = false),
-          )
-        else
-          Positioned(
-            right: 16,
-            top: MediaQuery.paddingOf(context).top + 56,
-            child: Material(
-              color: Colors.black.withValues(alpha: 0.65),
-              borderRadius: BorderRadius.circular(20),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(20),
-                onTap: () => setState(() => _showTunerHud = true),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  child: Text(
-                    'Motion HUD',
-                    style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          const SizedBox.shrink(),
       ],
     );
   }

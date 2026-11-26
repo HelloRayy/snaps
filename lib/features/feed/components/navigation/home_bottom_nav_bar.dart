@@ -69,8 +69,8 @@ class HomeBottomNavBar extends StatelessWidget {
     this.userAvatar,
     this.isCollapsed = false,
     this.onExpandTap,
-    this.motionDurationMs = 380,
-    this.motionCurve = Curves.easeOutCubic,
+    this.motionDurationMs = 425,
+    this.motionCurve = Curves.fastOutSlowIn,
   });
 
   @override
@@ -82,6 +82,8 @@ class HomeBottomNavBar extends StatelessWidget {
     }
 
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
+    final double expandedWidth = (MediaQuery.sizeOf(context).width - 40.0).clamp(0.0, 360.0);
+    final double innerWidth = (expandedWidth - 8.0).clamp(0.0, 352.0);
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final activeColor = isDark ? Colors.white : AppColors.primary;
@@ -93,15 +95,13 @@ class HomeBottomNavBar extends StatelessWidget {
         right: 20.0,
         bottom: bottomPadding > 0 ? bottomPadding + 8.0 : 18.0,
       ),
-      child: AnimatedAlign(
-        duration: Duration(milliseconds: motionDurationMs),
-        curve: motionCurve,
-        alignment: isCollapsed ? Alignment.centerLeft : Alignment.center,
+      child: Align(
+        alignment: Alignment.centerLeft,
         heightFactor: 1.0,
         child: AnimatedContainer(
           duration: Duration(milliseconds: motionDurationMs),
-          curve: motionCurve,
-          width: isCollapsed ? 62.0 : 360.0,
+          curve: Curves.easeOutCubic,
+          width: isCollapsed ? 62.0 : expandedWidth,
           height: 62.0,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(31.0),
@@ -140,34 +140,23 @@ class HomeBottomNavBar extends StatelessWidget {
                             ],
                     ),
                   ),
-                  child: AnimatedSwitcher(
-                    duration: Duration(milliseconds: (motionDurationMs * 0.65).round()),
-                    switchInCurve: Curves.easeOut,
-                    switchOutCurve: Curves.easeIn,
-                    child: isCollapsed
-                        ? InkWell(
-                            key: const ValueKey('collapsed_nav'),
-                            borderRadius: BorderRadius.circular(31.0),
-                            onTap: () {
-                              HapticFeedback.selectionClick();
-                              onExpandTap?.call();
-                            },
-                            child: Center(
-                              child: switch (currentTab) {
-                                HomeNavTab.home => const HomeNavGlyph(isActive: true),
-                                HomeNavTab.messages => const PaperPlaneNavGlyph(isActive: true),
-                                HomeNavTab.activity => const HeartNavGlyph(isActive: true),
-                                HomeNavTab.profile => const UserNavGlyph(isActive: true),
-                              },
-                            ),
-                          )
-                        : SingleChildScrollView(
-                            key: const ValueKey('expanded_nav'),
-                            scrollDirection: Axis.horizontal,
-                            physics: const NeverScrollableScrollPhysics(),
-                            child: SizedBox(
-                              width: 352.0,
-                              child: LayoutBuilder(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: isCollapsed
+                        ? () {
+                            HapticFeedback.selectionClick();
+                            onExpandTap?.call();
+                          }
+                        : null,
+                    child: IgnorePointer(
+                      ignoring: isCollapsed,
+                      child: OverflowBox(
+                        maxWidth: innerWidth,
+                        minWidth: innerWidth,
+                        alignment: Alignment.centerLeft,
+                        child: SizedBox(
+                          width: innerWidth,
+                          child: LayoutBuilder(
                     builder: (context, constraints) {
                       final double tabWidth = constraints.maxWidth / 4.0;
                       return Stack(
@@ -196,6 +185,7 @@ class HomeBottomNavBar extends StatelessWidget {
                               _DockTabItem(
                                 isActive: currentTab == HomeNavTab.home,
                                 label: 'Home',
+                                showLabel: !isCollapsed,
                                 glyph: HomeNavGlyph(
                                   isActive: currentTab == HomeNavTab.home,
                                   activeColor: activeColor,
@@ -255,6 +245,9 @@ class HomeBottomNavBar extends StatelessWidget {
           ),
         ),
       ),
+      ),
+      ),
+      ),
     );
   }
 }
@@ -265,12 +258,14 @@ class _DockTabItem extends StatefulWidget {
   final String label;
   final Widget glyph;
   final VoidCallback onTap;
+  final bool showLabel;
 
   const _DockTabItem({
     required this.isActive,
     required this.label,
     required this.glyph,
     required this.onTap,
+    this.showLabel = true,
   });
 
   @override
@@ -321,25 +316,27 @@ class _DockTabItemState extends State<_DockTabItem> {
                   ),
                 ),
 
-                const SizedBox(height: 2.0),
+                if (widget.showLabel) ...[
+                  const SizedBox(height: 2.0),
 
-                // Label Text with smooth color transition
-                AnimatedDefaultTextStyle(
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeOutCubic,
-                  style: TextStyle(
-                    fontSize: 10.0,
-                    fontWeight: widget.isActive ? FontWeight.w700 : FontWeight.w500,
-                    color: widget.isActive ? activeColor : inactiveColor,
-                    letterSpacing: -0.2,
-                    height: 1.2,
+                  // Label Text with smooth color transition
+                  AnimatedDefaultTextStyle(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeOutCubic,
+                    style: TextStyle(
+                      fontSize: 10.0,
+                      fontWeight: widget.isActive ? FontWeight.w700 : FontWeight.w500,
+                      color: widget.isActive ? activeColor : inactiveColor,
+                      letterSpacing: -0.2,
+                      height: 1.2,
+                    ),
+                    child: Text(
+                      widget.label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  child: Text(
-                    widget.label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
+                ],
               ],
             ),
           ),
