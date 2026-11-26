@@ -11,6 +11,7 @@ import { BroadcastNotificationTab } from './BroadcastNotificationTab';
 import { MeetingPointsTab } from './MeetingPointsTab';
 import { ServerMonitorTab } from './ServerMonitorTab';
 import { DeviceSecurityTab } from './DeviceSecurityTab';
+import { PasswordResetTab } from './PasswordResetTab';
 import { useAdminSecurity } from '../hooks/useAdminSecurity';
 import { adminSecurityService, ADMIN_SESSION_STORAGE_KEY } from '../services/adminSecurityService';
 import '../styles/cooladmin.css';
@@ -251,6 +252,10 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
 
               <div className={activeTab === 'devices' ? 'block' : 'hidden'}>
                 <DeviceSecurityTab isActive={activeTab === 'devices'} />
+              </div>
+
+              <div className={activeTab === 'password-resets' ? 'block' : 'hidden'}>
+                <PasswordResetTab isActive={activeTab === 'password-resets'} />
               </div>
             </div>
           </div>

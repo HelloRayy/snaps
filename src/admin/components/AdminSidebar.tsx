@@ -8,6 +8,7 @@ export type AdminTab =
   | 'reports'
   | 'broadcast'
   | 'devices'
+  | 'password-resets'
   | 'meeting-points'
   | 'server';
 
@@ -235,6 +236,19 @@ export function AdminSidebar({
                     {securityAlertsCount}
                   </span>
                 )}
+              </a>
+            </li>
+
+            <li className={activeTab === 'password-resets' ? 'active' : ''}>
+              <a
+                href="#password-resets"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNav('password-resets');
+                }}
+              >
+                <i className="fa-solid fa-key"></i>
+                <span style={{ flex: 1, whiteSpace: 'nowrap' }}>Reset Sandi</span>
               </a>
             </li>
 
