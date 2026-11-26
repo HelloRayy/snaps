@@ -329,8 +329,7 @@ print(json.dumps({
       --data-binary @"$APK_PATH" \
       "https://uploads.github.com/repos/${RELEASE_REPO}/releases/${RELEASE_ID}/assets?name=app-release.apk")
 
-    UPLOAD_STATE=$(echo "$UPLOAD_RESP" | grep -m 1 '"state":' | awk '{print $2}' | tr -d '",')
-    if [ "$UPLOAD_STATE" = "uploaded" ]; then
+    if echo "$UPLOAD_RESP" | grep -qE '"state":[[:space:]]*"uploaded"'; then
       echo -e "${GREEN}✓ Asset APK terunggah ke GitHub Publik (0 egress Supabase)!${NC}"
     else
       echo -e "${RED}❌ Gagal upload APK ke GitHub Publik: $UPLOAD_RESP${NC}"
