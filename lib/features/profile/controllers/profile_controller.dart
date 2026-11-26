@@ -55,6 +55,41 @@ class ProfileController extends ChangeNotifier {
     _followRealtimeSubscription?.unsubscribe();
   }
 
+  List<ProfileReplyThreadModel> _enrichReplies(
+    List<ProfileReplyThreadModel> raw,
+    ProfileUserModel profileUser,
+  ) {
+    return raw.map((item) {
+      if (item.reply.user.name != 'Pengguna' && item.reply.user.avatar.isNotEmpty) {
+        return item;
+      }
+      final enrichedReply = PostCommentModel(
+        id: item.reply.id,
+        postId: item.reply.postId,
+        parentCommentId: item.reply.parentCommentId,
+        user: CommentUserModel(
+          id: profileUser.id,
+          name: profileUser.name,
+          avatar: profileUser.avatar,
+          isVerified: profileUser.isVerified,
+        ),
+        content: item.reply.content,
+        images: item.reply.images,
+        threadPart: item.reply.threadPart,
+        totalParts: item.reply.totalParts,
+        timestamp: item.reply.timestamp,
+        likesCount: item.reply.likesCount,
+        isLiked: item.reply.isLiked,
+        replies: item.reply.replies,
+      );
+      return ProfileReplyThreadModel(
+        id: item.id,
+        parentPost: item.parentPost,
+        reply: enrichedReply,
+      );
+    }).toList();
+  }
+
   Future<void> loadProfile({required bool isOwnProfile, String? username}) async {
     if (_isFetching) return;
     _isFetching = true;
@@ -132,7 +167,7 @@ class ProfileController extends ChangeNotifier {
         }
 
         allUserPosts = await _enrichPosts(livePosts);
-        allUserReplies = liveReplies;
+        allUserReplies = _enrichReplies(liveReplies, user!);
         isLoading = false;
         isNotFound = false;
         notifyListeners();
@@ -186,7 +221,7 @@ class ProfileController extends ChangeNotifier {
             followerAvatars: followerAvatars,
           );
           allUserPosts = await _enrichPosts(targetPosts);
-          allUserReplies = targetReplies;
+          allUserReplies = _enrichReplies(targetReplies, user!);
           isLoading = false;
           isNotFound = false;
           notifyListeners();
