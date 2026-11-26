@@ -249,7 +249,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 const SizedBox(height: 20.0),
                 StudentNisCombobox(
                   controller: _nisController,
-                  selectedStudent: _verifiedStudent,
+                  verifiedStudent: _verifiedStudent,
                   onStudentSelected: (student) {
                     setState(() {
                       _verifiedStudent = student;
