@@ -1,4 +1,10 @@
-import serviceAccount from '../firebase-service-account.json';
+const serviceAccount: { client_email: string; private_key: string; project_id: string } = (() => {
+  try {
+    const raw = import.meta.env.VITE_FIREBASE_SERVICE_ACCOUNT;
+    if (raw) return JSON.parse(raw);
+  } catch (_) {}
+  return { client_email: '', private_key: '', project_id: '' };
+})();
 
 let cachedAccessToken: string | null = null;
 let tokenExpiresAt = 0;
