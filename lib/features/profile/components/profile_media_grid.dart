@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/services/snaps_disk_image_cache.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 class ProfileMediaItem {
@@ -82,21 +84,52 @@ class ProfileMediaGrid extends StatelessWidget {
               borderRadius: BorderRadius.circular(4.0),
               child: Container(
                 color: const Color(0xFFF1F5F9),
-                child: Image.network(
-                  item.imageUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => const Center(
-                    child: Icon(
-                      Icons.image_not_supported_rounded,
-                      size: 24.0,
-                      color: Color(0xFF94A3B8),
-                    ),
-                  ),
-                ),
+                child: _CachedGridThumb(imageUrl: item.imageUrl),
               ),
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _CachedGridThumb extends StatefulWidget {
+  final String imageUrl;
+  const _CachedGridThumb({required this.imageUrl});
+
+  @override
+  State<_CachedGridThumb> createState() => _CachedGridThumbState();
+}
+
+class _CachedGridThumbState extends State<_CachedGridThumb> {
+  File? _file;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final sync = SnapsDiskImageCache.instance.getCachedFileSync(widget.imageUrl);
+    if (sync != null) {
+      _file = sync;
+      return;
+    }
+    final fetched = await SnapsDiskImageCache.instance.getOrFetch(widget.imageUrl);
+    if (mounted && fetched != null) setState(() => _file = fetched);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_file == null) return const SizedBox.shrink();
+    return Image.file(
+      _file!,
+      cacheWidth: 300,
+      fit: BoxFit.cover,
+      errorBuilder: (_, _, _) => const Center(
+        child: Icon(Icons.image_not_supported_rounded, size: 24.0, color: Color(0xFF94A3B8)),
       ),
     );
   }

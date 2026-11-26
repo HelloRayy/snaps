@@ -76,13 +76,16 @@ class _DynamicFeedImageState extends State<DynamicFeedImage> {
     }
   }
 
+  ImageProvider _providerFor(File file) =>
+      ResizeImage(FileImage(file), width: 800);
+
   void _resolveRatioFromFile(File file) {
     if (_ratioCache.containsKey(widget.imageUrl)) return;
     if (_listener != null && _imageStream != null) {
       _imageStream?.removeListener(_listener!);
     }
-    _imageStream = ResizeImage(FileImage(file), width: 64)
-        .resolve(const ImageConfiguration());
+    // Share exact same ResizeImage key as the Image widget so Flutter decodes ONCE, never twice
+    _imageStream = _providerFor(file).resolve(const ImageConfiguration());
     _listener = ImageStreamListener(
       (info, _) {
         if (!mounted) return;
@@ -156,11 +159,11 @@ class _DynamicFeedImageState extends State<DynamicFeedImage> {
         ),
       );
     } else if (_localFile != null) {
-      child = Image.file(
-        _localFile!,
+      child = Image(
+        image: _providerFor(_localFile!),
         key: ValueKey('${widget.imageUrl}#$_retryCount'),
-        cacheWidth: 800,
         fit: BoxFit.cover,
+        gaplessPlayback: true,
         errorBuilder: (_, _, _) => Container(
           color: placeholderColor,
           child: Center(

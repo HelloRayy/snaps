@@ -95,13 +95,16 @@ class _AdaptiveCarouselCardState extends State<AdaptiveCarouselCard> {
     }
   }
 
+  ImageProvider _providerFor(File file) =>
+      ResizeImage(FileImage(file), width: 600);
+
   void _resolveRatioFromFile(File file) {
     if (AdaptiveCarouselCard.ratioCache.containsKey(widget.imageUrl)) return;
     if (_imageStream != null && _listener != null) {
       _imageStream!.removeListener(_listener!);
     }
-    _imageStream = ResizeImage(FileImage(file), width: 64)
-        .resolve(const ImageConfiguration());
+    // Share exact same ResizeImage key as the Image widget so Flutter decodes ONCE, never twice
+    _imageStream = _providerFor(file).resolve(const ImageConfiguration());
     _listener = ImageStreamListener(
       (info, _) {
         if (!mounted) return;
@@ -140,11 +143,11 @@ class _AdaptiveCarouselCardState extends State<AdaptiveCarouselCard> {
     } else if (_hasError) {
       imageBody = _errorPlaceholder(calculatedWidth, isDark);
     } else if (_localFile != null) {
-      imageBody = Image.file(
-        _localFile!,
+      imageBody = Image(
+        image: _providerFor(_localFile!),
         key: ValueKey('${widget.imageUrl}#$_retryCount'),
-        cacheWidth: 600,
         fit: BoxFit.cover,
+        gaplessPlayback: true,
         errorBuilder: (_, _, _) => _errorPlaceholder(calculatedWidth, isDark),
       );
     } else {
