@@ -34,8 +34,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
   void initState() {
     super.initState();
     _notifications = [];
-    _loadLiveNotifications();
-    _setupRealtimeNotifications();
+    // Show skeleton smoothly during 280ms tab slide transition, then load live data
+    Future.delayed(const Duration(milliseconds: 280), () {
+      if (!mounted) return;
+      _loadLiveNotifications();
+      _setupRealtimeNotifications();
+    });
   }
 
   @override

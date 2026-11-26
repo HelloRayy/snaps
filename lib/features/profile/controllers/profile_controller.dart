@@ -17,6 +17,7 @@ class ProfileController extends ChangeNotifier {
   List<MarketPostModel> allUserPosts = [];
   List<ProfileReplyThreadModel> allUserReplies = [];
   bool isLoading = true;
+  bool _isFetching = false;
 
   RealtimeChannel? _profileSubscription;
   RealtimeChannel? _followRealtimeSubscription;
@@ -55,6 +56,8 @@ class ProfileController extends ChangeNotifier {
   }
 
   Future<void> loadProfile({required bool isOwnProfile, String? username}) async {
+    if (_isFetching) return;
+    _isFetching = true;
     final isFirstLoad = user == null;
     if (isFirstLoad) {
       isLoading = true;
@@ -62,6 +65,14 @@ class ProfileController extends ChangeNotifier {
       notifyListeners();
     }
 
+    try {
+      await _loadProfileInternal(isOwnProfile: isOwnProfile, username: username);
+    } finally {
+      _isFetching = false;
+    }
+  }
+
+  Future<void> _loadProfileInternal({required bool isOwnProfile, String? username}) async {
     if (isOwnProfile) {
       final currentUser = SupabaseService.instance.currentUser;
       if (currentUser == null) {
