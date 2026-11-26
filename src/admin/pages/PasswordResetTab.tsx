@@ -247,6 +247,66 @@ export function PasswordResetTab({ isActive = true }: PasswordResetTabProps) {
           </div>
         )}
       </div>
+
+      {confirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl border border-slate-100 space-y-4">
+            <h3 className="text-base font-bold text-slate-900">
+              {confirmModal.action === 'approve'
+                ? 'Konfirmasi Setujui Reset Sandi'
+                : 'Konfirmasi Tolak Permintaan'}
+            </h3>
+            <div className="rounded-xl bg-slate-50 p-3 text-sm space-y-1">
+              <div><span className="text-slate-500">NIS:</span> <span className="font-semibold">{confirmModal.req.nis}</span></div>
+              <div><span className="text-slate-500">Nama:</span> <span className="font-semibold">{confirmModal.req.full_name}</span></div>
+              <div><span className="text-slate-500">Kelas:</span> <span className="font-semibold">{confirmModal.req.class_group}</span></div>
+              <div>
+                <span className="text-slate-500">Perangkat:</span>{' '}
+                <span className={confirmModal.req.isKnownDevice ? 'text-emerald-700 font-semibold' : 'text-amber-700 font-semibold'}>
+                  {confirmModal.req.isKnownDevice ? 'Perangkat Dikenal' : 'Perangkat Baru/Berbeda'}
+                </span>
+              </div>
+              {confirmModal.req.device_fcm_token && (
+                <div className="text-xs text-slate-400 font-mono">
+                  Token: {confirmModal.req.device_fcm_token.slice(0, 14)}...
+                </div>
+              )}
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Catatan Admin (Opsional)</label>
+              <input
+                type="text"
+                value={confirmModal.note}
+                onChange={(e) => setConfirmModal({ ...confirmModal, note: e.target.value })}
+                placeholder="Tulis catatan jika perlu..."
+                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                onClick={() => setConfirmModal(null)}
+                className="px-4 py-2 text-sm font-semibold rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50"
+              >
+                Batal
+              </button>
+              <button
+                onClick={() => {
+                  const { req, action, note } = confirmModal;
+                  setConfirmModal(null);
+                  handleAction(req.id, action, note.trim() || undefined);
+                }}
+                className={`px-4 py-2 text-sm font-semibold rounded-xl text-white ${
+                  confirmModal.action === 'approve'
+                    ? 'bg-indigo-600 hover:bg-indigo-700'
+                    : 'bg-rose-600 hover:bg-rose-700'
+                }`}
+              >
+                {confirmModal.action === 'approve' ? 'Ya, Setujui' : 'Ya, Tolak'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
