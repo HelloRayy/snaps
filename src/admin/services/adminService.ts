@@ -187,6 +187,7 @@ export const adminService = {
   async getProfiles(params?: {
     search?: string;
     role?: string;
+    classFilter?: string;
     verification?: 'all' | 'verified' | 'unverified';
     status?: 'all' | 'active' | 'suspended';
     sortBy?: 'created_at' | 'last_app_version';
@@ -196,6 +197,7 @@ export const adminService = {
     const {
       search = '',
       role = 'all',
+      classFilter = 'all',
       verification = 'all',
       status = 'all',
       sortBy = 'created_at',
@@ -214,6 +216,15 @@ export const adminService = {
         query = query.in('role', ['user', 'buyer', 'seller']);
       } else {
         query = query.eq('role', role as 'user' | 'admin' | 'buyer' | 'seller');
+      }
+    }
+
+    if (classFilter && classFilter !== 'all') {
+      if (classFilter.startsWith('grade:')) {
+        const grade = classFilter.replace('grade:', '');
+        query = query.ilike('class_group', `${grade} %`);
+      } else {
+        query = query.ilike('class_group', `%${classFilter}%`);
       }
     }
 

@@ -23,7 +23,7 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [roleFilter, setRoleFilter] = useState('all');
+  const [classFilter, setClassFilter] = useState('all');
   const [verifFilter, setVerifFilter] = useState<'all' | 'verified' | 'unverified'>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'suspended'>('all');
   const [sortBy, setSortBy] = useState<'created_at' | 'last_app_version'>('created_at');
@@ -76,7 +76,7 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
       const offset = (page - 1) * pageSize;
       const res = await adminService.getProfiles({
         search,
-        role: roleFilter,
+        classFilter,
         verification: verifFilter,
         status: statusFilter,
         sortBy,
@@ -90,7 +90,7 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
     } finally {
       setIsLoading(false);
     }
-  }, [search, roleFilter, verifFilter, statusFilter, sortBy, page, pageSize]);
+  }, [search, classFilter, verifFilter, statusFilter, sortBy, page, pageSize]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -450,11 +450,11 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
               ></i>
             </div>
 
-            {/* Filter Role */}
+            {/* Filter Per Kelas */}
             <select
-              value={roleFilter}
+              value={classFilter}
               onChange={(e) => {
-                setRoleFilter(e.target.value);
+                setClassFilter(e.target.value);
                 setPage(1);
               }}
               style={{
@@ -467,9 +467,35 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
                 background: '#ffffff',
               }}
             >
-              <option value="all">Semua Role</option>
-              <option value="user">Siswa / Warga Sekolah (C2C)</option>
-              <option value="admin">Administrator</option>
+              <option value="all">Semua Kelas</option>
+              <optgroup label="Per Tingkat">
+                {SMKN8_GRADES.map((g) => (
+                  <option key={g} value={`grade:${g}`}>
+                    Kelas {g}
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label="Per Jurusan">
+                {SMKN8_MAJORS.map((m) => (
+                  <option key={m} value={m}>
+                    Jurusan {m}
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label="Kelas Spesifik">
+                {SMKN8_GRADES.flatMap((g) =>
+                  SMKN8_MAJORS.flatMap((m) =>
+                    SMKN8_CLASS_NUMS.map((num) => {
+                      const label = `${g} ${m} ${num}`;
+                      return (
+                        <option key={label} value={label}>
+                          {label}
+                        </option>
+                      );
+                    })
+                  )
+                )}
+              </optgroup>
             </select>
 
             {/* Filter Verifikasi */}
