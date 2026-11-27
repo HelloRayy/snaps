@@ -177,10 +177,7 @@ class ProfileInfoHeader extends StatelessWidget {
           ),
 
           if (user.bio.isNotEmpty) ...[
-            if ((user.link ?? '').trim().isNotEmpty)
-            ProfileSocialLinkBadge(rawLink: user.link!),
-
-          const SizedBox(height: 10.0),
+            const SizedBox(height: 10.0),
             Text.rich(
               TextSpan(
                 children: MentionTextSpanHelper.buildSpans(

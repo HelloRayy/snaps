@@ -16,36 +16,36 @@ class ProfileSocialLinkBadge extends StatelessWidget {
     return 'https://$trimmed';
   }
 
-  ({IconData icon, String label, Color color}) _resolvePlatform(Uri uri) {
+  ({bool isInstagram, IconData icon, String label}) _resolvePlatform(Uri uri) {
     final host = uri.host.toLowerCase().replaceFirst('www.', '');
     final segments = uri.pathSegments.where((s) => s.isNotEmpty).toList();
 
     if (host.contains('instagram.com')) {
       final handle = segments.isNotEmpty ? '@${segments.first.replaceAll('@', '')}' : 'Instagram';
-      return (icon: LucideIcons.camera, label: handle, color: const Color(0xFFE1306C));
+      return (isInstagram: true, icon: LucideIcons.camera, label: handle);
     }
     if (host.contains('tiktok.com')) {
       final handle = segments.isNotEmpty ? '@${segments.first.replaceAll('@', '')}' : 'TikTok';
-      return (icon: LucideIcons.music, label: handle, color: const Color(0xFF0F172A));
+      return (isInstagram: false, icon: LucideIcons.music, label: handle);
     }
     if (host.contains('wa.me') || host.contains('whatsapp.com')) {
-      return (icon: LucideIcons.messageCircle, label: 'WhatsApp', color: const Color(0xFF25D366));
+      return (isInstagram: false, icon: LucideIcons.messageCircle, label: 'WhatsApp');
     }
     if (host.contains('github.com')) {
       final handle = segments.isNotEmpty ? segments.first : 'GitHub';
-      return (icon: LucideIcons.code, label: handle, color: const Color(0xFF24292E));
+      return (isInstagram: false, icon: LucideIcons.code, label: handle);
     }
     if (host.contains('youtube.com') || host.contains('youtu.be')) {
-      return (icon: LucideIcons.play, label: 'YouTube', color: const Color(0xFFFF0000));
+      return (isInstagram: false, icon: LucideIcons.play, label: 'YouTube');
     }
     if (host.contains('x.com') || host.contains('twitter.com')) {
       final handle = segments.isNotEmpty ? '@${segments.first.replaceAll('@', '')}' : 'X';
-      return (icon: LucideIcons.atSign, label: handle, color: const Color(0xFF0F172A));
+      return (isInstagram: false, icon: LucideIcons.atSign, label: handle);
     }
     return (
+      isInstagram: false,
       icon: LucideIcons.link,
       label: host.isNotEmpty ? host : rawLink.trim(),
-      color: AppColors.primary,
     );
   }
 
@@ -57,9 +57,9 @@ class ProfileSocialLinkBadge extends StatelessWidget {
 
     final platform = _resolvePlatform(uri);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final badgeColor = isDark && platform.color == const Color(0xFF0F172A)
-        ? Colors.white
-        : platform.color;
+    final bgColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9);
+    final borderColor = isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0);
+    final inkColor = isDark ? Colors.white : const Color(0xFF0F172A);
 
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
@@ -73,18 +73,21 @@ class ProfileSocialLinkBadge extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
           decoration: BoxDecoration(
-            color: badgeColor.withValues(alpha: 0.08),
+            color: bgColor,
             borderRadius: BorderRadius.circular(20.0),
-            border: Border.all(
-              color: badgeColor.withValues(alpha: 0.22),
-              width: 0.8,
-            ),
+            border: Border.all(color: borderColor, width: 0.8),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(platform.icon, size: 13.5, color: badgeColor),
-              const SizedBox(width: 5.0),
+              if (platform.isInstagram)
+                CustomPaint(
+                  size: const Size(13.5, 13.5),
+                  painter: _InstagramGlyphPainter(inkColor),
+                )
+              else
+                Icon(platform.icon, size: 13.5, color: inkColor),
+              const SizedBox(width: 6.0),
               Flexible(
                 child: Text(
                   platform.label,
@@ -93,7 +96,7 @@ class ProfileSocialLinkBadge extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w600,
-                    color: badgeColor,
+                    color: inkColor,
                   ),
                 ),
               ),
@@ -103,4 +106,36 @@ class ProfileSocialLinkBadge extends StatelessWidget {
       ),
     );
   }
+}
+
+class _InstagramGlyphPainter extends CustomPainter {
+  final Color color;
+  const _InstagramGlyphPainter(this.color);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final stroke = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.4;
+    final rect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(0.7, 0.7, size.width - 1.4, size.height - 1.4),
+      const Radius.circular(3.5),
+    );
+    canvas.drawRRect(rect, stroke);
+    canvas.drawCircle(
+      Offset(size.width / 2, size.height / 2),
+      size.width * 0.22,
+      stroke,
+    );
+    canvas.drawCircle(
+      Offset(size.width * 0.76, size.height * 0.24),
+      0.9,
+      Paint()..color = color,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _InstagramGlyphPainter oldDelegate) =>
+      oldDelegate.color != color;
 }
