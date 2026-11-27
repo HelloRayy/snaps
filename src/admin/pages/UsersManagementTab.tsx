@@ -26,8 +26,9 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
   const [roleFilter, setRoleFilter] = useState('all');
   const [verifFilter, setVerifFilter] = useState<'all' | 'verified' | 'unverified'>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'suspended'>('all');
+  const [sortBy, setSortBy] = useState<'created_at' | 'updated_at'>('created_at');
   const [page, setPage] = useState(1);
-  const pageSize = 10;
+  const [pageSize, setPageSize] = useState(25);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [feedbackMsg, setFeedbackMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [latestAppVersion, setLatestAppVersion] = useState<string | null>(null);
@@ -78,6 +79,7 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
         role: roleFilter,
         verification: verifFilter,
         status: statusFilter,
+        sortBy,
         limit: pageSize,
         offset,
       });
@@ -88,7 +90,7 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
     } finally {
       setIsLoading(false);
     }
-  }, [search, roleFilter, verifFilter, statusFilter, page, pageSize]);
+  }, [search, roleFilter, verifFilter, statusFilter, sortBy, page, pageSize]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -512,6 +514,50 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
               <option value="all">Semua Status Akun</option>
               <option value="active">Akun Normal / Aktif</option>
               <option value="suspended">Ditangguhkan (Suspen)</option>
+            </select>
+
+            {/* Urutkan / Kategori Latest Update */}
+            <select
+              value={sortBy}
+              onChange={(e) => {
+                setSortBy(e.target.value as 'created_at' | 'updated_at');
+                setPage(1);
+              }}
+              style={{
+                height: '36px',
+                borderRadius: '6px',
+                border: '1px solid #e4e7ec',
+                padding: '0 10px',
+                fontSize: '13px',
+                color: '#475569',
+                background: '#ffffff',
+              }}
+            >
+              <option value="created_at">Urutkan: Terbaru Daftar</option>
+              <option value="updated_at">Urutkan: Latest Update</option>
+            </select>
+
+            {/* Jumlah Baris per Halaman */}
+            <select
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setPage(1);
+              }}
+              style={{
+                height: '36px',
+                borderRadius: '6px',
+                border: '1px solid #e4e7ec',
+                padding: '0 10px',
+                fontSize: '13px',
+                color: '#475569',
+                background: '#ffffff',
+              }}
+            >
+              <option value={10}>10 / hal</option>
+              <option value={25}>25 / hal</option>
+              <option value={50}>50 / hal</option>
+              <option value={100}>100 / hal</option>
             </select>
           </div>
 

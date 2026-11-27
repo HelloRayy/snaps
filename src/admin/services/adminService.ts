@@ -189,6 +189,7 @@ export const adminService = {
     role?: string;
     verification?: 'all' | 'verified' | 'unverified';
     status?: 'all' | 'active' | 'suspended';
+    sortBy?: 'created_at' | 'updated_at';
     limit?: number;
     offset?: number;
   }): Promise<{ data: ProfileRow[]; count: number }> {
@@ -197,6 +198,7 @@ export const adminService = {
       role = 'all',
       verification = 'all',
       status = 'all',
+      sortBy = 'created_at',
       limit = 20,
       offset = 0,
     } = params || {};
@@ -227,7 +229,8 @@ export const adminService = {
       query = query.or('is_suspended.is.null,is_suspended.eq.false');
     }
 
-    query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1);
+    const orderCol = sortBy === 'updated_at' ? 'updated_at' : 'created_at';
+    query = query.order(orderCol, { ascending: false, nullsFirst: false }).range(offset, offset + limit - 1);
 
     const { data, error, count } = await query;
     if (error) throw error;
@@ -447,7 +450,8 @@ export const adminService = {
       query = query.eq('post_type', postType as 'thread' | 'product');
     }
 
-    query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1);
+    const orderCol = sortBy === 'updated_at' ? 'updated_at' : 'created_at';
+    query = query.order(orderCol, { ascending: false, nullsFirst: false }).range(offset, offset + limit - 1);
 
     const { data, error, count } = await query;
     if (error) throw error;
