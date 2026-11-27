@@ -70,8 +70,21 @@ class ProfileSocialLinkBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(20.0),
         onTap: () async {
           try {
+            if (platform.isInstagram && platform.label.startsWith('@')) {
+              final handle = platform.label.substring(1);
+              final igAppUri = Uri.parse('instagram://user?username=$handle');
+              final launchedApp = await launchUrl(
+                igAppUri,
+                mode: LaunchMode.externalApplication,
+              );
+              if (launchedApp) return;
+            }
             await launchUrl(uri, mode: LaunchMode.externalApplication);
-          } catch (_) {}
+          } catch (_) {
+            try {
+              await launchUrl(uri, mode: LaunchMode.externalApplication);
+            } catch (_) {}
+          }
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
