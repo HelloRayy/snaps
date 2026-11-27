@@ -13,10 +13,18 @@ class ProfileSocialLinkBadge extends StatelessWidget {
     if (trimmed.startsWith('@')) {
       return 'https://instagram.com/${trimmed.substring(1)}';
     }
-    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
-      return trimmed;
+    final withScheme = (trimmed.startsWith('http://') || trimmed.startsWith('https://'))
+        ? trimmed
+        : 'https://$trimmed';
+    final parsed = Uri.tryParse(withScheme);
+    if (parsed != null &&
+        (parsed.host.contains('instagram.com') ||
+            parsed.host.contains('tiktok.com') ||
+            parsed.host.contains('x.com') ||
+            parsed.host.contains('twitter.com'))) {
+      return parsed.replace(queryParameters: const {}).toString().replaceAll(RegExp(r'\?$'), '');
     }
-    return 'https://$trimmed';
+    return withScheme;
   }
 
   ({bool isInstagram, IconData icon, String label}) _resolvePlatform(Uri uri) {
