@@ -22,7 +22,7 @@ class ProfileSocialLinkBadge extends StatelessWidget {
 
     if (host.contains('instagram.com')) {
       final handle = segments.isNotEmpty ? '@${segments.first.replaceAll('@', '')}' : 'Instagram';
-      return (icon: LucideIcons.instagram, label: handle, color: const Color(0xFFE1306C));
+      return (icon: LucideIcons.camera, label: handle, color: const Color(0xFFE1306C));
     }
     if (host.contains('tiktok.com')) {
       final handle = segments.isNotEmpty ? '@${segments.first.replaceAll('@', '')}' : 'TikTok';
@@ -33,10 +33,10 @@ class ProfileSocialLinkBadge extends StatelessWidget {
     }
     if (host.contains('github.com')) {
       final handle = segments.isNotEmpty ? segments.first : 'GitHub';
-      return (icon: LucideIcons.github, label: handle, color: const Color(0xFF24292E));
+      return (icon: LucideIcons.code, label: handle, color: const Color(0xFF24292E));
     }
     if (host.contains('youtube.com') || host.contains('youtu.be')) {
-      return (icon: LucideIcons.youtube, label: 'YouTube', color: const Color(0xFFFF0000));
+      return (icon: LucideIcons.play, label: 'YouTube', color: const Color(0xFFFF0000));
     }
     if (host.contains('x.com') || host.contains('twitter.com')) {
       final handle = segments.isNotEmpty ? '@${segments.first.replaceAll('@', '')}' : 'X';
