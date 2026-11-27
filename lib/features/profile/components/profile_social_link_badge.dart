@@ -56,49 +56,47 @@ class ProfileSocialLinkBadge extends StatelessWidget {
     if (uri == null || rawLink.trim().isEmpty) return const SizedBox.shrink();
 
     final platform = _resolvePlatform(uri);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9);
-    final borderColor = isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0);
-    final inkColor = isDark ? Colors.white : const Color(0xFF0F172A);
+    const linkColor = AppColors.primary;
 
     return Padding(
-      padding: const EdgeInsets.only(top: 8.0),
+      padding: const EdgeInsets.only(top: 6.0),
       child: InkWell(
-        borderRadius: BorderRadius.circular(20.0),
+        borderRadius: BorderRadius.circular(6.0),
         onTap: () async {
           if (await canLaunchUrl(uri)) {
             await launchUrl(uri, mode: LaunchMode.externalApplication);
           }
         },
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
-          decoration: BoxDecoration(
-            color: bgColor,
-            borderRadius: BorderRadius.circular(20.0),
-            border: Border.all(color: borderColor, width: 0.8),
-          ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2.0),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               if (platform.isInstagram)
                 CustomPaint(
-                  size: const Size(13.5, 13.5),
-                  painter: _InstagramGlyphPainter(inkColor),
+                  size: const Size(14.0, 14.0),
+                  painter: const _InstagramGlyphPainter(linkColor),
                 )
               else
-                Icon(platform.icon, size: 13.5, color: inkColor),
-              const SizedBox(width: 6.0),
+                Icon(platform.icon, size: 14.0, color: linkColor),
+              const SizedBox(width: 5.0),
               Flexible(
                 child: Text(
                   platform.label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w600,
-                    color: inkColor,
+                  style: const TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w500,
+                    color: linkColor,
                   ),
                 ),
+              ),
+              const SizedBox(width: 2.0),
+              Icon(
+                LucideIcons.arrowUpRight,
+                size: 13.0,
+                color: linkColor.withValues(alpha: 0.75),
               ),
             ],
           ),
