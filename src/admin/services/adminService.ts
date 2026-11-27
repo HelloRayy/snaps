@@ -812,8 +812,9 @@ export const adminService = {
   async sendBroadcastNotification(payload: {
     title: string;
     message: string;
-    targetType: 'all' | 'specific_role' | 'single_user';
+    targetType: 'all' | 'specific_role' | 'specific_class' | 'single_user';
     targetRole?: string;
+    targetClass?: string;
     targetUserId?: string;
     soundUrl?: string; // Mock custom sound url / name
     adminId?: string;
@@ -832,6 +833,13 @@ export const adminService = {
       let query = supabase.from('profiles').select('id');
       if (payload.targetType === 'single_user' && payload.targetUserId) {
         query = query.eq('id', payload.targetUserId);
+      } else if (payload.targetType === 'specific_class' && payload.targetClass) {
+        if (payload.targetClass.startsWith('grade:')) {
+          const grade = payload.targetClass.replace('grade:', '');
+          query = query.ilike('class_group', `${grade} %`);
+        } else {
+          query = query.ilike('class_group', `%${payload.targetClass}%`);
+        }
       } else if (payload.targetType === 'specific_role' && payload.targetRole) {
         if (payload.targetRole === 'user') {
           query = query.in('role', ['user', 'buyer', 'seller']);

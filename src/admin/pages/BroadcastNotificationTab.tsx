@@ -6,12 +6,16 @@ interface BroadcastNotificationTabProps {
   adminProfile?: ProfileRow | null;
 }
 
+const SMKN8_GRADES = ['X', 'XI', 'XII'] as const;
+const SMKN8_MAJORS = ['PPLG', 'TJKT', 'DKV', 'PS', 'LK'] as const;
+const SMKN8_CLASS_NUMS = ['1', '2', '3'] as const;
+
 export function BroadcastNotificationTab({ adminProfile }: BroadcastNotificationTabProps) {
   // Form State
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
-  const [targetType, setTargetType] = useState<'all' | 'specific_role' | 'single_user'>('all');
-  const [targetRole, setTargetRole] = useState<'user' | 'admin'>('user');
+  const [targetType, setTargetType] = useState<'all' | 'specific_class' | 'single_user'>('all');
+  const [targetClass, setTargetClass] = useState<string>('grade:XI');
   const [targetUsername, setTargetUsername] = useState('');
   const [selectedUser, setSelectedUser] = useState<ProfileRow | null>(null);
   
@@ -176,7 +180,7 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
         title: title.trim(),
         message: message.trim(),
         targetType,
-        targetRole: targetType === 'specific_role' ? targetRole : undefined,
+        targetClass: targetType === 'specific_class' ? targetClass : undefined,
         targetUserId: targetType === 'single_user' ? selectedUser?.id : undefined,
         soundUrl: soundChoice === 'custom' ? customSoundUrl : soundChoice,
         actionType,
@@ -305,22 +309,22 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
                   <button
                     type="button"
                     onClick={() => {
-                      setTargetType('specific_role');
+                      setTargetType('specific_class');
                       setSelectedUser(null);
                     }}
                     className={`btn btn-sm ${
-                      targetType === 'specific_role' ? 'btn-primary' : 'btn-outline-secondary'
+                      targetType === 'specific_class' ? 'btn-primary' : 'btn-outline-secondary'
                     }`}
                     style={{
                       borderRadius: '8px',
                       padding: '6px 14px',
                       fontSize: '12.5px',
                       fontWeight: 600,
-                      backgroundColor: targetType === 'specific_role' ? '#3d38f5' : 'transparent',
-                      borderColor: targetType === 'specific_role' ? '#3d38f5' : '#cbd5e1',
+                      backgroundColor: targetType === 'specific_class' ? '#3d38f5' : 'transparent',
+                      borderColor: targetType === 'specific_class' ? '#3d38f5' : '#cbd5e1',
                     }}
                   >
-                    <i className="fa-solid fa-filter me-1.5"></i> Peran Spesifik
+                    <i className="fa-solid fa-filter me-1.5"></i> Kelas Spesifik
                   </button>
 
                   <button
@@ -342,20 +346,46 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
                   </button>
                 </div>
 
-                {/* Sub-pilihan jika targetType === 'specific_role' */}
-                {targetType === 'specific_role' && (
+                {/* Sub-pilihan jika targetType === 'specific_class' */}
+                {targetType === 'specific_class' && (
                   <div className="mt-2 p-2.5 bg-light rounded-3 border" style={{ borderColor: '#e2e8f0' }}>
                     <label className="form-label mb-1" style={{ fontSize: '12px', color: '#64748b' }}>
-                      Pilih Role Target:
+                      Pilih Kelas Target:
                     </label>
                     <select
                       className="form-select form-select-sm"
-                      value={targetRole}
-                      onChange={(e) => setTargetRole(e.target.value as any)}
+                      value={targetClass}
+                      onChange={(e) => setTargetClass(e.target.value)}
                       style={{ borderRadius: '6px', fontSize: '13px' }}
                     >
-                      <option value="user">Hanya Siswa / Warga Sekolah (User)</option>
-                      <option value="admin">Hanya Administrator (Admin)</option>
+                      <optgroup label="Per Tingkat">
+                        {SMKN8_GRADES.map((g) => (
+                          <option key={g} value={`grade:${g}`}>
+                            Kelas {g}
+                          </option>
+                        ))}
+                      </optgroup>
+                      <optgroup label="Per Jurusan">
+                        {SMKN8_MAJORS.map((m) => (
+                          <option key={m} value={m}>
+                            Jurusan {m}
+                          </option>
+                        ))}
+                      </optgroup>
+                      <optgroup label="Kelas Spesifik">
+                        {SMKN8_GRADES.flatMap((g) =>
+                          SMKN8_MAJORS.flatMap((m) =>
+                            SMKN8_CLASS_NUMS.map((num) => {
+                              const label = `${g} ${m} ${num}`;
+                              return (
+                                <option key={label} value={label}>
+                                  {label}
+                                </option>
+                              );
+                            })
+                          )
+                        )}
+                      </optgroup>
                     </select>
                   </div>
                 )}
