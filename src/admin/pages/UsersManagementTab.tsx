@@ -26,7 +26,7 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
   const [roleFilter, setRoleFilter] = useState('all');
   const [verifFilter, setVerifFilter] = useState<'all' | 'verified' | 'unverified'>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'suspended'>('all');
-  const [sortBy, setSortBy] = useState<'created_at' | 'updated_at'>('created_at');
+  const [sortBy, setSortBy] = useState<'created_at' | 'last_app_version'>('created_at');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -520,7 +520,7 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
             <select
               value={sortBy}
               onChange={(e) => {
-                setSortBy(e.target.value as 'created_at' | 'updated_at');
+                setSortBy(e.target.value as 'created_at' | 'last_app_version');
                 setPage(1);
               }}
               style={{
@@ -534,7 +534,7 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
               }}
             >
               <option value="created_at">Urutkan: Terbaru Daftar</option>
-              <option value="updated_at">Urutkan: Latest Update</option>
+              <option value="last_app_version">Urutkan: Update Versi App</option>
             </select>
 
             {/* Jumlah Baris per Halaman */}

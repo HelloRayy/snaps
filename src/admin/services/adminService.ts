@@ -189,7 +189,7 @@ export const adminService = {
     role?: string;
     verification?: 'all' | 'verified' | 'unverified';
     status?: 'all' | 'active' | 'suspended';
-    sortBy?: 'created_at' | 'updated_at';
+    sortBy?: 'created_at' | 'last_app_version';
     limit?: number;
     offset?: number;
   }): Promise<{ data: ProfileRow[]; count: number }> {
@@ -229,7 +229,7 @@ export const adminService = {
       query = query.or('is_suspended.is.null,is_suspended.eq.false');
     }
 
-    const orderCol = sortBy === 'updated_at' ? 'updated_at' : 'created_at';
+    const orderCol = sortBy === 'last_app_version' ? 'last_app_version' : 'created_at';
     query = query.order(orderCol, { ascending: false, nullsFirst: false }).range(offset, offset + limit - 1);
 
     const { data, error, count } = await query;
@@ -450,7 +450,7 @@ export const adminService = {
       query = query.eq('post_type', postType as 'thread' | 'product');
     }
 
-    const orderCol = sortBy === 'updated_at' ? 'updated_at' : 'created_at';
+    const orderCol = sortBy === 'last_app_version' ? 'last_app_version' : 'created_at';
     query = query.order(orderCol, { ascending: false, nullsFirst: false }).range(offset, offset + limit - 1);
 
     const { data, error, count } = await query;
