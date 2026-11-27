@@ -345,6 +345,8 @@ class EditProfileFormFields extends StatelessWidget {
                 decoration: InputDecoration(
                   hintText: 'instagram.com/username atau link lain',
                   hintStyle: TextStyle(fontFamily: 'SFPro', color: secondaryTextColor),
+                  helperText: 'Tempel link IG, TikTok, WhatsApp, atau website kamu',
+                  helperStyle: TextStyle(fontFamily: 'SFPro', fontSize: 11.5, color: secondaryTextColor),
                   border: InputBorder.none,
                   isDense: true,
                   counterText: '',
