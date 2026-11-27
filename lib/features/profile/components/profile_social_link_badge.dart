@@ -10,6 +10,9 @@ class ProfileSocialLinkBadge extends StatelessWidget {
 
   String _normalizeUrl(String input) {
     final trimmed = input.trim();
+    if (trimmed.startsWith('@')) {
+      return 'https://instagram.com/${trimmed.substring(1)}';
+    }
     if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
       return trimmed;
     }
