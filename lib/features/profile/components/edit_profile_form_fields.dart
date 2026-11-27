@@ -341,9 +341,9 @@ class EditProfileFormFields extends StatelessWidget {
               TextField(
                 controller: linkController,
                 maxLength: 100,
-                style: TextStyle(fontFamily: 'SFPro', fontSize: 15.0, color: primaryTextColor),
+                style: TextStyle(fontFamily: 'SFPro', fontSize: 15.0, color: AppColors.primary, fontWeight: FontWeight.w500),
                 decoration: InputDecoration(
-                  hintText: 'https://wa.me/... atau https://instagram.com/...',
+                  hintText: 'instagram.com/username atau link lain',
                   hintStyle: TextStyle(fontFamily: 'SFPro', color: secondaryTextColor),
                   border: InputBorder.none,
                   isDense: true,
