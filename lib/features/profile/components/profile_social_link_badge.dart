@@ -66,9 +66,9 @@ class ProfileSocialLinkBadge extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(20.0),
         onTap: () async {
-          if (await canLaunchUrl(uri)) {
+          try {
             await launchUrl(uri, mode: LaunchMode.externalApplication);
-          }
+          } catch (_) {}
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
