@@ -9,6 +9,7 @@ import 'package:snapan_market/core/utils/mention_text_span_helper.dart';
 import 'package:snapan_market/core/utils/string_utils.dart';
 import 'package:snapan_market/features/profile/models/profile_user_model.dart';
 import 'package:snapan_market/features/profile/components/follower_avatar_stack.dart';
+import 'package:snapan_market/features/profile/components/profile_social_link_badge.dart';
 
 
 
@@ -176,7 +177,10 @@ class ProfileInfoHeader extends StatelessWidget {
           ),
 
           if (user.bio.isNotEmpty) ...[
-            const SizedBox(height: 10.0),
+            if ((user.link ?? '').trim().isNotEmpty)
+            ProfileSocialLinkBadge(rawLink: user.link!),
+
+          const SizedBox(height: 10.0),
             Text.rich(
               TextSpan(
                 children: MentionTextSpanHelper.buildSpans(
@@ -207,6 +211,9 @@ class ProfileInfoHeader extends StatelessWidget {
               ),
             ),
           ],
+
+          if ((user.link ?? '').trim().isNotEmpty)
+            ProfileSocialLinkBadge(rawLink: user.link!),
 
           const SizedBox(height: 10.0),
 
