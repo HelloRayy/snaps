@@ -56,47 +56,60 @@ class ProfileSocialLinkBadge extends StatelessWidget {
     if (uri == null || rawLink.trim().isEmpty) return const SizedBox.shrink();
 
     final platform = _resolvePlatform(uri);
-    const linkColor = AppColors.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final borderColor = isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0);
+    final inkColor = isDark ? Colors.white : const Color(0xFF0F172A);
 
     return Padding(
-      padding: const EdgeInsets.only(top: 6.0),
+      padding: const EdgeInsets.only(top: 8.0),
       child: InkWell(
-        borderRadius: BorderRadius.circular(6.0),
+        borderRadius: BorderRadius.circular(20.0),
         onTap: () async {
           if (await canLaunchUrl(uri)) {
             await launchUrl(uri, mode: LaunchMode.externalApplication);
           }
         },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 2.0),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(20.0),
+            border: Border.all(color: borderColor, width: 0.9),
+          ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               if (platform.isInstagram)
-                CustomPaint(
-                  size: const Size(14.0, 14.0),
-                  painter: const _InstagramGlyphPainter(linkColor),
+                ShaderMask(
+                  shaderCallback: (bounds) => const LinearGradient(
+                    begin: Alignment.bottomLeft,
+                    end: Alignment.topRight,
+                    colors: [
+                      Color(0xFFF58529),
+                      Color(0xFFDD2A7B),
+                      Color(0xFF8134AF),
+                    ],
+                  ).createShader(bounds),
+                  child: CustomPaint(
+                    size: const Size(14.5, 14.5),
+                    painter: const _InstagramGlyphPainter(Colors.white),
+                  ),
                 )
               else
-                Icon(platform.icon, size: 14.0, color: linkColor),
-              const SizedBox(width: 5.0),
+                Icon(platform.icon, size: 14.0, color: inkColor),
+              const SizedBox(width: 6.0),
               Flexible(
                 child: Text(
                   platform.label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w500,
-                    color: linkColor,
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                    color: inkColor,
                   ),
                 ),
-              ),
-              const SizedBox(width: 2.0),
-              Icon(
-                LucideIcons.arrowUpRight,
-                size: 13.0,
-                color: linkColor.withValues(alpha: 0.75),
               ),
             ],
           ),
