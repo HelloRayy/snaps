@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
@@ -48,6 +49,7 @@ class AppUpdateService {
   ///
   /// Set [isManual] to true when user explicitly taps "Periksa pembaruan".
   Future<AppVersionModel?> checkForUpdate({bool isManual = false}) async {
+    if (kDebugMode && !isManual) return null;
     try {
       if (isManual) {
         _cachedPackageInfo = null;
