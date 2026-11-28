@@ -477,7 +477,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
                   padding: const EdgeInsets.fromLTRB(16.0, 4.0, 4.0, 4.0),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(24.0),
-                    color: isDark ? AppColors.darkSurface : AppColors.surface,
+                    color: isDark ? AppColors.darkSurface : AppColors.canvas,
                     border: Border.all(
                       color: isDark ? AppColors.darkBorder : AppColors.border,
                       width: 1.0,

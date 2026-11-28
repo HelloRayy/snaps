@@ -237,7 +237,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                       decoration: BoxDecoration(
-                        color: AppColors.primaryLight,
+                        color: AppColors.primaryPastel,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
                       ),

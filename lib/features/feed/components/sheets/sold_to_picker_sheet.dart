@@ -99,7 +99,7 @@ class _SoldToPickerSheetState extends State<SoldToPickerSheet> {
       constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.78),
       padding: EdgeInsets.only(bottom: bottomInset),
       decoration: const BoxDecoration(
-        color: AppColors.surface,
+        color: AppColors.canvas,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SafeArea(
@@ -126,7 +126,7 @@ class _SoldToPickerSheetState extends State<SoldToPickerSheet> {
                 style: GoogleFonts.inter(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: AppColors.ink,
                 ),
               ),
             ),
@@ -135,13 +135,13 @@ class _SoldToPickerSheetState extends State<SoldToPickerSheet> {
               child: TextField(
                 controller: _searchController,
                 onChanged: _onSearchChanged,
-                style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
+                style: GoogleFonts.inter(fontSize: 14, color: AppColors.ink),
                 decoration: InputDecoration(
                   hintText: 'Cari username atau nama siswa...',
-                  hintStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.textMuted),
-                  prefixIcon: const Icon(LucideIcons.search, size: 18, color: AppColors.textMuted),
+                  hintStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.lightMuted),
+                  prefixIcon: const Icon(LucideIcons.search, size: 18, color: AppColors.lightMuted),
                   filled: true,
-                  fillColor: AppColors.background,
+                  fillColor: AppColors.inputBg,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -157,7 +157,7 @@ class _SoldToPickerSheetState extends State<SoldToPickerSheet> {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: AppColors.primaryLight,
+                  color: AppColors.primaryPastel,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Icon(LucideIcons.store, size: 18, color: AppColors.primary),
@@ -167,19 +167,19 @@ class _SoldToPickerSheetState extends State<SoldToPickerSheet> {
                 style: GoogleFonts.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+                  color: AppColors.ink,
                 ),
               ),
               subtitle: Text(
                 'Laku lewat COD langsung atau platform lain',
-                style: GoogleFonts.inter(fontSize: 12, color: AppColors.textSecondary),
+                style: GoogleFonts.inter(fontSize: 12, color: AppColors.muted),
               ),
               onTap: () {
                 HapticFeedback.lightImpact();
                 Navigator.of(context).pop(const SoldToResult(displayName: 'Di luar Snaps'));
               },
             ),
-            const Divider(height: 1, color: AppColors.borderLight),
+            const Divider(height: 1, color: AppColors.divider),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 6),
               child: Text(
@@ -187,7 +187,7 @@ class _SoldToPickerSheetState extends State<SoldToPickerSheet> {
                 style: GoogleFonts.inter(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textSecondary,
+                  color: AppColors.muted,
                 ),
               ),
             ),
@@ -205,7 +205,7 @@ class _SoldToPickerSheetState extends State<SoldToPickerSheet> {
                               hasQuery
                                   ? 'Siswa tidak ditemukan'
                                   : 'Belum ada riwayat chat. Cari username di atas.',
-                              style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted),
+                              style: GoogleFonts.inter(fontSize: 13, color: AppColors.lightMuted),
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -226,10 +226,10 @@ class _SoldToPickerSheetState extends State<SoldToPickerSheet> {
                               contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
                               leading: CircleAvatar(
                                 radius: 20,
-                                backgroundColor: AppColors.borderLight,
+                                backgroundColor: AppColors.divider,
                                 backgroundImage: avatar.isNotEmpty ? NetworkImage(avatar) : null,
                                 child: avatar.isEmpty
-                                    ? const Icon(LucideIcons.user, size: 18, color: AppColors.textMuted)
+                                    ? const Icon(LucideIcons.user, size: 18, color: AppColors.lightMuted)
                                     : null,
                               ),
                               title: Text(
@@ -237,7 +237,7 @@ class _SoldToPickerSheetState extends State<SoldToPickerSheet> {
                                 style: GoogleFonts.inter(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color: AppColors.textPrimary,
+                                  color: AppColors.ink,
                                 ),
                               ),
                               subtitle: Text(
@@ -245,7 +245,7 @@ class _SoldToPickerSheetState extends State<SoldToPickerSheet> {
                                   if (username.isNotEmpty) '@$username',
                                   if (classGroup.isNotEmpty) classGroup,
                                 ].join(' • '),
-                                style: GoogleFonts.inter(fontSize: 12, color: AppColors.textSecondary),
+                                style: GoogleFonts.inter(fontSize: 12, color: AppColors.muted),
                               ),
                               onTap: () {
                                 HapticFeedback.lightImpact();

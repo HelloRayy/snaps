@@ -210,8 +210,24 @@ class SupabaseService {
   Future<void> deletePost(String postId, {bool asAdmin = false}) =>
       feed.deletePost(postId, asAdmin: asAdmin);
 
-  Future<bool> updatePostStock(String postId, int newStock) =>
-      feed.updatePostStock(postId, newStock);
+  Future<bool> updatePostStock(
+    String postId,
+    int newStock, {
+    String? soldToUserId,
+    String? soldToName,
+  }) =>
+      feed.updatePostStock(
+        postId,
+        newStock,
+        soldToUserId: soldToUserId,
+        soldToName: soldToName,
+      );
+
+  Future<List<Map<String, dynamic>>> fetchPotentialBuyers() =>
+      feed.fetchPotentialBuyers();
+
+  Future<List<Map<String, dynamic>>> searchProfilesForSoldPicker(String query) =>
+      feed.searchProfilesForSoldPicker(query);
 
   Future<MarketPostModel?> fetchPostById(String postId) =>
       feed.fetchPostById(postId);
