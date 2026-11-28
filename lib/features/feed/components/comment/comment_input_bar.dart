@@ -473,15 +473,24 @@ class _CommentInputBarState extends State<CommentInputBar> {
               // 2. WRITE BAR (Clean Flat Capsule Bordered)
               Expanded(
                 child: Container(
-                  constraints: const BoxConstraints(minHeight: 42.0),
-                  padding: const EdgeInsets.fromLTRB(14.0, 3.0, 3.0, 3.0),
+                  constraints: const BoxConstraints(minHeight: 44.0),
+                  padding: const EdgeInsets.fromLTRB(16.0, 4.0, 4.0, 4.0),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(21.0),
-                    color: isDark ? AppColors.darkSurface : const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(24.0),
+                    color: isDark ? AppColors.darkSurface : AppColors.surface,
                     border: Border.all(
-                      color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0),
+                      color: isDark ? AppColors.darkBorder : AppColors.border,
                       width: 1.0,
                     ),
+                    boxShadow: isDark
+                        ? null
+                        : [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.04),
+                              blurRadius: 10,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -536,7 +545,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
                               width: 36.0,
                               height: 36.0,
                               decoration: const BoxDecoration(
-                                color: Color(0xFF008BFF), // pen.dev Azure Blue #008BFF
+                                color: AppColors.primary,
                                 shape: BoxShape.circle,
                               ),
                               child: const Center(
