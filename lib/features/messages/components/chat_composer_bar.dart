@@ -317,36 +317,34 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
 
                 // B. Multiline Text Input Field (auto-expanding up to 4 lines, scrollable when long)
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 2.0),
-                    child: TextField(
-                      controller: _controller,
-                      focusNode: _focusNode,
-                      onTap: widget.onTap,
-                      textInputAction: TextInputAction.newline,
-                      keyboardType: TextInputType.multiline,
-                      minLines: 1,
-                      maxLines: 4,
-                      style: TextStyle(
+                  child: TextField(
+                    controller: _controller,
+                    focusNode: _focusNode,
+                    onTap: widget.onTap,
+                    textAlignVertical: TextAlignVertical.center,
+                    textInputAction: TextInputAction.newline,
+                    keyboardType: TextInputType.multiline,
+                    minLines: 1,
+                    maxLines: 4,
+                    style: TextStyle(
+                      fontFamily: 'SFPro',
+                      fontSize: 15.5,
+                      color: textColor,
+                      letterSpacing: -0.2,
+                      height: 1.28,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: widget.placeholder,
+                      hintStyle: TextStyle(
                         fontFamily: 'SFPro',
                         fontSize: 15.5,
-                        color: textColor,
+                        color: hintColor,
                         letterSpacing: -0.2,
                         height: 1.28,
                       ),
-                      decoration: InputDecoration(
-                        hintText: widget.placeholder,
-                        hintStyle: TextStyle(
-                          fontFamily: 'SFPro',
-                          fontSize: 15.5,
-                          color: hintColor,
-                          letterSpacing: -0.2,
-                          height: 1.28,
-                        ),
-                        border: InputBorder.none,
-                        isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 9.0),
-                      ),
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 6.0),
                     ),
                   ),
                 ),
