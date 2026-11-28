@@ -239,20 +239,105 @@ class SupabaseFeedService {
   }
 
   /// Update stock / availability for a product post (e.g. 1 for available, 0 for sold out)
-  Future<bool> updatePostStock(String postId, int newStock) async {
+  /// Optionally records who bought the item (soldToUserId, soldToName).
+  Future<bool> updatePostStock(
+    String postId,
+    int newStock, {
+    String? soldToUserId,
+    String? soldToName,
+  }) async {
     final user = _currentUser;
     if (user == null) return false;
+
+    final payload = <String, dynamic>{
+      'stock': newStock,
+      if (newStock <= 0) ...{
+        'sold_to_user_id': soldToUserId,
+        'sold_to_name': soldToName,
+      } else ...{
+        'sold_to_user_id': null,
+        'sold_to_name': null,
+      },
+    };
 
     try {
       await _client
           .from('market_posts')
-          .update({'stock': newStock})
+          .update(payload)
           .eq('id', postId)
           .eq('seller_id', user.id);
       return true;
     } catch (e) {
-      debugPrint('[SupabaseFeedService] Error updatePostStock: $e');
-      return false;
+      debugPrint('[SupabaseFeedService] Error updatePostStock with sold_to: $e');
+      // Fallback if sold_to columns are not yet migrated in DB
+      try {
+        await _client
+            .from('market_posts')
+            .update({'stock': newStock})
+            .eq('id', postId)
+            .eq('seller_id', user.id);
+        return true;
+      } catch (fallbackErr) {
+        debugPrint('[SupabaseFeedService] Error updatePostStock fallback: $fallbackErr');
+        return false;
+      }
+    }
+  }
+
+  /// Fetch potential buyers who have chatted with the current seller (prioritized for sold-to picker)
+  Future<List<Map<String, dynamic>>> fetchPotentialBuyers() async {
+    final user = _currentUser;
+    if (user == null) return [];
+
+    try {
+      final convs = await _client
+          .from('conversations')
+          .select('buyer_id, seller_id')
+          .or('buyer_id.eq.${user.id},seller_id.eq.${user.id}')
+          .order('updated_at', ascending: false)
+          .limit(20);
+
+      final otherIds = <String>{};
+      for (final row in (convs as List<dynamic>)) {
+        final b = row['buyer_id']?.toString();
+        final s = row['seller_id']?.toString();
+        if (b != null && b != user.id) otherIds.add(b);
+        if (s != null && s != user.id) otherIds.add(s);
+      }
+      if (otherIds.isEmpty) return [];
+
+      final profiles = await _client
+          .from('profiles')
+          .select('id, username, full_name, display_name, avatar_url, class_group')
+          .inFilter('id', otherIds.toList());
+
+      return (profiles as List<dynamic>).whereType<Map<String, dynamic>>().toList();
+    } catch (e) {
+      debugPrint('[SupabaseFeedService] Error fetchPotentialBuyers: $e');
+      return [];
+    }
+  }
+
+  /// Search student profiles by username or name for sold-to picker
+  Future<List<Map<String, dynamic>>> searchProfilesForSoldPicker(String query) async {
+    final q = query.trim();
+    if (q.isEmpty) return [];
+    final user = _currentUser;
+
+    try {
+      var req = _client
+          .from('profiles')
+          .select('id, username, full_name, display_name, avatar_url, class_group')
+          .or('username.ilike.%$q%,full_name.ilike.%$q%,display_name.ilike.%$q%')
+          .limit(15);
+      final res = await req;
+      return (res as List<dynamic>)
+          .whereType<Map<String, dynamic>>()
+          .where((p) => p['id']?.toString() != user?.id)
+          .toList();
+    } catch (e) {
+      debugPrint('[SupabaseFeedService] Error searchProfilesForSoldPicker: $e');
+      return [];
     }
   }
 

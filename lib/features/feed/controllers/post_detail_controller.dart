@@ -7,6 +7,7 @@ import 'package:snapan_market/core/utils/snaps_toast.dart';
 import 'package:snapan_market/features/create_post/components/create_post_image_helper.dart';
 import 'package:snapan_market/features/feed/components/sheets/delete_post_bottom_sheet.dart';
 import 'package:snapan_market/features/feed/components/post_card/post_submenu_popover.dart';
+import 'package:snapan_market/features/feed/components/sheets/sold_to_picker_sheet.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 /// Controller managing comments fetching, adding, post deletion, and submenu actions.
@@ -378,17 +379,34 @@ class PostDetailController extends ChangeNotifier {
         }
       },
       onToggleProductAvailability: () async {
-        final newStock = post.isSoldOut ? 1 : 0;
-        final updated = post.copyWith(stock: newStock);
+        final markingSold = !post.isSoldOut;
+        SoldToResult? soldResult;
+        if (markingSold) {
+          soldResult = await SoldToPickerSheet.show(context);
+          if (soldResult == null || !context.mounted) return;
+        }
+        final newStock = markingSold ? 0 : 1;
+        final updated = markingSold
+            ? post.copyWith(
+                stock: 0,
+                soldToUserId: soldResult?.userId,
+                soldToName: soldResult?.displayName,
+              )
+            : post.copyWith(stock: 1, clearSoldTo: true);
         post = updated;
         notifyListeners();
         onBookmarkToggle?.call(updated);
         try {
-          await SupabaseService.instance.updatePostStock(post.id, newStock);
+          await SupabaseService.instance.updatePostStock(
+            post.id,
+            newStock,
+            soldToUserId: soldResult?.userId,
+            soldToName: soldResult?.displayName,
+          );
           if (context.mounted) {
             SnapsToast.success(
               context,
-              newStock <= 0 ? 'Produk ditandai habis' : 'Produk ditandai tersedia',
+              markingSold ? 'Produk ditandai terjual' : 'Produk ditandai tersedia',
               hasBottomNav: false,
             );
           }

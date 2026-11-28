@@ -482,6 +482,8 @@ class MarketPostModel {
   final int? price;
   final int? originalPrice;
   final int? stock;
+  final String? soldToUserId;
+  final String? soldToName;
   final String? category;
   final int likesCount;
   final int commentsCount;
@@ -512,6 +514,8 @@ class MarketPostModel {
     this.price,
     this.originalPrice,
     this.stock,
+    this.soldToUserId,
+    this.soldToName,
     this.category,
     this.likesCount = 0,
     this.commentsCount = 0,
@@ -681,6 +685,8 @@ class MarketPostModel {
       isSaved: json['is_saved'] == true || json['isSaved'] == true,
       timestamp: _formatRelativeTimestamp(json['created_at'] ?? json['timestamp']),
       rawCreatedAt: json['created_at']?.toString(),
+      soldToUserId: json['sold_to_user_id']?.toString() ?? json['soldToUserId']?.toString(),
+      soldToName: json['sold_to_name']?.toString() ?? json['soldToName']?.toString(),
       deletedAt: json['deleted_at'] != null ? DateTime.tryParse(json['deleted_at'].toString()) : null,
       threadChain: parsedChain,
       comments: parsedComments,
@@ -715,6 +721,9 @@ class MarketPostModel {
     int? price,
     int? originalPrice,
     int? stock,
+    String? soldToUserId,
+    String? soldToName,
+    bool clearSoldTo = false,
     String? category,
     int? likesCount,
     int? commentsCount,
@@ -744,6 +753,8 @@ class MarketPostModel {
       price: price ?? this.price,
       originalPrice: originalPrice ?? this.originalPrice,
       stock: stock ?? this.stock,
+      soldToUserId: clearSoldTo ? null : (soldToUserId ?? this.soldToUserId),
+      soldToName: clearSoldTo ? null : (soldToName ?? this.soldToName),
       category: category ?? this.category,
       likesCount: likesCount ?? this.likesCount,
       commentsCount: commentsCount ?? this.commentsCount,

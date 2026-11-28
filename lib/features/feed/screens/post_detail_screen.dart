@@ -232,6 +232,32 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       ),
                     ),
                   ),
+                  if (post.isSoldOut && post.soldToName != null && post.soldToName!.isNotEmpty)
+                    Container(
+                      margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryLight,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(CupertinoIcons.checkmark_seal_fill, size: 16, color: AppColors.primary),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Terjual kepada ${post.soldToName}',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   PostDetailCommentsHeader(
                     isProductMode: _isProductMode,
                     totalCount: _totalCommentsCount,
@@ -258,7 +284,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
               right: 0,
               bottom: 0,
               child: PostDetailBottomBar(
-                isProductMode: _isProductMode,
+                isProductMode: false,
                 isCommentingActive: _controller.isCommentingActive,
                 post: post,
                 replyToUser: _controller.replyToUser,

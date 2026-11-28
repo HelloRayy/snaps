@@ -10,6 +10,7 @@ import 'package:snapan_market/features/feed/components/sheets/delete_post_bottom
 import 'package:snapan_market/features/feed/components/post_card/market_feed_icons.dart';
 import 'package:snapan_market/features/feed/components/post_card/post_author_avatar.dart';
 import 'package:snapan_market/features/feed/components/post_card/post_submenu_popover.dart';
+import 'package:snapan_market/features/feed/components/sheets/sold_to_picker_sheet.dart';
 import 'package:snapan_market/features/feed/components/sheets/report_content_bottom_sheet.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
@@ -78,16 +79,35 @@ class PostCardHeader extends StatelessWidget {
           onPostClick?.call(updated);
         }
       },
-      onToggleProductAvailability: () {
-        final newStock = item.isSoldOut ? 1 : 0;
-        SupabaseService.instance.updatePostStock(item.id, newStock);
-        final updated = item.copyWith(stock: newStock);
-        onPostClick?.call(updated);
-        SnapsToast.success(
-          context,
-          newStock <= 0 ? 'Produk ditandai habis' : 'Produk ditandai tersedia',
-          hasBottomNav: true,
+      onToggleProductAvailability: () async {
+        final markingSold = !item.isSoldOut;
+        SoldToResult? soldResult;
+        if (markingSold) {
+          soldResult = await SoldToPickerSheet.show(context);
+          if (soldResult == null || !context.mounted) return;
+        }
+        final newStock = markingSold ? 0 : 1;
+        await SupabaseService.instance.updatePostStock(
+          item.id,
+          newStock,
+          soldToUserId: soldResult?.userId,
+          soldToName: soldResult?.displayName,
         );
+        final updated = markingSold
+            ? item.copyWith(
+                stock: 0,
+                soldToUserId: soldResult?.userId,
+                soldToName: soldResult?.displayName,
+              )
+            : item.copyWith(stock: 1, clearSoldTo: true);
+        onPostClick?.call(updated);
+        if (context.mounted) {
+          SnapsToast.success(
+            context,
+            markingSold ? 'Produk ditandai terjual' : 'Produk ditandai tersedia',
+            hasBottomNav: true,
+          );
+        }
       },
       onHidePost: () {},
       onMuteAuthor: () {},
