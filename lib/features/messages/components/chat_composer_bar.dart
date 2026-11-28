@@ -262,7 +262,7 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
             ),
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // A. Direct Attachment Icon (Inside unified pill)
                 Padding(
